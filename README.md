@@ -47,4 +47,4 @@ the same purpose as the variables `prefix-arg` and `current-prefix-arg` do
 for any command that was called after the prefix arguments have been
 set using a command such as `universal-argument`.
 
-![screenshot](http://readme.emacsair.me/assets/readme/transient.png)
+![screenshot](http://readme.emacsair.me/transient.png)
