@@ -1414,6 +1414,7 @@ EDIT may be non-nil."
       (transient--pre-exit)))))
 
 (defun transient--pre-exit ()
+  (transient--debug 'pre-exit)
   (let ((window (selected-window)))
     (lv-delete-window)
     (select-window window))
