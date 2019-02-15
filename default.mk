@@ -1,7 +1,6 @@
 PKG = transient
 
 ELS   = $(PKG).el
-ELS  += $(PKG)-demo.el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = dash
