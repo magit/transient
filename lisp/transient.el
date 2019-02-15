@@ -1976,7 +1976,7 @@ The last value is \"don't use any of these switches\"."
   (save-match-data
     (cl-block nil
       (while t
-        (let ((str (read-from-minibuffer prompt initial-input nil history)))
+        (let ((str (read-from-minibuffer prompt initial-input nil nil history)))
           (cond ((string-equal str "")
                  (cl-return nil))
                 ((string-match-p (if include-zero
