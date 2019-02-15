@@ -113,9 +113,9 @@ This function is called with one argument, the prefix object,
 and must return a key binding description, either the existing
 key description it finds in the `key' slot, or a substitution.
 
-This is intended to let users replace certain prefix keys, but
-while discouraged, it could also be used to make other
-substitutions, but that is discouraged.
+This is intended to let users replace certain prefix keys.  It
+could also be used to make other substitutions, but that is
+discouraged.
 
 For example, \"=\" is hard to reach using my custom keyboard
 layout, so I substitute \"(\" for that, which is easy to reach
