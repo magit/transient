@@ -1000,7 +1000,7 @@ command; explicitly defined infix arguments continue to polute
 the command namespace.  It would be better if all this were made
 unnecessary by a `execute-extended-command-ignore' symbol property
 but unfortunately that does not exist (yet?)."
-  (if (cl-typep arg 'transient-suffix)
+  (if (transient-suffix--eieio-childp arg)
       (let ((sym (oref arg command)))
         (if (commandp sym)
             sym
@@ -1274,12 +1274,14 @@ EDIT may be non-nil."
                                            'transient--layout)))))))
   (setq transient--suffixes
         (cl-labels ((s (def)
-                       (cl-etypecase def
-                         (integer          nil)
-                         (string           nil)
-                         (list             (cl-mapcan #'s def))
-                         (transient-group  (cl-mapcan #'s (oref def suffixes)))
-                         (transient-suffix (list def)))))
+                       (cond
+                        ((integerp def) nil)
+                        ((stringp def) nil)
+                        ((listp def) (cl-mapcan #'s def))
+                        ((transient-group--eieio-childp def)
+                         (cl-mapcan #'s (oref def suffixes)))
+                        ((transient-suffix--eieio-childp def)
+                         (list def)))))
           (cl-mapcan #'s transient--layout))))
 
 (defun transient--init-child (levels spec)
@@ -1328,7 +1330,7 @@ EDIT may be non-nil."
     (error "No key for %s" (oref obj command))))
 
 (cl-defmethod transient--init-suffix-key ((obj transient-argument))
-  (if (cl-typep obj 'transient-switches)
+  (if (transient-switches--eieio-childp obj)
       (cl-call-next-method obj)
     (unless (slot-boundp obj 'shortarg)
       (when-let ((shortarg (transient--derive-shortarg (oref obj argument))))
@@ -1801,7 +1803,7 @@ For transients that are used to pass arguments to a subprosess
 separates non-positional arguments from positional arguments.
 The value of Magit's file argument for example looks like this:
 \(\"--\" file...)."
-  (let ((val (if (and (cl-typep prefix 'transient-prefix))
+  (let ((val (if (and (transient-prefix--eieio-childp prefix))
                  (delq nil (mapcar 'transient-infix-value
                                    transient--suffixes))
                (and (or (not prefix)
