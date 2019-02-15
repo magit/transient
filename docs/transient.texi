@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0
+@subtitle for version 0.1.0 (v0.1.0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0.
+This manual is for Transient version 0.1.0 (v0.1.0+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -252,7 +252,7 @@ One benefit of the Transient interface is that it remembers history
 not only on a global level ("this command was invoked using these
 arguments and previously it was invoked using those other arguments"),
 but also remembers the values of individual arguments independently.
-see @ref{Using History}.
+See @ref{Using History}.
 
 After a transient prefix command is invoked @code{C-h <key>} can be used to
 show the documentation for the infix or suffix command that @code{<key>} is
@@ -266,7 +266,7 @@ infix commands.  A command that sets a command line option for example
 has different needs than a command that merely toggles a boolean flag.
 Additionally Transient provides abstractions for defining new types,
 which the author of Transient did not anticipate (or didn't get around
-to implement yet).
+to implementing yet).
 
 @node Usage
 @chapter Usage
@@ -287,7 +287,7 @@ to implement yet).
 A transient prefix command is invoked like any other command by
 pressing the key that is bound to that command.  The main difference
 to other commands is that a transient prefix commands activates a
-transient keymap, which temporarily binds the transients infix and
+transient keymap, which temporarily binds the transient's infix and
 suffix commands.  Bindings from other keymaps may, or may not, be
 disabled while the transient state is in effect.
 
@@ -319,7 +319,7 @@ and the information displayed in the echo area is updated accordingly.
 Pressing @code{C-g} while a nested transient is active only quits the
 innermost transient, causing a return to the previous transient.
 
-@code{C-q} and @code{C-z} on the other hand always exits all transients.  If you use
+@code{C-q} or @code{C-z} on the other hand always exits all transients.  If you use
 the latter, then you can later resume the stack of transients using
 @code{M-x transient-resume}.
 
@@ -373,8 +373,8 @@ A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the echo area by default.
 
 Most of these commands are bound to @code{C-x <key>} and after pressing @code{C-x} a
-section featuring all common commands is temporarily show in the echo
-area.  After invoking one of these commands that section disappears
+section featuring all common commands is temporarily shown in the echo
+area.  After invoking one of these commands, that section disappears
 again.  Note however that one of these commands is described as "Show
 common permanently"; invoke that if you want the common commands to
 always be shown for all transients.
@@ -573,7 +573,7 @@ The user base of a package that uses transients can be very diverse.
 This is certainly the case for Magit; some users have been using it and
 Git for a decade, while others are just getting started now.
 
-For that reason a mechanism is that authors can use to classify a
+For that reason a mechanism is needed that authors can use to classify a
 transient's infixes and suffixes along the essentials@dots{}everything
 spectrum.  We use the term "levels" to describe that mechanism.
 
@@ -583,7 +583,7 @@ are available.  Integers between 1 and 7 (inclusive) are valid levels.
 For suffixes, 0 is also valid; it means that the suffix is not
 displayed at any level.
 
-The levels of individual transient and/or their individual suffixes
+The levels of individual transients and/or their individual suffixes
 can be changed interactively, by invoking the transient and then
 pressing @code{C-x l} to enter the "edit" mode, see below.
 
@@ -610,7 +610,7 @@ user has not set that individually.
 @defopt transient-levels-file
 
 This file is used to persist the levels of transients and their
-suffix between Emacs sessions.
+suffixes between Emacs sessions.
 @end defopt
 
 @table @asis
@@ -664,8 +664,8 @@ This option controls whether key bindings of infix commands that do
 not match the respective command-line argument should be highlighted.
 For other infix commands this option has no effect.
 
-When this option is non-nil, then the key binding for infix argument
-are highlighted when only a long argument (e.g. @code{--verbose}) is
+When this option is non-nil, then the key binding for an infix argument
+is highlighted when only a long argument (e.g. @code{--verbose}) is
 specified but no shorthand (e.g @code{-v}).  In the rare case that a
 shorthand is specified but the key binding does not match, then it
 is highlighted differently.
@@ -721,7 +721,7 @@ enabled at a time.
 @node Modifying Existing Transients
 @chapter Modifying Existing Transients
 
-To an extend transients can be customized interactively, see @ref{Enabling and Disabling Suffixes}.  This section explains how existing transients
+To an extent transients can be customized interactively, see @ref{Enabling and Disabling Suffixes}.  This section explains how existing transients
 can be further modified non-interactively.
 
 The following functions share a few arguments:
@@ -781,7 +781,7 @@ the requested modification.  The functions that insert new suffixes
 show a warning if LOC cannot be found in PREFIX, without signaling an
 error.  The reason for doing it like this is that establishing a key
 binding (and that is what we essentially are trying to do here) should
-not prevent the rest of the configuration to fail also.  Among these
+not prevent the rest of the configuration from loading.  Among these
 functions only @code{transient-get-suffix} and @code{transient-suffix-put} may
 signal an error.
 
@@ -929,7 +929,7 @@ only documented once, see @ref{Predicate Slots}.
 
 
 @item
-Finally the value of @code{:hide}, if non-nil, is a predicate that control
+Finally the value of @code{:hide}, if non-nil, is a predicate that controls
 whether the group is hidden by default.  The key bindings for
 suffixes of a hidden group should all use the same prefix key.
 Pressing that prefix key should temporarily show the group and its
@@ -945,7 +945,7 @@ suffixes, which assumes that a predicate like this is used:
 The ELEMENTs are either all subgroups (vectors), or all suffixes
 (lists) and strings.  (At least currently no group type exists that
 would allow mixing subgroups with commands at the same level, though
-in principal there is nothing that prevents that.)
+in principle there is nothing that prevents that.)
 
 If the ELEMENTs are not subgroups, then they can be a mixture of lists
 that specify commands and strings.  Strings are inserted verbatim.
@@ -990,7 +990,7 @@ KEY is the key binding, either a vector or key description string.
 
 @item
 DESCRIPTION is the description, either a string or a function that
-return a string.  The function should to be a lambda expression to
+returns a string.  The function should be a lambda expression to
 avoid ambiguity.  In some cases a symbol that is bound as a function
 would also work but to be safe you should use @code{:description} in that
 case.
@@ -1526,7 +1526,7 @@ different macros (see @ref{Defining Suffix and Infix Commands}).
 
 @item
 Classes used for infix commands that represent arguments should
-derived from the abstract @code{transient-argument} class.
+be derived from the abstract @code{transient-argument} class.
 
 
 @item
@@ -1538,7 +1538,7 @@ not take a value).
 @item
 The @code{transient-option} class (or a derived class) is used for infix
 arguments that represent command-line options (arguments that do
-not take a value).
+take a value).
 
 
 @item
@@ -1558,7 +1558,7 @@ derived from the abstract @code{transient-variables} class.
 
 Magit defines additional classes, which can serve as examples for the
 fancy things you can do without modifying Transient.  Some of these
-classes will likely get generalized and added to Transient, for now
+classes will likely get generalized and added to Transient.  For now
 they are very much subject to change and not documented.
 
 @node Suffix Methods
@@ -2048,12 +2048,12 @@ and also takes external state into account.
 @itemize
 @item
 @code{@{1@}} Transients can be configured to be exited when a suffix command
-is invoked.  The default is to do so for all suffixes expect for
+is invoked.  The default is to do so for all suffixes except for
 those that are common to all transients and which are used to
 perform tasks such as providing help and saving the value of the
 infix arguments for future invocations.  The behavior can also be
-specified for individual suffix commands individually and may even
-depend on state.
+specified for individual suffix commands and may even depend on
+state.
 
 
 @item
@@ -2125,7 +2125,7 @@ That makes it possible to invoke the same command again, but using a
 shorter key sequence (i.e. the key that was used to enter the hydra
 does not have to be pressed again).
 
-Transient supports that too, but for not this feature is not a focus
+Transient supports that too, but for now this feature is not a focus
 and the interface is a bit more complicated.  A very basic example
 using the current interface:
 
@@ -2139,7 +2139,7 @@ using the current interface:
 
 
 @item
-Transient support infix arguments; values that are set by infix
+Transient supports infix arguments; values that are set by infix
 commands and then consumed by the invoked suffix command(s).
 
 To my knowledge, Hydra does not support that.
@@ -2164,7 +2164,7 @@ into groups and the use of generic functions allows authors of
 transients to control exactly how a certain command type is
 displayed.
 
-However while Transient support giving sections a heading it does
+However while Transient supports giving sections a heading it does
 not currently support giving the displayed information more
 structure by, for example, using box-drawing characters.
 
