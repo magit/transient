@@ -812,9 +812,7 @@ PREFIX is a prefix command, a symbol.
 LOC is a command, a key vector or a key description
   (a string as returned by `key-description')."
   (declare (indent defun))
-  (when-let ((mem (transient--layout-member prefix loc)))
-    (setcar mem (cadr mem))
-    (setcdr mem (cddr mem))))
+  (transient--layout-member prefix loc 'remove))
 
 (defun transient-get-suffix (prefix loc)
   "Return the suffix at LOC from PREFIX.
@@ -836,7 +834,7 @@ PROP has to be a keyword.  What keywords and values
     (setf (nth 2 elt)
           (plist-put (nth 2 elt) prop value))))
 
-(defun transient--layout-member (prefix loc)
+(defun transient--layout-member (prefix loc &optional remove)
   (if-let ((layout (get prefix 'transient--layout)))
       (cl-labels
           ((key (loc)
@@ -854,9 +852,13 @@ PROP has to be a keyword.  What keywords and values
                   (if (vectorp (car (aref layout 3)))
                       (--any (mem it loc)
                              (aref layout 3))
-                    (cl-member-if (lambda (suffix)
-                                    (mem suffix loc))
-                                  (aref layout 3))))
+                    (let* ((list (aref layout 3))
+                           (cons (cl-member-if (lambda (suffix) (mem suffix loc))
+                                               list)))
+                      (if remove
+                          (prog1 nil
+                            (aset layout 3 (delq (car cons) list)))
+                        cons))))
                  ((and (listp layout)
                        (if (symbolp loc)
                            (eq (plist-get (nth 2 layout) :command) loc)
