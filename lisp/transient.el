@@ -962,7 +962,7 @@ probably use this instead:
 
 Given a suffix specified by ARG, this function returns the
 respective command or a symbol that represents it.  It could
-therefore be considere the inverse of `transient-suffix-object'.
+therefore be considered the inverse of `transient-suffix-object'.
 
 Unlike that function it is only intended for internal use though,
 and it is more complicated to describe because of some internal
@@ -992,13 +992,13 @@ then this function always returns a symbol that is, or merely
 represents that command.
 
 The reason that there are \"symbols that merely represent a
-command\" is that by avoiding to binding a symbol as a command we
-can prevent it from being offered as a completion candidates for
+command\" is that by avoiding binding a symbol as a command we
+can prevent it from being offered as a completion candidate for
 `execute-extended-command'.  That is useful for infix arguments,
-which usually do not work corretly unless called from a
+which usually do not work correctly unless called from a
 transient.  Unfortunately this only works for infix arguments
-that are defined inline in the defintion of of a transient prefix
-command; explicitly defined infix arguments continue to polute
+that are defined inline in the definition of a transient prefix
+command; explicitly defined infix arguments continue to pollute
 the command namespace.  It would be better if all this were made
 unnecessary by a `execute-extended-command-ignore' symbol property
 but unfortunately that does not exist (yet?)."
