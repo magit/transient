@@ -2154,7 +2154,8 @@ have a history of their own.")
                               transient-history-prev
                               transient-history-next
                               transient-quit-one
-                              transient-toggle-common)))
+                              transient-toggle-common
+                              transient-set-level)))
                  (list (propertize (oref suffix key) 'face 'transient-key)))))
         transient--suffixes)
        #'string<)
