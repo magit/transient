@@ -1043,6 +1043,7 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-g") 'transient-quit-one)
     (define-key map (kbd "C-q") 'transient-quit-all)
     (define-key map (kbd "C-z") 'transient-suspend)
+    (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
     map)
   "Base keymap used by all transients.")
 
@@ -1054,6 +1055,7 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-g")   'transient-quit-one)
     (define-key map (kbd "C-q")   'transient-quit-all)
     (define-key map (kbd "C-z")   'transient-suspend)
+    (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
     map)
   "Keymap that is active while a transient in is in \"edit mode\".")
 
@@ -1062,6 +1064,7 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-g") 'transient-quit-seq)
     (define-key map (kbd "C-q") 'transient-quit-all)
     (define-key map (kbd "C-z") 'transient-suspend)
+    (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
     map)
   "Keymap that is active while an incomplete key sequence is active.")
 
