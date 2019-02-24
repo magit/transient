@@ -59,6 +59,9 @@
 (declare-function info 'info)
 (declare-function Man-find-section 'man)
 (declare-function Man-next-section 'man)
+(declare-function Man-getpage-in-background 'man)
+
+(defvar Man-notify-method)
 
 ;;; Options
 
@@ -2469,9 +2472,15 @@ location."
   (transient--describe-function cmd))
 
 (defun transient--show-manpage (manpage &optional argument)
-  (select-window (get-buffer-window (man manpage)))
-  (when argument
-    (transient--goto-argument-description argument)))
+  (require 'man)
+  (let* ((Man-notify-method 'meek)
+         (buf (Man-getpage-in-background manpage))
+         (proc (get-buffer-process buf)))
+    (while (and proc (eq (process-status proc) 'run))
+      (accept-process-output proc))
+    (switch-to-buffer buf)
+    (when argument
+      (transient--goto-argument-description argument))))
 
 (defun transient--describe-function (fn)
   (describe-function fn)
