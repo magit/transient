@@ -860,12 +860,25 @@ PROP has to be a keyword.  What keywords and values
                             (aset layout 3 (delq (car cons) list)))
                         cons))))
                  ((and (listp layout)
-                       (if (symbolp loc)
-                           (eq (plist-get (nth 2 layout) :command) loc)
-                         (equal (key (plist-get (nth 2 layout) :key)) loc)))
+                       (let* ((def (nth 2 layout))
+                              (cmd (plist-get def :command)))
+                         (if (symbolp loc)
+                             (eq cmd loc)
+                           (equal (key (or (plist-get def :key)
+                                           (transient--command-key cmd)))
+                                  loc))))
                   layout))))
         (mem layout (key loc)))
     (error "%s is not a transient command" prefix)))
+
+(defun transient--command-key (cmd)
+  (when-let ((obj (get cmd 'transient--suffix)))
+    (cond ((slot-boundp obj 'key)
+           (oref obj key))
+          ((slot-exists-p obj 'shortarg)
+           (if (slot-boundp obj 'shortarg)
+               (oref obj shortarg)
+             (transient--derive-shortarg (oref obj argument)))))))
 
 ;;; Variables
 
