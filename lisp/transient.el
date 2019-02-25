@@ -279,6 +279,14 @@ See info node `(transient)Enabling and Disabling Suffixes'."
            (insert-file-contents file)
            (read (current-buffer))))))
 
+(defun transient--pp-to-file (object file)
+  (make-directory (file-name-directory file) t)
+  (setq object (cl-sort object #'string< :key #'car))
+  (with-temp-file file
+    (let ((print-level nil)
+          (print-length nil))
+      (pp object (current-buffer)))))
+
 (defvar transient-values
   (transient--read-file-contents transient-values-file)
   "Values of transient commands.
@@ -286,10 +294,7 @@ The value of this variable persists between Emacs sessions
 and you usually should not change it manually.")
 
 (defun transient-save-values ()
-  (make-directory (file-name-directory transient-values-file) t)
-  (setq transient-values (cl-sort transient-values #'string< :key #'car))
-  (with-temp-file transient-values-file
-    (insert (pp-to-string transient-values))))
+  (transient--pp-to-file transient-values transient-values-file))
 
 (defvar transient-levels
   (transient--read-file-contents transient-levels-file)
@@ -298,10 +303,7 @@ The value of this variable persists between Emacs sessions
 and you usually should not change it manually.")
 
 (defun transient-save-levels ()
-  (make-directory (file-name-directory transient-levels-file) t)
-  (setq transient-levels (cl-sort transient-levels #'string< :key #'car))
-  (with-temp-file transient-levels-file
-    (insert (pp-to-string transient-levels))))
+  (transient--pp-to-file transient-levels transient-levels-file))
 
 (defvar transient-history
   (transient--read-file-contents transient-history-file)
@@ -311,15 +313,13 @@ The value of this variable persists between Emacs sessions
 should not change it manually.")
 
 (defun transient-save-history ()
-  (make-directory (file-name-directory transient-history-file) t)
   (setq transient-history
         (cl-sort (mapcar (pcase-lambda (`(,key . ,val))
                            (cons key (-take transient-history-limit
                                             (delete-dups val))))
                          transient-history)
                  #'string< :key #'car))
-  (with-temp-file transient-history-file
-    (insert (pp-to-string transient-history))))
+  (transient--pp-to-file transient-history transient-history-file))
 
 (defun transient-maybe-save-history ()
   "Save the value of `transient-history'.
