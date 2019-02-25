@@ -752,8 +752,12 @@ example, sets a variable use `define-infix-command' instead.
   (let ((cmd (oref obj command)))
     (unless (or (commandp cmd)
                 (get cmd 'transient--infix-command))
-      (put cmd 'transient--infix-command
-           (transient--default-infix-command)))))
+      (if (or (cl-typep obj 'transient-switch)
+              (cl-typep obj 'transient-option))
+          (put cmd 'transient--infix-command
+               (transient--default-infix-command))
+        ;; This is not an anonymous infix argument.
+        (error "Suffix %s is not defined or autoloaded as a command" cmd)))))
 
 (defun transient--derive-shortarg (arg)
   (save-match-data
