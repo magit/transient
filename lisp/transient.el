@@ -771,11 +771,7 @@ example, sets a variable use `define-infix-command' instead.
          (mem (transient--layout-member prefix loc)))
     (if mem
         (progn
-          (when-let ((old (transient--layout-member
-                           prefix (plist-get (nth 2 suf) :command))))
-            (setcar old (cadr old))
-            (setcdr old (cddr old))
-            (setq mem (transient--layout-member prefix loc)))
+          (transient-remove-suffix prefix (plist-get (nth 2 suf) :command))
           (cl-ecase action
             (insert  (setcdr mem (cons (car mem) (cdr mem)))
                      (setcar mem suf))
