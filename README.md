@@ -21,7 +21,7 @@ When the user calls a transient prefix command, then a transient
 (temporary) keymap is activated, which binds the transient's infix and
 suffix commands, and functions that control the transient state are
 added to `pre-command-hook` and `post-command-hook`.  The available
-suffix and infix commands and their state are shown in the echo area
+suffix and infix commands and their state are shown in a popup buffer
 until the transient is exited by invoking a suffix command.
 
 Calling an infix command causes its value to be changed.  How that is
@@ -32,10 +32,10 @@ toggled on or off.  More complex infix commands may read a value from
 the user, using the minibuffer.
 
 Calling a suffix command usually causes the transient to be exited;
-the transient keymaps and hook functions are removed, the echo area no
-longer shows information about the (no longer bound) suffix commands,
-the values of some public global variables are set, while some
-internal global variables are unset, and finally the command is
+the transient keymaps and hook functions are removed, the popup buffer
+no longer shows information about the (no longer bound) suffix
+commands, the values of some public global variables are set, while
+some internal global variables are unset, and finally the command is
 actually called.  Suffix commands can also be configured to not exit
 the transient.
 

@@ -70,7 +70,7 @@
   :group 'bindings)
 
 (defcustom transient-show-popup t
-  "Whether to show the current transient in the echo area.
+  "Whether to show the current transient in a popup buffer.
 
 If t, then show the popup as soon as a transient command is
 invoked.  If nil, then do not show the popup unless the user
@@ -84,7 +84,7 @@ or when the user explicitly requests it."
                  (number :tag "after delay" 1)))
 
 (defcustom transient-show-common-commands nil
-  "Whether to show common transient commands in the echo area.
+  "Whether to show common transient suffixes in the popup buffer.
 
 These commands are always shown after typing the prefix key
 \"C-x\" when a transient command is active.  To toggle the value
@@ -494,8 +494,8 @@ argument supported by the constructor of that class.  The
 explicitly.
 
 GROUPs add key bindings for infix and suffix commands and specify
-how these bindings are presented in the echo area.  At least one
-GROUP has to be specified.  See info node `(transient)Binding
+how these bindings are presented in the popup buffer.  At least
+one GROUP has to be specified.  See info node `(transient)Binding
 Suffix and Infix Commands'.
 
 The BODY is optional.  If it is omitted, then ARGLIST is also
@@ -913,7 +913,7 @@ variable instead.")
 (defconst transient--exit nil "Do exit the transient.")
 
 (defvar transient--exitp nil "Whether to exit the transient.")
-(defvar transient--showp nil "Whether the transient is show in echo area.")
+(defvar transient--showp nil "Whether the transient is show in a popup buffer.")
 (defvar transient--helpp nil "Whether help-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
 
@@ -1673,11 +1673,11 @@ transient is active."
   (interactive))
 
 (defun transient-update ()
-  "Redraw the transient's state in the echo area."
+  "Redraw the transient's state in the popup buffer."
   (interactive))
 
 (defun transient-show ()
-  "Show the transient's state in the echo area."
+  "Show the transient's state in the popup buffer."
   (interactive)
   (setq transient--showp t))
 

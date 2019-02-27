@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-15-g1fa3896+1)
+@subtitle for version 0.1.0 (v0.1.0-22-g101c0ae+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -55,7 +55,7 @@ When the user calls a transient prefix command, then a transient
 (temporary) keymap is activated, which binds the transient's infix
 and suffix commands, and functions that control the transient state
 are added to @code{pre-command-hook} and @code{post-command-hook}.  The available
-suffix and infix commands and their state are shown in the echo area
+suffix and infix commands and their state are shown in a popup buffer
 until the transient is exited by invoking a suffix command.
 
 Calling an infix command causes its value to be changed, possibly by
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-15-g1fa3896+1).
+This manual is for Transient version 0.1.0 (v0.1.0-22-g101c0ae+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -174,7 +174,7 @@ When the user calls a transient prefix command, then a transient
 (temporary) keymap is activated, which binds the transient's infix and
 suffix commands, and functions that control the transient state are
 added to @code{pre-command-hook} and @code{post-command-hook}.  The available suffix
-and infix commands and their state are shown in the echo area until
+and infix commands and their state are shown in a popup buffer until
 the transient state is exited by invoking a suffix command.
 
 Calling an infix command causes its value to be changed.  How that is
@@ -185,10 +185,10 @@ toggled on or off.  More complex infix commands may read a value from
 the user, using the minibuffer.
 
 Calling a suffix command usually causes the transient to be exited;
-the transient keymaps and hook functions are removed, the echo area no
-longer shows information about the (no longer bound) suffix commands,
-the values of some public global variables are set, while some
-internal global variables are unset, and finally the command is
+the transient keymaps and hook functions are removed, the popup buffer
+no longer shows information about the (no longer bound) suffix
+commands, the values of some public global variables are set, while
+some internal global variables are unset, and finally the command is
 actually called.  Suffix commands can also be configured to not exit
 the transient.
 
@@ -200,7 +200,7 @@ the same purpose as the variables @code{prefix-arg} and @code{current-prefix-arg
 for any command that was called after the prefix arguments have been
 set using a command such as @code{universal-argument}.
 
-The information shown in the echo area while a transient is active
+The information shown in the popup buffer while a transient is active
 looks a bit like this:
 
 @example
@@ -226,7 +226,7 @@ color.
 
 Transient can be used to implement simple "command dispatchers".  The
 main benefit then is that the user can see all the available commands
-in the echo area.  That is useful by itself because it frees the user
+in a popup buffer.  That is useful by itself because it frees the user
 from having to remember all the keys that are valid after a certain
 prefix key or command.  Magit's @code{magit-dispatch} command is an example
 of using Transient to merely implement a command dispatcher.
@@ -293,9 +293,9 @@ disabled while the transient state is in effect.
 
 There are two kinds of commands that are available after invoking a
 transient prefix command; infix and suffix commands.  Infix commands
-set some value (which is then shown in the echo area), without leaving
-the transient.  Suffix commands on the other hand usually quit the
-transient and they may use the values set by the infix commands,
+set some value (which is then shown in a popup buffer), without
+leaving the transient.  Suffix commands on the other hand usually quit
+the transient and they may use the values set by the infix commands,
 i.e. the infix @strong{arguments}.
 
 Instead of setting arguments to be used by a suffix command, infix
@@ -315,9 +315,10 @@ prefix key, but not the complete transient).
 A transient prefix command can be bound as a suffix of another
 transient.  Invoking such a suffix replaces the current transient
 state with a new transient state, i.e. the available bindings change
-and the information displayed in the echo area is updated accordingly.
-Pressing @code{C-g} while a nested transient is active only quits the
-innermost transient, causing a return to the previous transient.
+and the information displayed in the popup buffer is updated
+accordingly.  Pressing @code{C-g} while a nested transient is active only
+quits the innermost transient, causing a return to the previous
+transient.
 
 @code{C-q} or @code{C-z} on the other hand always exits all transients.  If you use
 the latter, then you can later resume the stack of transients using
@@ -370,11 +371,11 @@ if any.
 @section Common Suffix Commands
 
 A few shared suffix commands are available in all transients.  These
-suffix commands are not shown in the echo area by default.
+suffix commands are not shown in the popup buffer by default.
 
 Most of these commands are bound to @code{C-x <key>} and after pressing @code{C-x} a
-section featuring all common commands is temporarily shown in the echo
-area.  After invoking one of these commands, that section disappears
+section featuring all common commands is temporarily shown in the popup
+buffer.  After invoking one of these commands, that section disappears
 again.  Note however that one of these commands is described as "Show
 common permanently"; invoke that if you want the common commands to
 always be shown for all transients.
@@ -649,7 +650,7 @@ state, you have to make sure that that state is currently active.
 @defopt transient-show-popup
 
 This option controls whether the current transient's infix and
-suffix commands are shown in the echo area.
+suffix commands are shown in the popup buffer.
 
 If @code{t} (the default), then the infix and suffix commands are shown as
 soon as the transient is invoked.  If @code{nil}, only a one line summary
@@ -821,7 +822,7 @@ argument supported by the constructor of that class.  The
 explicitly.
 
 GROUPs add key bindings for infix and suffix commands and specify
-how these bindings are presented in the echo area.  At least one
+how these bindings are presented in the popup buffer.  At least one
 GROUP has to be specified.  See @ref{Binding Suffix and Infix Commands}.
 
 The BODY is optional.  If it is omitted, then ARGLIST is ignored and
@@ -1021,7 +1022,7 @@ which case the first string is used as the short argument (which can
 also be specified using @code{:shortarg}) and the second the long argument
 (which can also be specified using @code{:argument}).
 
-Only the long argument is displayed in the echo area.  See
+Only the long argument is displayed in the popup buffer.  See
 @code{transient-detect-key-conflicts} for how the short argument may be
 used.
 
@@ -1468,7 +1469,7 @@ elements.
 
 This generic function formats the group and its elements and inserts
 the result into the current buffer, which is a temporary buffer.
-The contents of that buffer are later inserted into the echo area.
+The contents of that buffer are later inserted into the popup buffer.
 
 Functions that are called by this function may need to operate in
 the buffer from which the transient was called.  To do so they can
@@ -1721,8 +1722,8 @@ Also see @ref{Suffix Classes}.
 
 
 @item
-@code{format} The format used to display the suffix in the echo area.  Must
-contain the following %-placeholders:
+@code{format} The format used to display the suffix in the popup buffer.
+It must contain the following %-placeholders:
 
 @itemize
 @item
@@ -1732,7 +1733,7 @@ contain the following %-placeholders:
 @code{%d} For the description.
 
 @item
-@code{%v} For the value.  Non-infix suffixes don't have a value.
+@code{%v} For the infix value.  Non-infix suffixes don't have a value.
 @end itemize
 
 
@@ -2098,9 +2099,10 @@ Hydra (see @uref{https://github.com/abo-abo/hydra}) is another package that
 provides features similar to those of Transient.
 
 Both packages use transient keymaps to make a set of commands
-temporarily available and the @code{lv} library to show these commands in the
-echo area.  (The author of Hydra is also the author of @code{lv}, which is
-maintained in the same repository.)
+temporarily available and the @code{lv} library to show these commands in a
+popup buffer, which looks like it is using the echo area (but without
+actually using the echo area).  The author of Hydra is also the author
+of @code{lv}, which is maintained in the same repository.
 
 A Hydra "body" is equivalent to a Transient "prefix" and a Hydra
 "head" is equivalent to a Transient "suffix".  Hydra has no equivalent
@@ -2108,7 +2110,7 @@ of a Transient "infix".
 
 Both hydras and transients can be used as simple command dispatchers.
 Used like this they are similar to regular prefix commands and prefix
-keys, except that the available commands are shown in the echo area.
+keys, except that the available commands are shown in the popup buffer.
 
 (Another package that does this is @code{which-key}. It does so automatically
 for any incomplete key sequence.  The advantage of that approach is
