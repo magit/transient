@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-22-g101c0ae+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-23-g6467626+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-22-g101c0ae+1).
+This manual is for Transient version 0.1.0 (v0.1.0-23-g6467626+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -569,7 +569,10 @@ The following functions share a few arguments:
 
 - PREFIX is a transient prefix command, a symbol.
 - SUFFIX is a transient infix or suffix specification in the same form
-  as expected by ~define-transient-command~.  See [[*Suffix Specifications]].
+  as expected by ~define-transient-command~.  Note that an infix is a
+  special kind of suffix.  Depending on context "suffixes" means
+  "suffixes (including infixes)" or "non-infix suffixes".  Here it
+  means the former.  See [[*Suffix Specifications]].
 - LOC is a command, a key vector or a key description (a string as
   returned by ~key-description~).
 
@@ -770,6 +773,10 @@ The same form is also used when later binding additional commands
 using functions such as ~transient-insert-suffix~, see [[*Modifying
 Existing Transients]].
 
+Note that an infix is a special kind of suffix. Depending on context
+"suffixes" means "suffixes (including infixes)" or "non-infix
+suffixes".  Here it means the former.
+
 Suffix specifications have this form:
 
 #+BEGIN_SRC emacs-lisp
@@ -829,6 +836,10 @@ argument supported by the constructor of that class.  See [[*Suffix
 Slots]].
 
 ** Defining Suffix and Infix Commands
+
+Note that an infix is a special kind of suffix. Depending on context
+"suffixes" means "suffixes (including infixes)" or "non-infix
+suffixes".
 
 - Macro: define-suffix-command name arglist [docstring] [keyword value]... body...
 
