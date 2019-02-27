@@ -1,0 +1,51 @@
+# -*- mode: org -*-
+* v0.2.0    UNRELEASED
+
+- An infix is a special kind of suffix.  Depending on context
+  "suffixes" means "suffixes (including infixes)" or "non-infix
+  suffixes".  This is now mention in a few places where users might
+  otherwise get confused.
+
+- Stopped claiming that the transient is shown in the "echo area",
+  because technically that is not correct.  Instead talk about the
+  "popup buffer".
+
+- Fixed handling of suffix commands that are undefined at the time the
+  prefix is invoked.  This is still an error, but the error message
+  now explains what is wrong.  a729bbb
+
+- Fixed saving values/history/levels, making sure that the printed
+  expression is never abbreviated.  #15
+
+- Fixed jumping to the correct place in a manpage when showing the
+  documentation for an infix argument.  c4bf4af
+
+- Bound ~ESC ESC ESC~ to ~transient-quit-all~ because the convention is
+  that it should be possible to exit any temporary state using this
+  binding.  #12
+
+- Fixed referencing suffix bindings by their key when the key binding
+  is defined in the suffix object instead of in the suffix spec.
+  e4ffb97
+
+- Remove trailing whitespace from popup text for the benefit of users
+  who have set enabled ~show-trailing-whitespace~ globally.  0758efa
+
+- Fixed showing available bindings on a single line instead of using
+  the usual popup buffer.  2f011c9, 99d3bf6
+
+- Added a line between the ~lv~ window and the echo area.  ca18bb6
+
+- Fixed adding a new suffix at the end of a group and removing a
+  group's last suffix.  #20, #6
+
+- No longer use ~cl-typep~, which appears to have a bug on Emacs 25.
+  9183fe1
+
+- Fixed ~lisp~ make target.  170a3fd
+
+- Fixed reading a number as the value of an infix.  8219c0b
+
+* v0.1.0    2019-01-14
+
+- First release.
