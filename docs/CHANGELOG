@@ -1,6 +1,10 @@
 # -*- mode: org -*-
 * v0.2.0    UNRELEASED
 
+- The new option ~transient-display-buffer-action~ allows users to
+  specify how a window is selected to display the transient popup
+  buffer.  The ~lv~ library is no longer used.  #17
+
 - The window that was selected before the transient window was shown
   is no longer re-selected before calling a suffix that exits the
   transient.  If a suffix changes the selected window unintentionally,

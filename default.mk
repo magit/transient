@@ -4,7 +4,6 @@ ELS   = $(PKG).el
 ELCS  = $(ELS:.el=.elc)
 
 DEPS  = dash
-DEPS += hydra # for lv.el
 
 EMACS      ?= emacs
 EMACS_ARGS ?=

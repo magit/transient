@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-23-g6467626+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-28-g625683c+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-23-g6467626+1).
+This manual is for Transient version 0.1.0 (v0.1.0-28-g625683c+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -501,6 +501,28 @@ as many additional suffixes as you hoped.)
   is shown until the user presses a key that forms an incomplete key
   sequence.  If a number, behave as for ~nil~ but also show the commands
   after that many seconds of inactivity.
+
+- User Option: transient-display-buffer-action
+
+  This option specifies the action used to display the transient popup
+  buffer.  The transient popup buffer is displayed in a window using
+  ~(display-buffer buf transient-display-buffer-action)~.
+
+  The value of this option has the form ~(FUNCTION . ALIST)~, where
+  FUNCTION is a function or a list of functions.  Each such function
+  should accept two arguments: a buffer to display and an alist of the
+  same form as ALIST.  See [[info:elisp#Choosing Window]].
+
+  The default is ~(display-buffer-in-side-window (side . bottom))~.
+  This displays the window at the bottom of the selected frame.
+  Another useful value is ~(display-buffer-below-selected)~.  This is
+  what ~magit-popup~ used by default.  For more alternatives see
+  [[info:elisp#Display Action Functions]].
+
+  It may be possible to display the window in another frame, but
+  whether that works in practice depends on the window-manager.
+  If the window manager selects the new window (Emacs frame),
+  then it doesn't work.
 
 - User Option: transient-highlight-mismatched-keys
 
@@ -1746,10 +1768,8 @@ Hydra (see https://github.com/abo-abo/hydra) is another package that
 provides features similar to those of Transient.
 
 Both packages use transient keymaps to make a set of commands
-temporarily available and the ~lv~ library to show these commands in a
-popup buffer, which looks like it is using the echo area (but without
-actually using the echo area).  The author of Hydra is also the author
-of ~lv~, which is maintained in the same repository.
+temporarily available and show the available commands in a popup
+buffer.
 
 A Hydra "body" is equivalent to a Transient "prefix" and a Hydra
 "head" is equivalent to a Transient "suffix".  Hydra has no equivalent

@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/transient
-;; Package-Requires: ((emacs "25.1") (dash "2.15.0") (lv "0.14.0"))
+;; Package-Requires: ((emacs "25.1") (dash "2.15.0"))
 ;; Keywords: bindings
 
 ;; This file is not part of GNU Emacs.
@@ -51,7 +51,6 @@
 (require 'dash)
 (require 'eieio)
 (require 'format-spec)
-(require 'lv)
 
 (eval-when-compile
   (require 'subr-x))
@@ -82,6 +81,35 @@ or when the user explicitly requests it."
   :type '(choice (const  :tag "instantly" t)
                  (const  :tag "on demand" nil)
                  (number :tag "after delay" 1)))
+
+(defcustom transient-display-buffer-action
+  '(display-buffer-in-side-window (side . bottom))
+  "The action used to display the transient popup buffer.
+
+The transient popup buffer is displayed in a window using
+
+  \(display-buffer buf transient-display-buffer-action)
+
+The value of this option has the form (FUNCTION . ALIST),
+where FUNCTION is a function or a list of functions.  Each such
+function should accept two arguments: a buffer to display and
+an alist of the same form as ALIST.  See `display-buffer' for
+details.
+
+The default is (display-buffer-in-side-window (side . bottom)).
+This displays the window at the bottom of the selected frame.
+Another useful value is (display-buffer-below-selected).  This
+is what `magit-popup' used by default.  For more alternatives
+see info node `(elisp)Display Action Functions'.
+
+It may be possible to display the window in another frame, but
+whether that works in practice depends on the window-manager.
+If the window manager selects the new window (Emacs frame),
+then it doesn't work."
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type '(cons (choice function (repeat :tag "Functions" function))
+               alist))
 
 (defcustom transient-show-common-commands nil
   "Whether to show common transient suffixes in the popup buffer.
@@ -268,6 +296,13 @@ See info node `(transient)Enabling and Disabling Suffixes'."
   '((t :background "red" :foreground "black" :weight bold))
   "Face used for disables levels while editing suffix levels.
 See info node `(transient)Enabling and Disabling Suffixes'."
+  :group 'transient-faces)
+
+(defface transient-separator
+  '((((class color) (background light)) :background "grey80")
+    (((class color) (background  dark)) :background "grey30"))
+  "Face used to draw line below transient popup window.
+Only the background color is significant."
   :group 'transient-faces)
 
 ;;; Persistence
@@ -921,6 +956,8 @@ variable instead.")
 
 (defvar transient--stack nil)
 
+(defvar transient--window nil)
+
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
 (defvar transient--history nil)
@@ -1455,6 +1492,12 @@ EDIT may be non-nil."
   (setq transient--prefix nil)
   (setq transient--layout nil)
   (setq transient--suffixes nil))
+
+(defun transient--delete-window ()
+  (when (window-live-p transient--window)
+    (let ((buf (window-buffer transient--window)))
+      (delete-window transient--window)
+      (kill-buffer buf))))
 
 (defun transient--export ()
   (setq current-transient-prefix transient--prefix)
@@ -2181,15 +2224,31 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((transient--source-buffer (current-buffer)))
-    (with-temp-buffer
+  (let ((transient--source-buffer (current-buffer))
+        (buf (get-buffer-create " *transient*")))
+    (unless (window-live-p transient--window)
+      (setq transient--window
+            (display-buffer buf transient-display-buffer-action)))
+    (with-selected-window transient--window
+      (erase-buffer)
+      (set-window-hscroll transient--window 0)
+      (set-window-dedicated-p transient--window t)
+      (set-window-parameter transient--window 'no-other-window t)
+      (setq window-size-fixed t)
+      (setq mode-line-format nil)
+      (setq cursor-type nil)
+      (setq display-line-numbers nil)
+      (setq show-trailing-whitespace nil)
       (transient--insert-groups)
       (when (or transient--helpp transient--editp)
         (transient--insert-help))
-      (delete-trailing-whitespace)
-      (let ((lv-force-update t)
-            (lv-use-separator t))
-        (lv-message "%s" (buffer-string))))))
+      (insert
+       (propertize "__" 'face 'transient-separator 'display '(space :height (1)))
+       (propertize "\n" 'face 'transient-separator 'line-height t))
+      (let ((window-resize-pixelwise t)
+            (window-size-fixed nil))
+        (fit-window-to-buffer nil nil 1))
+      (goto-char (point-min)))))
 
 (defun transient--insert-groups ()
   (let ((groups (cl-mapcan (lambda (group)
