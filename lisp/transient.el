@@ -1438,9 +1438,7 @@ EDIT may be non-nil."
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
-  (let ((window (selected-window)))
-    (lv-delete-window)
-    (select-window window))
+  (transient--delete-window)
   (transient--timer-cancel)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)

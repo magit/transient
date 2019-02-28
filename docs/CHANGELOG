@@ -1,6 +1,12 @@
 # -*- mode: org -*-
 * v0.2.0    UNRELEASED
 
+- The window that was selected before the transient window was shown
+  is no longer re-selected before calling a suffix that exits the
+  transient.  If a suffix changes the selected window unintentionally,
+  then that is a bug.  This makes it possible to intentionally change
+  the window layout using transients.
+
 - An infix is a special kind of suffix.  Depending on context
   "suffixes" means "suffixes (including infixes)" or "non-infix
   suffixes".  This is now mention in a few places where users might
