@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-29-g7e45a57+1)
+@subtitle for version 0.1.0 (v0.1.0-30-g2033ac1+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-29-g7e45a57+1).
+This manual is for Transient version 0.1.0 (v0.1.0-30-g2033ac1+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -108,6 +108,7 @@ Usage
 * Using History::
 * Getting Help for Suffix Commands::
 * Enabling and Disabling Suffixes::
+* Other Commands::
 
 Defining New Commands
 
@@ -279,6 +280,7 @@ to implementing yet).
 * Using History::
 * Getting Help for Suffix Commands::
 * Enabling and Disabling Suffixes::
+* Other Commands::
 @end menu
 
 @node Invoking Transients
@@ -643,6 +645,31 @@ predicates also apply in edit mode.
 Therefore, to control which suffixes are available given a certain
 state, you have to make sure that that state is currently active.
 @end table
+
+@node Other Commands
+@section Other Commands
+
+When invoking a transient in a small frame, the transient window may
+not show the complete buffer, making it necessary to scroll, using the
+following commands.  These commands are never shown in the transient
+window, and the key bindings are the same as for @code{scroll-up-command} and
+@code{scroll-down-command} in other buffers.
+
+@cindex transient-scroll-up arg
+@deffn Command transient-scroll-up arg
+
+This command scrolls text of transient popup window upward ARG
+lines.  If ARG is @code{nil}, then it scrolls near full screen.  This
+is a wrapper around @code{scroll-up-command} (which see).
+@end deffn
+
+@cindex transient-scroll-down arg
+@deffn Command transient-scroll-down arg
+
+This command scrolls text of transient popup window down ARG
+lines.  If ARG is @code{nil}, then it scrolls near full screen.  This
+is a wrapper around @code{scroll-down-command} (which see).
+@end deffn
 
 @node Other Options
 @chapter Other Options

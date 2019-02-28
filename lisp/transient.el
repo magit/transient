@@ -1110,6 +1110,8 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-q") 'transient-quit-all)
     (define-key map (kbd "C-z") 'transient-suspend)
     (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
+    (define-key map [remap scroll-up-command] 'transient-scroll-up)
+    (define-key map [remap scroll-down-command]'transient-scroll-down)
     map)
   "Base keymap used by all transients.")
 
@@ -1122,6 +1124,8 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-q")   'transient-quit-all)
     (define-key map (kbd "C-z")   'transient-suspend)
     (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
+    (define-key map [remap scroll-up-command] 'transient-scroll-up)
+    (define-key map [remap scroll-down-command]'transient-scroll-down)
     map)
   "Keymap that is active while a transient in is in \"edit mode\".")
 
@@ -1131,6 +1135,8 @@ but unfortunately that does not exist (yet?)."
     (define-key map (kbd "C-q") 'transient-quit-all)
     (define-key map (kbd "C-z") 'transient-suspend)
     (define-key map (kbd "ESC ESC ESC") 'transient-quit-all)
+    (define-key map [remap scroll-up-command] 'transient-scroll-up)
+    (define-key map [remap scroll-down-command]'transient-scroll-down)
     map)
   "Keymap that is active while an incomplete key sequence is active.")
 
@@ -1186,6 +1192,9 @@ but unfortunately that does not exist (yet?)."
     (define-key map [transient-save]          'transient--do-call)
     (define-key map [describe-key-briefly]    'transient--do-stay)
     (define-key map [describe-key]            'transient--do-stay)
+    (define-key map [transient-scroll-up]     'transient--do-stay)
+    (define-key map [transient-scroll-down]   'transient--do-stay)
+    (define-key map [mwheel-scroll]           'transient--do-stay)
     map)
   "Base keymap used to map common commands to their transient behavior.
 
@@ -1599,7 +1608,10 @@ EDIT may be non-nil."
 (defun transient--redisplay ()
   (if (or (eq transient-show-popup t)
           transient--showp)
-      (transient--show)
+      (unless (memq this-command '(transient-scroll-up
+                                   transient-scroll-down
+                                   mwheel-scroll))
+        (transient--show))
     (when (and (numberp transient-show-popup)
                (not transient--timer))
       (transient--timer-start))
@@ -1843,6 +1855,22 @@ transient is active."
       (oset obj history-pos pos)
       (oset obj value (nth pos hst))
       (mapc #'transient-init-value transient--suffixes))))
+
+(defun transient-scroll-up (&optional arg)
+  "Scroll text of transient popup window upward ARG lines.
+If ARG is nil scroll near full screen.  This is a wrapper
+around `scroll-up-command' (which see)."
+  (interactive "^P")
+  (with-selected-window transient--window
+    (scroll-up-command arg)))
+
+(defun transient-scroll-down (&optional arg)
+  "Scroll text of transient popup window down ARG lines.
+If ARG is nil scroll near full screen.  This is a wrapper
+around `scroll-down-command' (which see)."
+  (interactive "^P")
+  (with-selected-window transient--window
+    (scroll-up-command arg)))
 
 (defun transient-resume ()
   "Resume a previously suspended stack of transients."

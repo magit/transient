@@ -11,6 +11,9 @@
   non-standard value for ~transient-display-buffer-action~ it may
   be necessary to do that.  #17
 
+- Added new commands ~transient-scroll-up~ and ~transient-scroll-down~,
+  which scroll the transient window.  #17
+
 - The window that was selected before the transient window was shown
   is no longer re-selected before calling a suffix that exits the
   transient.  If a suffix changes the selected window unintentionally,

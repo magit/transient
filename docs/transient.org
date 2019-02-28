@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-29-g7e45a57+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-30-g2033ac1+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-29-g7e45a57+1).
+This manual is for Transient version 0.1.0 (v0.1.0-30-g2033ac1+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -488,6 +488,26 @@ as many additional suffixes as you hoped.)
 
   Therefore, to control which suffixes are available given a certain
   state, you have to make sure that that state is currently active.
+
+** Other Commands
+
+When invoking a transient in a small frame, the transient window may
+not show the complete buffer, making it necessary to scroll, using the
+following commands.  These commands are never shown in the transient
+window, and the key bindings are the same as for ~scroll-up-command~ and
+~scroll-down-command~ in other buffers.
+
+- Command: transient-scroll-up arg
+
+  This command scrolls text of transient popup window upward ARG
+  lines.  If ARG is ~nil~, then it scrolls near full screen.  This
+  is a wrapper around ~scroll-up-command~ (which see).
+
+- Command: transient-scroll-down arg
+
+  This command scrolls text of transient popup window down ARG
+  lines.  If ARG is ~nil~, then it scrolls near full screen.  This
+  is a wrapper around ~scroll-down-command~ (which see).
 
 * Other Options
 
