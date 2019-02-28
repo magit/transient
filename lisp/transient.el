@@ -105,11 +105,36 @@ see info node `(elisp)Display Action Functions'.
 It may be possible to display the window in another frame, but
 whether that works in practice depends on the window-manager.
 If the window manager selects the new window (Emacs frame),
-then it doesn't work."
+then it doesn't work.
+
+If you change the value of this option, then you might also
+want to change the value of `transient-mode-line-format'."
   :package-version '(transient . "0.2.0")
   :group 'transient
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
+
+(defcustom transient-mode-line-format 'line
+  "The mode-line format for the transient popup buffer.
+
+If nil, then the buffer has no mode-line.  If the buffer is not
+displayed right above the echo area, then this probably is not
+a good value.
+
+If `line' (the default), then the buffer also has no mode-line,
+but a thin line is drawn instead, using the background color of
+the face `transient-separator'.
+
+Otherwise this can be any mode-line format.
+See `mode-line-format' for details."
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type '(choice (const :tag "hide mode-line" nil)
+                 (const :tag "substitute thin line" line)
+                 (const :tag "name of prefix command"
+                        ("%e" mode-line-front-space
+                         mode-line-buffer-identification))
+                 (sexp  :tag "custom mode-line format")))
 
 (defcustom transient-show-common-commands nil
   "Whether to show common transient suffixes in the popup buffer.
@@ -302,6 +327,7 @@ See info node `(transient)Enabling and Disabling Suffixes'."
   '((((class color) (background light)) :background "grey80")
     (((class color) (background  dark)) :background "grey30"))
   "Face used to draw line below transient popup window.
+This is only used if `transient-mode-line-format' is `line'.
 Only the background color is significant."
   :group 'transient-faces)
 
@@ -2235,16 +2261,21 @@ have a history of their own.")
       (set-window-dedicated-p transient--window t)
       (set-window-parameter transient--window 'no-other-window t)
       (setq window-size-fixed t)
-      (setq mode-line-format nil)
+      (setq mode-line-format (if (eq transient-mode-line-format 'line)
+                                 nil
+                               transient-mode-line-format))
+      (setq mode-line-buffer-identification
+            (symbol-name (oref transient--prefix command)))
       (setq cursor-type nil)
       (setq display-line-numbers nil)
       (setq show-trailing-whitespace nil)
       (transient--insert-groups)
       (when (or transient--helpp transient--editp)
         (transient--insert-help))
-      (insert
-       (propertize "__" 'face 'transient-separator 'display '(space :height (1)))
-       (propertize "\n" 'face 'transient-separator 'line-height t))
+      (when (eq transient-mode-line-format 'line)
+        (insert (propertize "__" 'face 'transient-separator
+                            'display '(space :height (1))))
+        (insert (propertize "\n" 'face 'transient-separator 'line-height t)))
       (let ((window-resize-pixelwise t)
             (window-size-fixed nil))
         (fit-window-to-buffer nil nil 1))

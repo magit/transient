@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-28-g625683c+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-29-g7e45a57+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-28-g625683c+1).
+This manual is for Transient version 0.1.0 (v0.1.0-29-g7e45a57+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -523,6 +523,25 @@ as many additional suffixes as you hoped.)
   whether that works in practice depends on the window-manager.
   If the window manager selects the new window (Emacs frame),
   then it doesn't work.
+
+  If you change the value of this option, then you might also want
+  to change the value of ~transient-mode-line-format~.
+
+- User Option: transient-mode-line-format
+
+  This option controls whether the transient popup buffer has a
+  mode-line, separator line, or neither.
+
+  If ~nil~, then the buffer has no mode-line.  If the buffer is not
+  displayed right above the echo area, then this probably is not a
+  good value.
+
+  If ~line~ (the default), then the buffer also has no mode-line, but a
+  thin line is drawn instead, using the background color of the face
+  ~transient-separator~.
+
+  Otherwise this can be any mode-line format.  See ~[[info:elisp#Mode
+  Line Format]] for details.
 
 - User Option: transient-highlight-mismatched-keys
 
