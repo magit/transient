@@ -99,7 +99,7 @@ of this variable use \"C-x t\" when a transient is active."
 This only affects infix arguments that represent command-line
 arguments.  When this option is non-nil, then the key binding
 for infix argument are highlighted when only a long argument
-(e.g. \"--verbose\") is specified but no shor-thand (e.g \"-v\").
+\(e.g. \"--verbose\") is specified but no shor-thand (e.g \"-v\").
 In the rare case that a short-hand is specified but does not
 match the key binding, then it is highlighed differently.
 
