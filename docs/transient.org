@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-31-gf0213e0+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-32-g08b4778+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-31-gf0213e0+1).
+This manual is for Transient version 0.1.0 (v0.1.0-32-g08b4778+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -248,7 +248,6 @@ doc-string.
   if any.
 
 ** Common Suffix Commands
-*** _ :ignore:
 
 A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the popup buffer by default.
@@ -281,47 +280,8 @@ always be shown for all transients.
 The other common commands are describe in either the previous node or
 in one of the following nodes.
 
-*** Notes on Common Key Bindings
-:PROPERTIES:
-:NONODE: t
-:END:
-
-You may have noticed that the bindings for some of the common commands
-do *not* have the prefix ~C-x~ and that furthermore some of these commands
-are grayed out while others are not.  That unfortunately is a bit
-confusing if the section of common commands is not shown permanently,
-making the following explanation necessary.
-
-The purpose of usually hiding that section but showing it after the
-user pressed the respective prefix key is to conserve space and not
-overwhelm users with too much noise, while allowing the user to
-quickly list common bindings on demand.
-
-That however should not keep us from using the best possible key
-bindings.  The bindings that do use a prefix do so to avoid wasting
-too many non-prefix bindings, keeping them available for use in
-individual transients.  The bindings that do not use a prefix and that
-are *not* grayed out are very important bindings that are *always*
-available, even when invoking the "common command key prefix" or *any
-other* transient-specific prefix.  The non-prefix keys that *are* grayed
-out however, are not available when any incomplete prefix key sequence
-is active.  They do not use the "common command key prefix" because it
-is likely that users want to invoke them several times in a row and
-e.g. ~M-p M-p M-p~ is much more convenient than ~C-x M-p C-x M-p C-x M-p~.
-
-You may also have noticed that the "Set" command is bound to ~C-x s~,
-while Magit-Popup used to bind ~C-c C-c~ instead.  I have seen several
-users praise the latter binding (sic), so I did not change it
-willy-nilly.  The reason that I changed it is that using different
-prefix keys for different common commands, would have made the
-temporary display of the common commands even more confusing,
-i.e. after pressing ~C-c~ all the ~C-x ...~ bindings would be grayed out.
-
-Using a single prefix for common commands key means that all other
-potential prefix keys can be used for transient-specific commands
-*without* the section of common commands also popping up.  ~C-c~ in
-particular is a prefix that I want (and already do) use for Magit, and
-also using that for a common command would prevent me from doing so.
+Some of Transient's key bindings differ from the respective bindings
+of Magit-Popup; see [[*FAQ]] for more information.
 
 ** Saving Values
 
@@ -1875,6 +1835,85 @@ commands are outlined:
   the author specify a format string.  It should be possible to
   implement that without modifying any existing code, but it does not
   currently exist.
+
+* FAQ
+:PROPERTIES:
+:APPENDIX:   t
+:END:
+
+** Can I control how the popup buffer is displayed?
+:PROPERTIES:
+:NONODE: t
+:END:
+
+Yes, see ~transient-display-buffer-action~ in [[*Other Options]].
+
+** Why did some of the key bindings change?
+:PROPERTIES:
+:NONODE: t
+:END:
+
+You may have noticed that the bindings for some of the common commands
+do *not* have the prefix ~C-x~ and that furthermore some of these commands
+are grayed out while others are not.  That unfortunately is a bit
+confusing if the section of common commands is not shown permanently,
+making the following explanation necessary.
+
+The purpose of usually hiding that section but showing it after the
+user pressed the respective prefix key is to conserve space and not
+overwhelm users with too much noise, while allowing the user to
+quickly list common bindings on demand.
+
+That however should not keep us from using the best possible key
+bindings.  The bindings that do use a prefix do so to avoid wasting
+too many non-prefix bindings, keeping them available for use in
+individual transients.  The bindings that do not use a prefix and that
+are *not* grayed out are very important bindings that are *always*
+available, even when invoking the "common command key prefix" or *any
+other* transient-specific prefix.  The non-prefix keys that *are* grayed
+out however, are not available when any incomplete prefix key sequence
+is active.  They do not use the "common command key prefix" because it
+is likely that users want to invoke them several times in a row and
+e.g. ~M-p M-p M-p~ is much more convenient than ~C-x M-p C-x M-p C-x M-p~.
+
+You may also have noticed that the "Set" command is bound to ~C-x s~,
+while Magit-Popup used to bind ~C-c C-c~ instead.  I have seen several
+users praise the latter binding (sic), so I did not change it
+willy-nilly.  The reason that I changed it is that using different
+prefix keys for different common commands, would have made the
+temporary display of the common commands even more confusing,
+i.e. after pressing ~C-c~ all the ~C-x ...~ bindings would be grayed out.
+
+Using a single prefix for common commands key means that all other
+potential prefix keys can be used for transient-specific commands
+*without* the section of common commands also popping up.  ~C-c~ in
+particular is a prefix that I want (and already do) use for Magit, and
+also using that for a common command would prevent me from doing so.
+
+(Also see the next question.)
+
+** Why does ~q~ not quit popups anymore?
+:PROPERTIES:
+:NONODE: t
+:END:
+
+I agree that ~q~ is a good binding for commands that quit something.
+This includes quitting whatever transient is currently active, but it
+also includes quitting whatever it is that some specific transient is
+controlling.  The transient ~magit-blame~ for example binds ~q~ to the
+command that turns ~magit-blame-mode~ off.
+
+So I had to decide if ~q~ should quit the active transient (like
+Magit-Popup used to) or whether ~C-g~ should do that instead, so that ~q~
+could be bound in individual transient to whatever commands make sense
+for them.  Because all other letters are already reserved for use by
+individual transients, I have decided to no longer make an exception
+for ~q~.
+
+If you want to get ~q~'s old binding back then you can do so.  Doing
+that is a bit more complicated than changing a single key binding, so
+I have implemented a function, ~transient-bind-q-to-quit~ that makes the
+necessary changes.  See its doc-string for more information.
 
 * Keystroke Index
 :PROPERTIES:
