@@ -2709,6 +2709,37 @@ resumes the suspended transient.")
     (which-key-mode 1)
     (remove-hook 'post-transient-hook 'transient--resume-which-key-mode)))
 
+(defun transient-bind-q-to-quit ()
+  "Modify some keymaps to bind \"q\" to the appropriate quit command.
+
+\"C-g\" is the default binding for such commands now, but Transient's
+predecessor Magit-Popup used \"q\" instead.  If you would like to get
+that binding back, then call this function in your init file like so:
+
+  (with-eval-after-load \\='transient
+    (transient-bind-q-to-quit))
+
+Individual transients may already bind \"q\" to something else
+and such a binding would shadow the quit binding.  If that is the
+case then \"Q\" is bound to whatever \"q\" would have been bound
+to by setting `transient-substitute-key-function' to a function
+that does that.  Of course \"Q\" may already be bound to something
+else, so that function binds \"M-q\" to that command instead.
+Of course \"M-q\" may already be bound to something else, but
+we stop there."
+  (define-key transient-map        "q" 'transient-quit-one)
+  (define-key transient-edit-map   "q" 'transient-quit-one)
+  (define-key transient-sticky-map "q" 'transient-quit-seq)
+  (setq transient-substitute-key-function
+        'transient-rebind-quit-commands))
+
+(defun transient-rebind-quit-commands (obj)
+  "See `transient-bind-q-to-quit'."
+  (let ((key (oref obj key)))
+    (cond ((string-equal key "q") "Q")
+          ((string-equal key "Q") "M-q")
+          (t key))))
+
 ;;; Font-Lock
 
 (defconst transient-font-lock-keywords

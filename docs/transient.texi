@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-30-g2033ac1+1)
+@subtitle for version 0.1.0 (v0.1.0-31-gf0213e0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-30-g2033ac1+1).
+This manual is for Transient version 0.1.0 (v0.1.0-31-gf0213e0+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -337,7 +337,13 @@ the latter, then you can later resume the stack of transients using
 This key quits the currently active incomplete key sequence, if any,
 or else the current transient.  When quitting the current transient,
 then it returns to the previous transient, if any.
+@end table
 
+Transient's predecessor bound @code{q} instead of @code{C-g} to the quit command.
+To learn how to get that binding back see @code{transient-bind-q-to-quit}'s
+doc-string.
+
+@table @asis
 @kindex C-q
 @cindex transient-quit-all
 @item @kbd{C-q} @tie{}@tie{}@tie{}@tie{}(@code{transient-quit-all})
