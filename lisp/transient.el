@@ -1182,6 +1182,7 @@ but unfortunately that does not exist (yet?)."
     (define-key map [transient-history-next]  'transient--do-stay)
     (define-key map [universal-argument]      'transient--do-stay)
     (define-key map [negative-argument]       'transient--do-stay)
+    (define-key map [digit-argument]          'transient--do-stay)
     (define-key map [transient-quit-all]      'transient--do-quit-all)
     (define-key map [transient-quit-one]      'transient--do-quit-one)
     (define-key map [transient-quit-seq]      'transient--do-stay)
@@ -1195,6 +1196,8 @@ but unfortunately that does not exist (yet?)."
     (define-key map [transient-scroll-up]     'transient--do-stay)
     (define-key map [transient-scroll-down]   'transient--do-stay)
     (define-key map [mwheel-scroll]           'transient--do-stay)
+    (define-key map [scroll-up-command]       'transient--do-stay)
+    (define-key map [scroll-down-command]     'transient--do-stay)
     map)
   "Base keymap used to map common commands to their transient behavior.
 
@@ -1870,7 +1873,7 @@ If ARG is nil scroll near full screen.  This is a wrapper
 around `scroll-down-command' (which see)."
   (interactive "^P")
   (with-selected-window transient--window
-    (scroll-up-command arg)))
+    (scroll-down-command arg)))
 
 (defun transient-resume ()
   "Resume a previously suspended stack of transients."
