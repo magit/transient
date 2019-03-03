@@ -18,6 +18,11 @@
   it necessary to find a new binding for ~transient-show~, which ~C-t~ is
   bound to now.  #17
 
+- A new keymap, ~transient-base-map~ was added to make it easier to
+  change key bindings that are shared between all transients.  This
+  new keymap is used as the parent of all the other keymaps that are
+  shared between all transients.
+
 - The window that was selected before the transient window was shown
   is no longer re-selected before calling a suffix that exits the
   transient.  If a suffix changes the selected window unintentionally,
