@@ -1870,7 +1870,7 @@ If ARG is nil scroll near full screen.  This is a wrapper
 around `scroll-down-command' (which see)."
   (interactive "^P")
   (with-selected-window transient--window
-    (scroll-up-command arg)))
+    (scroll-down-command arg)))
 
 (defun transient-resume ()
   "Resume a previously suspended stack of transients."
