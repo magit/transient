@@ -1099,7 +1099,7 @@ but unfortunately that does not exist (yet?)."
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-p") 'universal-argument)
     (define-key map (kbd "C--") 'negative-argument)
-    (define-key map (kbd "C-v") 'transient-show)
+    (define-key map (kbd "C-t") 'transient-show)
     (define-key map (kbd "?")   'transient-help)
     (define-key map (kbd "C-h") 'transient-help)
     (define-key map (kbd "M-p") 'transient-history-prev)
