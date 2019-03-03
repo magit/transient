@@ -1153,18 +1153,15 @@ edited using the same functions as used for transients.")
      'transient--layout
      (cl-mapcan
       (lambda (s) (transient--parse-child 'transient-common-commands s))
-      `([:hide (lambda ()
+      '([:hide (lambda ()
                  (and (not (memq (car transient--redisplay-key)
                                  transient--common-command-prefixes))
                       (not transient-show-common-commands)))
          ["Value commands"
           ("C-x s  " "Set"            transient-set)
           ("C-x C-s" "Save"           transient-save)
-          (,(if (featurep 'jkl) "M-i    " "M-p    ")
-           "Previous value" transient-history-prev)
-          (,(if (featurep 'jkl) "M-k    " "M-n    ")
-           "Next value"     transient-history-next)
-          ]
+          ("M-p    " "Previous value" transient-history-prev)
+          ("M-n    " "Next value"     transient-history-next)]
          ["Sticky commands"
           ;; Like `transient-sticky-map' except that
           ;; "C-g" has to be bound to a different command.
