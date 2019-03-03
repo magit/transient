@@ -12,7 +12,11 @@
   be necessary to do that.  #17
 
 - Added new commands ~transient-scroll-up~ and ~transient-scroll-down~,
-  which scroll the transient window.  #17
+  which scroll the transient window.  ~C-v~ and ~M-v~ (and ~<next>~ and
+  ~<prior>~) are bound to these commands.  These keys were choosen they
+  are bound to scrolling commands in the global map too.  This made
+  it necessary to find a new binding for ~transient-show~, which ~C-t~ is
+  bound to now.  #17
 
 - The window that was selected before the transient window was shown
   is no longer re-selected before calling a suffix that exits the
