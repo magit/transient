@@ -596,6 +596,7 @@ to the setup function:
             `(lambda ()
                (interactive)
                (transient-setup ',name))))
+       (put ',name 'interactive-only t)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--prefix
             (,(or class 'transient-prefix) :command ',name ,@slots))
@@ -632,6 +633,7 @@ just like for `prefix-arg' and `current-prefix-arg'.
                (transient--expand-define-args args)))
     `(progn
        (defalias ',name (lambda ,arglist ,@body))
+       (put ',name 'interactive-only t)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
@@ -678,6 +680,7 @@ keyword.
                (transient--expand-define-args args)))
     `(progn
        (defalias ',name ,(transient--default-infix-command))
+       (put ',name 'interactive-only t)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
