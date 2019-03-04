@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-32-g08b4778+1)
+@subtitle for version 0.1.0 (v0.1.0-39-gb1da0ca+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-32-g08b4778+1).
+This manual is for Transient version 0.1.0 (v0.1.0-39-gb1da0ca+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1133,11 +1133,10 @@ explicitly.
 The function definitions is always:
 
 @lisp
-(lambda (obj value)
-  (interactive
-   (let ((obj (transient-suffix-object)))
-     (list obj (transient-infix-read obj))))
-  (transient-infix-set obj value)
+(lambda ()
+  (interactive)
+  (let ((obj (transient-suffix-object)))
+    (transient-infix-set obj (transient-infix-read obj)))
   (transient--show))
 @end lisp
 

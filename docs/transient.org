@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-32-g08b4778+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-39-gb1da0ca+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-32-g08b4778+1).
+This manual is for Transient version 0.1.0 (v0.1.0-39-gb1da0ca+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -908,11 +908,10 @@ suffixes".
   The function definitions is always:
 
   #+BEGIN_SRC emacs-lisp
-    (lambda (obj value)
-      (interactive
-       (let ((obj (transient-suffix-object)))
-         (list obj (transient-infix-read obj))))
-      (transient-infix-set obj value)
+    (lambda ()
+      (interactive)
+      (let ((obj (transient-suffix-object)))
+        (transient-infix-set obj (transient-infix-read obj)))
       (transient--show))
   #+END_SRC
 
