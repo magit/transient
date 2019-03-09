@@ -1352,19 +1352,14 @@ EDIT may be non-nil."
 
 (defun transient--init-objects (name layout params)
   (setq transient--prefix
-        (let* ((proto (get name 'transient--prefix))
-               (clone (apply #'clone proto
-                             :prototype proto
-                             :level (or (alist-get
-                                         t (alist-get name transient-levels))
-                                        transient-default-level)
-                             params))
-               (value (oref proto value)))
-          (if (functionp value)
-              (oset clone value (funcall value))
-            (when-let ((saved (assq name transient-values)))
-              (oset clone value (cdr saved))))
-          clone))
+        (let ((proto (get name 'transient--prefix)))
+          (apply #'clone proto
+                 :prototype proto
+                 :level (or (alist-get
+                             t (alist-get name transient-levels))
+                            transient-default-level)
+                 params)))
+  (transient-init-value transient--prefix)
   (setq transient--layout
         (or layout
             (let ((levels (alist-get name transient-levels)))
@@ -1962,14 +1957,20 @@ implementation, which is a noop.")
 (cl-defgeneric transient-init-value (_)
   "Set the initial value of the object OBJ.
 
-This function is called for all suffix commands, but unless a
-concrete method is implemented this falls through to the default
-implementation, which is a noop.  In other words this usually
-only does something for infix commands, but note that this is
-not implemented for the abstract class `transient-infix', so if
-your class derives from that directly, then you must implement
-a method."
+This function is called for all prefix and suffix commands.
+
+For suffix commands (including infix argument commands) the
+default implementation is a noop.  Classes derived from the
+abstract `transient-infix' class must implement this function.
+Non-infix suffix commands usually don't have a value."
   nil)
+
+(cl-defmethod transient-init-value ((obj transient-prefix))
+  (let ((value (oref obj value)))
+    (if (functionp value)
+        (oset obj value (funcall value))
+      (when-let ((saved (assq (oref obj command) transient-values)))
+        (oset obj value (cdr saved))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
   (oset obj value
