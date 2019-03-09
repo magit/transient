@@ -1959,7 +1959,7 @@ implementation, which is a noop.")
 (cl-defmethod transient-init-scope ((_   transient-suffix))
   "Noop." nil)
 
-(cl-defgeneric transient-init-value (obj)
+(cl-defgeneric transient-init-value (_)
   "Set the initial value of the object OBJ.
 
 This function is called for all suffix commands, but unless a
@@ -1968,10 +1968,8 @@ implementation, which is a noop.  In other words this usually
 only does something for infix commands, but note that this is
 not implemented for the abstract class `transient-infix', so if
 your class derives from that directly, then you must implement
-a method.")
-
-(cl-defmethod transient-init-value ((_   transient-suffix))
-  "Noop." nil)
+a method."
+  nil)
 
 (cl-defmethod transient-init-value ((obj transient-switch))
   (oset obj value
