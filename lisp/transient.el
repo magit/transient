@@ -1825,17 +1825,12 @@ transient is active."
 (defun transient-set ()
   "Save the value of the active transient for this Emacs session."
   (interactive)
-  (oset (oref transient--prefix prototype) value (transient-args))
-  (transient--history-push))
+  (transient-set-value transient--prefix))
 
 (defun transient-save ()
   "Save the value of the active transient persistenly across Emacs sessions."
   (interactive)
-  (let ((value (transient-args)))
-    (oset (oref transient--prefix prototype) value value)
-    (setf (alist-get (oref transient--prefix command) transient-values) value)
-    (transient-save-values))
-  (transient--history-push))
+  (transient-save-value transient--prefix))
 
 (defun transient-history-next ()
   "Switch to the next value used for the active transient."
@@ -2174,6 +2169,19 @@ prompt."
 This implementation should be suitable for almost all infix
 commands.  It simply calls `oset'."
   (oset obj value value))
+
+(cl-defmethod transient-set-value ((obj transient-prefix))
+  (oset (oref obj prototype) value (transient-args))
+  (transient--history-push))
+
+;;;; Save
+
+(cl-defmethod transient-save-value ((obj transient-prefix))
+  (let ((value (transient-args)))
+    (oset (oref obj prototype) value value)
+    (setf (alist-get (oref obj command) transient-values) value)
+    (transient-save-values))
+  (transient--history-push))
 
 ;;;; Use
 
