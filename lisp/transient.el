@@ -1826,12 +1826,12 @@ transient is active."
 (defun transient-set ()
   "Save the value of the active transient for this Emacs session."
   (interactive)
-  (transient-set-value transient--prefix))
+  (transient-set-value (or transient--prefix current-transient-prefix)))
 
 (defun transient-save ()
   "Save the value of the active transient persistenly across Emacs sessions."
   (interactive)
-  (transient-save-value transient--prefix))
+  (transient-save-value (or transient--prefix current-transient-prefix)))
 
 (defun transient-history-next ()
   "Switch to the next value used for the active transient."
