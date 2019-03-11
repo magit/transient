@@ -2242,12 +2242,12 @@ which is not the same as nil."
 
 ;;; History
 
-(defun transient--history-push ()
-  (let* ((obj transient--prefix)
-         (cmd (oref obj command))
-         (val (transient-args))
-         (hst (cons val (delete val (alist-get cmd transient-history)))))
-    (setf (alist-get cmd transient-history) hst)))
+(defun transient--history-push (&optional slot)
+  (unless slot
+    (setq slot (oref transient--prefix command)))
+  (setf (alist-get slot transient-history)
+        (let ((args (transient-args)))
+          (cons args (delete args (alist-get slot transient-history))))))
 
 (cl-defgeneric transient--history-init (obj)
   "Initialize OBJ's `value' slot.
