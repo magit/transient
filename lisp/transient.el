@@ -1496,6 +1496,7 @@ EDIT may be non-nil."
      (t
       (setq this-command 'transient-undefined))))
    ((and transient--editp
+         (transient-suffix-object)
          (not (memq this-command '(transient-quit-one
                                    transient-quit-all
                                    transient-help))))
