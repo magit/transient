@@ -297,6 +297,10 @@ give you as many additional suffixes as you hoped.)"
   "Face used for suffixes unreachable from the current prefix sequence."
   :group 'transient-faces)
 
+(defface transient-active-infix '((t :inherit secondary-selection))
+  "Face used for the infix for which the value is being read."
+  :group 'transient-faces)
+
 (defface transient-unreachable-key '((t :inherit shadow))
   "Face used for keys unreachable from the current prefix sequence."
   :group 'transient-faces)
@@ -978,6 +982,8 @@ variable instead.")
 (defvar transient--showp nil "Whether the transient is show in a popup buffer.")
 (defvar transient--helpp nil "Whether help-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
+
+(defvar transient--active-infix nil "The active infix awaiting user input.")
 
 (defvar transient--timer nil)
 
@@ -2010,10 +2016,13 @@ infix command determines what the new value should be, based
 on the previous value.")
 
 (cl-defmethod transient-infix-read :around ((obj transient-infix))
-  "Exit the transient in case of an error.
+  "Highlight the infix in the popup buffer.
 
-Without this Emacs would get stuck in an inconsistent state,
+Also arrange for the transient to be exited in case of an error
+because otherwise Emacs would get stuck in an inconsistent state,
 which might make it necessary to kill it from the outside."
+  (let ((transient--active-infix obj))
+    (transient--show))
   (transient--with-emergency-exit
     (cl-call-next-method obj)))
 
@@ -2357,9 +2366,11 @@ have a history of their own.")
 
 (cl-defmethod transient--insert-group ((group transient-column))
   (dolist (suffix (oref group suffixes))
-    (insert (transient-format suffix))
-    (unless (integerp suffix)
-      (insert ?\n))))
+    (let ((str (transient-format suffix)))
+      (insert str)
+      (unless (or (integerp suffix)
+                  (string-match-p ".\n\\'" str))
+        (insert ?\n)))))
 
 (cl-defmethod transient--insert-group ((group transient-columns))
   (let* ((columns
@@ -2409,6 +2420,15 @@ making `transient--source-buffer' current.")
 (cl-defmethod transient-format ((arg integer))
   "Return a string containing just the ARG character."
   (char-to-string arg))
+
+(cl-defmethod transient-format :around ((obj transient-infix))
+  "When reading user input for this infix, then highlight it."
+  (let ((str (cl-call-next-method obj)))
+    (when (eq obj transient--active-infix)
+      (setq str (concat str "\n"))
+      (add-face-text-property 0 (length str)
+                              'transient-active-infix nil str))
+    str))
 
 (cl-defmethod transient-format :around ((obj transient-suffix))
   "When edit-mode is enabled, then prepend the level information."
