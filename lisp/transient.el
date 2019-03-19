@@ -1796,16 +1796,19 @@ transient is active."
 (defun transient-set-level (&optional command level)
   "Set the level of the transient or one of its suffix commands."
   (interactive
-   (let ((command this-original-command))
+   (let ((command this-original-command)
+         (prefix (oref transient--prefix command)))
      (and (or (not (eq command 'transient-set-level))
               (and transient--editp
-                   (setq command (oref transient--prefix command))))
+                   (setq command prefix)))
           (list command
                 (let ((keys (this-single-command-raw-keys)))
                   (and (lookup-key transient--transient-map keys)
-                       (read-number
-                        (format "Set level for `%s': "
-                                (transient--suffix-command command)))))))))
+                       (string-to-number
+                        (transient--read-number-N
+                         (format "Set level for `%s': "
+                                 (transient--suffix-command command))
+                         nil nil (not (eq command prefix))))))))))
   (cond
    ((not command)
     (setq transient--editp t)
