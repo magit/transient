@@ -161,7 +161,7 @@ show the documentation for the infix or suffix command that ~<key>~ is
 bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
 suffixes can be removed from the transient using ~C-x l <key>~.  Infixes
 and suffixes that are disabled by default can be enabled the same way.
-See [[*Enabling and Disabling Suffixes]].
+See [[Enabling and Disabling Suffixes]].
 
 Transient ships with support for a few different types of specialized
 infix commands.  A command that sets a command line option for example
@@ -586,7 +586,7 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
 
 * Modifying Existing Transients
 
-To an extent transients can be customized interactively, see [[*Enabling
+To an extent transients can be customized interactively, see [[Enabling
 and Disabling Suffixes]].  This section explains how existing transients
 can be further modified non-interactively.
 
@@ -732,7 +732,7 @@ Group specifications then have this form:
   [{LEVEL} {DESCRIPTION} {KEYWORD VALUE}... ELEMENT...]
 #+END_SRC
 
-The LEVEL is optional and defaults to 4.  See [[*Enabling and Disabling
+The LEVEL is optional and defaults to 4.  See [[Enabling and Disabling
 Suffixes]].
 
 The DESCRIPTION is optional.  If present it is used as the heading of
@@ -815,7 +815,7 @@ here.  You can however specify them here anyway, possibly overriding
 the objects value just for the binding inside this transient.
 
 - LEVEL is the suffix level, an integer between 1 and 7.  See
-  [[*Enabling and Disabling Suffixes]].
+  [[Enabling and Disabling Suffixes]].
 
 - KEY is the key binding, either a vector or key description string.
 
@@ -1525,7 +1525,7 @@ One more slot is shared between group and suffix classes, ~level~.  Like
 the slots documented above it is a predicate, but it is used for a
 different purpose.  The value has to be an integer between 1
 and 7. ~level~ controls whether it should be available depending on
-whether the user wants that or not.  See [[*Enabling and Disabling
+whether the user wants that or not.  See [[Enabling and Disabling
 Suffixes]].
 
 * Related Abstractions and Packages
