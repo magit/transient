@@ -2261,12 +2261,12 @@ which is not the same as nil."
           (cons args (delete args (alist-get slot transient-history))))))
 
 (cl-defgeneric transient--history-init (obj)
-  "Initialize OBJ's `value' slot.
+  "Initialize OBJ's `history' slot.
 This is the transient-wide history; many individual infixes also
 have a history of their own.")
 
 (cl-defmethod transient--history-init ((obj transient-prefix))
-  "Initialize OBJ's `value' slot from the variable `transient-history'."
+  "Initialize OBJ's `history' slot from the variable `transient-history'."
   (let ((val (oref obj value))
         (cmd (oref obj command)))
     (oset obj history
