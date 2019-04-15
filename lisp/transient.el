@@ -1550,7 +1550,7 @@ EDIT may be non-nil."
   (setq current-transient-prefix transient--prefix)
   (setq current-transient-command (oref transient--prefix command))
   (setq current-transient-suffixes transient--suffixes)
-  (transient--history-push))
+  (transient--history-push transient--prefix))
 
 (defun transient--minibuffer-setup ()
   (transient--debug 'minibuffer-setup)
@@ -2184,7 +2184,7 @@ commands.  It simply calls `oset'."
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
   (oset (oref obj prototype) value (transient-args))
-  (transient--history-push))
+  (transient--history-push obj))
 
 ;;;; Save
 
@@ -2193,7 +2193,7 @@ commands.  It simply calls `oset'."
     (oset (oref obj prototype) value value)
     (setf (alist-get (oref obj command) transient-values) value)
     (transient-save-values))
-  (transient--history-push))
+  (transient--history-push obj))
 
 ;;;; Use
 
@@ -2261,12 +2261,12 @@ that.  Otherwise return the value of the `command' slot."
   (or (oref obj history-key)
       (oref obj command)))
 
-(defun transient--history-push (&optional slot)
-  (unless slot
-    (setq slot (oref transient--prefix command)))
-  (setf (alist-get slot transient-history)
-        (let ((args (transient-args)))
-          (cons args (delete args (alist-get slot transient-history))))))
+(cl-defgeneric transient--history-push (obj)
+  "Push the current value of OBJ to its entry in `transient-history'."
+  (let ((key (transient--history-key obj)))
+    (setf (alist-get key transient-history)
+          (let ((args (transient-args)))
+            (cons args (delete args (alist-get key transient-history)))))))
 
 (cl-defgeneric transient--history-init (obj)
   "Initialize OBJ's `history' slot.
