@@ -407,6 +407,7 @@ If `transient-save-history' is nil, then do nothing."
    (scope       :initarg :scope       :initform nil)
    (history     :initarg :history     :initform nil)
    (history-pos :initarg :history-pos :initform 0)
+   (history-key :initarg :history-key :initform nil)
    (man-page    :initarg :man-page    :initform nil)
    (info-manual :initarg :info-manual :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
@@ -2254,8 +2255,11 @@ which is not the same as nil."
 ;;; History
 
 (cl-defgeneric transient--history-key (obj)
-  "Return OBJ's history key."
-  (oref obj command))
+  "Return OBJ's history key.
+If the value of the `history-key' slot is non-nil, then return
+that.  Otherwise return the value of the `command' slot."
+  (or (oref obj history-key)
+      (oref obj command)))
 
 (defun transient--history-push (&optional slot)
   (unless slot
