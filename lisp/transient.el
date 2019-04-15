@@ -2253,6 +2253,10 @@ which is not the same as nil."
 
 ;;; History
 
+(cl-defgeneric transient--history-key (obj)
+  "Return OBJ's history key."
+  (oref obj command))
+
 (defun transient--history-push (&optional slot)
   (unless slot
     (setq slot (oref transient--prefix command)))
@@ -2267,10 +2271,10 @@ have a history of their own.")
 
 (cl-defmethod transient--history-init ((obj transient-prefix))
   "Initialize OBJ's `history' slot from the variable `transient-history'."
-  (let ((val (oref obj value))
-        (cmd (oref obj command)))
+  (let ((val (oref obj value)))
     (oset obj history
-          (cons val (delete val (alist-get cmd transient-history))))))
+          (cons val (delete val (alist-get (transient--history-key obj)
+                                           transient-history))))))
 
 ;;; Draw
 
