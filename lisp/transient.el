@@ -1929,7 +1929,7 @@ For transients that are used to pass arguments to a subprosess
 separates non-positional arguments from positional arguments.
 The value of Magit's file argument for example looks like this:
 \(\"--\" file...)."
-  (let ((val (if (and (transient-prefix--eieio-childp prefix))
+  (let ((val (if (transient-prefix--eieio-childp prefix)
                  (delq nil (mapcar 'transient-infix-value
                                    transient--suffixes))
                (and (or (not prefix)
