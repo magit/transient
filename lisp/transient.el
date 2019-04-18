@@ -411,7 +411,8 @@ If `transient-save-history' is nil, then do nothing."
    (man-page    :initarg :man-page    :initform nil)
    (info-manual :initarg :info-manual :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
-   (transient-non-suffix :initarg :transient-non-suffix :initform nil))
+   (transient-non-suffix :initarg :transient-non-suffix :initform nil)
+   (incompatible         :initarg :incompatible         :initform nil))
   "Transient prefix command.
 
 Each transient prefix command consists of a command, which is
@@ -2172,6 +2173,8 @@ prompt."
 
 ;;;; Set
 
+(defvar transient--unset-incompatible t)
+
 (cl-defgeneric transient-infix-set (obj value)
   "Set the value of infix object OBJ to value.")
 
@@ -2179,8 +2182,24 @@ prompt."
   "Set the value of infix object OBJ to value.
 
 This implementation should be suitable for almost all infix
-commands.  It simply calls `oset'."
+commands."
   (oset obj value value))
+
+(cl-defmethod transient-infix-set :around ((obj transient-infix) value)
+  "Unset incompatible infix arguments."
+  (if-let ((sic transient--unset-incompatible)
+           (arg (oref obj argument))
+           (spec (oref transient--prefix incompatible))
+           (incomp (remove arg (cl-find-if (lambda (elt) (member arg elt)) spec))))
+      (progn
+        (cl-call-next-method)
+        (dolist (arg incomp)
+          (when-let ((obj (cl-find-if (lambda (obj)
+                                        (equal (oref obj argument) arg))
+                                      transient--suffixes)))
+            (let ((transient--unset-incompatible nil))
+              (transient-infix-set obj nil)))))
+    (cl-call-next-method)))
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
   (oset (oref obj prototype) value (transient-args))
