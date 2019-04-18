@@ -2185,7 +2185,7 @@ This implementation should be suitable for almost all infix
 commands."
   (oset obj value value))
 
-(cl-defmethod transient-infix-set :around ((obj transient-infix) value)
+(cl-defmethod transient-infix-set :around ((obj transient-argument) value)
   "Unset incompatible infix arguments."
   (if-let ((sic transient--unset-incompatible)
            (arg (oref obj argument))
@@ -2195,7 +2195,8 @@ commands."
         (cl-call-next-method)
         (dolist (arg incomp)
           (when-let ((obj (cl-find-if (lambda (obj)
-                                        (equal (oref obj argument) arg))
+                                        (and (slot-boundp obj 'argument)
+                                             (equal (oref obj argument) arg)))
                                       transient--suffixes)))
             (let ((transient--unset-incompatible nil))
               (transient-infix-set obj nil)))))
