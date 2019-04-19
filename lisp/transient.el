@@ -2192,7 +2192,7 @@ commands."
            (spec (oref transient--prefix incompatible))
            (incomp (remove arg (cl-find-if (lambda (elt) (member arg elt)) spec))))
       (progn
-        (cl-call-next-method)
+        (cl-call-next-method obj value)
         (dolist (arg incomp)
           (when-let ((obj (cl-find-if (lambda (obj)
                                         (and (slot-boundp obj 'argument)
@@ -2200,7 +2200,7 @@ commands."
                                       transient--suffixes)))
             (let ((transient--unset-incompatible nil))
               (transient-infix-set obj nil)))))
-    (cl-call-next-method)))
+    (cl-call-next-method obj value)))
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
   (oset (oref obj prototype) value (transient-args))
