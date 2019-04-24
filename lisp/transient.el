@@ -514,9 +514,10 @@ slot is non-nil."
 
 (cl-defmethod initialize-instance ((obj transient-switches) slots)
   (cl-call-next-method)
-  (-let [(&plist :argument-regexp :choices :argument-format) slots]
+  (cl-destructuring-bind
+      (&key choices argument-format argument-regexp &allow-other-keys) slots
     (unless argument-regexp
-      (setf (oref obj argument-regexp)
+      (oset obj argument-regexp
             (--> choices
                  (regexp-opt it t)
                  (format (regexp-quote argument-format) it)
