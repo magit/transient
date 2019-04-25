@@ -2106,6 +2106,10 @@ The last value is \"don't use any of these switches\"."
 
 ;;;; Readers
 
+(defun transient-read-directory (prompt _initial-input _history)
+  "Read a directory."
+  (expand-file-name (read-directory-name prompt)))
+
 (defun transient-read-existing-directory (prompt _initial-input _history)
   "Read an existing directory."
   (expand-file-name (read-directory-name prompt nil nil t)))
