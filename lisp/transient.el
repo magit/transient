@@ -2322,7 +2322,8 @@ have a history of their own.")
 (defun transient--show-brief ()
   (let ((message-log-max nil))
     (message
-     "%s %s"
+     "%s- [%s] %s"
+     (key-description (this-command-keys))
      (oref transient--prefix command)
      (mapconcat
       #'identity
