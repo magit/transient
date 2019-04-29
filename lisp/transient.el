@@ -1655,7 +1655,9 @@ EDIT may be non-nil."
         (run-at-time (abs transient-show-popup) nil
                      (lambda ()
                        (transient--timer-cancel)
-                       (transient--show)))))
+                       (transient--show)
+                       (let ((message-log-max nil))
+                         (message ""))))))
 
 (defun transient--timer-cancel ()
   (when transient--timer
