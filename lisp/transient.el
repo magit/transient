@@ -71,15 +71,25 @@
 (defcustom transient-show-popup t
   "Whether to show the current transient in a popup buffer.
 
-If t, then show the popup as soon as a transient command is
-invoked.  If nil, then do not show the popup unless the user
-explicitly requests it, by pressing the prefix \"C-x\".  If a
-number, then show the popup after this many seconds of inactivity
-or when the user explicitly requests it."
+- If t, then show the popup as soon as a transient command is
+  invoked.
+
+- If nil, then do not show the popup unless the user explicitly
+  requests it, by pressing an incomplete prefix key sequence.
+
+- If a number, then delay displaying the popup and instead show
+  a brief one-line summary.  If zero or negative, then suppress
+  even showing that summary and display the pressed key only.
+
+  Show the when the user explicitly requests it by pressing an
+  incomplete prefix key sequence.  Unless zero, then also show
+  the popup after that many seconds of inactivity (using the
+  absolute value)."
   :package-version '(transient . "0.1.0")
   :group 'transient
   :type '(choice (const  :tag "instantly" t)
                  (const  :tag "on demand" nil)
+                 (const  :tag "on demand (no summary)" 0)
                  (number :tag "after delay" 1)))
 
 (defcustom transient-display-buffer-action
@@ -1635,13 +1645,14 @@ EDIT may be non-nil."
                                    mwheel-scroll))
         (transient--show))
     (when (and (numberp transient-show-popup)
+               (not (zerop transient-show-popup))
                (not transient--timer))
       (transient--timer-start))
     (transient--show-brief)))
 
 (defun transient--timer-start ()
   (setq transient--timer
-        (run-at-time transient-show-popup nil
+        (run-at-time (abs transient-show-popup) nil
                      (lambda ()
                        (transient--timer-cancel)
                        (transient--show)))))
@@ -2321,32 +2332,34 @@ have a history of their own.")
 
 (defun transient--show-brief ()
   (let ((message-log-max nil))
-    (message
-     "%s- [%s] %s"
-     (key-description (this-command-keys))
-     (oref transient--prefix command)
-     (mapconcat
-      #'identity
-      (sort
-       (cl-mapcan
-        (lambda (suffix)
-          (let ((key (kbd (oref suffix key))))
-            ;; Don't list any common commands.
-            (and (not (memq (oref suffix command)
-                            `(,(lookup-key transient-map key)
-                              ,(lookup-key transient-sticky-map key)
-                              ;; From transient-common-commands:
-                              transient-set
-                              transient-save
-                              transient-history-prev
-                              transient-history-next
-                              transient-quit-one
-                              transient-toggle-common
-                              transient-set-level)))
-                 (list (propertize (oref suffix key) 'face 'transient-key)))))
-        transient--suffixes)
-       #'string<)
-      (propertize "|" 'face 'transient-unreachable-key)))))
+    (if (and transient-show-popup (<= transient-show-popup 0))
+        (message "%s-" (key-description (this-command-keys)))
+      (message
+       "%s- [%s] %s"
+       (key-description (this-command-keys))
+       (oref transient--prefix command)
+       (mapconcat
+        #'identity
+        (sort
+         (cl-mapcan
+          (lambda (suffix)
+            (let ((key (kbd (oref suffix key))))
+              ;; Don't list any common commands.
+              (and (not (memq (oref suffix command)
+                              `(,(lookup-key transient-map key)
+                                ,(lookup-key transient-sticky-map key)
+                                ;; From transient-common-commands:
+                                transient-set
+                                transient-save
+                                transient-history-prev
+                                transient-history-next
+                                transient-quit-one
+                                transient-toggle-common
+                                transient-set-level)))
+                   (list (propertize (oref suffix key) 'face 'transient-key)))))
+          transient--suffixes)
+         #'string<)
+        (propertize "|" 'face 'transient-unreachable-key))))))
 
 (defun transient--show ()
   (transient--timer-cancel)
