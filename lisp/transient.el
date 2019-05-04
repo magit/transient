@@ -51,7 +51,6 @@
 (require 'dash)
 (require 'eieio)
 (require 'format-spec)
-(require 'isearch)
 
 (eval-when-compile
   (require 'subr-x))
