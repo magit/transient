@@ -1002,7 +1002,8 @@ variable instead.")
 
 (defvar transient--stack nil)
 
-(defvar transient--window nil)
+(defvar transient--window nil
+  "The window used to display the transient popup.")
 
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
