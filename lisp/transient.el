@@ -71,8 +71,8 @@
 (defcustom transient-show-popup t
   "Whether to show the current transient in a popup buffer.
 
-- If t, then show the popup as soon as a transient command is
-  invoked.
+- If t, then show the popup as soon as a transient prefix command
+  is invoked.
 
 - If nil, then do not show the popup unless the user explicitly
   requests it, by pressing an incomplete prefix key sequence.
@@ -81,8 +81,8 @@
   a brief one-line summary.  If zero or negative, then suppress
   even showing that summary and display the pressed key only.
 
-  Show the when the user explicitly requests it by pressing an
-  incomplete prefix key sequence.  Unless zero, then also show
+  Show the popup when the user explicitly requests it by pressing
+  an incomplete prefix key sequence.  Unless zero, then also show
   the popup after that many seconds of inactivity (using the
   absolute value)."
   :package-version '(transient . "0.1.0")

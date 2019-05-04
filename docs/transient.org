@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-39-gb1da0ca+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-65-gafdf1f0+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-39-gb1da0ca+1).
+This manual is for Transient version 0.1.0 (v0.1.0-65-gafdf1f0+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -480,11 +480,21 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   This option controls whether the current transient's infix and
   suffix commands are shown in the popup buffer.
 
-  If ~t~ (the default), then the infix and suffix commands are shown as
-  soon as the transient is invoked.  If ~nil~, only a one line summary
-  is shown until the user presses a key that forms an incomplete key
-  sequence.  If a number, behave as for ~nil~ but also show the commands
-  after that many seconds of inactivity.
+  - If ~t~ (the default) then the popup buffer is shown as soon as a
+    transient prefix command is invoked.
+
+  - If ~nil~, then the popup buffer is not shown unless the user
+    explicitly requests it, by pressing an incomplete prefix key
+    sequence.
+
+  - If a number, then the a brief one-line summary is shown instead of
+    the popup buffer.  If zero or negative, then not even that summary
+    is shown; only the pressed key itself is shown.
+
+    The popup is shown when the user explicitly requests it by
+    pressing an incomplete prefix key sequence.  Unless this is zero,
+    then the popup is shown after that many seconds of inactivity
+    (using the absolute value).
 
 - User Option: transient-display-buffer-action
 

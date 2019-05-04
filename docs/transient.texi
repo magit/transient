@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-39-gb1da0ca+1)
+@subtitle for version 0.1.0 (v0.1.0-65-gafdf1f0+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-39-gb1da0ca+1).
+This manual is for Transient version 0.1.0 (v0.1.0-65-gafdf1f0+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -650,11 +650,28 @@ is a wrapper around @code{scroll-down-command} (which see).
 This option controls whether the current transient's infix and
 suffix commands are shown in the popup buffer.
 
-If @code{t} (the default), then the infix and suffix commands are shown as
-soon as the transient is invoked.  If @code{nil}, only a one line summary
-is shown until the user presses a key that forms an incomplete key
-sequence.  If a number, behave as for @code{nil} but also show the commands
-after that many seconds of inactivity.
+@itemize
+@item
+If @code{t} (the default) then the popup buffer is shown as soon as a
+transient prefix command is invoked.
+
+
+@item
+If @code{nil}, then the popup buffer is not shown unless the user
+explicitly requests it, by pressing an incomplete prefix key
+sequence.
+
+
+@item
+If a number, then the a brief one-line summary is shown instead of
+the popup buffer.  If zero or negative, then not even that summary
+is shown; only the pressed key itself is shown.
+
+The popup is shown when the user explicitly requests it by
+pressing an incomplete prefix key sequence.  Unless this is zero,
+then the popup is shown after that many seconds of inactivity
+(using the absolute value).
+@end itemize
 @end defopt
 
 @defopt transient-display-buffer-action
