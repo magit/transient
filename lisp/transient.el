@@ -384,7 +384,7 @@ and you usually should not change it manually.")
   (transient--read-file-contents transient-history-file)
   "History of transient commands and infix arguments.
 The value of this variable persists between Emacs sessions
-(unless `transient-save-history' is nil) and you usually
+\(unless `transient-save-history' is nil) and you usually
 should not change it manually.")
 
 (defun transient-save-history ()
