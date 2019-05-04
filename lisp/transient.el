@@ -1005,6 +1005,10 @@ variable instead.")
 (defvar transient--window nil
   "The window used to display the transient popup.")
 
+(defvar transient--original-window nil
+  "The window that was selected before the transient was invoked.
+Usually it remains selected while the transient is active.")
+
 (defvar transient--original-buffer nil
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
@@ -1374,6 +1378,7 @@ EDIT may be non-nil."
   (setq transient--predicate-map (transient--make-predicate-map))
   (setq transient--transient-map (transient--make-transient-map))
   (setq transient--redisplay-map (transient--make-redisplay-map))
+  (setq transient--original-window (selected-window))
   (setq transient--original-buffer (current-buffer))
   (transient--redisplay)
   (transient--init-transient)
@@ -1568,6 +1573,7 @@ EDIT may be non-nil."
   (setq transient--prefix nil)
   (setq transient--layout nil)
   (setq transient--suffixes nil)
+  (setq transient--original-window nil)
   (setq transient--original-buffer nil)
   (setq transient--window nil))
 
