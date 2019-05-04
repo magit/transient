@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-65-gafdf1f0+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-75-ge7a16d2+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-65-gafdf1f0+1).
+This manual is for Transient version 0.1.0 (v0.1.0-75-ge7a16d2+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -495,6 +495,22 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
     pressing an incomplete prefix key sequence.  Unless this is zero,
     then the popup is shown after that many seconds of inactivity
     (using the absolute value).
+
+- User Option: transient-enable-popup-navigation
+
+  This option controls whether navigation commands are enabled in the
+  transient popup.
+
+  While a transient is active the transient popup buffer is not the
+  current buffer, making it necesary to use dedicated commands to act
+  on that buffer itself.  This is disabled by default.  If this option
+  is non-nil, then the following features are available:
+
+  - ~<up>~ moves the cursor to the previous suffix.
+    ~<down>~ moves the cursor to the next suffix.
+    ~RET~ invokes the suffix the cursor is on.
+  - ~<mouse-1>~ invokes the clicked on suffix.
+  - ~C-s~ and ~C-r~ start isearch in the popup buffer.
 
 - User Option: transient-display-buffer-action
 
