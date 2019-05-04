@@ -92,6 +92,22 @@
                  (const  :tag "on demand (no summary)" 0)
                  (number :tag "after delay" 1)))
 
+(defcustom transient-enable-popup-navigation nil
+  "Whether navigation commands are enabled in the transient popup.
+
+While a transient is active the transient popup buffer is not the
+current buffer, making it necesary to use dedicated commands to
+act on that buffer itself.  If this non-nil, then the following
+features are available:
+
+- \"<up>\" moves the cursor to the previous suffix.
+  \"<down>\" moves the cursor to the next suffix.
+  \"RET\" invokes the suffix the cursor is on.
+"
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-display-buffer-action
   '(display-buffer-in-side-window (side . bottom))
   "The action used to display the transient popup buffer.
@@ -1234,6 +1250,9 @@ edited using the same functions as used for transients.")
     (define-key map [transient-scroll-up]     'transient--do-stay)
     (define-key map [transient-scroll-down]   'transient--do-stay)
     (define-key map [mwheel-scroll]           'transient--do-stay)
+    (define-key map [transient-push-button]       'transient--do-move)
+    (define-key map [transient-backward-button]   'transient--do-move)
+    (define-key map [transient-forward-button]    'transient--do-move)
     map)
   "Base keymap used to map common commands to their transient behavior.
 
@@ -1252,6 +1271,8 @@ transient behavior of the respective command.
 For transient commands that are bound in individual transients,
 the transient behavior is specified using the `:transient' slot
 of the corresponding object.")
+
+(defvar transient-popup-navigation-map)
 
 (defvar transient--transient-map nil)
 (defvar transient--predicate-map nil)
@@ -1291,6 +1312,9 @@ of the corresponding object.")
                      (string-trim key)
                      cmd conflict)))
           (define-key map kbd cmd))))
+    (when transient-enable-popup-navigation
+      (setq map
+            (make-composed-keymap (list map transient-popup-navigation-map))))
     map))
 
 (defun transient--make-predicate-map ()
@@ -1764,6 +1788,14 @@ either be unbound or do something else."
   "Exit all transients without saving the transient stack."
   (transient--stack-zap)
   transient--exit)
+
+(defun transient--do-move ()
+  "Call the command if `transient-enable-popup-navigation' is non-nil.
+In that case behave like `transient--do-stay', otherwise similar
+to `transient--do-warn'."
+  (unless transient-enable-popup-navigation
+    (setq this-command 'transient-popup-navigation-help))
+  transient--stay)
 
 ;;; Commands
 
@@ -2381,11 +2413,14 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((buf (get-buffer-create " *transient*")))
+  (let ((buf (get-buffer-create " *transient*"))
+        (focus nil))
     (unless (window-live-p transient--window)
       (setq transient--window
             (display-buffer buf transient-display-buffer-action)))
     (with-selected-window transient--window
+      (when transient-enable-popup-navigation
+        (setq focus (button-get (point) 'command)))
       (erase-buffer)
       (set-window-hscroll transient--window 0)
       (set-window-dedicated-p transient--window t)
@@ -2396,7 +2431,9 @@ have a history of their own.")
                                transient-mode-line-format))
       (setq mode-line-buffer-identification
             (symbol-name (oref transient--prefix command)))
-      (setq cursor-type nil)
+      (if transient-enable-popup-navigation
+          (setq-local cursor-in-non-selected-windows 'box)
+        (setq cursor-type nil))
       (setq display-line-numbers nil)
       (setq show-trailing-whitespace nil)
       (transient--insert-groups)
@@ -2409,7 +2446,9 @@ have a history of their own.")
       (let ((window-resize-pixelwise t)
             (window-size-fixed nil))
         (fit-window-to-buffer nil nil 1))
-      (goto-char (point-min)))))
+      (goto-char (point-min))
+      (when transient-enable-popup-navigation
+        (transient--goto-button focus)))))
 
 (defun transient--insert-groups ()
   (let ((groups (cl-mapcan (lambda (group)
@@ -2505,14 +2544,21 @@ making `transient--original-buffer' current.")
     str))
 
 (cl-defmethod transient-format :around ((obj transient-suffix))
-  "When edit-mode is enabled, then prepend the level information."
-  (concat (and transient--editp
-               (let ((level (oref obj level)))
-                 (propertize (format " %s " level)
-                             'face (if (transient--use-level-p level t)
-                                       'transient-enabled-suffix
-                                     'transient-disabled-suffix))))
-          (cl-call-next-method obj)))
+  "When edit-mode is enabled, then prepend the level information.
+Optional support for popup buttons is also implemented here."
+  (let ((str (concat
+              (and transient--editp
+                   (let ((level (oref obj level)))
+                     (propertize (format " %s " level)
+                                 'face (if (transient--use-level-p level t)
+                                           'transient-enabled-suffix
+                                         'transient-disabled-suffix))))
+              (cl-call-next-method obj))))
+    (if transient-enable-popup-navigation
+        (make-text-button str nil
+                          'type 'transient-button
+                          'command (transient--suffix-command obj))
+      str)))
 
 (cl-defmethod transient-format ((obj transient-infix))
   "Return a string generated using OBJ's `format'.
@@ -2809,6 +2855,62 @@ resumes the suspended transient.")
   "Auxiliary minor-mode used to resume a transient after viewing help.")
 
 ;;; Compatibility
+;;;; Popup Navigation
+
+(defun transient-popup-navigation-help ()
+  "Inform the user how to enable popup navigation commands."
+  (interactive)
+  (message "This command is only available if `%s' is non-nil"
+           'transient-enable-popup-navigation))
+
+(define-button-type 'transient-button
+  'face nil
+  'action (lambda (button)
+            (let ((command (button-get button 'command)))
+              ;; Yes, I know that this is wrong(tm).
+              ;; Unfortunately it is also necessary.
+              (setq this-original-command command)
+              (call-interactively command))))
+
+(defvar transient-popup-navigation-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET")       'transient-push-button)
+    (define-key map (kbd "<up>")      'transient-backward-button)
+    (define-key map (kbd "C-p")       'transient-backward-button)
+    (define-key map (kbd "<down>")    'transient-forward-button)
+    (define-key map (kbd "C-n")       'transient-forward-button)
+    map))
+
+(defun transient-push-button ()
+  "Invoke the selected suffix command."
+  (interactive)
+  (with-selected-window transient--window
+    (push-button)))
+
+(defun transient-backward-button (n)
+  "Move to the previous button in the transient popup buffer.
+See `backward-button' for information about N."
+  (interactive "p")
+  (with-selected-window transient--window
+    (backward-button n t)))
+
+(defun transient-forward-button (n)
+  "Move to the next button in the transient popup buffer.
+See `forward-button' for information about N."
+  (interactive "p")
+  (with-selected-window transient--window
+    (forward-button n t)))
+
+(defun transient--goto-button (command)
+  (if (not command)
+      (forward-button 1)
+    (while (and (ignore-errors (forward-button 1))
+                (not (eq (button-get (button-at (point)) 'command) command))))
+    (unless (eq (button-get (button-at (point)) 'command) command)
+      (goto-char (point-min))
+      (forward-button 1))))
+
+;;;; Other Packages
 
 (declare-function which-key-mode "which-key" (&optional arg))
 
