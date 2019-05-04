@@ -104,7 +104,7 @@ features are available:
   \"<down>\" moves the cursor to the next suffix.
   \"RET\" invokes the suffix the cursor is on.
 - \"<mouse-1>\" invokes the clicked on suffix.
-"
+- \"C-s\" and \"C-r\" start isearch in the popup buffer."
   :package-version '(transient . "0.2.0")
   :group 'transient
   :type 'boolean)
@@ -1256,6 +1256,8 @@ edited using the same functions as used for transients.")
     (define-key map [transient-push-button]       'transient--do-move)
     (define-key map [transient-backward-button]   'transient--do-move)
     (define-key map [transient-forward-button]    'transient--do-move)
+    (define-key map [transient-isearch-backward]  'transient--do-move)
+    (define-key map [transient-isearch-forward]   'transient--do-move)
     map)
   "Base keymap used to map common commands to their transient behavior.
 
@@ -2884,6 +2886,8 @@ resumes the suspended transient.")
     (define-key map (kbd "C-p")       'transient-backward-button)
     (define-key map (kbd "<down>")    'transient-forward-button)
     (define-key map (kbd "C-n")       'transient-forward-button)
+    (define-key map (kbd "C-r")       'transient-isearch-backward)
+    (define-key map (kbd "C-s")       'transient-isearch-forward)
     map))
 
 (defun transient-mouse-push-button (&optional pos)
@@ -2919,6 +2923,68 @@ See `forward-button' for information about N."
     (unless (eq (button-get (button-at (point)) 'command) command)
       (goto-char (point-min))
       (forward-button 1))))
+
+;;;; Popup Isearch
+
+(require 'isearch)
+
+(defvar transient--isearch-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map isearch-mode-map)
+    (define-key map [remap isearch-exit]   'transient-isearch-exit)
+    (define-key map [remap isearch-cancel] 'transient-isearch-cancel)
+    (define-key map [remap isearch-abort]  'transient-isearch-abort)
+    map))
+
+(defun transient-isearch-backward (&optional regexp-p)
+  "Do incremental search backward.
+With a prefix argument, do an incremental regular expression
+search instead."
+  (interactive "P")
+  (transient--isearch-setup)
+  (let ((isearch-mode-map transient--isearch-mode-map))
+    (isearch-mode nil regexp-p)))
+
+(defun transient-isearch-forward (&optional regexp-p)
+  "Do incremental search forward.
+With a prefix argument, do an incremental regular expression
+search instead."
+  (interactive "P")
+  (transient--isearch-setup)
+  (let ((isearch-mode-map transient--isearch-mode-map))
+    (isearch-mode t regexp-p)))
+
+(defun transient-isearch-exit ()
+  "Like `isearch-exit' but adapted for `transient'."
+  (interactive)
+  (isearch-exit)
+  (transient--isearch-exit))
+
+(defun transient-isearch-cancel ()
+  "Like `isearch-cancel' but adapted for `transient'."
+  (interactive)
+  (condition-case nil (isearch-cancel) (quit))
+  (transient--isearch-exit))
+
+(defun transient-isearch-abort ()
+  "Like `isearch-abort' but adapted for `transient'."
+  (interactive)
+  (condition-case nil (isearch-abort) (quit))
+  (transient--isearch-exit))
+
+(defun transient--isearch-setup ()
+  (select-window transient--window)
+  (transient--pop-keymap 'transient--transient-map)
+  (transient--pop-keymap 'transient--redisplay-map)
+  (remove-hook 'pre-command-hook #'transient--pre-command)
+  (remove-hook 'post-command-hook #'transient--post-command))
+
+(defun transient--isearch-exit ()
+  (select-window transient--original-window)
+  (transient--push-keymap 'transient--transient-map)
+  (transient--push-keymap 'transient--redisplay-map)
+  (add-hook 'pre-command-hook #'transient--pre-command)
+  (add-hook 'post-command-hook #'transient--post-command))
 
 ;;;; Other Packages
 
