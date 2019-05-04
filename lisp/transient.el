@@ -1558,7 +1558,8 @@ EDIT may be non-nil."
   (setq transient--editp nil)
   (setq transient--prefix nil)
   (setq transient--layout nil)
-  (setq transient--suffixes nil))
+  (setq transient--suffixes nil)
+  (setq transient--window nil))
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
