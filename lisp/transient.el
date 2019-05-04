@@ -51,6 +51,7 @@
 (require 'dash)
 (require 'eieio)
 (require 'format-spec)
+(require 'isearch)
 
 (eval-when-compile
   (require 'subr-x))
@@ -2925,8 +2926,6 @@ See `forward-button' for information about N."
       (forward-button 1))))
 
 ;;;; Popup Isearch
-
-(require 'isearch)
 
 (defvar transient--isearch-mode-map
   (let ((map (make-sparse-keymap)))
