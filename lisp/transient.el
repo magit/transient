@@ -1005,6 +1005,13 @@ variable instead.")
 (defvar transient--window nil
   "The window used to display the transient popup.")
 
+(defvar transient--original-buffer nil
+  "The buffer that was current before the transient was invoked.
+Usually it remains current while the transient is active.")
+
+(define-obsolete-variable-alias 'transient--source-buffer
+  'transient--original-buffer "Transient 0.2.0")
+
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
 (defvar transient--history nil)
@@ -2332,8 +2339,6 @@ have a history of their own.")
 
 ;;; Draw
 
-(defvar transient--source-buffer nil)
-
 (defun transient--show-brief ()
   (let ((message-log-max nil))
     (if (and transient-show-popup (<= transient-show-popup 0))
@@ -2368,7 +2373,7 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((transient--source-buffer (current-buffer))
+  (let ((transient--original-buffer (current-buffer))
         (buf (get-buffer-create " *transient*")))
     (unless (window-live-p transient--window)
       (setq transient--window
@@ -2469,7 +2474,7 @@ have a history of their own.")
 When this function is called, then the current buffer is some
 temporary buffer.  If you need the buffer from which the prefix
 command was invoked to be current, then do so by temporarily
-making `transient--source-buffer' current.")
+making `transient--original-buffer' current.")
 
 (cl-defmethod transient-format ((arg string))
   "Return the string ARG after applying the `transient-heading' face."
@@ -2577,7 +2582,7 @@ called inside the correct buffer (see `transient-insert-group')
 and its value is returned to the caller."
   (when-let ((desc (oref obj description)))
     (if (functionp desc)
-        (with-current-buffer transient--source-buffer
+        (with-current-buffer transient--original-buffer
           (funcall desc))
       desc)))
 
