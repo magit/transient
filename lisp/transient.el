@@ -103,6 +103,7 @@ features are available:
 - \"<up>\" moves the cursor to the previous suffix.
   \"<down>\" moves the cursor to the next suffix.
   \"RET\" invokes the suffix the cursor is on.
+- \"<mouse-1>\" invokes the clicked on suffix.
 "
   :package-version '(transient . "0.2.0")
   :group 'transient
@@ -1250,6 +1251,8 @@ edited using the same functions as used for transients.")
     (define-key map [transient-scroll-up]     'transient--do-stay)
     (define-key map [transient-scroll-down]   'transient--do-stay)
     (define-key map [mwheel-scroll]           'transient--do-stay)
+    (define-key map [transient-noop]              'transient--do-noop)
+    (define-key map [transient-mouse-push-button] 'transient--do-move)
     (define-key map [transient-push-button]       'transient--do-move)
     (define-key map [transient-backward-button]   'transient--do-move)
     (define-key map [transient-forward-button]    'transient--do-move)
@@ -2874,12 +2877,19 @@ resumes the suspended transient.")
 
 (defvar transient-popup-navigation-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<down-mouse-1>") 'transient-noop)
+    (define-key map (kbd "<mouse-1>") 'transient-mouse-push-button)
     (define-key map (kbd "RET")       'transient-push-button)
     (define-key map (kbd "<up>")      'transient-backward-button)
     (define-key map (kbd "C-p")       'transient-backward-button)
     (define-key map (kbd "<down>")    'transient-forward-button)
     (define-key map (kbd "C-n")       'transient-forward-button)
     map))
+
+(defun transient-mouse-push-button (&optional pos)
+  "Invoke the suffix the user clicks on."
+  (interactive (list last-command-event))
+  (push-button pos))
 
 (defun transient-push-button ()
   "Invoke the selected suffix command."
