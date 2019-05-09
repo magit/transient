@@ -1609,7 +1609,8 @@ EDIT may be non-nil."
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
     (let ((buf (window-buffer transient--window)))
-      (delete-window transient--window)
+      (with-demoted-errors "Error while exiting transient: %S"
+        (delete-window transient--window))
       (kill-buffer buf))))
 
 (defun transient--export ()
