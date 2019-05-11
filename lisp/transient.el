@@ -1019,6 +1019,9 @@ variable instead.")
 
 (defvar transient--stack nil)
 
+(defvar transient--buffer-name " *transient*"
+  "Name of the transient buffer.")
+
 (defvar transient--window nil
   "The window used to display the transient popup.")
 
@@ -2419,7 +2422,7 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((buf (get-buffer-create " *transient*"))
+  (let ((buf (get-buffer-create transient--buffer-name))
         (focus nil))
     (unless (window-live-p transient--window)
       (setq transient--window
