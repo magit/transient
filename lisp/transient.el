@@ -350,7 +350,7 @@ See info node `(transient)Enabling and Disabling Suffixes'."
 
 (defface transient-disabled-suffix
   '((t :background "red" :foreground "black" :weight bold))
-  "Face used for disables levels while editing suffix levels.
+  "Face used for disabled levels while editing suffix levels.
 See info node `(transient)Enabling and Disabling Suffixes'."
   :group 'transient-faces)
 
