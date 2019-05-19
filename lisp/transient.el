@@ -290,6 +290,12 @@ give you as many additional suffixes as you hoped.)"
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-history-show-initial-input t
+  "Whether to show the last history element in the minibuffer."
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type 'boolean)
+
 ;;; Faces
 
 (defgroup transient-faces nil
@@ -2145,7 +2151,8 @@ it\", in which case it is pointless to preserve history.)"
                                          (eq value (car transient--history)))
                                      transient--history
                                    (cons value transient--history)))
-             (initial-input (car transient--history))
+             (initial-input (and transient-history-show-initial-input
+                                 (car transient--history)))
              (history (cons 'transient--history (if initial-input 1 0)))
              (value
               (cond
