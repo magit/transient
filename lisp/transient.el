@@ -173,6 +173,12 @@ of this variable use \"C-x t\" when a transient is active."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-read-with-initial-input t
+  "Whether to use the last history element as initial minibuffer input."
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-highlight-mismatched-keys nil
   "Whether to highlight keys that do not match their argument.
 
@@ -2145,7 +2151,8 @@ it\", in which case it is pointless to preserve history.)"
                                          (eq value (car transient--history)))
                                      transient--history
                                    (cons value transient--history)))
-             (initial-input (car transient--history))
+             (initial-input (and transient-read-with-initial-input
+                                 (car transient--history)))
              (history (cons 'transient--history (if initial-input 1 0)))
              (value
               (cond

@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-75-ge7a16d2+1)
+@subtitle for version 0.1.0 (v0.1.0-82-gf0a7a97+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-75-ge7a16d2+1).
+This manual is for Transient version 0.1.0 (v0.1.0-82-gf0a7a97+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -738,6 +738,14 @@ thin line is drawn instead, using the background color of the face
 @code{transient-separator}.
 
 Otherwise this can be any mode-line format.  See ~@ref{Mode Line Format,,,elisp,} for details.
+@end defopt
+
+@defopt transient-read-with~initial-input
+
+This option controls whether the last history element is used as the
+initial minibuffer input when reading the value of an infix argument
+from the user.  If @code{nil}, then there is no initial input and the first
+element has to be accessed the same way as the older elements.
 @end defopt
 
 @defopt transient-highlight-mismatched-keys

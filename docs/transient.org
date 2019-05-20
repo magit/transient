@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-75-ge7a16d2+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-82-gf0a7a97+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-75-ge7a16d2+1).
+This manual is for Transient version 0.1.0 (v0.1.0-82-gf0a7a97+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -552,6 +552,13 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
 
   Otherwise this can be any mode-line format.  See ~[[info:elisp#Mode
   Line Format]] for details.
+
+- User Option: transient-read-with~initial-input
+
+  This option controls whether the last history element is used as the
+  initial minibuffer input when reading the value of an infix argument
+  from the user.  If ~nil~, then there is no initial input and the first
+  element has to be accessed the same way as the older elements.
 
 - User Option: transient-highlight-mismatched-keys
 
