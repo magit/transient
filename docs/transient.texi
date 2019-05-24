@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-82-gf0a7a97+1)
+@subtitle for version 0.1.0 (v0.1.0-90-g4ce1868+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-82-gf0a7a97+1).
+This manual is for Transient version 0.1.0 (v0.1.0-90-g4ce1868+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -820,6 +820,7 @@ The following functions share a few arguments:
 @item
 PREFIX is a transient prefix command, a symbol.
 
+
 @item
 SUFFIX is a transient infix or suffix specification in the same form
 as expected by @code{define-transient-command}.  Note that an infix is a
@@ -827,9 +828,24 @@ special kind of suffix.  Depending on context "suffixes" means
 "suffixes (including infixes)" or "non-infix suffixes".  Here it
 means the former.  See @ref{Suffix Specifications}.
 
+SUFFIX may also be a group in the same form as expected by
+@code{define-transient-command}.  See @ref{Group Specifications}.
+
+
 @item
-LOC is a command, a key vector or a key description (a string as
-returned by @code{key-description}).
+LOC is a command, a key vector, a key description (a string as
+returned by @code{key-description}), or a list specifying coordinates (the
+last element may also be a command or key). For example @code{(1 0 -1)}
+identifies the last suffix (@code{-1}) of the first subgroup (@code{0}) of the
+second group (@code{1}).
+
+If LOC is a list of coordinates, then it can be used to identify a
+group, not just an individual suffix command.
+
+The function @code{transient-get-suffix} can be useful to determine whether
+a certain coordination list identifies the suffix or group that you
+expect it to identify.  In hairy cases it may be necessary to look
+at the definition of the transient prefix command.
 @end itemize
 
 These functions operate on the information stored in the
@@ -839,34 +855,35 @@ plist should set at least @code{:key}, @code{:description} and @code{:command}.
 
 @defun transient-insert-suffix prefix loc suffix
 
-This function inserts SUFFIX into PREFIX before LOC@.
+This function inserts suffix or group SUFFIX into PREFIX before LOC@.
 @end defun
 
 @defun transient-append-suffix prefix loc suffix
 
-This function inserts SUFFIX into PREFIX after LOC@.
+This function inserts suffix or group SUFFIX into PREFIX after LOC@.
 @end defun
 
 @defun transient-replace-suffix prefix loc suffix
 
-This function replaces the suffix at LOC in PREFIX with SUFFIX@.
+This function replaces the suffix or group at LOC in PREFIX with
+suffix or group SUFFIX@.
 @end defun
 
 @defun transient-remove-suffix prefix loc
 
-This function removes the suffix at LOC in PREFIX@.
+This function removes the suffix or group at LOC in PREFIX@.
 @end defun
 
 @defun transient-get-suffix prefix loc
 
-This function returns the suffix at LOC in PREFIX@.  The returned
-value has the form mentioned above.
+This function returns the suffix or group at LOC in PREFIX@.  The
+returned value has the form mentioned above.
 @end defun
 
 @defun transient-suffix-put prefix loc prop value
 
-This function edits the suffix at LOC in PREFIX, by setting the
-PROP of its plist to VALUE@.
+This function edits the suffix or group at LOC in PREFIX, by setting
+the PROP of its plist to VALUE@.
 @end defun
 
 Most of these functions do not signal an error if they cannot perform

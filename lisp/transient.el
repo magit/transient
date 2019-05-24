@@ -868,64 +868,85 @@ example, sets a variable use `define-infix-command' instead.
 ;;; Edit
 
 (defun transient--insert-suffix (prefix loc suffix action)
-  (let* ((suf (transient--parse-suffix prefix suffix))
+  (let* ((suf (cl-etypecase suffix
+                (vector (transient--parse-group  prefix suffix))
+                (list   (transient--parse-suffix prefix suffix))))
          (mem (transient--layout-member loc prefix)))
-    (if mem
+    (cond
+     ((not mem)
+      (message "Cannot insert %S into %s; %s not found"
+               suffix prefix loc))
+     ((not (eq (type-of suffix)
+               (type-of (car mem))))
+      (message "Cannot place %S into %s at %s; %s"
+               suffix prefix loc
+               "suffixes and groups cannot be siblings"))
+     (t
+      (when (listp suffix)
         (let ((key (plist-get (nth 2 suf) :key)))
           (if (equal (transient--kbd key)
                      (transient--kbd (plist-get (nth 2 (car mem)) :key)))
               (setq action 'replace)
-            (transient-remove-suffix prefix key))
-          (cl-ecase action
-            (insert  (setcdr mem (cons (car mem) (cdr mem)))
-                     (setcar mem suf))
-            (append  (setcdr mem (cons suf (cdr mem))))
-            (replace (setcar mem suf))))
-      (message "Cannot insert %S into %s; %s not found" suffix prefix loc))))
+            (transient-remove-suffix prefix key))))
+      (cl-ecase action
+        (insert  (setcdr mem (cons (car mem) (cdr mem)))
+                 (setcar mem suf))
+        (append  (setcdr mem (cons suf (cdr mem))))
+        (replace (setcar mem suf)))))))
 
 (defun transient-insert-suffix (prefix loc suffix)
   "Insert a SUFFIX into PREFIX before LOC.
 PREFIX is a prefix command, a symbol.
-SUFFIX is a suffix command specification list of the
-  same form as expected by `define-transient-command'.
-LOC is a command or a key vector or a key description
-  (a string as returned by `key-description')."
+SUFFIX is a suffix command or a group specification (of
+  the same forms as expected by `define-transient-command').
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'insert))
 
 (defun transient-append-suffix (prefix loc suffix)
   "Insert a SUFFIX into PREFIX after LOC.
 PREFIX is a prefix command, a symbol.
-SUFFIX is a suffix command specification list of the
-  same form as expected by `define-transient-command'.
-LOC is a command, a key vector or a key description
-  (a string as returned by `key-description')."
+SUFFIX is a suffix command or a group specification (of
+  the same forms as expected by `define-transient-command').
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'append))
 
 (defun transient-replace-suffix (prefix loc suffix)
   "Replace the suffix at LOC in PREFIX with SUFFIX.
 PREFIX is a prefix command, a symbol.
-SUFFIX is a suffix command specification list of the
-  same form as expected by `define-transient-command'.
-LOC is a command, a key vector or a key description
-  (a string as returned by `key-description')."
+SUFFIX is a suffix command or a group specification (of
+  the same forms as expected by `define-transient-command').
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'replace))
 
 (defun transient-remove-suffix (prefix loc)
-  "Remove the suffix at LOC in PREFIX.
+  "Remove the suffix or group at LOC in PREFIX.
 PREFIX is a prefix command, a symbol.
-LOC is a command, a key vector or a key description
-  (a string as returned by `key-description')."
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--layout-member loc prefix 'remove))
 
 (defun transient-get-suffix (prefix loc)
-  "Return the suffix at LOC from PREFIX.
+  "Return the suffix or group at LOC in PREFIX.
 PREFIX is a prefix command, a symbol.
-LOC is a command, a key vector or a key description
-  (a string as returned by `key-description')."
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
   (if-let ((mem (transient--layout-member loc prefix)))
       (car mem)
     (error "%s not found in %s" loc prefix)))
@@ -933,18 +954,34 @@ LOC is a command, a key vector or a key description
 (defun transient-suffix-put (prefix loc prop value)
   "Edit the suffix at LOC in PREFIX, setting PROP to VALUE.
 PREFIX is a prefix command, a symbol.
-LOC is a command, a key vector or a key description
-  (a string as returned by `key-description').
-PROP has to be a keyword.  What keywords and values
-  are valid depends on the type of the suffix."
-  (let ((elt (transient-get-suffix prefix loc)))
-    (setf (nth 2 elt)
-          (plist-put (nth 2 elt) prop value))))
+SUFFIX is a suffix command or a group specification (of
+  the same forms as expected by `define-transient-command').
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
+  (let ((suf (transient-get-suffix prefix loc)))
+    (setf (elt suf 2)
+          (plist-put (elt suf 2) prop value))))
 
 (defun transient--layout-member (loc prefix &optional remove)
-  (if-let ((layout (get prefix 'transient--layout)))
-      (transient--layout-member-1 (transient--kbd loc) layout remove)
-    (error "%s is not a transient command" prefix)))
+  (let ((val (or (get prefix 'transient--layout)
+                 (error "%s is not a transient command" prefix))))
+    (when (listp loc)
+      (while (integerp (car loc))
+        (let* ((children (if (vectorp val) (aref val 3) val))
+               (mem (transient--nthcdr (pop loc) children)))
+          (if (and remove (not loc))
+              (let ((rest (delq (car mem) children)))
+                (if (vectorp val)
+                    (aset val 3 rest)
+                  (put prefix 'transient--layout rest))
+                (setq val nil))
+            (setq val (if loc (car mem) mem)))))
+      (setq loc (car loc)))
+    (if loc
+        (transient--layout-member-1 (transient--kbd loc) val remove)
+      val)))
 
 (defun transient--layout-member-1 (loc layout remove)
   (cond ((listp layout)
@@ -985,6 +1022,9 @@ PROP has to be a keyword.  What keywords and values
            (if (slot-boundp obj 'shortarg)
                (oref obj shortarg)
              (transient--derive-shortarg (oref obj argument)))))))
+
+(defun transient--nthcdr (n list)
+  (nthcdr (if (< n 0) (- (length list) (abs n)) n) list))
 
 ;;; Variables
 
