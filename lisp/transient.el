@@ -940,35 +940,35 @@ PROP has to be a keyword.  What keywords and values
 
 (defun transient--layout-member (loc prefix &optional remove)
   (if-let ((layout (get prefix 'transient--layout)))
-      (cl-labels
-          ((mem (layout loc)
-                (cond
-                 ((and (listp layout)
-                       (vectorp (car layout)))
-                  (--any (mem it loc) layout))
-                 ((vectorp layout)
-                  (if (vectorp (car (aref layout 3)))
-                      (--any (mem it loc)
-                             (aref layout 3))
-                    (let* ((list (aref layout 3))
-                           (cons (cl-member-if (lambda (suffix) (mem suffix loc))
-                                               list)))
-                      (if remove
-                          (prog1 nil
-                            (aset layout 3 (delq (car cons) list)))
-                        cons))))
-                 ((and (listp layout)
-                       (let* ((def (nth 2 layout))
-                              (cmd (plist-get def :command)))
-                         (if (symbolp loc)
-                             (eq cmd loc)
-                           (equal (transient--kbd
-                                   (or (plist-get def :key)
-                                       (transient--command-key cmd)))
-                                  loc))))
-                  layout))))
-        (mem layout (transient--kbd loc)))
+      (transient--layout-member-1 (transient--kbd loc) layout remove)
     (error "%s is not a transient command" prefix)))
+
+(defun transient--layout-member-1 (loc layout remove)
+  (cond ((and (listp layout)
+              (vectorp (car layout)))
+         (--any (transient--layout-member-1 it loc) layout))
+        ((vectorp layout)
+         (if (vectorp (car (aref layout 3)))
+             (--any (transient--layout-member-1 it loc)
+                    (aref layout 3))
+           (let* ((list (aref layout 3))
+                  (cons (cl-member-if (lambda (suffix)
+                                        (transient--layout-member-1 suffix loc))
+                                      list)))
+             (if remove
+                 (prog1 nil
+                   (aset layout 3 (delq (car cons) list)))
+               cons))))
+        ((and (listp layout)
+              (let* ((def (nth 2 layout))
+                     (cmd (plist-get def :command)))
+                (if (symbolp loc)
+                    (eq cmd loc)
+                  (equal (transient--kbd
+                          (or (plist-get def :key)
+                              (transient--command-key cmd)))
+                         loc))))
+         layout)))
 
 (defun transient--kbd (keys)
   (when (vectorp keys)
