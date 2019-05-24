@@ -869,7 +869,7 @@ example, sets a variable use `define-infix-command' instead.
 
 (defun transient--insert-suffix (prefix loc suffix action)
   (let* ((suf (transient--parse-suffix prefix suffix))
-         (mem (transient--layout-member prefix loc)))
+         (mem (transient--layout-member loc prefix)))
     (if mem
         (progn
           (transient-remove-suffix prefix (plist-get (nth 2 suf) :command))
@@ -916,14 +916,14 @@ PREFIX is a prefix command, a symbol.
 LOC is a command, a key vector or a key description
   (a string as returned by `key-description')."
   (declare (indent defun))
-  (transient--layout-member prefix loc 'remove))
+  (transient--layout-member loc prefix 'remove))
 
 (defun transient-get-suffix (prefix loc)
   "Return the suffix at LOC from PREFIX.
 PREFIX is a prefix command, a symbol.
 LOC is a command, a key vector or a key description
   (a string as returned by `key-description')."
-  (if-let ((mem (transient--layout-member prefix loc)))
+  (if-let ((mem (transient--layout-member loc prefix)))
       (car mem)
     (error "%s not found in %s" loc prefix)))
 
@@ -938,7 +938,7 @@ PROP has to be a keyword.  What keywords and values
     (setf (nth 2 elt)
           (plist-put (nth 2 elt) prop value))))
 
-(defun transient--layout-member (prefix loc &optional remove)
+(defun transient--layout-member (loc prefix &optional remove)
   (if-let ((layout (get prefix 'transient--layout)))
       (cl-labels
           ((mem (layout loc)
