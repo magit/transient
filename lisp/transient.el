@@ -944,31 +944,28 @@ PROP has to be a keyword.  What keywords and values
     (error "%s is not a transient command" prefix)))
 
 (defun transient--layout-member-1 (loc layout remove)
-  (cond ((and (listp layout)
-              (vectorp (car layout)))
-         (--any (transient--layout-member-1 it loc) layout))
-        ((vectorp layout)
-         (if (vectorp (car (aref layout 3)))
-             (--any (transient--layout-member-1 it loc)
-                    (aref layout 3))
-           (let* ((list (aref layout 3))
-                  (cons (cl-member-if (lambda (suffix)
-                                        (transient--layout-member-1 suffix loc))
-                                      list)))
-             (if remove
-                 (prog1 nil
-                   (aset layout 3 (delq (car cons) list)))
-               cons))))
-        ((and (listp layout)
-              (let* ((def (nth 2 layout))
-                     (cmd (plist-get def :command)))
-                (if (symbolp loc)
-                    (eq cmd loc)
-                  (equal (transient--kbd
-                          (or (plist-get def :key)
-                              (transient--command-key cmd)))
-                         loc))))
-         layout)))
+  (cond ((listp layout)
+         (--any (transient--layout-member-1 loc it remove) layout))
+        ((vectorp (car (aref layout 3)))
+         (--any (transient--layout-member-1 loc it remove) (aref layout 3)))
+        (remove
+         (aset layout 3
+               (delq (car (transient--group-member loc layout))
+                     (aref layout 3)))
+         nil)
+        (t (transient--group-member loc layout))))
+
+(defun transient--group-member (loc group)
+  (cl-member-if (lambda (suffix)
+                  (let* ((def (nth 2 suffix))
+                         (cmd (plist-get def :command)))
+                    (if (symbolp loc)
+                        (eq cmd loc)
+                      (equal (transient--kbd
+                              (or (plist-get def :key)
+                                  (transient--command-key cmd)))
+                             loc))))
+                (aref group 3)))
 
 (defun transient--kbd (keys)
   (when (vectorp keys)
