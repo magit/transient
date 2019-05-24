@@ -941,13 +941,7 @@ PROP has to be a keyword.  What keywords and values
 (defun transient--layout-member (prefix loc &optional remove)
   (if-let ((layout (get prefix 'transient--layout)))
       (cl-labels
-          ((key (loc)
-                (when (vectorp loc)
-                  (setq loc (key-description loc)))
-                (when (stringp loc)
-                  (setq loc (kbd loc)))
-                loc)
-           (mem (layout loc)
+          ((mem (layout loc)
                 (cond
                  ((and (listp layout)
                        (vectorp (car layout)))
@@ -968,12 +962,20 @@ PROP has to be a keyword.  What keywords and values
                               (cmd (plist-get def :command)))
                          (if (symbolp loc)
                              (eq cmd loc)
-                           (equal (key (or (plist-get def :key)
-                                           (transient--command-key cmd)))
+                           (equal (transient--kbd
+                                   (or (plist-get def :key)
+                                       (transient--command-key cmd)))
                                   loc))))
                   layout))))
-        (mem layout (key loc)))
+        (mem layout (transient--kbd loc)))
     (error "%s is not a transient command" prefix)))
+
+(defun transient--kbd (keys)
+  (when (vectorp keys)
+    (setq keys (key-description keys)))
+  (when (stringp keys)
+    (setq keys (kbd keys)))
+  keys)
 
 (defun transient--command-key (cmd)
   (when-let ((obj (get cmd 'transient--suffix)))
