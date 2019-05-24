@@ -871,8 +871,11 @@ example, sets a variable use `define-infix-command' instead.
   (let* ((suf (transient--parse-suffix prefix suffix))
          (mem (transient--layout-member loc prefix)))
     (if mem
-        (progn
-          (transient-remove-suffix prefix (plist-get (nth 2 suf) :key))
+        (let ((key (plist-get (nth 2 suf) :key)))
+          (if (equal (transient--kbd key)
+                     (transient--kbd (plist-get (nth 2 (car mem)) :key)))
+              (setq action 'replace)
+            (transient-remove-suffix prefix key))
           (cl-ecase action
             (insert  (setcdr mem (cons (car mem) (cdr mem)))
                      (setcar mem suf))
