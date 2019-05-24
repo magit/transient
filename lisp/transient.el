@@ -758,8 +758,7 @@ example, sets a variable use `define-infix-command' instead.
   (cl-etypecase spec
     (vector  (when-let ((c (transient--parse-group  prefix spec))) (list c)))
     (list    (when-let ((c (transient--parse-suffix prefix spec))) (list c)))
-    (string  (list spec))
-    (integer (list spec))))
+    (string  (list spec))))
 
 (defun transient--parse-group (prefix spec)
   (setq spec (append spec nil))
@@ -1443,7 +1442,6 @@ EDIT may be non-nil."
   (setq transient--suffixes
         (cl-labels ((s (def)
                        (cond
-                        ((integerp def) nil)
                         ((stringp def) nil)
                         ((listp def) (cl-mapcan #'s def))
                         ((transient-group--eieio-childp def)
@@ -1456,8 +1454,7 @@ EDIT may be non-nil."
   (cl-etypecase spec
     (vector  (transient--init-group  levels spec))
     (list    (transient--init-suffix levels spec))
-    (string  (list spec))
-    (integer (list spec))))
+    (string  (list spec))))
 
 (defun transient--init-group (levels spec)
   (pcase-let ((`(,level ,class ,args ,children) (append spec nil)))
@@ -2500,8 +2497,7 @@ have a history of their own.")
   (dolist (suffix (oref group suffixes))
     (let ((str (transient-format suffix)))
       (insert str)
-      (unless (or (integerp suffix)
-                  (string-match-p ".\n\\'" str))
+      (unless (string-match-p ".\n\\'" str)
         (insert ?\n)))))
 
 (cl-defmethod transient--insert-group ((group transient-columns))
