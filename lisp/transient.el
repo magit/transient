@@ -877,13 +877,15 @@ example, sets a variable use `define-infix-command' instead.
      ((not mem)
       (message "Cannot insert %S into %s; %s not found"
                suffix prefix loc))
-     ((not (eq (type-of suffix)
-               (type-of elt)))
+     ((or (and (vectorp suffix) (not (vectorp elt)))
+          (and (listp   suffix) (vectorp elt))
+          )
       (message "Cannot place %S into %s at %s; %s"
                suffix prefix loc
                "suffixes and groups cannot be siblings"))
      (t
-      (when (listp suffix)
+      (when (and (listp suffix)
+                 (listp elt))
         (let ((key (plist-get (nth 2 suf) :key)))
           (if (equal (transient--kbd key)
                      (transient--kbd (plist-get (nth 2 elt) :key)))
@@ -998,14 +1000,15 @@ See info node `(transient)Modifying Existing Transients'."
 
 (defun transient--group-member (loc group)
   (cl-member-if (lambda (suffix)
-                  (let* ((def (nth 2 suffix))
-                         (cmd (plist-get def :command)))
-                    (if (symbolp loc)
-                        (eq cmd loc)
-                      (equal (transient--kbd
-                              (or (plist-get def :key)
-                                  (transient--command-key cmd)))
-                             loc))))
+                  (and (listp suffix)
+                       (let* ((def (nth 2 suffix))
+                              (cmd (plist-get def :command)))
+                         (if (symbolp loc)
+                             (eq cmd loc)
+                           (equal (transient--kbd
+                                   (or (plist-get def :key)
+                                       (transient--command-key cmd)))
+                                  loc)))))
                 (aref group 3)))
 
 (defun transient--kbd (keys)
