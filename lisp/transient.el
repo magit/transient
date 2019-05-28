@@ -870,7 +870,8 @@ example, sets a variable use `define-infix-command' instead.
 (defun transient--insert-suffix (prefix loc suffix action)
   (let* ((suf (cl-etypecase suffix
                 (vector (transient--parse-group  prefix suffix))
-                (list   (transient--parse-suffix prefix suffix))))
+                (list   (transient--parse-suffix prefix suffix))
+                (string suffix)))
          (mem (transient--layout-member loc prefix))
          (elt (car mem)))
     (cond
@@ -879,7 +880,7 @@ example, sets a variable use `define-infix-command' instead.
                suffix prefix loc))
      ((or (and (vectorp suffix) (not (vectorp elt)))
           (and (listp   suffix) (vectorp elt))
-          )
+          (and (stringp suffix) (vectorp elt)))
       (message "Cannot place %S into %s at %s; %s"
                suffix prefix loc
                "suffixes and groups cannot be siblings"))
