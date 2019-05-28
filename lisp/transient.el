@@ -871,13 +871,14 @@ example, sets a variable use `define-infix-command' instead.
   (let* ((suf (cl-etypecase suffix
                 (vector (transient--parse-group  prefix suffix))
                 (list   (transient--parse-suffix prefix suffix))))
-         (mem (transient--layout-member loc prefix)))
+         (mem (transient--layout-member loc prefix))
+         (elt (car mem)))
     (cond
      ((not mem)
       (message "Cannot insert %S into %s; %s not found"
                suffix prefix loc))
      ((not (eq (type-of suffix)
-               (type-of (car mem))))
+               (type-of elt)))
       (message "Cannot place %S into %s at %s; %s"
                suffix prefix loc
                "suffixes and groups cannot be siblings"))
@@ -885,11 +886,11 @@ example, sets a variable use `define-infix-command' instead.
       (when (listp suffix)
         (let ((key (plist-get (nth 2 suf) :key)))
           (if (equal (transient--kbd key)
-                     (transient--kbd (plist-get (nth 2 (car mem)) :key)))
+                     (transient--kbd (plist-get (nth 2 elt) :key)))
               (setq action 'replace)
             (transient-remove-suffix prefix key))))
       (cl-ecase action
-        (insert  (setcdr mem (cons (car mem) (cdr mem)))
+        (insert  (setcdr mem (cons elt (cdr mem)))
                  (setcar mem suf))
         (append  (setcdr mem (cons suf (cdr mem))))
         (replace (setcar mem suf)))))))
