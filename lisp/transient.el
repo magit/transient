@@ -1081,12 +1081,12 @@ variable instead.")
   "The window that was selected before the transient was invoked.
 Usually it remains selected while the transient is active.")
 
+(define-obsolete-variable-alias 'transient--source-buffer
+  'transient--original-buffer "Transient 0.2.0")
+
 (defvar transient--original-buffer nil
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
-
-(define-obsolete-variable-alias 'transient--source-buffer
-  'transient--original-buffer "Transient 0.2.0")
 
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
