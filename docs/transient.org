@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-90-g4ce1868+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-96-g01a166f+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-90-g4ce1868+1).
+This manual is for Transient version 0.1.0 (v0.1.0-96-g01a166f+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -2018,8 +2018,6 @@ General Public License for more details.
 
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
-# eval: (require 'magit-utils nil t)
-# eval: (require 'org-man     nil t)
 # eval: (require 'ox-extra    nil t)
 # eval: (require 'ox-texinfo+ nil t)
 # eval: (and (featurep 'ox-extra) (ox-extras-activate '(ignore-headlines)))
