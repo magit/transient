@@ -2033,20 +2033,6 @@ around `scroll-down-command' (which see)."
          (message "No suspended transient command"))))
 
 ;;; Value
-;;;; Core
-
-(defun transient-args (&optional prefix)
-  "Return the value of the transient from which the current suffix was called.
-
-If optional PREFIX is non-nil, then it should be a symbol, a
-transient prefix command.  In that case only return the value
-of the transient if the suffix was actually invoked from that
-transient.  Otherwise return nil."
-  (and (or (not prefix)
-           (eq prefix current-transient-command))
-       (delq nil (mapcar 'transient-infix-value
-                         current-transient-suffixes))))
-
 ;;;; Init
 
 (cl-defgeneric transient-init-scope (obj)
@@ -2319,19 +2305,26 @@ commands."
       (cl-call-next-method obj value))))
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
-  (oset (oref obj prototype) value (transient-args))
+  (oset (oref obj prototype) value (transient-get-value))
   (transient--history-push obj))
 
 ;;;; Save
 
 (cl-defmethod transient-save-value ((obj transient-prefix))
-  (let ((value (transient-args)))
+  (let ((value (transient-get-value)))
     (oset (oref obj prototype) value value)
     (setf (alist-get (oref obj command) transient-values) value)
     (transient-save-values))
   (transient--history-push obj))
 
-;;;; Use
+;;;; Get
+
+(defun transient-args (prefix)
+  (and (eq current-transient-command prefix)
+       (delq nil (mapcar 'transient-infix-value current-transient-suffixes))))
+
+(defun transient-get-value ()
+  (delq nil (mapcar 'transient-infix-value current-transient-suffixes)))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
@@ -2401,7 +2394,7 @@ that.  Otherwise return the value of the `command' slot."
   "Push the current value of OBJ to its entry in `transient-history'."
   (let ((key (transient--history-key obj)))
     (setf (alist-get key transient-history)
-          (let ((args (transient-args)))
+          (let ((args (transient-get-value)))
             (cons args (delete args (alist-get key transient-history)))))))
 
 (cl-defgeneric transient--history-init (obj)

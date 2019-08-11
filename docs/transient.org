@@ -1002,15 +1002,6 @@ function, which for infix arguments serves about the same purpose as
 
 - Function: transient-args &optional prefix
 
-  This function returns the value of the transient from which the
-  current suffix was called.  If the current suffix command was not
-  called from a transient, then it returns ~nil~.
-
-  If optional PREFIX is non-~nil~, then it should be a symbol, a
-  transient prefix command.  In that case the value of the transient
-  is only returned if the suffix was invoked from *that* transient.
-  Otherwise ~nil~ is returned.
-
 - Variable: current-transient-suffixes
 
   The suffixes of the transient from which this suffix command was
