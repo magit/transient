@@ -1000,7 +1000,7 @@ The preferred way of doing that is to call the ~transient-args~
 function, which for infix arguments serves about the same purpose as
 ~prefix-arg~ serves for prefix arguments.
 
-- Function: transient-args &optional prefix separate
+- Function: transient-args &optional prefix
 
   This function returns the value of the transient from which the
   current suffix was called.  If the current suffix command was not
@@ -1011,21 +1011,6 @@ function, which for infix arguments serves about the same purpose as
   is only returned if the suffix was invoked from *that* transient.
   Otherwise ~nil~ is returned.  This function is also used internally,
   in which PREFIX can also be a ~transient-prefix~ object.
-
-  If optional SEPARATE is non-~nil~, then the arguments are separated
-  into two groups.  If SEPARATE is ~t~, they are separated into atoms
-  and conses (~nil~ isn't a valid value, so it doesn't matter that that
-  is both an atom and a cons).
-
-  SEPARATE can also be a predicate function, in which case the first
-  element is a list of the values for which it returns non-~nil~ and the
-  second element is a list of the values for which it returns ~nil~.
-
-  For transients that are used to pass arguments to a subprocess (such
-  as ~git~), ~stringp~ is a useful value for SEPARATE, it separates
-  non-positional arguments from positional arguments.  The value of
-  Magit's file argument (~"--"~) for example looks like this: ~("--"
-  file...)~."
 
 - Variable: current-transient-suffixes
 

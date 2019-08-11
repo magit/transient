@@ -2035,7 +2035,7 @@ around `scroll-down-command' (which see)."
 ;;; Value
 ;;;; Core
 
-(defun transient-args (&optional prefix separate)
+(defun transient-args (&optional prefix)
   "Return the value of the transient from which the current suffix was called.
 
 If optional PREFIX is non-nil, then it should be a symbol, a
@@ -2043,33 +2043,14 @@ transient prefix command.  In that case only return the value
 of the transient if the suffix was actually invoked from that
 transient.  Otherwise return nil.  This function is also used
 internally, in which PREFIX can also be a `transient-prefix'
-object.
-
-If optional SEPARATE is non-nil, then separate the arguments
-into two groups.  If SEPARATE is t, then separate into atoms
-and conses (nil isn't a valid value, so it doesn't matter that
-that is both an atom and a cons).
-
-SEPARATE can also be a predicate function, in which case the
-first element is a list of the values for which it returns
-non-nil and the second a list of the values for which it
-returns nil.
-
-For transients that are used to pass arguments to a subprosess
-\(such as git), `stringp' is a useful value for SEPARATE, it
-separates non-positional arguments from positional arguments.
-The value of Magit's file argument for example looks like this:
-\(\"--\" file...)."
-  (let ((val (if (transient-prefix--eieio-childp prefix)
-                 (delq nil (mapcar 'transient-infix-value
-                                   transient--suffixes))
-               (and (or (not prefix)
-                        (eq prefix current-transient-command))
-                    (delq nil (mapcar 'transient-infix-value
-                                      current-transient-suffixes))))))
-    (if separate
-        (-separate (if (eq separate t) #'atom separate) val)
-      val)))
+object."
+  (if (transient-prefix--eieio-childp prefix)
+      (delq nil (mapcar 'transient-infix-value
+                        transient--suffixes))
+    (and (or (not prefix)
+             (eq prefix current-transient-command))
+         (delq nil (mapcar 'transient-infix-value
+                           current-transient-suffixes)))))
 
 ;;;; Init
 
