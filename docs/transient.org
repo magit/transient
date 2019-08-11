@@ -1002,6 +1002,14 @@ function, which for infix arguments serves about the same purpose as
 
 - Function: transient-args &optional prefix
 
+  This function returns the value of the transient prefix command
+  PREFIX.
+
+  If the current command was invoked from the transient prefix command
+  PREFIX, then it returns the active infix arguments.  If the current
+  command was not invoked from PREFIX, then it returns the set, saved
+  or default value for PREFIX.
+
 - Variable: current-transient-suffixes
 
   The suffixes of the transient from which this suffix command was
