@@ -2041,16 +2041,11 @@ around `scroll-down-command' (which see)."
 If optional PREFIX is non-nil, then it should be a symbol, a
 transient prefix command.  In that case only return the value
 of the transient if the suffix was actually invoked from that
-transient.  Otherwise return nil.  This function is also used
-internally, in which PREFIX can also be a `transient-prefix'
-object."
-  (if (transient-prefix--eieio-childp prefix)
-      (delq nil (mapcar 'transient-infix-value
-                        transient--suffixes))
-    (and (or (not prefix)
-             (eq prefix current-transient-command))
-         (delq nil (mapcar 'transient-infix-value
-                           current-transient-suffixes)))))
+transient.  Otherwise return nil."
+  (and (or (not prefix)
+           (eq prefix current-transient-command))
+       (delq nil (mapcar 'transient-infix-value
+                         current-transient-suffixes))))
 
 ;;;; Init
 
