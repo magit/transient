@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-101-ga6ce195+1)
+@subtitle for version 0.1.0 (v0.1.0-102-g9fb3f79+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-101-ga6ce195+1).
+This manual is for Transient version 0.1.0 (v0.1.0-102-g9fb3f79+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1140,8 +1140,8 @@ Only the long argument is displayed in the popup buffer.  See
 used.
 
 Unless the class is specified explicitly, the appropriate class is
-guessed based on the long argument.  If the argument ends with "@samp{"
-  (e.g. "--format}") then @code{transient-option} is used, otherwise
+guessed based on the long argument.  If the argument ends with "=​"
+(e.g. "--format=") then @code{transient-option} is used, otherwise
 @code{transient-switch}.
 @end itemize
 
