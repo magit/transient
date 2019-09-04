@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-103-g68f31ed+1)
+@subtitle for version 0.1.0 (v0.1.0-105-g0cad5eb+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-103-g68f31ed+1).
+This manual is for Transient version 0.1.0 (v0.1.0-105-g0cad5eb+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1794,7 +1794,75 @@ the command's doc string.
 @end defun
 
 @node Prefix Slots
-@section @strong{TODO} Prefix Slots
+@section Prefix Slots
+
+@itemize
+@item
+@code{man-page} or @code{info-manual} can be used to specify the documentation for
+the prefix and its suffixes.  The command @code{transient-help} uses the
+method @code{transient-show-help} (which see) to lookup and use these
+values.
+
+
+@item
+@code{history-key} If multiple prefix commands should share a single value,
+then this slot has to be set to the same value for all of them.  You
+probably don't want that.
+
+
+@item
+@code{transient-suffix} and @code{transient-non-suffix} play a part when
+determining whether the currently active transient prefix command
+remains active/transient when a suffix or abitrary non-suffix
+command is invoked.  See @ref{Transient State}.
+
+
+@item
+@code{incompatible} A list of lists.  Each sub-list specifies a set of
+mutually exclusive arguments.  Enabling one of these arguments
+causes the others to be disabled.
+
+
+@item
+@code{scope} For some transients it might be necessary to have a sort of
+secondary value, called a "scope".  See @code{define-transient-command}.
+@end itemize
+
+@subsection Internal Prefix Slots
+
+These slots are mostly intended for internal use.  They should not be
+set in calls to @code{define-transient-command}.
+
+@itemize
+@item
+@code{prototype} When a transient prefix command is invoked, then a clone
+of that object is stored in the global variable @code{transient--prefix}
+and the prototype is stored in the clone's @code{prototype} slot.
+
+
+@item
+@code{command} The command, a symbol.  Each transient prefix command
+consists of a command, which is stored in a symbol's function slot
+and an object, which is stored in the @code{transient--prefix} property
+of the same symbol.
+
+
+@item
+@code{level} The level of the prefix commands.  The suffix commands whose
+layer is equal or lower are displayed.  See @ref{Enabling and Disabling Suffixes}.
+
+
+@item
+@code{value} The likely outdated value of the prefix.  Instead of accessing
+this slot directly you should use the function @code{transient-get-value},
+which is guaranteed to return the up-to-date value.
+
+
+@item
+@code{history} and @code{history-pos} are used to keep track of historic values.
+Unless you implement your own @code{transient-infix-read} method you should
+not have to deal with these slots.
+@end itemize
 
 @node Suffix Slots
 @section Suffix Slots
