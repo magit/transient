@@ -449,12 +449,12 @@ If `transient-save-history' is nil, then do nothing."
   "Transient prefix command.
 
 Each transient prefix command consists of a command, which is
-stored in a symbols function slot and an object, which is stored
-in the `transient--prefix' property of the same object.
+stored in a symbol's function slot and an object, which is
+stored in the `transient--prefix' property of the same symbol.
 
 When a transient prefix command is invoked, then a clone of that
 object is stored in the global variable `transient--prefix' and
-the prototype is stored in the clones `prototype' slot.")
+the prototype is stored in the clone's `prototype' slot.")
 
 ;;;; Suffix
 
