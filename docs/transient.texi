@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-105-g0cad5eb+1)
+@subtitle for version 0.1.0 (v0.1.0-106-g0d9a1b5+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-105-g0cad5eb+1).
+This manual is for Transient version 0.1.0 (v0.1.0-106-g0d9a1b5+1).
 
 @quotation
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1170,11 +1170,8 @@ argument supported by the constructor of that class.  The
 explicitly.
 
 The BODY must begin with an @code{interactive} form that matches ARGLIST@.
-Use the function @code{transient-args} or the low-level variable
-@code{current-transient-suffixes} if the former does not give you all the
-required details.  This should, but does not necessarily have to be,
-done inside the @code{interactive} form; just like for @code{prefix-arg} and
-@code{current-prefix-arg}.
+The infix arguments are usually accessed by using @code{transient-args}
+inside @code{interactive}.
 @end defmac
 
 @defmac define-infix-command name arglist [docstring] [keyword value]@dots{}

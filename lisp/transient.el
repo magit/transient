@@ -656,11 +656,8 @@ The `transient-suffix' class is used if the class is not
 specified explicitly.
 
 The BODY must begin with an `interactive' form that matches
-ARGLIST.  Use the function `transient-args' or the low-level
-variable `current-transient-suffixes' if the former does not
-give you all the required details.  This should, but does not
-necessarily have to be, done inside the `interactive' form;
-just like for `prefix-arg' and `current-prefix-arg'.
+ARGLIST.  The infix arguments are usually accessed by using
+`transient-args' inside `interactive'.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]... BODY...)"
   (declare (debug (&define name lambda-list
