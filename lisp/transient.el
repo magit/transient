@@ -2140,7 +2140,6 @@ it\", in which case it is pointless to preserve history.)"
   (with-slots (value multi-value allow-empty choices) obj
     (if (and value
              (not multi-value)
-             (not allow-empty)
              transient--prefix)
         (oset obj value nil)
       (let* ((overriding-terminal-local-map nil)
