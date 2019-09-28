@@ -1862,6 +1862,7 @@ to `transient--do-warn'."
 (defun transient-undefined ()
   "Warn the user that the pressed key is not bound to any suffix."
   (interactive)
+  (ding)
   (message "Unbound suffix: `%s' (Use `%s' to abort, `%s' for help)"
            (propertize (key-description (this-single-command-keys))
                        'face 'font-lock-warning-face)
