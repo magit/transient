@@ -2779,7 +2779,7 @@ Show the first one that is specified."
 If the manpage is specified, then try to jump to the correct
 location."
   (if-let ((manpage (oref transient--prefix man-page)))
-      (transient--show-manpage manpage (oref obj argument))
+      (transient--show-manpage manpage (ignore-errors (oref obj argument)))
     (transient--describe-function this-original-command)))
 
 ;; `cl-generic-generalizers' doesn't support `command' et al.
