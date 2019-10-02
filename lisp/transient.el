@@ -884,7 +884,8 @@ example, sets a variable use `define-infix-command' instead.
      (t
       (when (and (listp suffix)
                  (listp elt))
-        (let ((key (plist-get (nth 2 suf) :key)))
+        (let ((key (or (plist-get elt :key)
+                       (transient--command-key (plist-get elt :command)))))
           (if (equal (transient--kbd key)
                      (transient--kbd (plist-get (nth 2 elt) :key)))
               (setq action 'replace)
