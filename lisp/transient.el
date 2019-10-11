@@ -141,7 +141,7 @@ want to change the value of `transient-mode-line-format'."
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
 
-(defcustom transient-mode-line-format 'line
+(defcustom transient-mode-line-format (and window-system 'line)
   "The mode-line format for the transient popup buffer.
 
 If nil, then the buffer has no mode-line.  If the buffer is not
