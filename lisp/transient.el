@@ -2466,6 +2466,8 @@ have a history of their own.")
       (set-window-dedicated-p transient--window t)
       (set-window-parameter transient--window 'no-other-window t)
       (setq window-size-fixed t)
+      (when (bound-and-true-p tab-line-format)
+        (setq tab-line-format nil))
       (setq mode-line-format (if (eq transient-mode-line-format 'line)
                                  nil
                                transient-mode-line-format))
