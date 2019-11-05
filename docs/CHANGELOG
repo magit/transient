@@ -13,7 +13,7 @@
 
 - Added new commands ~transient-scroll-up~ and ~transient-scroll-down~,
   which scroll the transient window.  ~C-v~ and ~M-v~ (and ~<next>~ and
-  ~<prior>~) are bound to these commands.  These keys were choosen they
+  ~<prior>~) are bound to these commands.  These keys were chosen they
   are bound to scrolling commands in the global map too.  This made
   it necessary to find a new binding for ~transient-show~, which ~C-t~ is
   bound to now.  #17

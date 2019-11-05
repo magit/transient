@@ -96,7 +96,7 @@
   "Whether navigation commands are enabled in the transient popup.
 
 While a transient is active the transient popup buffer is not the
-current buffer, making it necesary to use dedicated commands to
+current buffer, making it necessary to use dedicated commands to
 act on that buffer itself.  If this non-nil, then the following
 features are available:
 
@@ -1770,7 +1770,7 @@ EDIT may be non-nil."
     (apply #'message arg args))))
 
 (defun transient--emergency-exit ()
-  "Exit the current transient command after an error occured.
+  "Exit the current transient command after an error occurred.
 Beside being used with `condition-case', this function also has
 to be a member of `debugger-mode-hook', else the debugger would
 be unusable and exiting it by pressing \"q\" would fail because
@@ -2247,7 +2247,7 @@ That function must return a string, which is then used as the
 prompt.
 
 Otherwise, if the value of either the `argument' or `variable'
-slot of OBJ is a string, then base the prompt on that (prefering
+slot of OBJ is a string, then base the prompt on that (preferring
 the former), appending either \"=\" (if it appears to be a
 command-line option) or \": \".
 
