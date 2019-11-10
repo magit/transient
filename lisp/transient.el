@@ -2716,7 +2716,10 @@ If the OBJ's `key' is currently unreachable, then apply the face
 
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((value (oref obj value)))
-    (propertize (concat (oref obj argument) value)
+    (propertize (concat (oref obj argument)
+                        (if (listp value)
+                            (mapconcat #'identity value ",")
+                          value))
                 'face (if value
                           'transient-value
                         'transient-inactive-value))))
