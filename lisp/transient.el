@@ -1694,6 +1694,20 @@ EDIT may be non-nil."
       (add-hook 'pre-command-hook #'transient--pre-command))
     (add-hook 'post-command-hook #'transient--post-command)))
 
+(defun transient--suspend-override ()
+  (transient--debug 'suspend-override)
+  (transient--pop-keymap 'transient--transient-map)
+  (transient--pop-keymap 'transient--redisplay-map)
+  (remove-hook 'pre-command-hook  #'transient--pre-command)
+  (remove-hook 'post-command-hook #'transient--post-command))
+
+(defun transient--resume-override ()
+  (transient--debug 'resume-override)
+  (transient--push-keymap 'transient--transient-map)
+  (transient--push-keymap 'transient--redisplay-map)
+  (add-hook 'pre-command-hook  #'transient--pre-command)
+  (add-hook 'post-command-hook #'transient--post-command))
+
 (defun transient--post-command ()
   (transient--debug 'post-command)
   (if transient--exitp
@@ -3021,17 +3035,11 @@ search instead."
 
 (defun transient--isearch-setup ()
   (select-window transient--window)
-  (transient--pop-keymap 'transient--transient-map)
-  (transient--pop-keymap 'transient--redisplay-map)
-  (remove-hook 'pre-command-hook #'transient--pre-command)
-  (remove-hook 'post-command-hook #'transient--post-command))
+  (transient--suspend-override))
 
 (defun transient--isearch-exit ()
   (select-window transient--original-window)
-  (transient--push-keymap 'transient--transient-map)
-  (transient--push-keymap 'transient--redisplay-map)
-  (add-hook 'pre-command-hook #'transient--pre-command)
-  (add-hook 'post-command-hook #'transient--post-command))
+  (transient--resume-override))
 
 ;;;; Other Packages
 
