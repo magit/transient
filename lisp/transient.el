@@ -1799,11 +1799,15 @@ EDIT may be non-nil."
 
 (defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
+
 Beside being used with `condition-case', this function also has
 to be a member of `debugger-mode-hook', else the debugger would
 be unusable and exiting it by pressing \"q\" would fail because
 the transient command would still be active and that key would
-either be unbound or do something else."
+either be unbound or do something else.
+
+When no transient is active (i.e. when `transient--prefix') is
+nil, then do nothing."
   (when transient--prefix
     (setq transient--stack nil)
     (setq transient--exitp t)
