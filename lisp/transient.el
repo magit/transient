@@ -1870,11 +1870,12 @@ to `transient--do-warn'."
   "Warn the user that the pressed key is not bound to any suffix."
   (interactive)
   (ding)
-  (message "Unbound suffix: `%s' (Use `%s' to abort, `%s' for help)"
+  (message "Unbound suffix: `%s' (Use `%s' to abort, `%s' for help) [%s]"
            (propertize (key-description (this-single-command-keys))
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
-           (propertize "?"   'face 'transient-key)))
+           (propertize "?"   'face 'transient-key)
+           this-original-command))
 
 (defun transient-toggle-common ()
   "Toggle whether common commands are always shown."
