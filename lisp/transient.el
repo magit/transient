@@ -373,7 +373,7 @@ Only the background color is significant."
 (defun transient--read-file-contents (file)
   (with-demoted-errors "Transient error: %S"
     (and (file-exists-p file)
-         (with-temp-buffer file
+         (with-temp-buffer
            (insert-file-contents file)
            (read (current-buffer))))))
 
