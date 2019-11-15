@@ -797,35 +797,35 @@ example, sets a variable use `define-infix-command' instead.
                      (commandp (cadr spec))))
         (setq args (plist-put args :description pop)))
       (cond
-        ((keywordp car)
-         (error "Need command, got %S" car))
-        ((symbolp car)
-         (setq args (plist-put args :command pop)))
-        ((or (stringp car)
-             (and car (listp car)))
-         (let ((arg pop))
-           (cl-typecase arg
-             (list
-              (setq args (plist-put args :shortarg (car  arg)))
-              (setq args (plist-put args :argument (cadr arg)))
-              (setq arg  (cadr arg)))
-             (string
-              (when-let ((shortarg (transient--derive-shortarg arg)))
-                (setq args (plist-put args :shortarg shortarg)))
-              (setq args (plist-put args :argument arg))))
-           (setq args (plist-put args :command
-                                 (intern (format "transient:%s:%s"
-                                                 prefix arg))))
-           (cond ((and car (not (keywordp car)))
-                  (setq class 'transient-option)
-                  (setq args (plist-put args :reader pop)))
-                 ((not (string-suffix-p "=" arg))
-                  (setq class 'transient-switch))
-                 (t
-                  (setq class 'transient-option)
-                  (setq args (plist-put args :reader 'read-string))))))
-        (t
-         (error "Needed command or argument, got %S" car)))
+       ((keywordp car)
+        (error "Need command, got %S" car))
+       ((symbolp car)
+        (setq args (plist-put args :command pop)))
+       ((or (stringp car)
+            (and car (listp car)))
+        (let ((arg pop))
+          (cl-typecase arg
+            (list
+             (setq args (plist-put args :shortarg (car  arg)))
+             (setq args (plist-put args :argument (cadr arg)))
+             (setq arg  (cadr arg)))
+            (string
+             (when-let ((shortarg (transient--derive-shortarg arg)))
+               (setq args (plist-put args :shortarg shortarg)))
+             (setq args (plist-put args :argument arg))))
+          (setq args (plist-put args :command
+                                (intern (format "transient:%s:%s"
+                                                prefix arg))))
+          (cond ((and car (not (keywordp car)))
+                 (setq class 'transient-option)
+                 (setq args (plist-put args :reader pop)))
+                ((not (string-suffix-p "=" arg))
+                 (setq class 'transient-switch))
+                (t
+                 (setq class 'transient-option)
+                 (setq args (plist-put args :reader 'read-string))))))
+       (t
+        (error "Needed command or argument, got %S" car)))
       (while (keywordp car)
         (let ((k pop))
           (cl-case k
@@ -840,11 +840,12 @@ example, sets a variable use `define-infix-command' instead.
           args)))
 
 (defun transient--default-infix-command ()
-  (cons 'lambda '(()
-             (interactive)
-             (let ((obj (transient-suffix-object)))
-               (transient-infix-set obj (transient-infix-read obj)))
-             (transient--show))))
+  (cons 'lambda
+        '(()
+          (interactive)
+          (let ((obj (transient-suffix-object)))
+            (transient-infix-set obj (transient-infix-read obj)))
+          (transient--show))))
 
 (defun transient--ensure-infix-command (obj)
   (let ((cmd (oref obj command)))
@@ -1795,7 +1796,7 @@ EDIT may be non-nil."
     (if (symbolp arg)
         (message "-- %-16s (cmd: %s, exit: %s)"
                  arg this-command transient--exitp)
-    (apply #'message arg args))))
+      (apply #'message arg args))))
 
 (defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
@@ -2777,7 +2778,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                             (mapconcat (lambda (f) (format "%S" f))
                                        (oref obj value) " "))
                     'face 'transient-argument)
-    (propertize argument 'face 'transient-inactive-argument))))
+      (propertize argument 'face 'transient-inactive-argument))))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
