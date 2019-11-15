@@ -1614,7 +1614,7 @@ EDIT may be non-nil."
       (transient--do-suspend)
       (setq this-command 'transient-suspend)
       (transient--pre-exit))
-     (t
+     ((not (transient--edebug-command-p))
       (setq this-command 'transient-undefined))))
    ((and transient--editp
          (transient-suffix-object)
@@ -1631,11 +1631,11 @@ EDIT may be non-nil."
                     (when (eq action transient--exit)
                       (setq transient--exitp (or transient--exitp t)))
                     action)
-                (setq this-command
-                      (let ((keys (this-command-keys-vector)))
-                        (if (eq (aref keys (1- (length keys))) ?\C-g)
-                            'transient-noop
-                          'transient-undefined)))
+                (if (let ((keys (this-command-keys-vector)))
+                      (eq (aref keys (1- (length keys))) ?\C-g))
+                    (setq this-command 'transient-noop)
+                  (unless (transient--edebug-command-p)
+                    (setq this-command 'transient-undefined)))
                 transient--stay)
               transient--exit)
       (transient--pre-exit)))))
@@ -1694,19 +1694,27 @@ EDIT may be non-nil."
       (add-hook 'pre-command-hook #'transient--pre-command))
     (add-hook 'post-command-hook #'transient--post-command)))
 
-(defun transient--suspend-override ()
+(defun transient--suspend-override (&optional minibuffer-hooks)
   (transient--debug 'suspend-override)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook  #'transient--pre-command)
-  (remove-hook 'post-command-hook #'transient--post-command))
+  (remove-hook 'post-command-hook #'transient--post-command)
+  (when minibuffer-hooks
+    (remove-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
+    (remove-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
+    (advice-remove 'abort-recursive-edit  #'transient--minibuffer-exit)))
 
-(defun transient--resume-override ()
+(defun transient--resume-override (&optional minibuffer-hooks)
   (transient--debug 'resume-override)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command)
-  (add-hook 'post-command-hook #'transient--post-command))
+  (add-hook 'post-command-hook #'transient--post-command)
+  (when minibuffer-hooks
+    (add-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
+    (add-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
+    (advice-add 'abort-recursive-edit :after #'transient--minibuffer-exit)))
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
@@ -3040,6 +3048,30 @@ search instead."
 (defun transient--isearch-exit ()
   (select-window transient--original-window)
   (transient--resume-override))
+
+;;;; Edebug
+
+(defun transient--edebug--recursive-edit (fn arg-mode)
+  (transient--debug 'edebug--recursive-edit)
+  (if (not transient--prefix)
+      (funcall fn arg-mode)
+    (transient--suspend-override t)
+    (funcall fn arg-mode)
+    (transient--resume-override t)))
+
+(advice-add 'edebug--recursive-edit :around 'transient--edebug--recursive-edit)
+
+(defun transient--abort-edebug ()
+  (when (bound-and-true-p edebug-active)
+    (transient--emergency-exit)))
+
+(advice-add 'abort-recursive-edit :before 'transient--abort-edebug)
+(advice-add 'top-level :before 'transient--abort-edebug)
+
+(defun transient--edebug-command-p ()
+  (and (bound-and-true-p edebug-active)
+       (or (memq this-command '(top-level abort-recursive-edit))
+           (string-prefix-p "edebug" (symbol-name this-command)))))
 
 ;;;; Other Packages
 
