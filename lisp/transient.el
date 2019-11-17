@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/transient
-;; Package-Requires: ((emacs "25.1") (dash "2.15.0"))
+;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: bindings
 
 ;; This file is not part of GNU Emacs.
@@ -48,9 +48,9 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'dash)
 (require 'eieio)
 (require 'format-spec)
+(require 'seq)
 
 (eval-when-compile
   (require 'subr-x))
@@ -413,8 +413,8 @@ should not change it manually.")
 (defun transient-save-history ()
   (setq transient-history
         (cl-sort (mapcar (pcase-lambda (`(,key . ,val))
-                           (cons key (-take transient-history-limit
-                                            (delete-dups val))))
+                           (cons key (seq-take (delete-dups val)
+                                               transient-history-limit)))
                          transient-history)
                  #'string< :key #'car))
   (transient--pp-to-file transient-history transient-history-file))
@@ -987,9 +987,11 @@ See info node `(transient)Modifying Existing Transients'."
 
 (defun transient--layout-member-1 (loc layout remove)
   (cond ((listp layout)
-         (--any (transient--layout-member-1 loc it remove) layout))
+         (seq-some (lambda (elt) (transient--layout-member-1 loc elt remove))
+                   layout))
         ((vectorp (car (aref layout 3)))
-         (--any (transient--layout-member-1 loc it remove) (aref layout 3)))
+         (seq-some (lambda (elt) (transient--layout-member-1 loc elt remove))
+                   (aref layout 3)))
         (remove
          (aset layout 3
                (delq (car (transient--group-member loc layout))
@@ -2571,8 +2573,9 @@ have a history of their own.")
            (oref group suffixes)))
          (rs (apply #'max (mapcar #'length columns)))
          (cs (length columns))
-         (cw (--map (apply #'max (mapcar #'length it)) columns))
-         (cc (-reductions-from (apply-partially #'+ 3) 0 cw)))
+         (cw (mapcar (lambda (col) (apply #'max (mapcar #'length col)))
+                     columns))
+         (cc (transient--seq-reductions-from (apply-partially #'+ 3) cw 0)))
     (dotimes (r rs)
       (dotimes (c cs)
         (insert (make-string (- (nth c cc) (current-column)) ?\s))
@@ -2663,9 +2666,9 @@ Optional support for popup buttons is also implemented here."
         (let ((len (length transient--redisplay-key))
               (seq (cl-coerce (edmacro-parse-keys key t) 'list)))
           (cond
-           ((equal (-take len seq) transient--redisplay-key)
-            (let ((pre (key-description (vconcat (-take len seq))))
-                  (suf (key-description (vconcat (-drop len seq)))))
+           ((equal (seq-take seq len) transient--redisplay-key)
+            (let ((pre (key-description (vconcat (seq-take seq len))))
+                  (suf (key-description (vconcat (seq-drop seq len)))))
               (setq pre (replace-regexp-in-string "RET" "C-m" pre t))
               (setq pre (replace-regexp-in-string "TAB" "C-i" pre t))
               (setq suf (replace-regexp-in-string "RET" "C-m" suf t))
@@ -2783,8 +2786,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
        (let ((key (oref obj key)))
-         (not (or (equal (-take (length transient--redisplay-key)
-                                (cl-coerce (edmacro-parse-keys key t) 'list))
+         (not (or (equal (seq-take (cl-coerce (edmacro-parse-keys key t) 'list)
+                                   (length transient--redisplay-key))
                          transient--redisplay-key)
                   (transient--lookup-key transient-sticky-map (kbd key)))))))
 
@@ -3121,6 +3124,14 @@ we stop there."
     (cond ((string-equal key "q") "Q")
           ((string-equal key "Q") "M-q")
           (t key))))
+
+;;;; Missing from Emacs
+
+(defun transient--seq-reductions-from (function sequence initial-value)
+  (let ((acc (list initial-value)))
+    (seq-doseq (elt sequence)
+      (push (funcall function (car acc) elt) acc))
+    (nreverse acc)))
 
 ;;; Font-Lock
 
