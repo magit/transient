@@ -246,7 +246,7 @@ This option only controls the default for transients.  The default
 suffix level is always 4.  The author of a transient should place
 certain suffixes on a higher level if they expect that it won't be
 of use to most users, and they should place very important suffixes
-on a lower level so that the remain available even if the user
+on a lower level so that they remain available even if the user
 lowers the transient level.
 
 \(Magit currently places nearly all suffixes on level 4 and lower
