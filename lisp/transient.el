@@ -66,7 +66,7 @@
 
 (defgroup transient nil
   "Transient commands."
-  :group 'bindings)
+  :group 'extensions)
 
 (defcustom transient-show-popup t
   "Whether to show the current transient in a popup buffer.
