@@ -361,8 +361,12 @@ See info node `(transient)Enabling and Disabling Suffixes'."
   :group 'transient-faces)
 
 (defface transient-separator
-  '((((class color) (background light)) :background "grey80")
-    (((class color) (background  dark)) :background "grey30"))
+  `((((class color) (background light))
+     ,@(and (>= emacs-major-version 27) '(:extend t))
+     :background "grey80")
+    (((class color) (background  dark))
+     ,@(and (>= emacs-major-version 27) '(:extend t))
+     :background "grey30"))
   "Face used to draw line below transient popup window.
 This is only used if `transient-mode-line-format' is `line'.
 Only the background color is significant."
