@@ -11,6 +11,10 @@
   non-standard value for ~transient-display-buffer-action~ it may
   be necessary to do that.  #17
 
+- The new option ~transient-force-fixed-pitch~ allows users to use a
+  monospaced font in transient's popup buffer even if they use a
+  proportional font for the rest of Emacs.  #25, #67
+
 - Added new commands ~transient-scroll-up~ and ~transient-scroll-down~,
   which scroll the transient window.  ~C-v~ and ~M-v~ (and ~<next>~ and
   ~<prior>~) are bound to these commands.  These keys were chosen they

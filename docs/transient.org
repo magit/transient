@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.1.0 (v0.1.0-115-gad7f255+1)
+#+SUBTITLE: for version 0.1.0 (v0.1.0-129-gc1ae1ee+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-115-gad7f255+1).
+This manual is for Transient version 0.1.0 (v0.1.0-129-gc1ae1ee+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2019 Jonas Bernoulli <jonas@bernoul.li>
@@ -616,6 +616,14 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   multiple suffixes to share a common key binding, provided the
   predicates of those suffixes prevent that more than one of them is
   enabled at a time.
+
+- User Option: transient-force-fixed-pitch
+
+  This option controls whether to force the use of a monospaced font
+  in popup buffer.  Even if you use a proportional font for the
+  ~default~ face, you might still want to use a monospaced font in
+  transient's popup buffer.  Setting this option to t causes ~default~
+  to be remapped to ~fixed-pitch~ in that buffer.
 
 * Modifying Existing Transients
 

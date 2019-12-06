@@ -230,6 +230,17 @@ used."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-force-fixed-pitch nil
+  "Whether to force used of monospaced font in popup buffer.
+
+Even if you use a proportional font for the `default' face,
+you might still want to use a monospaced font in transient's
+popup buffer.  Setting this option to t causes `default' to
+be remapped to `fixed-pitch' in that buffer."
+  :package-version '(transient . "0.2.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-default-level 4
   "Control what suffix levels are made available by default.
 
@@ -2529,6 +2540,8 @@ have a history of their own.")
             (window-size-fixed nil))
         (fit-window-to-buffer nil nil 1))
       (goto-char (point-min))
+      (when transient-force-fixed-pitch
+        (transient--force-fixed-pitch))
       (when transient-enable-popup-navigation
         (transient--goto-button focus)))))
 
@@ -3085,7 +3098,7 @@ search instead."
        (or (memq this-command '(top-level abort-recursive-edit))
            (string-prefix-p "edebug" (symbol-name this-command)))))
 
-;;;; Other Packages
+;;;; Miscellaneous
 
 (declare-function which-key-mode "which-key" (&optional arg))
 
@@ -3128,6 +3141,11 @@ we stop there."
     (cond ((string-equal key "q") "Q")
           ((string-equal key "Q") "M-q")
           (t key))))
+
+(defun transient--force-fixed-pitch ()
+  (require 'face-remap)
+  (face-remap-reset-base 'default)
+  (face-remap-add-relative 'default 'fixed-pitch))
 
 ;;;; Missing from Emacs
 
