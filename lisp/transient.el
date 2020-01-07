@@ -451,7 +451,7 @@ If `transient-save-history' is nil, then do nothing."
    (command     :initarg :command)
    (level       :initarg :level)
    (variable    :initarg :variable    :initform nil)
-   (value       :initarg :value)
+   (value) (default-value :initarg :value)
    (scope       :initarg :scope       :initform nil)
    (history     :initarg :history     :initform nil)
    (history-pos :initarg :history-pos :initform 0)
@@ -2113,13 +2113,14 @@ Non-infix suffix commands usually don't have a value."
   nil)
 
 (cl-defmethod transient-init-value ((obj transient-prefix))
-  (if (slot-boundp obj 'value)
-      (let ((value (oref obj value)))
-        (when (functionp value)
-          (oset obj value (funcall value))))
-    (oset obj value
-          (if-let ((saved (assq (oref obj command) transient-values)))
-              (cdr saved)
+  (oset obj value
+        (if-let ((saved (assq (oref obj command) transient-values)))
+            (cdr saved)
+          (if-let ((default (and (slot-boundp obj 'default-value)
+                                 (oref obj default-value))))
+              (if (functionp default)
+                  (funcall default)
+                default)
             nil))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
