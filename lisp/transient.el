@@ -640,7 +640,8 @@ to the setup function:
                            [&optional lambda-doc]
                            [&rest keywordp sexp]
                            [&rest vectorp]
-                           [&optional ("interactive" interactive) def-body])))
+                           [&optional ("interactive" interactive) def-body]))
+           (doc-string 3))
   (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body)
                (transient--expand-define-args args)))
     `(progn
@@ -679,7 +680,8 @@ ARGLIST.  The infix arguments are usually accessed by using
                            [&optional lambda-doc]
                            [&rest keywordp sexp]
                            ("interactive" interactive)
-                           def-body)))
+                           def-body))
+           (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
                (transient--expand-define-args args)))
     `(progn
@@ -726,7 +728,8 @@ keyword.
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)"
   (declare (debug (&define name lambda-list
                            [&optional lambda-doc]
-                           [&rest keywordp sexp])))
+                           [&rest keywordp sexp]))
+           (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,_)
                (transient--expand-define-args args)))
     `(progn
