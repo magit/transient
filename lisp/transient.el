@@ -173,7 +173,7 @@ of this variable use \"C-x t\" when a transient is active."
   :group 'transient
   :type 'boolean)
 
-(defcustom transient-read-with-initial-input t
+(defcustom transient-read-with-initial-input nil
   "Whether to use the last history element as initial minibuffer input."
   :package-version '(transient . "0.2.0")
   :group 'transient
