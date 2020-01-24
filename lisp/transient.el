@@ -509,7 +509,15 @@ the prototype is stored in the clone's `prototype' slot.")
    (if-not-derived
     :initarg :if-not-derived
     :initform nil
-    :documentation "Enable if major-mode does not derive from value."))
+    :documentation "Enable if major-mode does not derive from value.")
+   (if-minor-mode
+    :initarg :if-minor-mode
+    :initform nil
+    :documentation "Enable if minor-mode matches value.")
+   (if-not-minor-mode
+    :initarg :if-not-minor-mode
+    :initform nil
+    :documentation "Enable if minor-mode does not match value."))
   "Abstract superclass for group and and suffix classes.
 
 It is undefined what happens if more than one `if*' predicate
@@ -1581,7 +1589,9 @@ EDIT may be non-nil."
 
 (defun transient--use-suffix-p (obj)
   (with-slots
-      (if if-not if-nil if-non-nil if-mode if-not-mode if-derived if-not-derived)
+      (if if-not if-nil if-non-nil
+       if-mode if-not-mode if-derived if-not-derived
+       if-minor-mode if-not-minor-mode)
       obj
     (cond
      (if                  (funcall if))
@@ -1600,6 +1610,30 @@ EDIT may be non-nil."
      (if-not-derived (not (if (atom if-not-derived)
                               (derived-mode-p if-not-derived)
                             (apply #'derived-mode-p if-not-derived))))
+     (if-minor-mode       (let ((enabled (mapcan
+                                          (lambda (elm)
+                                            (and (symbolp elm)
+                                                 (boundp elm)
+                                                 (symbol-value elm)
+                                                 (list elm)))
+                                          minor-mode-list)))
+                            (if (atom if-minor-mode)
+                                (memq if-minor-mode enabled)
+                              (cl-find-if
+                               (lambda (mode) (memq mode enabled))
+                               if-minor-mode))))
+     (if-not-minor-mode (not (let ((enabled (mapcan
+                                             (lambda (elm)
+                                               (and (symbolp elm)
+                                                    (boundp elm)
+                                                    (symbol-value elm)
+                                                    (list elm)))
+                                             minor-mode-list)))
+                               (if (atom if-not-minor-mode)
+                                   (memq if-not-minor-mode enabled)
+                                 (cl-find-if
+                                  (lambda (mode) (memq mode enabled))
+                                  if-not-minor-mode)))))
      (t))))
 
 ;;; Flow-Control
