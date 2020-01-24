@@ -2227,6 +2227,9 @@ it\", in which case it is pointless to preserve history.)"
               ((and (equal value "\"\"") allow-empty)
                (setq value "")))
         (when value
+          (when (bound-and-true-p ivy-mode)
+            (set-text-properties 0 (length (car transient--history)) nil
+                                 (car transient--history)))
           (setf (alist-get history-key transient-history)
                 (delete-dups transient--history)))
         value))))
