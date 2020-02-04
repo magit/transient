@@ -1082,7 +1082,7 @@ variable instead.")
 (defvar transient--layout nil)
 (defvar transient--suffixes nil)
 
-(defconst transient--stay t   "Do not exist the transient.")
+(defconst transient--stay t   "Do not exit the transient.")
 (defconst transient--exit nil "Do exit the transient.")
 
 (defvar transient--exitp nil "Whether to exit the transient.")
