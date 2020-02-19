@@ -2116,15 +2116,17 @@ Non-infix suffix commands usually don't have a value."
   nil)
 
 (cl-defmethod transient-init-value ((obj transient-prefix))
-  (oset obj value
-        (if-let ((saved (assq (oref obj command) transient-values)))
-            (cdr saved)
-          (if-let ((default (and (slot-boundp obj 'default-value)
-                                 (oref obj default-value))))
-              (if (functionp default)
-                  (funcall default)
-                default)
-            nil))))
+  (if (slot-boundp obj 'value)
+      (oref obj value)
+    (oset obj value
+          (if-let ((saved (assq (oref obj command) transient-values)))
+              (cdr saved)
+            (if-let ((default (and (slot-boundp obj 'default-value)
+                                   (oref obj default-value))))
+                (if (functionp default)
+                    (funcall default)
+                  default)
+              nil)))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
   (oset obj value
