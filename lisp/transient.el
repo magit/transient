@@ -141,7 +141,7 @@ want to change the value of `transient-mode-line-format'."
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
 
-(defcustom transient-mode-line-format (and window-system 'line)
+(defcustom transient-mode-line-format 'line
   "The mode-line format for the transient popup buffer.
 
 If nil, then the buffer has no mode-line.  If the buffer is not
@@ -150,7 +150,8 @@ a good value.
 
 If `line' (the default), then the buffer also has no mode-line,
 but a thin line is drawn instead, using the background color of
-the face `transient-separator'.
+the face `transient-separator'.  Termcap frames cannot display
+thin lines and therefore fallback to treating `line' like nil.
 
 Otherwise this can be any mode-line format.
 See `mode-line-format' for details."
@@ -2543,7 +2544,8 @@ have a history of their own.")
       (transient--insert-groups)
       (when (or transient--helpp transient--editp)
         (transient--insert-help))
-      (when (eq transient-mode-line-format 'line)
+      (when (and (eq transient-mode-line-format 'line)
+                 window-system)
         (insert (propertize "__" 'face 'transient-separator
                             'display '(space :height (1))))
         (insert (propertize "\n" 'face 'transient-separator 'line-height t)))
