@@ -1,15 +1,42 @@
 # -*- mode: org -*-
-* v0.2.0    UNRELEASED
+* v0.2.0    2020-02-26
 
-- No longer attempt to display a thin line in termcap frames.  0a96a57
+- ~transient-args~ must now be called with a transient prefix command
+  as argument.  It is now the only argument and its value must be a
+  symbol now, an object is no longer supported.  When this command
+  does not match ~current-transient-command~, then this function now
+  returns the set, saved or default value.  0312b93, 7d0db28,
+  d33fe5a, a6ce195
 
-+ No longer use the last history element as initial minibuffer input
+- No longer use the last history element as initial minibuffer input
   by default.  Added new option ~transient-read-with-initial-input~ to
   allow users to restore the old default. dcf7a4d, 5decc6e
 
-- Work around some Ivy bugs/incompatibilities.  af243d5, fed7ab1
+- The set and saved values were not always used.  #68
 
-+ The set and saved values were not always used.  #68
+- Added support for inserting and removing groups.  #36
+
+- Added support for specifying where to insert elements and groups
+  using coordinates.  #26
+
+- Added support for moving the cursor inside the transient popup
+  buffer using the arrow keys or Isearch, and for invoke suffix
+  commands using RET or mouse clicks.  Unlike Magit-Popup, Transient
+  doesn't make the transient popup buffer the current buffer.  This
+  is important when invoking suffix commands that take the current
+  position into account, but it has the drawback that we do not get
+  these features for free.  Because I also consider them unnecessary
+  I did not implement them initially.  Turns out quite a few users
+  strongly disagree.  Set ~transient-enable-popup-navigation~ to ~t~ to
+  enable these features.  #42
+
+- Explicitly support Edebug.  Previously when Edebug was triggered
+  while a transient was active, then Emacs entered an unrecoverable
+  state.  #19
+
+- No longer attempt to display a thin line in termcap frames.  0a96a57
+
+- Work around some Ivy bugs/incompatibilities.  af243d5, fed7ab1
 
 - The new option ~transient-force-fixed-pitch~ allows users to use a
   monospaced font in transient's popup buffer even if they use a
@@ -19,10 +46,6 @@
   faces from extending to the edge of the window as expected.  c1ae1ee
 
 - No longer depend on dash (or any other third-party package).  #66
-
-+ Explicitly support Edebug.  Previously when Edebug was triggered
-  while a transient was active, then Emacs entered an unrecoverable
-  state.  #19
 
 - When a transient has conflicting key bindings and Transient is
   configure to warn about that, then Emacs entered an unrecoverable
@@ -39,24 +62,7 @@
 - Inserting a new suffix next to another ended up replacing the latter
   instead if its key binding was defined in the suffix object.  #58
 
-> ~transient--goto-argument-description~ (4f80a89),
-> ~transient-show-help~ (ccac95e),
-
 - ~transient-undefined~ learned to make some noise.  #57
-
-> ~transient-infix-read~ (7bf9759),
-
-+ ~transient-args~ must now be called with a transient prefix command
-  as argument.  It is now the only argument and its value must be a
-  symbol now, an object is no longer supported.  When this command
-  does not match ~current-transient-command~, then this function now
-  returns the set, saved or default value.  0312b93, 7d0db28,
-  d33fe5a, a6ce195
-
-+ Added support for inserting and removing groups.  #36
-
-+ Added support for specifying where to insert elements and groups
-  using coordinates.  #26
 
 - Fix replacing a suffix with another suffix bound to the same key.
   5a360bb, 4ce1868
@@ -69,17 +75,6 @@
 - Some misconfiguration that affects how the transient popup buffer
   is displayed could lead to Emacs entering an unrecoverable state.
   #34, #44
-
-+ Added support for moving the cursor inside the transient popup
-  buffer using the arrow keys or Isearch, and for invoke suffix
-  commands using RET or mouse clicks.  Unlike Magit-Popup, Transient
-  doesn't make the transient popup buffer the current buffer.  This
-  is important when invoking suffix commands that take the current
-  position into account, but it has the drawback that we do not get
-  these features for free.  Because I also consider them unnecessary
-  I did not implement them initially.  Turns out quite a few users
-  strongly disagree.  Set ~transient-enable-popup-navigation~ to ~t~ to
-  enable these features.  #42
 
 - The echo area is now cleared when the transient popup buffer is
   shown.  afdf1f0
@@ -204,6 +199,9 @@
 - Fixed reading a number as the value of an infix.  8219c0b
 
 - Various bug fixes to
+  ~transient--goto-argument-description~ (4f80a89),
+  ~transient-show-help~ (ccac95e),
+  ~transient-infix-read~ (7bf9759).
 
 * v0.1.0    2019-01-14
 
