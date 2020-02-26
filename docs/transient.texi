@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.1.0 (v0.1.0-141-g5c0f901+1)
+@subtitle for version 0.1.0 (v0.1.0-143-g37aec3a+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.1.0 (v0.1.0-141-g5c0f901+1).
+This manual is for Transient version 0.1.0 (v0.1.0-143-g37aec3a+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -776,7 +776,7 @@ option is nil (the default), then no substitution is performed.
 
 This function is called with one argument, the prefix object, and
 must return a key binding description, either the existing key
-description it finds in the @code{key} slot, or key description that
+description it finds in the @code{key} slot, or the key description that
 replaces the prefix key.  It could be used to make other
 substitutions, but that is discouraged.
 
