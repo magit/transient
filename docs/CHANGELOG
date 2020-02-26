@@ -1,19 +1,14 @@
 # -*- mode: org -*-
 * v0.2.0    UNRELEASED
 
-- The new option ~transient-display-buffer-action~ allows users to
-  specify how a window is selected to display the transient popup
-  buffer.  The ~lv~ library is no longer used.  #17
-
-- The new option ~transient-mode-line-format~ allows users to use
-  a mode-line for the transient popup buffer instead of just a
-  thin line that separates it from the echo area.  When using a
-  non-standard value for ~transient-display-buffer-action~ it may
-  be necessary to do that.  #17
-
 - The new option ~transient-force-fixed-pitch~ allows users to use a
   monospaced font in transient's popup buffer even if they use a
   proportional font for the rest of Emacs.  #25, #67
+
+- A new keymap, ~transient-base-map~ was added to make it easier to
+  change key bindings that are shared between all transients.  This
+  new keymap is used as the parent of all the other keymaps that are
+  shared between all transients.
 
 - Added new commands ~transient-scroll-up~ and ~transient-scroll-down~,
   which scroll the transient window.  ~C-v~ and ~M-v~ (and ~<next>~ and
@@ -22,10 +17,15 @@
   it necessary to find a new binding for ~transient-show~, which ~C-t~ is
   bound to now.  #17
 
-- A new keymap, ~transient-base-map~ was added to make it easier to
-  change key bindings that are shared between all transients.  This
-  new keymap is used as the parent of all the other keymaps that are
-  shared between all transients.
+- The new option ~transient-mode-line-format~ allows users to use
+  a mode-line for the transient popup buffer instead of just a
+  thin line that separates it from the echo area.  When using a
+  non-standard value for ~transient-display-buffer-action~ it may
+  be necessary to do that.  #17
+
+- The new option ~transient-display-buffer-action~ allows users to
+  specify how a window is selected to display the transient popup
+  buffer.  The ~lv~ library is no longer used.  #17
 
 - The window that was selected before the transient window was shown
   is no longer re-selected before calling a suffix that exits the
