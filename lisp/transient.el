@@ -1994,10 +1994,13 @@ transient is active."
                 (let ((keys (this-single-command-raw-keys)))
                   (and (lookup-key transient--transient-map keys)
                        (string-to-number
-                        (transient--read-number-N
-                         (format "Set level for `%s': "
-                                 (transient--suffix-command command))
-                         nil nil (not (eq command prefix))))))))))
+                        (let ((transient--active-infix
+                               (transient-suffix-object)))
+                          (transient--show)
+                          (transient--read-number-N
+                           (format "Set level for `%s': "
+                                   (transient--suffix-command command))
+                           nil nil (not (eq command prefix)))))))))))
   (cond
    ((not command)
     (setq transient--editp t)
@@ -2647,8 +2650,10 @@ making `transient--original-buffer' current.")
   (let ((str (cl-call-next-method obj)))
     (when (eq obj transient--active-infix)
       (setq str (concat str "\n"))
-      (add-face-text-property 0 (length str)
-                              'transient-active-infix nil str))
+      (add-face-text-property
+       (if (eq this-command 'transient-set-level) 3 0)
+       (length str)
+       'transient-active-infix nil str))
     str))
 
 (cl-defmethod transient-format :around ((obj transient-suffix))
