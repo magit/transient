@@ -2048,12 +2048,12 @@ General Public License for more details.
 
 #  LocalWords:  ARGLIST ARGS DOCSTRING ELEMENTs EVAL GROUPs Infixes
 #  LocalWords:  Infixes KEYWORDs LOC LocalWords MERCHANTABILITY Magit
-#  LocalWords:  Magit's Magit-Popup Makefile OBJ OBJ's Pre arglist
+#  LocalWords:  Magit's Makefile OBJ OBJ's Pre arglist
 #  LocalWords:  args boolean booleans customizable docstring eval
 #  LocalWords:  featurep infixes init keymap keymaps loc magit manpage
-#  LocalWords:  minibuffer ness nilly noop plist pre pre-command prev
+#  LocalWords:  minibuffer ness nilly noop plist pre prev
 #  LocalWords:  rebase src subclass subclasses subprocess superclass
-#  LocalWords:  texinfo+ utils
+#  LocalWords:  utils
 
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
