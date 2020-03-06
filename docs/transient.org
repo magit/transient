@@ -832,6 +832,49 @@ Transients]]).  These functions take a "suffix specification" as one of
 their arguments, which has the same form as the specifications used in
 ~transient-define-prefix~.
 
+*** About Suffixes and Infixes
+
+At a fundamental level this package deals with only two kinds of
+commands: prefix commands and suffix commands.  A transient is
+activated when the user invoked a prefix command.  After that has
+happened, the user can invoke other commands, which we call suffix
+commands.
+
+In a transient that is used as a trivial command dispatcher all suffix
+commands exit the transient state.
+
+In a slightly less trivial case some of the suffix commands may not
+exit the transient state.
+
+A transient may for example have ~goto-line~ and ~forward-line~ as suffix
+commands.  While the former should probably exit the transient, the
+user might want to invoke the latter multiple times before exiting.
+
+Its appealing to call such a suffix (that does not exit the transient)
+an infix.
+
+  Its tempting to go a step further and to say that infixes are a
+third kind of commands, but we should avoid that.
+
+When a transient is active, then each of the associated commands is
+internally represented by an object.  The prefix command whose
+invocation caused the transient to become active is represented by a
+~transient-prefix~ object.  Each of the commands that can be invoked
+while the transient is active is represented by a ~transient-suffix~
+object.
+
+The *only* difference between ~goto-line~ and ~forward-line~ in this example
+is that only the latter exits the transient, but there are infix
+commands that the user does not think of as perform some operation but
+that is instead said to set some value to be consumed by the suffix
+command that is ultimately used to exit the transient.
+
+A line number as infix argument makes in this example.  ~goto-line~
+jumps to the specified line number, while ~forward-line~ moves by that
+number of lines.
+
+When ~forward-line~ is invoked without a number as infix argument ...
+
 *** Group Specifications
 
 The suffix and infix commands of a transient are organized in groups.
