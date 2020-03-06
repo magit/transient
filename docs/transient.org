@@ -472,6 +472,70 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   lines.  If ARG is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-down-command~ (which see).
 
+** Terminology and the Path to Enlightenment
+
+Please forgive me for injecting this section so early into this manual
+and also for it being much more rambling than the rest.  It has been
+pointed out (repeatedly, and its not like I wasn't aware of this all
+along) that this manual has some circular logic and is generally very
+hard to understand [fn:2].
+
+Feel free to skip this section for now.  If you do that, then you will
+later run into the following statement elsewhere in this manual and be
+a bit confused about it and not at all amused.
+
+#+BEGIN_QUOTE
+Note that an infix is a special kind of suffix. Depending on context
+"suffixes" means "suffixes (including infixes)" or "non-infix
+suffixes".
+#+END_QUOTE
+
+I'm afraid its not possible [fn:3] to make the confusion, which you
+are feeling right now, just go away in a few paragraphs, but we can
+try.  Transient is very flexible and that flexibility comes at a
+price.  This section uses a lot of "lying for users" in the hope that
+you won't take it personal and by the end of it you understand the
+above statement and may even think that it is kind of funny when
+phrased like that.
+
+- Transient knows about two kinds of commands: prefix commands and
+  suffix commands.  Prefixes cause the transient state to come into
+  existence and suffixes cause the transient state to cease to exist.
+
+- Transient associates an object with each command, which is used to
+  configure how exactly the command behaves and to track its state.
+  Prefix objects are stored in the symbol's ~transient--prefix~ and
+  ~transient--suffix~ properties (except when they are not, but forget
+  that I mentioned that).
+
+- Actually a command can be both a prefix and a suffix at the same
+  time.  Such command would be associated with two objects and which
+  of these objects is relevant in any give situation depends on the
+  role the command is being accessed.  I.e. a command can quit one
+  transient while simultaneously enter another.
+
+- Actually not all suffixes quit the transient state because sometimes
+  it useful to enter the transient once and then do several things
+  before quitting the transient again.
+
+- We could call these commands, which do not exit the transient, infix
+  commands because they are neither prefixes nor suffixes but
+  something that happens in between.  And in fact we do, because it is
+  a useful distinction.
+
+[fn:2] Another approach might be to look at examples.  Magit contains
+many.  Ranging from very simple to damn complex.  Also, if you have
+read any Luhmann, then you should actually appreciate the circular
+logic.
+
+[fn:3] Not when the author dreads [fn:4] writing documentation at
+least.
+
+[fn:4] Because its tedious but would fill a book by now, and even if
+you do a great job many users would rather open support tickets than
+to consult it anyway, so writing it doesn't even save you any time.
+Or at least not as match as you dared to hoped.
+
 ** Other Options
 
 - User Option: transient-show-popup
