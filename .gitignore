@@ -3,3 +3,5 @@
 /docs/*.pdf
 /docs/dir
 /docs/transient/
+/lisp/*.elc
+/lisp/transient-autoloads.el
