@@ -3,3 +3,4 @@
 /docs/*.pdf
 /docs/dir
 /docs/transient/
+*elc
