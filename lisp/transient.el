@@ -529,7 +529,7 @@ slot is non-nil."
   ((transient                         :initform t)
    (argument    :initarg :argument)
    (shortarg    :initarg :shortarg)
-   (value                             :initform nil)
+   (value       :initarg :value       :initform nil)
    (multi-value :initarg :multi-value :initform nil)
    (allow-empty :initarg :allow-empty :initform nil)
    (history-key :initarg :history-key :initform nil)
