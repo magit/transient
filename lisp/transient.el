@@ -2677,7 +2677,7 @@ Optional support for popup buttons is also implemented here."
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'.
-%f is formatted using `transient-format-value'."
+%v is formatted using `transient-format-value'."
   (format-spec (oref obj format)
                `((?k . ,(transient-format-key obj))
                  (?d . ,(transient-format-description obj))
