@@ -1,13 +1,14 @@
 ;;; transient.el --- Transient commands          -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2018-2020  Jonas Bernoulli
+;; Copyright (C) 2018-2020  Free Software Foundation, Inc.
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/transient
 ;; Package-Requires: ((emacs "25.1"))
+;; Package-Version: 0
 ;; Keywords: bindings
 
-;; This file is not part of GNU Emacs.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
