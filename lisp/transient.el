@@ -1119,6 +1119,11 @@ Usually it remains current while the transient is active.")
 
 (defvar transient--history nil)
 
+(defvar transient--scroll-commands
+  '(transient-scroll-up
+    transient-scroll-down
+    mwheel-scroll))
+
 ;;; Identities
 
 (defun transient-suffix-object (&optional command)
@@ -1790,9 +1795,7 @@ EDIT may be non-nil."
 (defun transient--redisplay ()
   (if (or (eq transient-show-popup t)
           transient--showp)
-      (unless (memq this-command '(transient-scroll-up
-                                   transient-scroll-down
-                                   mwheel-scroll))
+      (unless (memq this-command transient--scroll-commands)
         (transient--show))
     (when (and (numberp transient-show-popup)
                (not (zerop transient-show-popup))
