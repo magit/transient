@@ -1122,7 +1122,8 @@ Usually it remains current while the transient is active.")
 (defvar transient--scroll-commands
   '(transient-scroll-up
     transient-scroll-down
-    mwheel-scroll))
+    mwheel-scroll
+    scroll-bar-toolkit-scroll))
 
 ;;; Identities
 
@@ -1338,6 +1339,7 @@ edited using the same functions as used for transients.")
     (define-key map [transient-scroll-up]     'transient--do-stay)
     (define-key map [transient-scroll-down]   'transient--do-stay)
     (define-key map [mwheel-scroll]           'transient--do-stay)
+    (define-key map [scroll-bar-toolkit-scroll]   'transient--do-stay)
     (define-key map [transient-noop]              'transient--do-noop)
     (define-key map [transient-mouse-push-button] 'transient--do-move)
     (define-key map [transient-push-button]       'transient--do-move)
