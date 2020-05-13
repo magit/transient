@@ -2195,7 +2195,7 @@ which might make it necessary to kill it from the outside."
   "Read a value while taking care of history.
 
 This method is suitable for a wide variety of infix commands,
-including but not limitted to inline arguments and variables.
+including but not limited to inline arguments and variables.
 
 If you do not use this method for your own infix class, then
 you should likely replicate a lot of the behavior of this
