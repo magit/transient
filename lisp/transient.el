@@ -64,6 +64,24 @@
 
 (defvar Man-notify-method)
 
+(define-obsolete-function-alias 'define-transient-command
+  'transient-define-prefix "Transient 0.3.0")
+(define-obsolete-function-alias 'define-suffix-command
+  'transient-define-suffix "Transient 0.3.0")
+(define-obsolete-function-alias 'define-infix-command
+  'transient-define-infix "Transient 0.3.0")
+(define-obsolete-function-alias 'define-infix-argument
+  'transient-define-argument "Transient 0.3.0")
+
+(define-obsolete-variable-alias 'current-transient-prefix
+  'transient-current-prefix "Transient 0.3.0")
+(define-obsolete-variable-alias 'current-transient-command
+  'transient-current-command "Transient 0.3.0")
+(define-obsolete-variable-alias 'current-transient-suffixes
+  'transient-current-suffixes "Transient 0.3.0")
+(define-obsolete-variable-alias 'post-transient-hook
+  'transient-exit-hook "Transient 0.3.0")
+
 ;;; Options
 
 (defgroup transient nil
@@ -599,7 +617,7 @@ elements themselves.")
 
 ;;; Define
 
-(defmacro define-transient-command (name arglist &rest args)
+(defmacro transient-define-prefix (name arglist &rest args)
   "Define NAME as a transient prefix command.
 
 ARGLIST are the arguments that command takes.
@@ -662,7 +680,7 @@ to the setup function:
             ',(cl-mapcan (lambda (s) (transient--parse-child name s))
                          suffixes)))))
 
-(defmacro define-suffix-command (name arglist &rest args)
+(defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
 
 ARGLIST are the arguments that the command takes.
@@ -694,7 +712,7 @@ ARGLIST.  The infix arguments are usually accessed by using
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
 
-(defmacro define-infix-command (name _arglist &rest args)
+(defmacro transient-define-infix (name _arglist &rest args)
   "Define NAME as a transient infix command.
 
 ARGLIST is always ignored and reserved for future use.
@@ -742,12 +760,12 @@ keyword.
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
 
-(defalias 'define-infix-argument 'define-infix-command
+(defalias 'transient-define-argument 'define-infix-command
   "Define NAME as a transient infix command.
 
 Only use this alias to define an infix command that actually
 sets an infix argument.  To define a infix command that, for
-example, sets a variable use `define-infix-command' instead.
+example, sets a variable use `transient-define-infix' instead.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)")
 
@@ -921,7 +939,7 @@ example, sets a variable use `define-infix-command' instead.
   "Insert a SUFFIX into PREFIX before LOC.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
-  the same forms as expected by `define-transient-command').
+  the same forms as expected by `transient-define-prefix').
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
@@ -933,7 +951,7 @@ See info node `(transient)Modifying Existing Transients'."
   "Insert a SUFFIX into PREFIX after LOC.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
-  the same forms as expected by `define-transient-command').
+  the same forms as expected by `transient-define-prefix').
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
@@ -945,7 +963,7 @@ See info node `(transient)Modifying Existing Transients'."
   "Replace the suffix at LOC in PREFIX with SUFFIX.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
-  the same forms as expected by `define-transient-command').
+  the same forms as expected by `transient-define-prefix').
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
@@ -978,7 +996,7 @@ See info node `(transient)Modifying Existing Transients'."
   "Edit the suffix at LOC in PREFIX, setting PROP to VALUE.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
-  the same forms as expected by `define-transient-command').
+  the same forms as expected by `transient-define-prefix').
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
@@ -1060,24 +1078,24 @@ See info node `(transient)Modifying Existing Transients'."
 
 ;;; Variables
 
-(defvar current-transient-prefix nil
+(defvar transient-current-prefix nil
   "The transient from which this suffix command was invoked.
 This is an object representing that transient, use
-`current-transient-command' to get the respective command.")
+`transient-current-command' to get the respective command.")
 
-(defvar current-transient-command nil
+(defvar transient-current-command nil
   "The transient from which this suffix command was invoked.
 This is a symbol representing that transient, use
 `current-transient-object' to get the respective object.")
 
-(defvar current-transient-suffixes nil
+(defvar transient-current-suffixes nil
   "The suffixes of the transient from which this suffix command was invoked.
 This is a list of objects.  Usually it is sufficient to instead
 use the function `transient-args', which returns a list of
 values.  In complex cases it might be necessary to use this
 variable instead.")
 
-(defvar post-transient-hook nil
+(defvar transient-exit-hook nil
   "Hook run after exiting a transient.")
 
 (defvar transient--prefix nil)
@@ -1136,7 +1154,7 @@ the case of an infix command, which is a kind of suffix command).
 
 This function is intended to be called by infix commands, whose
 command definition usually (at least when defined using
-`define-infix-command') is this:
+`transient-define-infix') is this:
 
    (lambda ()
      (interactive)
@@ -1487,7 +1505,7 @@ EDIT may be non-nil."
     (setq name (oref transient--prefix command))
     (setq params (list :scope (oref transient--prefix scope))))
    ((not (or layout                      ; resuming parent/suspended prefix
-             current-transient-command)) ; entering child prefix
+             transient-current-command)) ; entering child prefix
     (transient--stack-zap))              ; replace suspended prefix, if any
    (edit
     ;; Returning from help to edit.
@@ -1702,9 +1720,9 @@ EDIT may be non-nil."
       (kill-buffer buf))))
 
 (defun transient--export ()
-  (setq current-transient-prefix transient--prefix)
-  (setq current-transient-command (oref transient--prefix command))
-  (setq current-transient-suffixes transient--suffixes)
+  (setq transient-current-prefix transient--prefix)
+  (setq transient-current-command (oref transient--prefix command))
+  (setq transient-current-suffixes transient--suffixes)
   (transient--history-push transient--prefix))
 
 (defun transient--minibuffer-setup ()
@@ -1760,15 +1778,15 @@ EDIT may be non-nil."
           (remove-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
           (advice-remove 'abort-recursive-edit  #'transient--minibuffer-exit)
           (remove-hook   'post-command-hook     #'transient--post-command))
-        (setq current-transient-prefix nil)
-        (setq current-transient-command nil)
-        (setq current-transient-suffixes nil)
+        (setq transient-current-prefix nil)
+        (setq transient-current-command nil)
+        (setq transient-current-suffixes nil)
         (let ((resume (and transient--stack
                            (not (memq transient--exitp '(replace suspend))))))
           (setq transient--exitp nil)
           (setq transient--helpp nil)
           (setq transient--editp nil)
-          (run-hooks 'post-transient-hook)
+          (run-hooks 'transient-exit-hook)
           (when resume
             (transient--stack-pop))))
     (transient--pop-keymap 'transient--redisplay-map)
@@ -2029,12 +2047,12 @@ transient is active."
 (defun transient-set ()
   "Save the value of the active transient for this Emacs session."
   (interactive)
-  (transient-set-value (or transient--prefix current-transient-prefix)))
+  (transient-set-value (or transient--prefix transient-current-prefix)))
 
 (defun transient-save ()
   "Save the value of the active transient persistenly across Emacs sessions."
   (interactive)
-  (transient-save-value (or transient--prefix current-transient-prefix)))
+  (transient-save-value (or transient--prefix transient-current-prefix)))
 
 (defun transient-history-next ()
   "Switch to the next value used for the active transient."
@@ -2396,8 +2414,8 @@ If the current command was invoked from the transient prefix
 command PREFIX, then return the active infix arguments.  If
 the current command was not invoked from PREFIX, then return
 the set, saved or default value for PREFIX."
-  (if (eq current-transient-command prefix)
-      (delq nil (mapcar 'transient-infix-value current-transient-suffixes))
+  (if (eq transient-current-command prefix)
+      (delq nil (mapcar 'transient-infix-value transient-current-suffixes))
     (let ((transient--prefix nil)
           (transient--layout nil)
           (transient--suffixes nil))
@@ -2405,7 +2423,7 @@ the set, saved or default value for PREFIX."
       (delq nil (mapcar 'transient-infix-value transient--suffixes)))))
 
 (defun transient-get-value ()
-  (delq nil (mapcar 'transient-infix-value current-transient-suffixes)))
+  (delq nil (mapcar 'transient-infix-value transient-current-suffixes)))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
@@ -3130,12 +3148,12 @@ search instead."
 (defun transient--suspend-which-key-mode ()
   (when (bound-and-true-p which-key-mode)
     (which-key-mode -1)
-    (add-hook 'post-transient-hook 'transient--resume-which-key-mode)))
+    (add-hook 'transient-exit-hook 'transient--resume-which-key-mode)))
 
 (defun transient--resume-which-key-mode ()
   (unless transient--prefix
     (which-key-mode 1)
-    (remove-hook 'post-transient-hook 'transient--resume-which-key-mode)))
+    (remove-hook 'transient-exit-hook 'transient--resume-which-key-mode)))
 
 (defun transient-bind-q-to-quit ()
   "Modify some keymaps to bind \"q\" to the appropriate quit command.
@@ -3185,10 +3203,10 @@ we stop there."
 (defconst transient-font-lock-keywords
   (eval-when-compile
     `((,(concat "("
-                (regexp-opt (list "define-transient-command"
-                                  "define-infix-command"
-                                  "define-infix-argument"
-                                  "define-suffix-command")
+                (regexp-opt (list "transient-define-prefix"
+                                  "transient-define-infix"
+                                  "transient-define-argument"
+                                  "transient-define-suffix")
                             t)
                 "\\_>[ \t'\(]*"
                 "\\(\\(?:\\sw\\|\\s_\\)+\\)?")

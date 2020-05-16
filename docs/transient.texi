@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-1-gafa0c2f+1)
+@subtitle for version 0.2.0 (v0.2.0-8-gc94cff7+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-1-gafa0c2f+1).
+This manual is for Transient version 0.2.0 (v0.2.0-8-gc94cff7+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -197,7 +197,7 @@ the transient.
 A suffix command can, but does not have to, use the infix arguments in
 much the same way it can choose to use or ignore the prefix arguments.
 For a suffix command that was invoked from a transient the variable
-@code{current-transient-suffixes} and the function @code{transient-args} serve about
+@code{transient-current-suffixes} and the function @code{transient-args} serve about
 the same purpose as the variables @code{prefix-arg} and @code{current-prefix-arg} do
 for any command that was called after the prefix arguments have been
 set using a command such as @code{universal-argument}.
@@ -833,13 +833,13 @@ PREFIX is a transient prefix command, a symbol.
 
 @item
 SUFFIX is a transient infix or suffix specification in the same form
-as expected by @code{define-transient-command}.  Note that an infix is a
+as expected by @code{transient-define-prefix}.  Note that an infix is a
 special kind of suffix.  Depending on context "suffixes" means
 "suffixes (including infixes)" or "non-infix suffixes".  Here it
 means the former.  See @ref{Suffix Specifications}.
 
 SUFFIX may also be a group in the same form as expected by
-@code{define-transient-command}.  See @ref{Group Specifications}.
+@code{transient-define-prefix}.  See @ref{Group Specifications}.
 
 
 @item
@@ -926,7 +926,7 @@ binds the transient's infix and suffix commands.  In other words, it
 defines the complete transient, not just the transient prefix command
 that is used to invoke that transient.
 
-@defmac define-transient-command name arglist [docstring] [keyword value]@dots{} group@dots{} [body@dots{}]
+@defmac transient-define-prefix name arglist [docstring] [keyword value]@dots{} group@dots{} [body@dots{}]
 
 This macro defines NAME as a transient prefix command and binds the
 transient's infix and suffix commands.
@@ -975,14 +975,14 @@ the branch whose variables are being configured.
 @node Binding Suffix and Infix Commands
 @section Binding Suffix and Infix Commands
 
-The macro @code{define-transient-command} is used to define a transient.
+The macro @code{transient-define-prefix} is used to define a transient.
 This defines the actual transient prefix command (see @ref{Defining Transients}) and adds the transient's infix and suffix bindings, as
 described below.
 
 Users and third-party packages can add additional bindings using
 functions such as @code{transient-insert-suffix} (See @ref{Modifying Existing Transients}).  These functions take a "suffix specification" as one of
 their arguments, which has the same form as the specifications used in
-@code{define-transient-command}.
+@code{transient-define-prefix}.
 
 @menu
 * Group Specifications::
@@ -1001,7 +1001,7 @@ Several group classes exist, some of which organize suffixes in
 subgroups.  In most cases the class does not have to be specified
 explicitly, but see @ref{Group Classes}.
 
-Groups are specified in the call to @code{define-transient-command}, using
+Groups are specified in the call to @code{transient-define-prefix}, using
 vectors.  Because groups are represented using vectors, we cannot use
 square brackets to indicate an optional element and instead use curly
 brackets to do the latter.
@@ -1078,7 +1078,7 @@ The form of suffix specifications is documented in the next node.
 @subsection Suffix Specifications
 
 A transient's suffix and infix commands are bound when the transient
-prefix command is defined using @code{define-transient-command}, see
+prefix command is defined using @code{transient-define-prefix}, see
 @ref{Defining Transients}.  The commands are organized into groups, see
 @ref{Group Specifications}.  Here we describe the form used to bind an
 individual suffix command.
@@ -1127,8 +1127,8 @@ argument that is mandatory in all cases.
 @item
 COMMAND is a symbol that is bound as a function, which has to be a
 command.  Any command will do; it does not need to have an object
-associated with it (as would be the case if @code{define-suffix-command}
-or @code{define-infix-command} were used to define it).
+associated with it (as would be the case if @code{transient-define-suffix}
+or @code{transient-define-infix} were used to define it).
 
 As mentioned above, the object that is associated with a command can
 be used to set the default for certain values that otherwise have to
@@ -1166,7 +1166,7 @@ Note that an infix is a special kind of suffix. Depending on context
 "suffixes" means "suffixes (including infixes)" or "non-infix
 suffixes".
 
-@defmac define-suffix-command name arglist [docstring] [keyword value]@dots{} body@dots{}
+@defmac transient-define-suffix name arglist [docstring] [keyword value]@dots{} body@dots{}
 
 This macro defines NAME as a transient suffix command.
 
@@ -1184,7 +1184,7 @@ The infix arguments are usually accessed by using @code{transient-args}
 inside @code{interactive}.
 @end defmac
 
-@defmac define-infix-command name arglist [docstring] [keyword value]@dots{}
+@defmac transient-define-infix name arglist [docstring] [keyword value]@dots{}
 
 This macro defines NAME as a transient infix command.
 
@@ -1222,14 +1222,14 @@ define your own infix command class.  In that case you have to use
 the value of the @code{:transient} keyword.
 @end defmac
 
-@defmac define-infix-argument name arglist [docstring] [keyword value]@dots{}
+@defmac transient-define-argument name arglist [docstring] [keyword value]@dots{}
 
 This macro defines NAME as a transient infix command.
 
-It is an alias for @code{define-infix-command}.  Only use this alias
+This is an alias for @code{transient-define-infix}.  Only use this alias
 to define an infix command that actually sets an infix argument.
 To define an infix command that, for example, sets a variable, use
-@code{define-infix-command} instead.
+@code{transient-define-infix} instead.
 @end defmac
 
 @node Using Infix Arguments
@@ -1262,7 +1262,7 @@ command was not invoked from PREFIX, then it returns the set, saved
 or default value for PREFIX@.
 @end defun
 
-@defvar current-transient-suffixes
+@defvar transient-current-suffixes
 
 The suffixes of the transient from which this suffix command was
 invoked.  This is a list of objects.  Usually it is sufficient to
@@ -1271,14 +1271,14 @@ values.  In complex cases it might be necessary to use this variable
 instead, i.e. if you need access to information beside the value.
 @end defvar
 
-@defvar current-transient-prefix
+@defvar transient-current-prefix
 
 The transient from which this suffix command was invoked.  The
 returned value is a @code{transient-prefix} object, which holds information
 associated with the transient prefix command.
 @end defvar
 
-@defvar current-transient-command
+@defvar transient-current-command
 
 The transient from which this suffix command was invoked.  The
 returned value is a symbol, the transient prefix command.
@@ -1516,7 +1516,7 @@ differ even between different commands of the same type.
 
 The type of a group can be specified using the @code{:class} property at the
 beginning of the class specification, e.g. @code{[:class transient-columns
-...]} in a call to @code{define-transient-command}.
+...]} in a call to @code{transient-define-prefix}.
 
 @itemize
 @item
@@ -1832,13 +1832,13 @@ causes the others to be disabled.
 
 @item
 @code{scope} For some transients it might be necessary to have a sort of
-secondary value, called a "scope".  See @code{define-transient-command}.
+secondary value, called a "scope".  See @code{transient-define-prefix}.
 @end itemize
 
 @subsection Internal Prefix Slots
 
 These slots are mostly intended for internal use.  They should not be
-set in calls to @code{define-transient-command}.
+set in calls to @code{transient-define-prefix}.
 
 @itemize
 @item
@@ -2305,7 +2305,7 @@ and the interface is a bit more complicated.  A very basic example
 using the current interface:
 
 @lisp
-(define-transient-command outline-navigate ()
+(transient-define-prefix outline-navigate ()
   :transient-suffix     'transient--do-stay
   :transient-non-suffix 'transient--do-warn
   [("p" "previous visible heading" outline-previous-visible-heading)

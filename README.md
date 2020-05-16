@@ -42,7 +42,7 @@ the transient.
 A suffix command can, but does not have to, use the infix arguments in
 much the same way it can choose to use or ignore the prefix arguments.
 For a suffix command that was invoked from a transient the variable
-`current-transient-suffixes` and the function `transient-args` serve about
+`transient-current-suffixes` and the function `transient-args` serve about
 the same purpose as the variables `prefix-arg` and `current-prefix-arg` do
 for any command that was called after the prefix arguments have been
 set using a command such as `universal-argument`.
