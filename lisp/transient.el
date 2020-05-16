@@ -935,6 +935,7 @@ example, sets a variable use `transient-define-infix' instead.
         (append  (setcdr mem (cons suf (cdr mem))))
         (replace (setcar mem suf)))))))
 
+;;;###autoload
 (defun transient-insert-suffix (prefix loc suffix)
   "Insert a SUFFIX into PREFIX before LOC.
 PREFIX is a prefix command, a symbol.
@@ -947,6 +948,7 @@ See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'insert))
 
+;;;###autoload
 (defun transient-append-suffix (prefix loc suffix)
   "Insert a SUFFIX into PREFIX after LOC.
 PREFIX is a prefix command, a symbol.
@@ -959,6 +961,7 @@ See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'append))
 
+;;;###autoload
 (defun transient-replace-suffix (prefix loc suffix)
   "Replace the suffix at LOC in PREFIX with SUFFIX.
 PREFIX is a prefix command, a symbol.
@@ -971,6 +974,7 @@ See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'replace))
 
+;;;###autoload
 (defun transient-remove-suffix (prefix loc)
   "Remove the suffix or group at LOC in PREFIX.
 PREFIX is a prefix command, a symbol.
