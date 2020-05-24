@@ -661,6 +661,7 @@ to the setup function:
                            [&rest keywordp sexp]
                            [&rest vectorp]
                            [&optional ("interactive" interactive) def-body]))
+           (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body)
                (transient--expand-define-args args)))
@@ -701,6 +702,7 @@ ARGLIST.  The infix arguments are usually accessed by using
                            [&rest keywordp sexp]
                            ("interactive" interactive)
                            def-body))
+           (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
                (transient--expand-define-args args)))
@@ -749,6 +751,7 @@ keyword.
   (declare (debug (&define name lambda-list
                            [&optional lambda-doc]
                            [&rest keywordp sexp]))
+           (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,_)
                (transient--expand-define-args args)))
