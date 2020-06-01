@@ -129,7 +129,9 @@ features are available:
   :type 'boolean)
 
 (defcustom transient-display-buffer-action
-  '(display-buffer-in-side-window (side . bottom))
+  '(display-buffer-in-side-window
+    (side . bottom)
+    (inhibit-same-window . t))
   "The action used to display the transient popup buffer.
 
 The transient popup buffer is displayed in a window using
@@ -155,7 +157,7 @@ then it doesn't work.
 
 If you change the value of this option, then you might also
 want to change the value of `transient-mode-line-format'."
-  :package-version '(transient . "0.2.0")
+  :package-version '(transient . "0.3.0")
   :group 'transient
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
