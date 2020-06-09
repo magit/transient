@@ -1444,21 +1444,22 @@ of the corresponding object.")
     (dolist (obj transient--suffixes)
       (let* ((cmd (transient--suffix-command obj))
              (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix))))
-        (if (slot-boundp obj 'transient)
-            (define-key map (vector cmd)
-              (let ((do (oref obj transient)))
-                (pcase do
-                  (`t (if sub-prefix
-                          'transient--do-replace
-                        'transient--do-stay))
-                  (`nil 'transient--do-exit)
-                  (_ do))))
-          (unless (lookup-key transient-predicate-map (vector cmd))
-            (define-key map (vector cmd)
-              (if sub-prefix
-                  'transient--do-replace
-                (or (oref transient--prefix transient-suffix)
-                    'transient--do-exit)))))))
+        (cond
+         ((slot-boundp obj 'transient)
+          (define-key map (vector cmd)
+            (let ((do (oref obj transient)))
+              (pcase do
+                (`t (if sub-prefix
+                        'transient--do-replace
+                      'transient--do-stay))
+                (`nil 'transient--do-exit)
+                (_ do)))))
+         ((not (lookup-key transient-predicate-map (vector cmd)))
+          (define-key map (vector cmd)
+            (if sub-prefix
+                'transient--do-replace
+              (or (oref transient--prefix transient-suffix)
+                  'transient--do-exit)))))))
     map))
 
 (defun transient--make-redisplay-map ()
