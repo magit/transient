@@ -1216,12 +1216,24 @@ property holds an anonymous command, which is returned instead."
       (get sym 'transient--infix-command))))
 
 (defun transient--suffix-symbol (arg)
+  "Return a symbol representing ARG.
+
+ARG must be a command and/or a symbol.  If it is a symbol,
+then just return it.  Otherwise return the symbol whose
+`transient--infix-command' property's value is ARG."
   (or (cl-typep arg 'command)
       (cl-typep arg 'symbol)
       (signal 'wrong-type-argument `((command symbol) ,arg)))
   (if (symbolp arg)
       arg
-    (oref (transient-suffix-object) command)))
+    (let* ((obj (transient-suffix-object))
+           (sym (oref obj command)))
+      (if (eq (get sym 'transient--infix-command) arg)
+          sym
+        (catch 'found
+          (mapatoms (lambda (sym)
+                      (when (eq (get sym 'transient--infix-command) arg)
+                        (throw 'found sym)))))))))
 
 ;;; Keymaps
 
