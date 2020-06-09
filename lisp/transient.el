@@ -1619,27 +1619,38 @@ EDIT may be non-nil."
            (<= level (oref transient--prefix level)))))
 
 (defun transient--use-suffix-p (obj)
-  (with-slots
-      (if if-not if-nil if-non-nil if-mode if-not-mode if-derived if-not-derived)
-      obj
-    (cond
-     (if                  (funcall if))
-     (if-not         (not (funcall if-not)))
-     (if-non-nil          (symbol-value if-non-nil))
-     (if-nil         (not (symbol-value if-nil)))
-     (if-mode             (if (atom if-mode)
-                              (eq major-mode if-mode)
-                            (memq major-mode if-mode)))
-     (if-not-mode    (not (if (atom if-not-mode)
-                              (eq major-mode if-not-mode)
-                            (memq major-mode if-not-mode))))
-     (if-derived          (if (atom if-derived)
-                              (derived-mode-p if-derived)
-                            (apply #'derived-mode-p if-derived)))
-     (if-not-derived (not (if (atom if-not-derived)
-                              (derived-mode-p if-not-derived)
-                            (apply #'derived-mode-p if-not-derived))))
-     (t))))
+  (transient--do-suffix-p
+   (oref obj if)
+   (oref obj if-not)
+   (oref obj if-nil)
+   (oref obj if-non-nil)
+   (oref obj if-mode)
+   (oref obj if-not-mode)
+   (oref obj if-derived)
+   (oref obj if-not-derived)
+   t))
+
+(defun transient--do-suffix-p
+    (if if-not if-nil if-non-nil if-mode if-not-mode if-derived if-not-derived
+        default)
+  (cond
+   (if                  (funcall if))
+   (if-not         (not (funcall if-not)))
+   (if-non-nil          (symbol-value if-non-nil))
+   (if-nil         (not (symbol-value if-nil)))
+   (if-mode             (if (atom if-mode)
+                            (eq major-mode if-mode)
+                          (memq major-mode if-mode)))
+   (if-not-mode    (not (if (atom if-not-mode)
+                            (eq major-mode if-not-mode)
+                          (memq major-mode if-not-mode))))
+   (if-derived          (if (atom if-derived)
+                            (derived-mode-p if-derived)
+                          (apply #'derived-mode-p if-derived)))
+   (if-not-derived (not (if (atom if-not-derived)
+                            (derived-mode-p if-not-derived)
+                          (apply #'derived-mode-p if-not-derived))))
+   (t default)))
 
 ;;; Flow-Control
 
