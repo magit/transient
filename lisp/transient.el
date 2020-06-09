@@ -1209,12 +1209,16 @@ probably use this instead:
 If the value of OBJECT's `command' slot is a command, then return
 that.  Otherwise it is a symbol whose `transient--infix-command'
 property holds an anonymous command, which is returned instead."
+  (cl-check-type object transient-suffix)
   (let ((sym (oref object command)))
     (if (commandp sym)
         sym
       (get sym 'transient--infix-command))))
 
 (defun transient--suffix-symbol (arg)
+  (or (cl-typep arg 'command)
+      (cl-typep arg 'symbol)
+      (signal 'wrong-type-argument `((command symbol) ,arg)))
   (if (symbolp arg)
       arg
     (oref (transient-suffix-object) command)))
