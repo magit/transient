@@ -2045,7 +2045,7 @@ transient is active."
                   (and (lookup-key transient--transient-map keys)
                        (string-to-number
                         (let ((transient--active-infix
-                               (transient-suffix-object)))
+                               (transient-suffix-object command)))
                           (transient--show)
                           (transient--read-number-N
                            (format "Set level for `%s': "
