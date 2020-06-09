@@ -1442,8 +1442,9 @@ of the corresponding object.")
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
     (dolist (obj transient--suffixes)
-      (let* ((cmd (transient--suffix-command obj))
-             (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix))))
+      (let* ((cmd (oref obj command))
+             (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix)))
+             (cmd (transient--suffix-command cmd)))
         (cond
          ((slot-boundp obj 'transient)
           (define-key map (vector cmd)
@@ -1694,7 +1695,8 @@ EDIT may be non-nil."
    (t
     (setq transient--exitp nil)
     (when (eq (if-let ((fn (or (lookup-key transient--predicate-map
-                                           (vector this-original-command))
+                                           (vector (transient--suffix-command
+                                                    this-original-command)))
                                (oref transient--prefix transient-non-suffix))))
                   (let ((action (funcall fn)))
                     (when (eq action transient--exit)
@@ -1972,7 +1974,8 @@ to `transient--do-warn'."
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
            (propertize "?"   'face 'transient-key)
-           (propertize (symbol-name this-original-command)
+           (propertize (symbol-name (transient--suffix-command
+                                     this-original-command))
                        'face 'font-lock-warning-face)))
 
 (defun transient-toggle-common ()
