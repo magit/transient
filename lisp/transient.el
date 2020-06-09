@@ -1972,7 +1972,8 @@ to `transient--do-warn'."
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
            (propertize "?"   'face 'transient-key)
-           this-original-command))
+           (propertize (symbol-name this-original-command)
+                       'face 'font-lock-warning-face)))
 
 (defun transient-toggle-common ()
   "Toggle whether common commands are always shown."
