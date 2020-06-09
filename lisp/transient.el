@@ -1190,6 +1190,8 @@ you are contemplating using it in your own code, then you should
 probably use this instead:
 
   (get COMMAND 'transient--suffix)"
+  (when command
+    (cl-check-type command command))
   (if transient--prefix
       (cl-find-if (lambda (obj)
                     (eq (transient--suffix-command obj)
