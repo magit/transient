@@ -381,6 +381,10 @@ Also see option `transient-highlight-mismatched-keys'."
 Also see option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
+(defface transient-inapt-suffix '((t :inherit shadow :italic t))
+  "Face used for suffixes that are inapt at this time."
+  :group 'transient-faces)
+
 (defface transient-enabled-suffix
   '((t :background "green" :foreground "black" :weight bold))
   "Face used for enabled levels while editing suffix levels.
@@ -543,7 +547,40 @@ slot is non-nil."
    (command     :initarg :command)
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
-   (description :initarg :description :initform nil))
+   (description :initarg :description :initform nil)
+   (inapt                             :initform nil)
+   (inapt-if
+    :initarg :inapt-if
+    :initform nil
+    :documentation "Inapt if predicate returns non-nil.")
+   (inapt-if-not
+    :initarg :inapt-if-not
+    :initform nil
+    :documentation "Inapt if predicate returns nil.")
+   (inapt-if-non-nil
+    :initarg :inapt-if-non-nil
+    :initform nil
+    :documentation "Inapt if variable's value is non-nil.")
+   (inapt-if-nil
+    :initarg :inapt-if-nil
+    :initform nil
+    :documentation "Inapt if variable's value is nil.")
+   (inapt-if-mode
+    :initarg :inapt-if-mode
+    :initform nil
+    :documentation "Inapt if major-mode matches value.")
+   (inapt-if-not-mode
+    :initarg :inapt-if-not-mode
+    :initform nil
+    :documentation "Inapt if major-mode does not match value.")
+   (inapt-if-derived
+    :initarg :inapt-if-derived
+    :initform nil
+    :documentation "Inapt if major-mode derives from value.")
+   (inapt-if-not-derived
+    :initarg :inapt-if-not-derived
+    :initform nil
+    :documentation "Inapt if major-mode does not derive from value."))
   "Superclass for suffix command.")
 
 (defclass transient-infix (transient-suffix)
@@ -1423,6 +1460,8 @@ of the corresponding object.")
              (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix)))
              (sym (transient--suffix-symbol cmd)))
         (cond
+         ((oref obj inapt)
+          (define-key map (vector sym) 'transient--do-warn-inapt))
          ((slot-boundp obj 'transient)
           (define-key map (vector sym)
             (let ((do (oref obj transient)))
@@ -1573,8 +1612,10 @@ EDIT may be non-nil."
         (transient--init-suffix-key obj)
         (transient--ensure-infix-command obj)
         (when (transient--use-suffix-p obj)
-          (transient-init-scope obj)
-          (transient-init-value obj)
+          (if (transient--inapt-suffix-p obj)
+              (oset obj inapt t)
+            (transient-init-scope obj)
+            (transient-init-value obj))
           (list obj))))))
 
 (cl-defmethod transient--init-suffix-key ((obj transient-suffix))
@@ -1608,6 +1649,18 @@ EDIT may be non-nil."
    (oref obj if-derived)
    (oref obj if-not-derived)
    t))
+
+(defun transient--inapt-suffix-p (obj)
+  (transient--do-suffix-p
+   (oref obj inapt-if)
+   (oref obj inapt-if-not)
+   (oref obj inapt-if-nil)
+   (oref obj inapt-if-non-nil)
+   (oref obj inapt-if-mode)
+   (oref obj inapt-if-not-mode)
+   (oref obj inapt-if-derived)
+   (oref obj inapt-if-not-derived)
+   nil))
 
 (defun transient--do-suffix-p
     (if if-not if-nil if-non-nil if-mode if-not-mode if-derived if-not-derived
@@ -1884,6 +1937,11 @@ nil, then do nothing."
   (setq this-command 'transient-undefined)
   transient--stay)
 
+(defun transient--do-warn-inapt ()
+  "Call `transient-inapt' and stay transient."
+  (setq this-command 'transient-inapt)
+  transient--stay)
+
 (defun transient--do-call ()
   "Call the command after exporting variables and stay transient."
   (transient--export)
@@ -1942,6 +2000,11 @@ to `transient--do-warn'."
   "Warn the user that the pressed key is not bound to any suffix."
   (interactive)
   (transient--invalid "Unbound suffix"))
+
+(defun transient-inapt ()
+  "Warn the user that the invoked command is inapt."
+  (interactive)
+  (transient--invalid "Inapt command"))
 
 (defun transient--invalid (msg)
   (ding)
@@ -2697,6 +2760,10 @@ Optional support for popup buttons is also implemented here."
                                            'transient-enabled-suffix
                                          'transient-disabled-suffix))))
               (cl-call-next-method obj))))
+    (when (oref obj inapt)
+      (set-text-properties 0 (length str)
+                           (list 'face 'transient-inapt-suffix)
+                           str))
     (if transient-enable-popup-navigation
         (make-text-button str nil
                           'type 'transient-button
