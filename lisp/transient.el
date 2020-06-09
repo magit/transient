@@ -1203,62 +1203,21 @@ probably use this instead:
       (transient-init-value obj)
       obj)))
 
-(defun transient--suffix-command (arg)
-  "Return the command specified by ARG.
+(defun transient--suffix-command (object)
+  "Return the command represented by OBJECT.
 
-Given a suffix specified by ARG, this function returns the
-respective command or a symbol that represents it.  It could
-therefore be considered the inverse of `transient-suffix-object'.
+If the value of OBJECT's `command' slot is a command, then return
+that.  Otherwise it is a symbol whose `transient--infix-command'
+property holds an anonymous command, which is returned instead."
+  (let ((sym (oref object command)))
+    (if (commandp sym)
+        sym
+      (get sym 'transient--infix-command))))
 
-Unlike that function it is only intended for internal use though,
-and it is more complicated to describe because of some internal
-tricks it has to account for.  You do not actually have to know
-any of this.
-
-ARG can be a `transient-suffix' object, a symbol representing a
-command, or a command (which can be either a fbound symbol or a
-lambda expression).
-
-If it is an object, then the value of its `command' slot is used
-as follows.  If ARG satisfies `commandp', then that is returned.
-Otherwise it is assumed to be a symbol that merely represents the
-command.  In that case the lambda expression that is stored in
-the symbols `transient--infix-command' property is returned.
-
-Therefore, if ARG is an object, then this function always returns
-something that is callable as a command.
-
-ARG can also be something that is callable as a function.  If it
-is a symbol, then that is returned.  Otherwise it is a lambda
-expression and a symbol that merely representing that command is
-returned.
-
-Therefore, if ARG is something that is callable as a command,
-then this function always returns a symbol that is, or merely
-represents that command.
-
-The reason that there are \"symbols that merely represent a
-command\" is that by avoiding binding a symbol as a command we
-can prevent it from being offered as a completion candidate for
-`execute-extended-command'.  That is useful for infix arguments,
-which usually do not work correctly unless called from a
-transient.  Unfortunately this only works for infix arguments
-that are defined inline in the definition of a transient prefix
-command; explicitly defined infix arguments continue to pollute
-the command namespace.  It would be better if all this were made
-unnecessary by a `execute-extended-command-ignore' symbol property
-but unfortunately that does not exist (yet?)."
-  (if (transient-suffix--eieio-childp arg)
-      (let ((sym (oref arg command)))
-        (if (commandp sym)
-            sym
-          (get sym 'transient--infix-command)))
-    (if (symbolp arg)
-        arg
-      ;; ARG is an interactive lambda.  The symbol returned by this
-      ;; is not actually a command, just a symbol representing it
-      ;; for purposes other than invoking it as a command.
-      (oref (transient-suffix-object) command))))
+(defun transient--suffix-symbol (arg)
+  (if (symbolp arg)
+      arg
+    (oref (transient-suffix-object) command)))
 
 ;;; Keymaps
 
@@ -1446,10 +1405,10 @@ of the corresponding object.")
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
              (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix)))
-             (cmd (transient--suffix-command cmd)))
+             (sym (transient--suffix-symbol cmd)))
         (cond
          ((slot-boundp obj 'transient)
-          (define-key map (vector cmd)
+          (define-key map (vector sym)
             (let ((do (oref obj transient)))
               (pcase do
                 (`t (if sub-prefix
@@ -1457,8 +1416,8 @@ of the corresponding object.")
                       'transient--do-stay))
                 (`nil 'transient--do-exit)
                 (_ do)))))
-         ((not (lookup-key transient-predicate-map (vector cmd)))
-          (define-key map (vector cmd)
+         ((not (lookup-key transient-predicate-map (vector sym)))
+          (define-key map (vector sym)
             (if sub-prefix
                 'transient--do-replace
               (or (oref transient--prefix transient-suffix)
@@ -1582,7 +1541,7 @@ EDIT may be non-nil."
 (defun transient--init-suffix (levels spec)
   (pcase-let* ((`(,level ,class ,args) spec)
                (cmd (plist-get args :command))
-               (level (or (alist-get (transient--suffix-command cmd) levels)
+               (level (or (alist-get (transient--suffix-symbol cmd) levels)
                           level)))
     (let ((fn (and (symbolp cmd)
                    (symbol-function cmd))))
@@ -1697,7 +1656,7 @@ EDIT may be non-nil."
    (t
     (setq transient--exitp nil)
     (when (eq (if-let ((fn (or (lookup-key transient--predicate-map
-                                           (vector (transient--suffix-command
+                                           (vector (transient--suffix-symbol
                                                     this-original-command)))
                                (oref transient--prefix transient-non-suffix))))
                   (let ((action (funcall fn)))
@@ -1976,7 +1935,7 @@ to `transient--do-warn'."
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
            (propertize "?"   'face 'transient-key)
-           (propertize (symbol-name (transient--suffix-command
+           (propertize (symbol-name (transient--suffix-symbol
                                      this-original-command))
                        'face 'font-lock-warning-face)))
 
@@ -2054,7 +2013,7 @@ transient is active."
                           (transient--show)
                           (transient--read-number-N
                            (format "Set level for `%s': "
-                                   (transient--suffix-command command))
+                                   (transient--suffix-symbol command))
                            nil nil (not (eq command prefix)))))))))))
   (cond
    ((not command)
@@ -2063,12 +2022,12 @@ transient is active."
    (level
     (let* ((prefix (oref transient--prefix command))
            (alist (alist-get prefix transient-levels))
-           (key (transient--suffix-command command)))
+           (sym (transient--suffix-symbol command)))
       (if (eq command prefix)
           (progn (oset transient--prefix level level)
-                 (setq key t))
+                 (setq sym t))
         (oset (transient-suffix-object command) level level))
-      (setf (alist-get key alist) level)
+      (setf (alist-get sym alist) level)
       (setf (alist-get prefix transient-levels) alist))
     (transient-save-levels))
    (t
