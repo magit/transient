@@ -1724,10 +1724,8 @@ EDIT may be non-nil."
     (setq this-command 'transient-set-level))
    (t
     (setq transient--exitp nil)
-    (when (eq (if-let ((fn (or (lookup-key transient--predicate-map
-                                           (vector (transient--suffix-symbol
-                                                    this-original-command)))
-                               (oref transient--prefix transient-non-suffix))))
+    (when (eq (if-let ((fn (transient--get-predicate-for
+                            this-original-command)))
                   (let ((action (funcall fn)))
                     (when (eq action transient--exit)
                       (setq transient--exitp (or transient--exitp t)))
@@ -1740,6 +1738,11 @@ EDIT may be non-nil."
                 transient--stay)
               transient--exit)
       (transient--pre-exit)))))
+
+(defun transient--get-predicate-for (cmd)
+  (or (lookup-key transient--predicate-map
+                  (vector (transient--suffix-symbol cmd)))
+      (oref transient--prefix transient-non-suffix)))
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
