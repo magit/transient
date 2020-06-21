@@ -242,6 +242,22 @@ using a layout optimized for lisp.
   :group 'transient
   :type '(choice (const :tag "Transform no keys (nil)" nil) function))
 
+(defcustom transient-semantic-coloring nil
+  "Whether to color prefixes and suffixes in Hydra-like fashion.
+This feature is experimental.
+
+If non-nil, then the key binding of each suffix is colorized to
+indicate whether it exits the transient state or not.  The color
+of the prefix is indicated using the line that is drawn when the
+value of `transient-mode-line-format' is `line'.
+
+For more information about how Hydra uses colors see
+https://github.com/abo-abo/hydra#color and
+https://oremacs.com/2015/02/19/hydra-colors-reloaded."
+  :package-version '(transient . "0.3.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-detect-key-conflicts nil
   "Whether to detect key binding conflicts.
 
@@ -408,6 +424,38 @@ See info node `(transient)Enabling and Disabling Suffixes'."
 This is only used if `transient-mode-line-format' is `line'.
 Only the background color is significant."
   :group 'transient-faces)
+
+(defgroup transient-color-faces
+  '((transient-semantic-coloring custom-variable))
+  "Faces used by Transient for Hydra-like command coloring.
+These faces are only used if `transient-semantic-coloring'
+\(which see) is non-nil."
+  :group 'transient-faces)
+
+(defface transient-red
+  '((t :inherit transient-key :foreground "red"))
+  "Face used for red prefixes and suffixes."
+  :group 'transient-color-faces)
+
+(defface transient-blue
+  '((t :inherit transient-key :foreground "blue"))
+  "Face used for blue prefixes and suffixes."
+  :group 'transient-color-faces)
+
+(defface transient-amaranth
+  '((t :inherit transient-key :foreground "#E52B50"))
+  "Face used for amaranth prefixes."
+  :group 'transient-color-faces)
+
+(defface transient-pink
+  '((t :inherit transient-key :foreground "#FF6EB4"))
+  "Face used for pink prefixes."
+  :group 'transient-color-faces)
+
+(defface transient-teal
+  '((t :inherit transient-key :foreground "#367588"))
+  "Face used for teal prefixes."
+  :group 'transient-color-faces)
 
 ;;; Persistence
 
@@ -1993,6 +2041,18 @@ to `transient--do-warn'."
     (setq this-command 'transient-popup-navigation-help))
   transient--stay)
 
+(put 'transient--do-stay       'transient-color 'transient-blue)
+(put 'transient--do-noop       'transient-color 'transient-blue)
+(put 'transient--do-warn       'transient-color 'transient-blue)
+(put 'transient--do-warn-inapt 'transient-color 'transient-blue)
+(put 'transient--do-call       'transient-color 'transient-blue)
+(put 'transient--do-exit       'transient-color 'transient-red)
+(put 'transient--do-replace    'transient-color 'transient-red)
+(put 'transient--do-suspend    'transient-color 'transient-red)
+(put 'transient--do-quit-one   'transient-color 'transient-red)
+(put 'transient--do-quit-all   'transient-color 'transient-red)
+(put 'transient--do-move       'transient-color 'transient-blue)
+
 ;;; Commands
 
 (defun transient-noop ()
@@ -2645,9 +2705,14 @@ have a history of their own.")
         (transient--insert-help))
       (when (and (eq transient-mode-line-format 'line)
                  window-system)
-        (insert (propertize "__" 'face 'transient-separator
-                            'display '(space :height (1))))
-        (insert (propertize "\n" 'face 'transient-separator 'line-height t)))
+        (let ((face
+               (if-let ((f (and (transient--semantic-coloring-p)
+                                (transient--prefix-color transient--prefix))))
+                   `(,@(and (>= emacs-major-version 27) '(:extend t))
+                     :background ,(face-foreground f))
+                 'transient-separator)))
+          (insert (propertize "__" 'face face 'display '(space :height (1))))
+          (insert (propertize "\n" 'face face 'line-height t))))
       (let ((window-resize-pixelwise t)
             (window-size-fixed nil))
         (fit-window-to-buffer nil nil 1))
@@ -2796,7 +2861,8 @@ Optional support for popup buttons is also implemented here."
 
 (cl-defmethod transient-format-key ((obj transient-suffix))
   "Format OBJ's `key' for display and return the result."
-  (let ((key (oref obj key)))
+  (let ((key (oref obj key))
+        (cmd (oref obj command)))
     (if transient--redisplay-key
         (let ((len (length transient--redisplay-key))
               (seq (cl-coerce (edmacro-parse-keys key t) 'list)))
@@ -2818,19 +2884,21 @@ Optional support for popup buttons is also implemented here."
                 (setq suf (replace-regexp-in-string " " "" suf)))
               (concat (propertize pre 'face 'default)
                       (and (string-prefix-p (concat pre " ") key) " ")
-                      (transient--colorize-key suf)
+                      (transient--colorize-key suf cmd)
                       (save-excursion
                         (when (string-match " +\\'" key)
                           (match-string 0 key))))))
            ((transient--lookup-key transient-sticky-map (kbd key))
-            (transient--colorize-key key))
+            (transient--colorize-key key cmd))
            (t
             (propertize key 'face 'transient-unreachable-key))))
-      (transient--colorize-key key))))
+      (transient--colorize-key key cmd))))
 
-(defun transient--colorize-key (key)
+(defun transient--colorize-key (key command)
   (propertize key 'face
-              'transient-key))
+              (or (and (transient--semantic-coloring-p)
+                       (transient--suffix-color command))
+                  'transient-key)))
 
 (cl-defmethod transient-format-key :around ((obj transient-argument))
   (let ((key (cl-call-next-method obj)))
@@ -3195,6 +3263,35 @@ search instead."
 (defun transient--isearch-exit ()
   (select-window transient--original-window)
   (transient--resume-override))
+
+;;;; Hydra Color Emulation
+
+(defun transient--semantic-coloring-p ()
+  (and transient-semantic-coloring
+       (not transient--helpp)
+       (not transient--editp)))
+
+(defun transient--suffix-color (command)
+  (or (get command 'transient-color)
+      (get (transient--get-predicate-for command) 'transient-color)))
+
+(defun transient--prefix-color (command)
+  (let* ((nonsuf (or (oref command transient-non-suffix)
+                     'transient--do-warn))
+         (nonsuf (if (memq nonsuf '(transient--do-noop transient--do-warn))
+                     'disallow
+                   (get nonsuf 'transient-color)))
+         (suffix (if-let ((pred (oref command transient-suffix)))
+                     (get pred 'transient-color)
+                   (if (eq nonsuf 'transient-red)
+                       'transient-red
+                     'transient-blue))))
+    (pcase (list suffix nonsuf)
+      (`(transient-red  disallow)       'transient-amaranth)
+      (`(transient-blue disallow)       'transient-teal)
+      (`(transient-red  transient-red)  'transient-pink)
+      (`(transient-red  transient-blue) 'transient-red)
+      (`(transient-blue transient-blue) 'transient-blue))))
 
 ;;;; Edebug
 
