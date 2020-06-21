@@ -2818,15 +2818,19 @@ Optional support for popup buttons is also implemented here."
                 (setq suf (replace-regexp-in-string " " "" suf)))
               (concat (propertize pre 'face 'default)
                       (and (string-prefix-p (concat pre " ") key) " ")
-                      (propertize suf 'face 'transient-key)
+                      (transient--colorize-key suf)
                       (save-excursion
                         (when (string-match " +\\'" key)
                           (match-string 0 key))))))
            ((transient--lookup-key transient-sticky-map (kbd key))
-            (propertize key 'face 'transient-key))
+            (transient--colorize-key key))
            (t
             (propertize key 'face 'transient-unreachable-key))))
-      (propertize key 'face 'transient-key))))
+      (transient--colorize-key key))))
+
+(defun transient--colorize-key (key)
+  (propertize key 'face
+              'transient-key))
 
 (cl-defmethod transient-format-key :around ((obj transient-argument))
   (let ((key (cl-call-next-method obj)))
