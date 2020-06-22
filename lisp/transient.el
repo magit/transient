@@ -2411,6 +2411,13 @@ The last value is \"don't use any of these switches\"."
         (cadr (member value choices))
       (car choices))))
 
+(cl-defmethod transient-infix-read ((command symbol))
+  "Elsewhere use the reader of the infix command COMMAND.
+Use this if you want to share an infix's history with a regular
+stand-alone command."
+  (cl-letf (((symbol-function #'transient--show) #'ignore))
+    (transient-infix-read (get command 'transient--suffix))))
+
 ;;;; Readers
 
 (defun transient-read-directory (prompt _initial-input _history)
