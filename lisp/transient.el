@@ -1571,6 +1571,9 @@ be nil and PARAMS may be (but usually is not) used to set e.g. the
 This function is also called internally in which case LAYOUT and
 EDIT may be non-nil."
   (transient--debug 'setup)
+  (when (and (>= (minibuffer-depth) 1) transient--prefix)
+    (error "Cannot invoke %s while minibuffer is active %s"
+           this-command "on behalf of another prefix command"))
   (cond
    ((not name)
     ;; Switching between regular and edit mode.
