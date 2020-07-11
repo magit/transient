@@ -1958,7 +1958,7 @@ EDIT may be non-nil."
                  arg this-command transient--exitp)
       (apply #'message arg args))))
 
-(defun transient--emergency-exit ()
+(defun transient--emergency-exit (&optional err)
   "Exit the current transient command after an error occurred.
 
 Beside being used with `condition-case', this function also has
@@ -1974,15 +1974,17 @@ nil, then do nothing."
     (setq transient--stack nil)
     (setq transient--exitp t)
     (transient--pre-exit)
-    (transient--post-command)))
+    (transient--post-command)
+    (when err
+      (signal (car err) (cdr err)))))
 
 (add-hook 'debugger-mode-hook 'transient--emergency-exit)
 
 (defmacro transient--with-emergency-exit (&rest body)
   (declare (indent defun))
-  `(condition-case nil
+  `(condition-case err
        ,(macroexp-progn body)
-     (error (transient--emergency-exit))))
+     (error (transient--emergency-exit err))))
 
 ;;; Pre-Commands
 
