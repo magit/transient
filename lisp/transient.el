@@ -1969,6 +1969,7 @@ either be unbound or do something else.
 
 When no transient is active (i.e. when `transient--prefix') is
 nil, then do nothing."
+  (transient--debug 'emergency-exit)
   (when transient--prefix
     (setq transient--stack nil)
     (setq transient--exitp t)
