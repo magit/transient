@@ -89,6 +89,12 @@
 (define-obsolete-variable-alias 'post-transient-hook
   'transient-exit-hook "Transient 0.3.0")
 
+(defmacro transient--with-emergency-exit (&rest body)
+  (declare (indent defun))
+  `(condition-case err
+       ,(macroexp-progn body)
+     (error (transient--emergency-exit err))))
+
 ;;; Options
 
 (defgroup transient nil
@@ -1979,12 +1985,6 @@ nil, then do nothing."
       (signal (car err) (cdr err)))))
 
 (add-hook 'debugger-mode-hook 'transient--emergency-exit)
-
-(defmacro transient--with-emergency-exit (&rest body)
-  (declare (indent defun))
-  `(condition-case err
-       ,(macroexp-progn body)
-     (error (transient--emergency-exit err))))
 
 ;;; Pre-Commands
 
