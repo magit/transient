@@ -651,6 +651,7 @@ slot is non-nil."
    (shortarg    :initarg :shortarg)
    (value                             :initform nil)
    (multi-value :initarg :multi-value :initform nil)
+   (always-read :initarg :always-read :initform nil)
    (allow-empty :initarg :allow-empty :initform nil)
    (history-key :initarg :history-key :initform nil)
    (reader      :initarg :reader      :initform nil)
@@ -2371,9 +2372,10 @@ limited number of possible values should you replace this with a
 simple method that does not handle history.  (E.g. for a command
 line switch the only possible values are \"use it\" and \"don't use
 it\", in which case it is pointless to preserve history.)"
-  (with-slots (value multi-value allow-empty choices) obj
+  (with-slots (value multi-value always-read allow-empty choices) obj
     (if (and value
              (not multi-value)
+             (not always-read)
              transient--prefix)
         (oset obj value nil)
       (let* ((overriding-terminal-local-map nil)
@@ -3412,6 +3414,35 @@ we stop there."
        (2 'font-lock-function-name-face nil t)))))
 
 (font-lock-add-keywords 'emacs-lisp-mode transient-font-lock-keywords)
+
+;;; Auxiliary Classes
+;;;; `transient-lisp-variable'
+
+(defclass transient-lisp-variable (transient-variable)
+  ((reader :initform transient-lisp-variable--reader)
+   (always-read :initform t))
+  "[Experimental] Class used for Lisp variables.")
+
+(cl-defmethod transient-init-value ((obj transient-lisp-variable))
+  (oset obj value (symbol-value (oref obj variable))))
+
+(cl-defmethod transient-infix-set ((obj transient-lisp-variable) value)
+  (set (oref obj variable)
+       (oset obj value value)))
+
+(cl-defmethod transient-format-description ((obj transient-lisp-variable))
+  (or (oref obj description)
+      (oref obj variable)))
+
+(cl-defmethod transient-format-value ((obj transient-lisp-variable))
+  (propertize (prin1-to-string (oref obj value))
+              'face 'transient-value))
+
+(cl-defmethod transient-prompt ((obj transient-lisp-variable))
+  (format "Set %s: " (oref obj variable)))
+
+(defun transient-lisp-variable--reader (prompt initial-input _history)
+  (read--expression prompt initial-input))
 
 ;;; _
 (provide 'transient)
