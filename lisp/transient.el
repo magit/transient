@@ -3436,6 +3436,18 @@ we stop there."
       (push (funcall function (car acc) elt) acc))
     (nreverse acc)))
 
+(defun transient-plist-to-alist (plist)
+  (let (alist)
+    (while plist
+      (push (cons (let* ((symbol (pop plist))
+                         (name (symbol-name symbol)))
+                    (if (eq (aref name 0) ?:)
+                        (intern (substring name 1))
+                      symbol))
+                  (pop plist))
+            alist))
+    (nreverse alist)))
+
 ;;; Font-Lock
 
 (defconst transient-font-lock-keywords
