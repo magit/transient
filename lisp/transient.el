@@ -690,9 +690,10 @@ They become the value of this this argument.")
 ;;;; Group
 
 (defclass transient-group (transient-child)
-  ((suffixes    :initarg :suffixes    :initform nil)
-   (hide        :initarg :hide        :initform nil)
-   (description :initarg :description :initform nil))
+  ((suffixes       :initarg :suffixes       :initform nil)
+   (hide           :initarg :hide           :initform nil)
+   (description    :initarg :description    :initform nil)
+   (setup-children :initarg :setup-children))
   "Abstract superclass of all group classes."
   :abstract t)
 
@@ -1614,6 +1615,15 @@ EDIT may be non-nil."
     (transient--init-transient)
     (transient--suspend-which-key-mode)))
 
+(cl-defgeneric transient-setup-children (group children)
+  "Setup the CHILDREN of GROUP.
+If the value of the `setup-children' slot is non-nil, then call
+that function with CHILDREN as the only argument and return the
+value.  Otherwise return CHILDREN as is."
+  (if (slot-boundp group 'setup-children)
+      (funcall (oref group setup-children) children)
+    children))
+
 (defun transient--init-objects (name layout params)
   (setq transient--prefix
         (let ((proto (get name 'transient--prefix)))
@@ -1656,7 +1666,7 @@ EDIT may be non-nil."
         (when (transient--use-suffix-p obj)
           (when-let ((suffixes
                       (cl-mapcan (lambda (c) (transient--init-child levels c))
-                                 children)))
+                                 (transient-setup-children obj children))))
             (oset obj suffixes suffixes)
             (list obj)))))))
 

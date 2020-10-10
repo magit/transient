@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-8-gc94cff7+1)
+@subtitle for version 0.2.0 (v0.2.0-36-g96cec8e1+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-8-gc94cff7+1).
+This manual is for Transient version 0.2.0 (v0.2.0-36-g96cec8e1+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1049,7 +1049,7 @@ only documented once, see @ref{Predicate Slots}.
 
 
 @item
-Finally the value of @code{:hide}, if non-nil, is a predicate that controls
+The value of @code{:hide}, if non-nil, is a predicate that controls
 whether the group is hidden by default.  The key bindings for
 suffixes of a hidden group should all use the same prefix key.
 Pressing that prefix key should temporarily show the group and its
@@ -1060,6 +1060,15 @@ suffixes, which assumes that a predicate like this is used:
   (eq (car transient--redisplay-key)
       ?\C-c)) ; the prefix key shared by all bindings
 @end lisp
+
+
+@item
+The value of @code{:setup-children}, if non-nil, is a function that takes
+two arguments the group object itself and a list of children.
+The children are given as a, potentially empty, list consisting
+of either group or suffix specifications.  It can make arbitrary
+changes to the children including constructing new children from
+scratch.  Also see @code{transient-setup-children}.
 @end itemize
 
 The ELEMENTs are either all subgroups (vectors), or all suffixes
@@ -1570,6 +1579,21 @@ elements.
 
 @node Group Methods
 @section Group Methods
+
+@defun transient-setup-children group children
+
+This generic function can be used to setup the children or a group.
+
+The default implementation usually just returns the children
+unchanged, but if the @code{setup-children} slot of GROUP is non-nil, then
+it calls that function with CHILDREN as the only argument and
+returns the value.
+
+The children are given as a, potentially empty, list consisting of
+either group or suffix specifications.  These functions can make
+arbitrary changes to the children including constructing new
+children from scratch.
+@end defun
 
 @defun transient--insert-group group
 
