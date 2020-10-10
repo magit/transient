@@ -945,6 +945,15 @@ example, sets a variable use `transient-define-infix' instead.
         (error "Need command, got %S" car))
        ((symbolp car)
         (setq args (plist-put args :command pop)))
+       ((and (commandp car)
+             (not (stringp car)))
+        (let ((cmd pop)
+              (sym (intern (format "transient:%s:%s"
+                                   prefix
+                                   (or (plist-get args :description)
+                                       (plist-get args :key))))))
+          (defalias sym cmd)
+          (setq args (plist-put args :command sym))))
        ((or (stringp car)
             (and car (listp car)))
         (let ((arg pop))

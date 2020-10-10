@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.2.0 (v0.2.0-36-g96cec8e1+1)
+#+SUBTITLE: for version 0.2.0 (v0.2.0-37-gf2252d53+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-36-g96cec8e1+1).
+This manual is for Transient version 0.2.0 (v0.2.0-37-gf2252d53+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -894,10 +894,18 @@ the object's values just for the binding inside this transient.
 The next element is either a command or an argument.  This is the only
 argument that is mandatory in all cases.
 
-- COMMAND is a symbol that is bound as a function, which has to be a
-  command.  Any command will do; it does not need to have an object
-  associated with it (as would be the case if ~transient-define-suffix~
-  or ~transient-define-infix~ were used to define it).
+- Usually COMMAND is a symbol that is bound as a function, which has
+  to be defined or at least autoloaded as a command by the time the
+  containing prefix command is invoked.
+
+  Any command will do; it does not need to have an object associated
+  with it (as would be the case if ~transient-define-suffix~ or
+  ~transient-define-infix~ were used to define it).
+
+  The command can also be a closure or lambda expression, but that
+  should only be used for dynamic transients whose suffixes are
+  defined when the prefix command is invoked.  See information about
+  the ~:setup-children~ function in [[*Group Specifications]].
 
   As mentioned above, the object that is associated with a command can
   be used to set the default for certain values that otherwise have to
