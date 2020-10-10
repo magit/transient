@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.2.0 (v0.2.0-37-gf2252d53+1)
+#+SUBTITLE: for version 0.2.0 (v0.2.0-38-ga3e53633+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-37-gf2252d53+1).
+This manual is for Transient version 0.2.0 (v0.2.0-38-ga3e53633+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -839,6 +839,11 @@ constructor of that class.
   of either group or suffix specifications.  It can make arbitrary
   changes to the children including constructing new children from
   scratch.  Also see ~transient-setup-children~.
+
+- The constructors of ~transient-column~ and ~transient-columns~ accept an
+  additional keyword argument ~:pad-keys~.  If non-nil, then keys of all
+  contained suffixes are right padded, effectively aligning the
+  descriptions.
 
 The ELEMENTs are either all subgroups (vectors), or all suffixes
 (lists) and strings.  (At least currently no group type exists that

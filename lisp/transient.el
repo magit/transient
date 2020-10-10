@@ -697,13 +697,15 @@ They become the value of this this argument.")
   "Abstract superclass of all group classes."
   :abstract t)
 
-(defclass transient-column (transient-group) ()
+(defclass transient-column (transient-group)
+  ((pad-keys :initarg :pad-keys))
   "Group class that displays each element on a separate line.")
 
 (defclass transient-row (transient-group) ()
   "Group class that displays all elements on a single line.")
 
-(defclass transient-columns (transient-group) ()
+(defclass transient-columns (transient-group)
+  ((pad-keys :initarg :pad-keys))
   "Group class that displays elements organized in columns.
 Direct elements have to be groups whose elements have to be
 commands or string.  Each subgroup represents a column.  This
@@ -2793,6 +2795,7 @@ have a history of their own.")
   (insert ?\n))
 
 (cl-defmethod transient--insert-group ((group transient-column))
+  (transient--maybe-pad-keys group)
   (dolist (suffix (oref group suffixes))
     (let ((str (transient-format suffix)))
       (insert str)
@@ -2803,6 +2806,7 @@ have a history of their own.")
   (let* ((columns
           (mapcar
            (lambda (column)
+             (transient--maybe-pad-keys column group)
              (let ((rows (mapcar 'transient-format (oref column suffixes))))
                (when-let ((desc (transient-format-description column)))
                  (push desc rows))
@@ -3044,6 +3048,21 @@ If the OBJ's `key' is currently unreachable, then apply the face
 (defun transient--lookup-key (keymap key)
   (let ((val (lookup-key keymap key)))
     (and val (not (integerp val)) val)))
+
+(defun transient--maybe-pad-keys (group &optional parent)
+  (when-let ((pad (if (slot-boundp group 'pad-keys)
+                      (oref group pad-keys)
+                    (and parent
+                         (slot-boundp parent 'pad-keys)
+                         (oref parent pad-keys)))))
+    (let ((width (apply #'max
+                        (cons (if (integerp pad) pad 0)
+                              (mapcar (lambda (suffix)
+                                        (length (oref suffix key)))
+                                      (oref group suffixes))))))
+      (dolist (suffix (oref group suffixes))
+        (oset suffix key
+              (truncate-string-to-width (oref suffix key) width nil ?\s))))))
 
 ;;; Help
 

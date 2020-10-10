@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-37-gf2252d53+1)
+@subtitle for version 0.2.0 (v0.2.0-38-ga3e53633+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-37-gf2252d53+1).
+This manual is for Transient version 0.2.0 (v0.2.0-38-ga3e53633+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1069,6 +1069,13 @@ The children are given as a, potentially empty, list consisting
 of either group or suffix specifications.  It can make arbitrary
 changes to the children including constructing new children from
 scratch.  Also see @code{transient-setup-children}.
+
+
+@item
+The constructors of @code{transient-column} and @code{transient-columns} accept an
+additional keyword argument @code{:pad-keys}.  If non-nil, then keys of all
+contained suffixes are right padded, effectively aligning the
+descriptions.
 @end itemize
 
 The ELEMENTs are either all subgroups (vectors), or all suffixes
