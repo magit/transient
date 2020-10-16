@@ -2003,9 +2003,9 @@ nil, then do nothing."
     (setq transient--stack nil)
     (setq transient--exitp t)
     (transient--pre-exit)
-    (transient--post-command)
-    (when err
-      (signal (car err) (cdr err)))))
+    (transient--post-command))
+  (when err
+    (signal (car err) (cdr err))))
 
 (add-hook 'debugger-mode-hook 'transient--emergency-exit)
 
