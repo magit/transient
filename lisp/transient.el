@@ -650,6 +650,7 @@ slot is non-nil."
    (argument    :initarg :argument)
    (shortarg    :initarg :shortarg)
    (value                             :initform nil)
+   (init-value  :initarg :init-value)
    (unsavable   :initarg :unsavable   :initform nil)
    (multi-value :initarg :multi-value :initform nil)
    (always-read :initarg :always-read :initform nil)
@@ -2311,6 +2312,13 @@ default implementation is a noop.  Classes derived from the
 abstract `transient-infix' class must implement this function.
 Non-infix suffix commands usually don't have a value."
   nil)
+
+(cl-defmethod transient-init-value :around ((obj transient-infix))
+  "If bound, then call OBJ's `init-value' function.
+Otherwise call the primary method according to objects class."
+  (if (slot-boundp obj 'init-value)
+      (funcall (oref obj init-value) obj)
+    (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value ((obj transient-prefix))
   (if (slot-boundp obj 'value)
