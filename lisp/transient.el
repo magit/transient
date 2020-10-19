@@ -650,6 +650,7 @@ slot is non-nil."
    (argument    :initarg :argument)
    (shortarg    :initarg :shortarg)
    (value                             :initform nil)
+   (unsavable   :initarg :unsavable   :initform nil)
    (multi-value :initarg :multi-value :initform nil)
    (always-read :initarg :always-read :initform nil)
    (allow-empty :initarg :allow-empty :initform nil)
@@ -2598,7 +2599,11 @@ the set, saved or default value for PREFIX."
       (delq nil (mapcar 'transient-infix-value transient--suffixes)))))
 
 (defun transient-get-value ()
-  (delq nil (mapcar 'transient-infix-value transient-current-suffixes)))
+  (delq nil (mapcar (lambda (obj)
+                      (and (or (not (slot-exists-p obj 'unsavable))
+                               (not (oref obj unsavable)))
+                           (transient-infix-value obj)))
+                    transient-current-suffixes)))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.

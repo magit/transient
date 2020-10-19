@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.2.0 (v0.2.0-44-gf0f3e2b9+1)
+#+SUBTITLE: for version 0.2.0 (v0.2.0-45-g313eee0f+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-44-gf0f3e2b9+1).
+This manual is for Transient version 0.2.0 (v0.2.0-45-g313eee0f+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -1592,6 +1592,9 @@ They are defined here anyway to allow sharing certain methods.
 - ~shortarg~ The short argument, e.g. ~-v~.
 
 - ~value~ The value.  Should not be accessed directly.
+
+- ~unsavable~ Whether the value of the suffix is not saved as part of
+  the prefixes.
 
 - ~multi-value~ For options, whether the option can have multiple
   values.  If non-nil, then default to use ~completing-read-multiple~.
