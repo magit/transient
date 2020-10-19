@@ -2647,7 +2647,7 @@ contribute to the value of the transient."
   nil)
 
 (cl-defmethod transient-infix-value ((obj transient-files))
-  "Return (concat ARGUMENT VALUE) or nil.
+  "Return (cons ARGUMENT VALUE) or nil.
 
 ARGUMENT and VALUE are the values of the respective slots of OBJ.
 If VALUE is nil, then return nil.  VALUE may be the empty string,
