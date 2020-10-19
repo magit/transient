@@ -480,13 +480,13 @@ These faces are only used if `transient-semantic-coloring'
            (insert-file-contents file)
            (read (current-buffer))))))
 
-(defun transient--pp-to-file (object file)
+(defun transient--pp-to-file (list file)
   (make-directory (file-name-directory file) t)
-  (setq object (cl-sort object #'string< :key #'car))
+  (setq list (cl-sort (copy-sequence list) #'string< :key #'car))
   (with-temp-file file
     (let ((print-level nil)
           (print-length nil))
-      (pp object (current-buffer)))))
+      (pp list (current-buffer)))))
 
 (defvar transient-values
   (transient--read-file-contents transient-values-file)
