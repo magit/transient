@@ -2618,11 +2618,9 @@ the set, saved or default value for PREFIX."
   "Return the suffix objects of the transient prefix command PREFIX."
   (if (eq transient-current-command prefix)
       transient-current-suffixes
-    (let ((transient--prefix nil)
-          (transient--layout nil)
-          (transient--suffixes nil))
-      (transient--init-objects prefix nil nil)
-      transient--suffixes)))
+    (let ((transient--prefix (transient--init-prefix prefix)))
+      (transient--flatten-suffixes
+       (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
   (delq nil (mapcar (lambda (obj)
