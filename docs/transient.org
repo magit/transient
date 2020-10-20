@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.2.0 (v0.2.0-48-g8423bc69+1)
+#+SUBTITLE: for version 0.2.0 (v0.2.0-49-ga3517747+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-48-g8423bc69+1).
+This manual is for Transient version 0.2.0 (v0.2.0-49-ga3517747+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@bernoul.li>
@@ -326,12 +326,14 @@ value is saved to its history.  These values can be cycled through the
 same way one can cycle through the history of commands that read
 user-input in the minibuffer.
 
-- Key: M-p, transient-history-prev
+- Key: C-M-p, transient-history-prev
+- Key: C-x p, transient-history-prev
 
   This command switches to the previous value used for the active
   transient.
 
-- Key: M-n, transient-history-next
+- Key: C-M-n, transient-history-next
+- Key: C-x n, transient-history-next
 
   This command switches to the next value used for the active
   transient.

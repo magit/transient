@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-48-g8423bc69+1)
+@subtitle for version 0.2.0 (v0.2.0-49-ga3517747+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-48-g8423bc69+1).
+This manual is for Transient version 0.2.0 (v0.2.0-49-ga3517747+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -471,16 +471,22 @@ same way one can cycle through the history of commands that read
 user-input in the minibuffer.
 
 @table @asis
-@kindex M-p
+@kindex C-M-p
 @cindex transient-history-prev
-@item @kbd{M-p} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-prev})
+@item @kbd{C-M-p} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-prev})
+@kindex C-x p
+@cindex transient-history-prev
+@item @kbd{C-x p} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-prev})
 
 This command switches to the previous value used for the active
 transient.
 
-@kindex M-n
+@kindex C-M-n
 @cindex transient-history-next
-@item @kbd{M-n} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-next})
+@item @kbd{C-M-n} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-next})
+@kindex C-x n
+@cindex transient-history-next
+@item @kbd{C-x n} @tie{}@tie{}@tie{}@tie{}(@code{transient-history-next})
 
 This command switches to the next value used for the active
 transient.

@@ -1358,7 +1358,7 @@ then just return it.  Otherwise return the symbol whose
     (define-key map (kbd "C-q") 'transient-quit-all)
     (define-key map (kbd "C-z") 'transient-suspend)
     (define-key map (kbd "C-v") 'transient-scroll-up)
-    (define-key map (kbd "M-v") 'transient-scroll-down)
+    (define-key map (kbd "C-M-v") 'transient-scroll-down)
     (define-key map [next]      'transient-scroll-up)
     (define-key map [prior]     'transient-scroll-down)
     map)
@@ -1382,8 +1382,9 @@ edited using the same functions as used for transients.")
     (define-key map (kbd "C-t") 'transient-show)
     (define-key map (kbd "?")   'transient-help)
     (define-key map (kbd "C-h") 'transient-help)
-    (define-key map (kbd "M-p") 'transient-history-prev)
-    (define-key map (kbd "M-n") 'transient-history-next)
+    ;; Also bound to "C-x p" and "C-x n" in transient-common-commands.
+    (define-key map (kbd "C-M-p") 'transient-history-prev)
+    (define-key map (kbd "C-M-n") 'transient-history-next)
     map)
   "Top-level keymap used by all transients.")
 
@@ -1416,8 +1417,8 @@ edited using the same functions as used for transients.")
          ["Value commands"
           ("C-x s  " "Set"            transient-set)
           ("C-x C-s" "Save"           transient-save)
-          ("M-p    " "Previous value" transient-history-prev)
-          ("M-n    " "Next value"     transient-history-next)]
+          ("C-x p  " "Previous value" transient-history-prev)
+          ("C-x n  " "Next value"     transient-history-next)]
          ["Sticky commands"
           ;; Like `transient-sticky-map' except that
           ;; "C-g" has to be bound to a different command.
