@@ -1646,14 +1646,7 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--init-objects (name layout params)
   (setq transient--prefix (transient--init-prefix name params))
-  (setq transient--layout
-        (or layout
-            (let ((levels (alist-get name transient-levels)))
-              (cl-mapcan (lambda (c) (transient--init-child levels c))
-                         (append (get name 'transient--layout)
-                                 (and (not transient--editp)
-                                      (get 'transient-common-commands
-                                           'transient--layout)))))))
+  (setq transient--layout (or layout (transient--init-suffixes name)))
   (setq transient--suffixes
         (cl-labels ((s (def)
                        (cond
@@ -1674,6 +1667,14 @@ value.  Otherwise return CHILDREN as is."
                       params))))
     (transient-init-value obj)
     obj))
+
+(defun transient--init-suffixes (name)
+  (let ((levels (alist-get name transient-levels)))
+    (cl-mapcan (lambda (c) (transient--init-child levels c))
+               (append (get name 'transient--layout)
+                       (and (not transient--editp)
+                            (get 'transient-common-commands
+                                 'transient--layout))))))
 
 (defun transient--init-child (levels spec)
   (cl-etypecase spec
