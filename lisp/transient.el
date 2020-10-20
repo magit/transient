@@ -1645,15 +1645,7 @@ value.  Otherwise return CHILDREN as is."
     children))
 
 (defun transient--init-objects (name layout params)
-  (setq transient--prefix
-        (let ((proto (get name 'transient--prefix)))
-          (apply #'clone proto
-                 :prototype proto
-                 :level (or (alist-get
-                             t (alist-get name transient-levels))
-                            transient-default-level)
-                 params)))
-  (transient-init-value transient--prefix)
+  (setq transient--prefix (transient--init-prefix name params))
   (setq transient--layout
         (or layout
             (let ((levels (alist-get name transient-levels)))
@@ -1672,6 +1664,16 @@ value.  Otherwise return CHILDREN as is."
                         ((transient-suffix--eieio-childp def)
                          (list def)))))
           (cl-mapcan #'s transient--layout))))
+
+(defun transient--init-prefix (name &optional params)
+  (let ((obj (let ((proto (get name 'transient--prefix)))
+               (apply #'clone proto
+                      :prototype proto
+                      :level (or (alist-get t (alist-get name transient-levels))
+                                 transient-default-level)
+                      params))))
+    (transient-init-value obj)
+    obj))
 
 (defun transient--init-child (levels spec)
   (cl-etypecase spec
