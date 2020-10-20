@@ -1647,16 +1647,7 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--init-objects (name layout params)
   (setq transient--prefix (transient--init-prefix name params))
   (setq transient--layout (or layout (transient--init-suffixes name)))
-  (setq transient--suffixes
-        (cl-labels ((s (def)
-                       (cond
-                        ((stringp def) nil)
-                        ((listp def) (cl-mapcan #'s def))
-                        ((transient-group--eieio-childp def)
-                         (cl-mapcan #'s (oref def suffixes)))
-                        ((transient-suffix--eieio-childp def)
-                         (list def)))))
-          (cl-mapcan #'s transient--layout))))
+  (setq transient--suffixes (transient--flatten-suffixes transient--layout)))
 
 (defun transient--init-prefix (name &optional params)
   (let ((obj (let ((proto (get name 'transient--prefix)))
@@ -1675,6 +1666,17 @@ value.  Otherwise return CHILDREN as is."
                        (and (not transient--editp)
                             (get 'transient-common-commands
                                  'transient--layout))))))
+
+(defun transient--flatten-suffixes (layout)
+  (cl-labels ((s (def)
+                 (cond
+                  ((stringp def) nil)
+                  ((listp def) (cl-mapcan #'s def))
+                  ((transient-group--eieio-childp def)
+                   (cl-mapcan #'s (oref def suffixes)))
+                  ((transient-suffix--eieio-childp def)
+                   (list def)))))
+    (cl-mapcan #'s layout)))
 
 (defun transient--init-child (levels spec)
   (cl-etypecase spec
