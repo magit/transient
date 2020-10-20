@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-47-gd1caef51+1)
+@subtitle for version 0.2.0 (v0.2.0-48-g8423bc69+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-47-gd1caef51+1).
+This manual is for Transient version 0.2.0 (v0.2.0-48-g8423bc69+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1284,6 +1284,14 @@ If the current command was invoked from the transient prefix command
 PREFIX, then it returns the active infix arguments.  If the current
 command was not invoked from PREFIX, then it returns the set, saved
 or default value for PREFIX@.
+@end defun
+
+@defun transient-suffixes prefix
+
+This function returns the suffixes of the transient prefix command
+PREFIX@.  This is a list of objects.  This function should only be
+used if you need the objects (as opposed to just their values) and
+if the current command is not being invoked from PREFIX@.
 @end defun
 
 @defvar transient-current-suffixes

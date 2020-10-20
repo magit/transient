@@ -2598,13 +2598,17 @@ If the current command was invoked from the transient prefix
 command PREFIX, then return the active infix arguments.  If
 the current command was not invoked from PREFIX, then return
 the set, saved or default value for PREFIX."
+  (delq nil (mapcar 'transient-infix-value (transient-suffixes prefix))))
+
+(defun transient-suffixes (prefix)
+  "Return the suffix objects of the transient prefix command PREFIX."
   (if (eq transient-current-command prefix)
-      (delq nil (mapcar 'transient-infix-value transient-current-suffixes))
+      transient-current-suffixes
     (let ((transient--prefix nil)
           (transient--layout nil)
           (transient--suffixes nil))
       (transient--init-objects prefix nil nil)
-      (delq nil (mapcar 'transient-infix-value transient--suffixes)))))
+      transient--suffixes)))
 
 (defun transient-get-value ()
   (delq nil (mapcar (lambda (obj)
