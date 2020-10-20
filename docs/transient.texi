@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-46-g1b9929ec+1)
+@subtitle for version 0.2.0 (v0.2.0-47-gd1caef51+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-46-g1b9929ec+1).
+This manual is for Transient version 0.2.0 (v0.2.0-47-gd1caef51+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1275,7 +1275,7 @@ The preferred way of doing that is to call the @code{transient-args}
 function, which for infix arguments serves about the same purpose as
 @code{prefix-arg} serves for prefix arguments.
 
-@defun transient-args &optional prefix
+@defun transient-args prefix
 
 This function returns the value of the transient prefix command
 PREFIX@.
