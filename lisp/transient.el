@@ -3488,15 +3488,17 @@ we stop there."
 
 (defclass transient-lisp-variable (transient-variable)
   ((reader :initform transient-lisp-variable--reader)
-   (always-read :initform t))
+   (always-read :initform t)
+   (set-value :initarg :set-value :initform set))
   "[Experimental] Class used for Lisp variables.")
 
 (cl-defmethod transient-init-value ((obj transient-lisp-variable))
   (oset obj value (symbol-value (oref obj variable))))
 
 (cl-defmethod transient-infix-set ((obj transient-lisp-variable) value)
-  (set (oref obj variable)
-       (oset obj value value)))
+  (funcall (oref obj set-value)
+           (oref obj variable)
+           (oset obj value value)))
 
 (cl-defmethod transient-format-description ((obj transient-lisp-variable))
   (or (oref obj description)
