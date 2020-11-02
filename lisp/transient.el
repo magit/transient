@@ -889,7 +889,9 @@ example, sets a variable use `transient-define-infix' instead.
             (setq class v)
           (push k keys)
           (push v keys))))
-    (while (vectorp (car args))
+    (while (let ((arg (car args)))
+             (or (vectorp arg)
+                 (and arg (symbolp arg))))
       (push (pop args) suffixes))
     (list (if (eq (car-safe class) 'quote)
               (cadr class)
@@ -901,6 +903,12 @@ example, sets a variable use `transient-define-infix' instead.
 
 (defun transient--parse-child (prefix spec)
   (cl-etypecase spec
+    (symbol  (let ((value (symbol-value spec)))
+               (if (and (listp value)
+                        (or (listp (car value))
+                            (vectorp (car value))))
+                   (cl-mapcan (lambda (s) (transient--parse-child prefix s)) value)
+                 (transient--parse-child prefix value))))
     (vector  (when-let ((c (transient--parse-group  prefix spec))) (list c)))
     (list    (when-let ((c (transient--parse-suffix prefix spec))) (list c)))
     (string  (list spec))))

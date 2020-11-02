@@ -857,6 +857,14 @@ that specify commands and strings.  Strings are inserted verbatim.
 The empty string can be used to insert gaps between suffixes, which is
 particularly useful if the suffixes are outlined as a table.
 
+Variables are supported inside group specifications.  For example in
+place of a direct subgroup specification, a variable can be used whose
+value is a vector that qualifies as a group specification.  Likewise a
+variable can be used where a suffix specification is expected.  Lists
+of group or suffix specifications are also supported.  Indirect
+specifications are resolved when the transient prefix is being
+defined.
+
 The form of suffix specifications is documented in the next node.
 
 *** Suffix Specifications
