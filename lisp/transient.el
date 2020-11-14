@@ -2682,6 +2682,25 @@ which is not the same as nil."
   (when-let ((value (oref obj value)))
     (cons (oref obj argument) value)))
 
+;;;; Utilities
+
+(defun transient-arg-value (arg args)
+  "Return the value of ARG as it appears in ARGS.
+
+For a switch return a boolean.  For an option return the value as
+a string, using the empty string for the empty value, or nil if
+the option does not appear in ARGS."
+  (if (string-match-p "=\\'" arg)
+      (save-match-data
+        (when-let ((match (let ((re (format "\\`%s\\(?:=\\(.+\\)\\)?\\'"
+                                            (substring arg 0 -1))))
+                            (cl-find-if (lambda (a)
+                                          (and (stringp a)
+                                               (string-match re a)))
+                                        args))))
+          (or (match-string 1 match) "")))
+    (and (member arg args) t)))
+
 ;;; History
 
 (cl-defgeneric transient--history-key (obj)

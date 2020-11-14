@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.2.0 (v0.2.0-49-ga3517747+1)
+@subtitle for version 0.2.0 (v0.2.0-53-ge2fee198+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.2.0 (v0.2.0-49-ga3517747+1).
+This manual is for Transient version 0.2.0 (v0.2.0-53-ge2fee198+1).
 
 @quotation
 Copyright (C) 2018-2020 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1094,6 +1094,14 @@ that specify commands and strings.  Strings are inserted verbatim.
 The empty string can be used to insert gaps between suffixes, which is
 particularly useful if the suffixes are outlined as a table.
 
+Variables are supported inside group specifications.  For example in
+place of a direct subgroup specification, a variable can be used whose
+value is a vector that qualifies as a group specification.  Likewise a
+variable can be used where a suffix specification is expected.  Lists
+of group or suffix specifications are also supported.  Indirect
+specifications are resolved when the transient prefix is being
+defined.
+
 The form of suffix specifications is documented in the next node.
 
 @node Suffix Specifications
@@ -1290,6 +1298,15 @@ If the current command was invoked from the transient prefix command
 PREFIX, then it returns the active infix arguments.  If the current
 command was not invoked from PREFIX, then it returns the set, saved
 or default value for PREFIX@.
+@end defun
+
+@defun transient-arg-value arg args
+
+This function return the value of ARG as it appears in ARGS@.
+
+For a switch a boolean is returned.  For an option the value is
+returned as a string, using the empty string for the empty value,
+or nil if the option does not appear in ARGS@.
 @end defun
 
 @defun transient-suffixes prefix
