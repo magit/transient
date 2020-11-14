@@ -695,19 +695,18 @@ They become the value of this this argument.")
   ((suffixes       :initarg :suffixes       :initform nil)
    (hide           :initarg :hide           :initform nil)
    (description    :initarg :description    :initform nil)
-   (setup-children :initarg :setup-children))
+   (setup-children :initarg :setup-children)
+   (pad-keys       :initarg :pad-keys))
   "Abstract superclass of all group classes."
   :abstract t)
 
-(defclass transient-column (transient-group)
-  ((pad-keys :initarg :pad-keys))
+(defclass transient-column (transient-group) ()
   "Group class that displays each element on a separate line.")
 
 (defclass transient-row (transient-group) ()
   "Group class that displays all elements on a single line.")
 
-(defclass transient-columns (transient-group)
-  ((pad-keys :initarg :pad-keys))
+(defclass transient-columns (transient-group) ()
   "Group class that displays elements organized in columns.
 Direct elements have to be groups whose elements have to be
 commands or string.  Each subgroup represents a column.  This
@@ -2834,6 +2833,7 @@ have a history of their own.")
     (insert desc ?\n)))
 
 (cl-defmethod transient--insert-group ((group transient-row))
+  (transient--maybe-pad-keys group)
   (dolist (suffix (oref group suffixes))
     (insert (transient-format suffix))
     (insert "   "))
@@ -2874,9 +2874,11 @@ have a history of their own.")
   (let* ((subgroups (oref group suffixes))
          (n (length subgroups)))
     (dotimes (s n)
-      (transient--insert-group (nth s subgroups))
-      (when (< s (1- n))
-        (insert ?\n)))))
+      (let ((subgroup (nth s subgroups)))
+        (transient--maybe-pad-keys subgroup group)
+        (transient--insert-group subgroup)
+        (when (< s (1- n))
+          (insert ?\n))))))
 
 (cl-defgeneric transient-format (obj)
   "Format and return OBJ for display.
