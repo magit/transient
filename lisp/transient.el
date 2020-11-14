@@ -548,7 +548,8 @@ If `transient-save-history' is nil, then do nothing."
    (info-manual :initarg :info-manual :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
-   (incompatible         :initarg :incompatible         :initform nil))
+   (incompatible         :initarg :incompatible         :initform nil)
+   (suffix-description   :initarg :suffix-description   :initform nil))
   "Transient prefix command.
 
 Each transient prefix command consists of a command, which is
@@ -3036,6 +3037,9 @@ is nil, then use \"(BUG: no description)\" as the description.
 If the OBJ's `key' is currently unreachable, then apply the face
 `transient-unreachable' to the complete string."
   (let ((desc (or (cl-call-next-method obj)
+                  (and (slot-boundp transient--prefix 'suffix-description)
+                       (funcall (oref transient--prefix suffix-description)
+                                obj))
                   (propertize "(BUG: no description)" 'face 'error))))
     (if (transient--key-unreachable-p obj)
         (propertize desc 'face 'transient-unreachable)
@@ -3113,6 +3117,19 @@ If the OBJ's `key' is currently unreachable, then apply the face
       (dolist (suffix (oref group suffixes))
         (oset suffix key
               (truncate-string-to-width (oref suffix key) width nil ?\s))))))
+
+(defun transient-command-summary-or-name (obj)
+  "Return the summary or name of the command represented by OBJ.
+
+If the command has a doc-string, then return the first line of
+that, else its name.
+
+Intended to be temporarily used as the `:suffix-description' of
+a prefix command, while porting a regular keymap to a transient."
+  (let ((command (transient--suffix-symbol (oref obj command))))
+    (if-let ((doc (documentation command)))
+        (propertize (car (split-string doc "\n")) 'face 'font-lock-doc-face)
+      (propertize (symbol-name command) 'face 'font-lock-function-name-face))))
 
 ;;; Help
 
