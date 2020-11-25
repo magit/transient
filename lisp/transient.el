@@ -1314,11 +1314,13 @@ probably use this instead:
   (get COMMAND 'transient--suffix)"
   (when command
     (cl-check-type command command))
-  (if transient--prefix
+  (if (or transient--prefix
+          transient-current-prefix)
       (cl-find-if (lambda (obj)
                     (eq (transient--suffix-command obj)
                         (or command this-original-command)))
-                  transient--suffixes)
+                  (or transient--suffixes
+                      transient-current-suffixes))
     (when-let ((obj (get (or command this-command) 'transient--suffix))
                (obj (clone obj)))
       (transient-init-scope obj)
