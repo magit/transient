@@ -539,6 +539,7 @@ If `transient-save-history' is nil, then do nothing."
    (command     :initarg :command)
    (level       :initarg :level)
    (variable    :initarg :variable    :initform nil)
+   (init-value  :initarg :init-value)
    (value) (default-value :initarg :value)
    (scope       :initarg :scope       :initform nil)
    (history     :initarg :history     :initform nil)
@@ -2328,6 +2329,13 @@ default implementation is a noop.  Classes derived from the
 abstract `transient-infix' class must implement this function.
 Non-infix suffix commands usually don't have a value."
   nil)
+
+(cl-defmethod transient-init-value :around ((obj transient-prefix))
+  "If bound, then call OBJ's `init-value' function.
+Otherwise call the primary method according to objects class."
+  (if (slot-boundp obj 'init-value)
+      (funcall (oref obj init-value) obj)
+    (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value :around ((obj transient-infix))
   "If bound, then call OBJ's `init-value' function.
