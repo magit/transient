@@ -2577,10 +2577,7 @@ prompt."
   "Set the value of infix object OBJ to value.")
 
 (cl-defmethod transient-infix-set ((obj transient-infix) value)
-  "Set the value of infix object OBJ to value.
-
-This implementation should be suitable for almost all infix
-commands."
+  "Set the value of infix object OBJ to value."
   (oset obj value value))
 
 (cl-defmethod transient-infix-set :around ((obj transient-argument) value)
