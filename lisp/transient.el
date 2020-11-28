@@ -93,7 +93,9 @@
   (declare (indent defun))
   `(condition-case err
        ,(macroexp-progn body)
-     (error (transient--emergency-exit err))))
+     (error
+      (transient--emergency-exit)
+      (signal (car err) (cdr err)))))
 
 ;;; Options
 
@@ -2005,7 +2007,7 @@ value.  Otherwise return CHILDREN as is."
                  arg this-command transient--exitp)
       (apply #'message arg args))))
 
-(defun transient--emergency-exit (&optional err)
+(defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
 
 Beside being used with `condition-case', this function also has
@@ -2021,9 +2023,7 @@ nil, then do nothing."
     (setq transient--stack nil)
     (setq transient--exitp t)
     (transient--pre-exit)
-    (transient--post-command))
-  (when err
-    (signal (car err) (cdr err))))
+    (transient--post-command)))
 
 (add-hook 'debugger-mode-hook 'transient--emergency-exit)
 
