@@ -93,7 +93,7 @@
   (declare (indent defun))
   `(condition-case err
        ,(macroexp-progn body)
-     (error
+     ((debug error)
       (transient--emergency-exit)
       (signal (car err) (cdr err)))))
 
