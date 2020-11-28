@@ -92,10 +92,15 @@
 (defmacro transient--with-emergency-exit (&rest body)
   (declare (indent defun))
   `(condition-case err
-       ,(macroexp-progn body)
+       (let ((debugger #'transient--exit-and-debug))
+         ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit)
       (signal (car err) (cdr err)))))
+
+(defun transient--exit-and-debug (&rest args)
+  (transient--emergency-exit)
+  (apply #'debug args))
 
 ;;; Options
 
@@ -2009,13 +2014,6 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
-
-Beside being used with `condition-case', this function also has
-to be a member of `debugger-mode-hook', else the debugger would
-be unusable and exiting it by pressing \"q\" would fail because
-the transient command would still be active and that key would
-either be unbound or do something else.
-
 When no transient is active (i.e. when `transient--prefix') is
 nil, then do nothing."
   (transient--debug 'emergency-exit)
@@ -2024,8 +2022,6 @@ nil, then do nothing."
     (setq transient--exitp t)
     (transient--pre-exit)
     (transient--post-command)))
-
-(add-hook 'debugger-mode-hook 'transient--emergency-exit)
 
 ;;; Pre-Commands
 
