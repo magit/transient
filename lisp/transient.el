@@ -995,8 +995,7 @@ example, sets a variable use `transient-define-infix' instead.
                 ((not (string-suffix-p "=" arg))
                  (setq class 'transient-switch))
                 (t
-                 (setq class 'transient-option)
-                 (setq args (plist-put args :reader 'read-string))))))
+                 (setq class 'transient-option)))))
        (t
         (error "Needed command or argument, got %S" car)))
       (while (keywordp car)
