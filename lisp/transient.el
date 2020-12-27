@@ -291,7 +291,7 @@ used."
   :type 'boolean)
 
 (defcustom transient-force-fixed-pitch nil
-  "Whether to force used of monospaced font in popup buffer.
+  "Whether to force use of monospaced font in the popup buffer.
 
 Even if you use a proportional font for the `default' face,
 you might still want to use a monospaced font in transient's
