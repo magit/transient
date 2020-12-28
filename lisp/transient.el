@@ -3554,7 +3554,7 @@ we stop there."
 
 (cl-defmethod transient-format-description ((obj transient-lisp-variable))
   (or (oref obj description)
-      (oref obj variable)))
+      (symbol-name (oref obj variable))))
 
 (cl-defmethod transient-format-value ((obj transient-lisp-variable))
   (propertize (prin1-to-string (oref obj value))
