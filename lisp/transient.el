@@ -1065,7 +1065,15 @@ example, sets a variable use `transient-define-infix' instead.
               ;; We must keep `mem' until after we have inserted
               ;; behind it, which `transient-remove-suffix' does
               ;; not allow us to do.
-              (setq action 'replace)
+              (let ((spred (transient--suffix-predicate suf))
+                    (epred (transient--suffix-predicate elt)))
+                ;; If both suffixes have a predicate and they
+                ;; are not identical, then the probability is
+                ;; high that we want to keep both.
+                (when (or (not spred)
+                          (not epred)
+                          (equal spred epred))
+                  (setq action 'replace)))
             (transient-remove-suffix prefix key))))
       (cl-ecase action
         (insert  (setcdr mem (cons elt (cdr mem)))
@@ -1800,6 +1808,20 @@ value.  Otherwise return CHILDREN as is."
                             (derived-mode-p if-not-derived)
                           (apply #'derived-mode-p if-not-derived))))
    (t default)))
+
+(defun transient--suffix-predicate (spec)
+  (let ((plist (nth 2 spec)))
+    (seq-some (lambda (prop)
+                (when-let ((pred (plist-get plist prop)))
+                  (list prop pred)))
+              '( :if :if-not
+                 :if-nil :if-non-nil
+                 :if-mode :if-not-mode
+                 :if-derived :if-not-derived
+                 :inapt-if :inapt-if-not
+                 :inapt-if-nil :inapt-if-non-nil
+                 :inapt-if-mode :inapt-if-not-mode
+                 :inapt-if-derived :inapt-if-not-derived))))
 
 ;;; Flow-Control
 
