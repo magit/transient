@@ -1,6 +1,6 @@
 ;;; transient.el --- Transient commands          -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2018-2020  Free Software Foundation, Inc.
+;; Copyright (C) 2018-2021  Free Software Foundation, Inc.
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/transient
@@ -1058,9 +1058,13 @@ example, sets a variable use `transient-define-infix' instead.
      (t
       (when (and (listp suffix)
                  (listp elt))
+        ;; Both suffixes are key bindings; not heading strings.
         (let ((key (transient--spec-key suf)))
           (if (equal (transient--kbd key)
                      (transient--kbd (transient--spec-key elt)))
+              ;; We must keep `mem' until after we have inserted
+              ;; behind it, which `transient-remove-suffix' does
+              ;; not allow us to do.
               (setq action 'replace)
             (transient-remove-suffix prefix key))))
       (cl-ecase action
