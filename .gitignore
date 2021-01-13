@@ -1,5 +1,6 @@
 /config.mk
 /docs/*.html
+/docs/*.info
 /docs/*.pdf
 /docs/dir
 /docs/transient/
