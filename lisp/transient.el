@@ -2462,14 +2462,18 @@ it\", in which case it is pointless to preserve history.)"
                           (cons 'transient--history 1)
                         'transient--history))
              (value
-              (cond
-               (reader (funcall reader prompt initial-input history))
-               (multi-value
-                (completing-read-multiple prompt choices nil nil
-                                          initial-input history))
-               (choices
-                (completing-read prompt choices nil t initial-input history))
-               (t (read-string prompt initial-input history)))))
+              (let* ((enable-recursive-minibuffers t)
+                     (_ (transient--suspend-override t))
+                     (input (cond
+                             (reader (funcall reader prompt initial-input history))
+                             (multi-value
+                              (completing-read-multiple prompt choices nil nil
+                                                        initial-input history))
+                             (choices
+                              (completing-read prompt choices nil t initial-input history))
+                             (t (read-string prompt initial-input history))))
+                     (_ (transient--resume-override t)))
+                input)))
         (cond ((and (equal value "") (not allow-empty))
                (setq value nil))
               ((and (equal value "\"\"") allow-empty)
