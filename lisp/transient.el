@@ -1906,10 +1906,15 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
-    (let ((buf (window-buffer transient--window)))
+    (let ((remain-in-minibuffer-window
+           (and (minibuffer-selected-window)
+                (selected-window)))
+          (buf (window-buffer transient--window)))
       (with-demoted-errors "Error while exiting transient: %S"
         (delete-window transient--window))
-      (kill-buffer buf))))
+      (kill-buffer buf)
+      (when remain-in-minibuffer-window
+        (select-window remain-in-minibuffer-window)))))
 
 (defun transient--export ()
   (setq transient-current-prefix transient--prefix)
@@ -1919,21 +1924,19 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--minibuffer-setup ()
   (transient--debug 'minibuffer-setup)
-  (unless (> (minibuffer-depth) 1)
-    (unless transient--exitp
-      (transient--pop-keymap 'transient--transient-map)
-      (transient--pop-keymap 'transient--redisplay-map)
-      (remove-hook 'pre-command-hook #'transient--pre-command))
-    (remove-hook 'post-command-hook #'transient--post-command)))
+  (unless transient--exitp
+    (transient--pop-keymap 'transient--transient-map)
+    (transient--pop-keymap 'transient--redisplay-map)
+    (remove-hook 'pre-command-hook #'transient--pre-command))
+  (remove-hook 'post-command-hook #'transient--post-command))
 
 (defun transient--minibuffer-exit ()
   (transient--debug 'minibuffer-exit)
-  (unless (> (minibuffer-depth) 1)
-    (unless transient--exitp
-      (transient--push-keymap 'transient--transient-map)
-      (transient--push-keymap 'transient--redisplay-map)
-      (add-hook 'pre-command-hook #'transient--pre-command))
-    (add-hook 'post-command-hook #'transient--post-command)))
+  (unless transient--exitp
+    (transient--push-keymap 'transient--transient-map)
+    (transient--push-keymap 'transient--redisplay-map)
+    (add-hook 'pre-command-hook #'transient--pre-command))
+  (add-hook 'post-command-hook #'transient--post-command))
 
 (defun transient--suspend-override (&optional minibuffer-hooks)
   (transient--debug 'suspend-override)
@@ -2452,6 +2455,7 @@ it\", in which case it is pointless to preserve history.)"
              transient--prefix)
         (oset obj value nil)
       (let* ((overriding-terminal-local-map nil)
+             (enable-recursive-minibuffers t)
              (reader (oref obj reader))
              (prompt (transient-prompt obj))
              (value (if multi-value (mapconcat #'identity value ",") value))
