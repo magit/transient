@@ -2048,7 +2048,8 @@ value.  Otherwise return CHILDREN as is."
           (run-hooks 'transient-exit-hook)
           (when resume
             (transient--stack-pop))))
-    (transient--pop-keymap 'transient--redisplay-map)
+    (unless (memq this-command '(transient-update transient-quit-seq))
+      (transient--pop-keymap 'transient--redisplay-map))
     (setq transient--redisplay-map (transient--make-redisplay-map))
     (transient--push-keymap 'transient--redisplay-map)
     (unless (eq this-command (oref transient--prefix command))
