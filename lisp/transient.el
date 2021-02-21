@@ -1060,8 +1060,8 @@ example, sets a variable use `transient-define-infix' instead.
               (let ((spred (transient--suffix-predicate suf))
                     (epred (transient--suffix-predicate elt)))
                 ;; If both suffixes have a predicate and they
-                ;; are not identical, then the probability is
-                ;; high that we want to keep both.
+                ;; are not identical, then there is a high
+                ;; probability that we want to keep both.
                 (when (or (not spred)
                           (not epred)
                           (equal spred epred))
