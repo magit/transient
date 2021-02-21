@@ -2027,9 +2027,10 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--debug (arg &rest args)
   (when transient--debug
     (if (symbolp arg)
-        (message "-- %-16s (cmd: %s, exit: %s)"
+        (message "-- %-16s (cmd: %s, event: %S, exit: %s)"
                  arg
                  (transient--suffix-symbol this-command)
+                 (key-description (this-command-keys-vector))
                  transient--exitp)
       (apply #'message arg args))))
 
