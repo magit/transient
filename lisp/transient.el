@@ -1946,7 +1946,6 @@ value.  Otherwise return CHILDREN as is."
   (transient--timer-cancel)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
-  (remove-hook 'pre-command-hook #'transient--pre-command)
   (unless transient--showp
     (let ((message-log-max nil))
       (message "")))
@@ -1984,8 +1983,8 @@ value.  Otherwise return CHILDREN as is."
   (unless (> (minibuffer-depth) 1)
     (unless transient--exitp
       (transient--pop-keymap 'transient--transient-map)
-      (transient--pop-keymap 'transient--redisplay-map)
-      (remove-hook 'pre-command-hook #'transient--pre-command))
+      (transient--pop-keymap 'transient--redisplay-map))
+    (remove-hook 'pre-command-hook  #'transient--pre-command)
     (remove-hook 'post-command-hook #'transient--post-command)))
 
 (defun transient--minibuffer-exit ()
@@ -1993,8 +1992,8 @@ value.  Otherwise return CHILDREN as is."
   (unless (> (minibuffer-depth) 1)
     (unless transient--exitp
       (transient--push-keymap 'transient--transient-map)
-      (transient--push-keymap 'transient--redisplay-map)
-      (add-hook 'pre-command-hook #'transient--pre-command))
+      (transient--push-keymap 'transient--redisplay-map))
+    (add-hook 'pre-command-hook  #'transient--pre-command)
     (add-hook 'post-command-hook #'transient--post-command)))
 
 (defun transient--suspend-override (&optional minibuffer-hooks)
@@ -2033,6 +2032,7 @@ value.  Otherwise return CHILDREN as is."
                          ;; The current command could act as a prefix,
                          ;; but decided not to call `transient-setup'.
                          (prog1 nil (transient--stack-zap))))
+          (remove-hook   'pre-command-hook      #'transient--pre-command)
           (remove-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
           (remove-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
           (advice-remove 'abort-recursive-edit  #'transient--minibuffer-exit)
