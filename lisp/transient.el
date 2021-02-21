@@ -2534,6 +2534,7 @@ it\", in which case it is pointless to preserve history.)"
              transient--prefix)
         (oset obj value nil)
       (let* ((overriding-terminal-local-map nil)
+             (enable-recursive-minibuffers t)
              (reader (oref obj reader))
              (prompt (transient-prompt obj))
              (value (if multi-value (mapconcat #'identity value ",") value))
