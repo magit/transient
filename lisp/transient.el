@@ -1633,6 +1633,12 @@ EDIT may be non-nil."
       (transient--pop-keymap 'transient--redisplay-map)
       (setq name (oref transient--prefix command))
       (setq params (list :scope (oref transient--prefix scope))))
+     (transient--transient-map
+      ;; Invoked as a ":transient-non-suffix 'transient--do-{stay,call}"
+      ;; of an outer prefix.  Unlike the usual `transient--do-replace',
+      ;; these predicates fail to clean up after the outer prefix.
+      (transient--pop-keymap 'transient--transient-map)
+      (transient--pop-keymap 'transient--redisplay-map))
      ((not (or layout                      ; resuming parent/suspended prefix
                transient-current-command)) ; entering child prefix
       (transient--stack-zap))              ; replace suspended prefix, if any
