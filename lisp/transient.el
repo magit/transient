@@ -1883,7 +1883,8 @@ value.  Otherwise return CHILDREN as is."
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook #'transient--pre-command)
   (unless transient--showp
-    (message ""))
+    (let ((message-log-max nil))
+      (message "")))
   (setq transient--transient-map nil)
   (setq transient--predicate-map nil)
   (setq transient--redisplay-map nil)
