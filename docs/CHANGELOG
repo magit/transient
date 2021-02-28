@@ -27,9 +27,9 @@
   namespace for a variety of uses in individual transient.  A few
   existing bindings had to be changed because of this.  990eb0a2
 
-- Added ~transient-suffix~ command, which is useful when ~transient-args~
-  is not sufficient because one needs the suffix objects, not just
-  their values.  #98
+- Added ~transient-suffixes~ function, which is useful when
+  ~transient-args~ is not sufficient because one needs the suffix
+  objects, not just their values.  #98
 
 - Added ~init-value~ slot for infix and prefix objects.  If this value
   bound then it is called with the object as only argument instead of
