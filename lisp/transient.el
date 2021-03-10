@@ -2514,6 +2514,14 @@ stand-alone command."
 
 ;;;; Readers
 
+(defun transient-read-file (prompt _initial-input _history)
+  "Read a file."
+  (file-local-name (expand-file-name (read-file-name prompt))))
+
+(defun transient-read-existing-file (prompt _initial-input _history)
+  "Read an existing file."
+  (file-local-name (expand-file-name (read-file-name prompt nil nil t))))
+
 (defun transient-read-directory (prompt _initial-input _history)
   "Read a directory."
   (file-local-name (expand-file-name (read-directory-name prompt))))
