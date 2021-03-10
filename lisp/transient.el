@@ -550,7 +550,7 @@ If `transient-save-history' is nil, then do nothing."
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
-   (suffix-description   :initarg :suffix-description   :initform nil))
+   (suffix-description   :initarg :suffix-description))
   "Transient prefix command.
 
 Each transient prefix command consists of a command, which is
