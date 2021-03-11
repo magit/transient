@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.0 (v0.3.0+1)
+@subtitle for version 0.3.0
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.0 (v0.3.0+1).
+This manual is for Transient version 0.3.0.
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -255,14 +255,14 @@ One benefit of the Transient interface is that it remembers history
 not only on a global level ("this command was invoked using these
 arguments and previously it was invoked using those other arguments"),
 but also remembers the values of individual arguments independently.
-@ref{Using History}.
+See @ref{Using History}.
 
 After a transient prefix command is invoked @code{C-h <key>} can be used to
 show the documentation for the infix or suffix command that @code{<key>} is
-bound to (@ref{Getting Help for Suffix Commands}) and infixes and
+bound to (see @ref{Getting Help for Suffix Commands}) and infixes and
 suffixes can be removed from the transient using @code{C-x l <key>}.  Infixes
 and suffixes that are disabled by default can be enabled the same way.
-@ref{Enabling and Disabling Suffixes}.
+See @ref{Enabling and Disabling Suffixes}.
 
 Transient ships with support for a few different types of specialized
 infix commands.  A command that sets a command line option for example
@@ -421,7 +421,7 @@ The other common commands are described in either the previous node or
 in one of the following nodes.
 
 Some of Transient's key bindings differ from the respective bindings
-of Magit-Popup; @ref{FAQ} for more information.
+of Magit-Popup; see @ref{FAQ} for more information.
 
 @node Saving Values
 @section Saving Values
@@ -440,7 +440,7 @@ than outlined above and even customizable.}
 If the user does not save the value and just exits using a regular
 suffix command, then the value is merely saved to the transient's
 history.  That value won't be used when the transient is next invoked
-but it is easily accessible (@ref{Using History}).
+but it is easily accessible (see @ref{Using History}).
 
 @table @asis
 @kindex C-x s
@@ -711,7 +711,7 @@ buffer.  The transient popup buffer is displayed in a window using
 The value of this option has the form @code{(FUNCTION . ALIST)}, where
 FUNCTION is a function or a list of functions.  Each such function
 should accept two arguments: a buffer to display and an alist of the
-same form as ALIST@.  @ref{Choosing Window,,,elisp,}.
+same form as ALIST@.  See @ref{Choosing Window,,,elisp,}.
 
 The default is @code{(display-buffer-in-side-window (side . bottom))}.
 This displays the window at the bottom of the selected frame.
@@ -742,7 +742,7 @@ thin line is drawn instead, using the background color of the face
 @code{transient-separator}.  Termcap frames cannot display thin lines and
 therefore fallback to treating @code{line} like @code{nil}.
 
-Otherwise this can be any mode-line format.  @ref{Mode Line Format,,,elisp,} for details.
+Otherwise this can be any mode-line format.  See @ref{Mode Line Format,,,elisp,} for details.
 @end defopt
 
 @defopt transient-read-with-initial-input
@@ -825,7 +825,7 @@ to be remapped to @code{fixed-pitch} in that buffer.
 @node Modifying Existing Transients
 @chapter Modifying Existing Transients
 
-To an extent transients can be customized interactively, @ref{Enabling and Disabling Suffixes}.  This section explains how existing transients
+To an extent transients can be customized interactively, see @ref{Enabling and Disabling Suffixes}.  This section explains how existing transients
 can be further modified non-interactively.
 
 The following functions share a few arguments:
@@ -840,10 +840,10 @@ SUFFIX is a transient infix or suffix specification in the same form
 as expected by @code{transient-define-prefix}.  Note that an infix is a
 special kind of suffix.  Depending on context "suffixes" means
 "suffixes (including infixes)" or "non-infix suffixes".  Here it
-means the former.  @ref{Suffix Specifications}.
+means the former.  See @ref{Suffix Specifications}.
 
 SUFFIX may also be a group in the same form as expected by
-@code{transient-define-prefix}.  @ref{Group Specifications}.
+@code{transient-define-prefix}.  See @ref{Group Specifications}.
 
 
 @item
@@ -946,7 +946,7 @@ explicitly.
 
 GROUPs add key bindings for infix and suffix commands and specify
 how these bindings are presented in the popup buffer.  At least one
-GROUP has to be specified.  @ref{Binding Suffix and Infix Commands}.
+GROUP has to be specified.  See @ref{Binding Suffix and Infix Commands}.
 
 The BODY is optional.  If it is omitted, then ARGLIST is ignored and
 the function definition becomes:
@@ -980,11 +980,11 @@ the branch whose variables are being configured.
 @section Binding Suffix and Infix Commands
 
 The macro @code{transient-define-prefix} is used to define a transient.
-This defines the actual transient prefix command (@ref{Defining Transients}) and adds the transient's infix and suffix bindings, as
+This defines the actual transient prefix command (see @ref{Defining Transients}) and adds the transient's infix and suffix bindings, as
 described below.
 
 Users and third-party packages can add additional bindings using
-functions such as @code{transient-insert-suffix} (@ref{Modifying Existing Transients}).  These functions take a "suffix specification" as one of
+functions such as @code{transient-insert-suffix} (See @ref{Modifying Existing Transients}).  These functions take a "suffix specification" as one of
 their arguments, which has the same form as the specifications used in
 @code{transient-define-prefix}.
 
@@ -1003,7 +1003,7 @@ for a set of suffixes.
 
 Several group classes exist, some of which organize suffixes in
 subgroups.  In most cases the class does not have to be specified
-explicitly, but @ref{Group Classes}.
+explicitly, but see @ref{Group Classes}.
 
 Groups are specified in the call to @code{transient-define-prefix}, using
 vectors.  Because groups are represented using vectors, we cannot use
@@ -1016,7 +1016,7 @@ Group specifications then have this form:
 [@{LEVEL@} @{DESCRIPTION@} @{KEYWORD VALUE@}... ELEMENT...]
 @end lisp
 
-The LEVEL is optional and defaults to 4.  @ref{Enabling and Disabling Suffixes}.
+The LEVEL is optional and defaults to 4.  See @ref{Enabling and Disabling Suffixes}.
 
 The DESCRIPTION is optional.  If present it is used as the heading of
 the group.
@@ -1049,7 +1049,7 @@ useful while rebase is already in progress; and another that uses
 initiate a rebase.
 
 These predicates can also be used on individual suffixes and are
-only documented once, @ref{Predicate Slots}.
+only documented once, see @ref{Predicate Slots}.
 
 
 @item
@@ -1111,7 +1111,7 @@ prefix command is defined using @code{transient-define-prefix}, see
 individual suffix command.
 
 The same form is also used when later binding additional commands
-using functions such as @code{transient-insert-suffix}, @ref{Modifying Existing Transients}.
+using functions such as @code{transient-insert-suffix}, see @ref{Modifying Existing Transients}.
 
 Note that an infix is a special kind of suffix. Depending on context
 "suffixes" means "suffixes (including infixes)" or "non-infix
@@ -1192,7 +1192,7 @@ guessed based on the long argument.  If the argument ends with "=​"
 
 Finally, details can be specified using optional KEYWORD-VALUE pairs.
 Each keyword has to be a keyword symbol, either @code{:class} or a keyword
-argument supported by the constructor of that class.  @ref{Suffix Slots}.
+argument supported by the constructor of that class.  See @ref{Suffix Slots}.
 
 @node Defining Suffix and Infix Commands
 @section Defining Suffix and Infix Commands
@@ -1680,7 +1680,7 @@ object should not affect later invocations.
 @item
 All suffix and infix classes derive from @code{transient-suffix}, which in
 turn derives from @code{transient-child}, from which @code{transient-group} also
-derives (@ref{Group Classes}).
+derives (see @ref{Group Classes}).
 
 
 @item
@@ -1689,13 +1689,13 @@ which in turn derives from the @code{transient-suffix} class.
 
 Infixes are a special type of suffixes.  The primary difference is
 that infixes always use the @code{transient--do-stay} pre-command, while
-non-infix suffixes use a variety of pre-commands (@ref{Transient State}).  Doing that is most easily achieved by using this class,
+non-infix suffixes use a variety of pre-commands (see @ref{Transient State}).  Doing that is most easily achieved by using this class,
 though theoretically it would be possible to define an infix class
 that does not do so.  If you do that then you get to implement many
 methods.
 
 Also, infixes and non-infix suffixes are usually defined using
-different macros (@ref{Defining Suffix and Infix Commands}).
+different macros (see @ref{Defining Suffix and Infix Commands}).
 
 
 @item
@@ -1888,7 +1888,7 @@ probably don't want that.
 @code{transient-suffix} and @code{transient-non-suffix} play a part when
 determining whether the currently active transient prefix command
 remains active/transient when a suffix or abitrary non-suffix
-command is invoked.  @ref{Transient State}.
+command is invoked.  See @ref{Transient State}.
 
 
 @item
@@ -1923,7 +1923,7 @@ of the same symbol.
 
 @item
 @code{level} The level of the prefix commands.  The suffix commands whose
-layer is equal or lower are displayed.  @ref{Enabling and Disabling Suffixes}.
+layer is equal or lower are displayed.  See @ref{Enabling and Disabling Suffixes}.
 
 
 @item
@@ -1945,7 +1945,7 @@ Here we document most of the slots that are only available for suffix
 objects.  Some slots are shared by suffix and group objects, they are
 documented in @ref{Predicate Slots}.
 
-Also @ref{Suffix Classes}.
+Also see @ref{Suffix Classes}.
 
 @subsection Slots of @code{transient-suffix}
 
@@ -1959,7 +1959,7 @@ Also @ref{Suffix Classes}.
 
 
 @item
-@code{transient} Whether to stay transient.  @ref{Transient State}.
+@code{transient} Whether to stay transient.  See @ref{Transient State}.
 
 
 @item
@@ -2110,7 +2110,7 @@ the slots documented above, it is a predicate, but it is used for a
 different purpose.  The value has to be an integer between 1
 and 7.  @code{level} controls whether a suffix or a group should be
 available depending on user preference.
-@ref{Enabling and Disabling Suffixes}.
+See @ref{Enabling and Disabling Suffixes}.
 
 @node Related Abstractions and Packages
 @chapter Related Abstractions and Packages
@@ -2144,7 +2144,7 @@ The following diagrams illustrate some of the differences.
 
 @subsection Regular Prefix Commands
 
-@ref{Prefix Keys,,,elisp,}.
+See @ref{Prefix Keys,,,elisp,}.
 
 @example
                                   ,--> command1 --> (c)
@@ -2156,7 +2156,7 @@ The following diagrams illustrate some of the differences.
 
 @subsection Regular Prefix Arguments
 
-@ref{Prefix Command Arguments,,,elisp,}.
+See @ref{Prefix Command Arguments,,,elisp,}.
 
 @example
         ,----------------------------------,
@@ -2339,7 +2339,7 @@ covered elsewhere.
 
 @subsection Magit-Popup
 
-Transient is the successor to Magit-Popup (@ref{Top,,,magit-popup,}).
+Transient is the successor to Magit-Popup (see @ref{Top,,,magit-popup,}).
 
 One major difference between these two implementations of the same
 ideas is that while Transient uses transient keymaps and embraces the

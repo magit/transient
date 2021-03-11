@@ -2,7 +2,6 @@
 /docs/*.html
 /docs/*.info
 /docs/*.pdf
-/docs/*.pdf.texi
 /docs/dir
 /docs/transient/
 /lisp/*.elc

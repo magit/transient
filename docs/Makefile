@@ -25,9 +25,6 @@ texi:
 	@$(EMACS) $(ORG_ARGS) $(PKG).org $(ORG_EVAL)
 	@printf "\n" >> $(PKG).texi
 	@rm -f $(PKG).texi~
-	@printf "Generating $(PKG).pdf.texi\n"
-	@cp $(PKG).texi $(PKG).pdf.texi
-	@sed -i -e "s/see @ref/@ref/gi" -e ":a;N;$!ba;s/see\n@ref/\n@ref/gi" $(PKG).texi
 
 %.info: %.texi
 	@printf "Generating $@\n"
@@ -59,7 +56,7 @@ html-dir: $(PKG).texi
 	sed -i -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $$f ; \
 	done
 
-%.pdf: %.pdf.texi
+%.pdf: %.texi
 	@printf "Generating $@\n"
 	@texi2pdf --clean $< > /dev/null
 
