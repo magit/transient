@@ -1394,7 +1394,10 @@ of the transient-specific keymaps), `transient-edit-map' and
 If you change a binding here, then you might also have to edit
 `transient-sticky-map' and `transient-common-commands'.  While
 the latter isn't a proper transient prefix command, it can be
-edited using the same functions as used for transients.")
+edited using the same functions as used for transients.
+
+If you add a new command here, then you must also add a binding
+to `transient-predicate-map'.")
 
 (defvar transient-map
   (let ((map (make-sparse-keymap)))
@@ -1408,7 +1411,10 @@ edited using the same functions as used for transients.")
     (define-key map (kbd "C-M-p") 'transient-history-prev)
     (define-key map (kbd "C-M-n") 'transient-history-next)
     map)
-  "Top-level keymap used by all transients.")
+  "Top-level keymap used by all transients.
+
+If you add a new command here, then you must also add a binding
+to `transient-predicate-map'.  Also see `transient-base-map'.")
 
 (defvar transient-edit-map
   (let ((map (make-sparse-keymap)))
