@@ -1629,7 +1629,7 @@ This function is also called internally in which case LAYOUT and
 EDIT may be non-nil."
   (transient--debug 'setup)
   (when (> (minibuffer-depth) 0)
-    (user-error "Cannot invoke transient %s while minibuffer is active"))
+    (user-error "Cannot invoke transient %s while minibuffer is active" name))
   (transient--with-emergency-exit
     (cond
      ((not name)
