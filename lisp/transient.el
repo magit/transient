@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/transient
 ;; Package-Requires: ((emacs "25.1"))
-;; Package-Version: 0.3.0
+;; Package-Version: 0.3.1
 ;; Keywords: bindings
 
 ;; This file is part of GNU Emacs.

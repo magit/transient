@@ -1,4 +1,12 @@
 # -*- mode: org -*-
+* v0.3.1    2021-04-19
+
+- Changed ~transient-prefix~'s ~suffix-description~ slot to be initially
+  unbound, as was always intended.  c28b8a4
+
+- Added new functions ~transient-read-file~ and
+  ~transient-read-existing-file~.  a3b44224
+
 * v0.3.0    2021-02-21
 
 - As a temporary kludge prevent a transient from being invoked while
