@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v0.3.2    2021-04-20
+
+- Fix an error message.  c145229a
+
 * v0.3.1    2021-04-19
 
 - Changed ~transient-prefix~'s ~suffix-description~ slot to be initially
