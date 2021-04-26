@@ -7,6 +7,7 @@
 ;; Package-Requires: ((emacs "25.1"))
 ;; Package-Version: 0.3.2
 ;; Keywords: bindings
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is part of GNU Emacs.
 
