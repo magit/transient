@@ -13,10 +13,10 @@
 
 * v0.3.0    2021-02-21
 
-- As a temporary kludge prevent a transient from being invoked while
-  the minibuffer is active.  The next release will enable this again,
-  once we are sure that cannot cause Emacs to enter an inconsistent
-  state, that causes most events to be ignored.  #112
+- Add a temporary kludge to prevent a transient from being invoked
+  while the minibuffer is active.  A future release will enable
+  this again, once we are sure that cannot cause Emacs to enter an
+  inconsistent state, that causes most events to be ignored.  #112
 
 - Improved the backtrace that is shown when a fatal error occured in a
   critical context.  This involved some back and forth.  See commits
