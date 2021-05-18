@@ -547,6 +547,7 @@ If `transient-save-history' is nil, then do nothing."
    (history-pos :initarg :history-pos :initform 0)
    (history-key :initarg :history-key :initform nil)
    (man-page    :initarg :man-page    :initform nil)
+   (help-command    :initarg :help-command    :initform nil)
    (info-manual :initarg :info-manual :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
@@ -3188,7 +3189,9 @@ Show the first one that is specified."
       (info manual)
     (if-let ((manpage (oref obj man-page)))
         (transient--show-manpage manpage)
-      (transient--describe-function (oref obj command)))))
+      (if-let ((helpcommand (oref obj help-command)))
+          (transient--show-helpcommand helpcommand)
+      (transient--describe-function (oref obj command))))))
 
 (cl-defmethod transient-show-help ((_   transient-suffix))
   "Show the command doc-string."
@@ -3221,6 +3224,12 @@ location."
     (switch-to-buffer buf)
     (when argument
       (transient--goto-argument-description argument))))
+
+(defun transient--show-helpcommand (helpcommand)
+  (let* ((process "*transient-helpcommand*")
+         (buffer "*transient-helpcommand-buffer*"))
+    (call-process-shell-command helpcommand nil buffer)
+    (switch-to-buffer buffer)))
 
 (defun transient--describe-function (fn)
   (describe-function fn)
