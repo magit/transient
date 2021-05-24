@@ -7,7 +7,7 @@
 ;; Keywords: bindings
 
 ;; Package-Requires: ((emacs "25.1"))
-;; Package-Version: 0.3.2
+;; Package-Version: 0.3.3
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 

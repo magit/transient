@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v0.3.3    2021-05-24
+
+- Add SPDX-License-Identifier library header.  7d3d8d79
+
 * v0.3.2    2021-04-20
 
 - Fix an error message.  c145229a
