@@ -44,7 +44,7 @@ publish:
 	@$(MAKE) -C docs publish
 
 release:
-	@$(MAKE) -C docs release
+	@$(MAKE) VERSION=$(VERSION) -C docs release
 
 bump-version:
 	@printf "Setting version in transient.el to $(VERSION)\n"
