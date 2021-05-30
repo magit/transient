@@ -161,7 +161,12 @@ function should accept two arguments: a buffer to display and
 an alist of the same form as ALIST.  See `display-buffer' for
 details.
 
-The default is (display-buffer-in-side-window (side . bottom)).
+The default is:
+
+  (display-buffer-in-side-window
+    (side . bottom)
+    (inhibit-same-window . t))
+
 This displays the window at the bottom of the selected frame.
 Another useful value is (display-buffer-below-selected).  This
 is what `magit-popup' used by default.  For more alternatives
