@@ -1973,6 +1973,11 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
+  (unless this-command
+    (transient--debug "-- force pre-exit from post-command")
+    (message "Quit transient!")
+    (transient--pre-exit)
+    (setq transient--exitp t))
   (if transient--exitp
       (progn
         (unless (and (eq transient--exitp 'replace)
@@ -2048,7 +2053,8 @@ value.  Otherwise return CHILDREN as is."
     (if (symbolp arg)
         (message "-- %-16s (cmd: %s, event: %S, exit: %s)"
                  arg
-                 (transient--suffix-symbol this-command)
+                 (or (transient--suffix-symbol this-command)
+                     (list this-command this-original-command last-command))
                  (key-description (this-command-keys-vector))
                  transient--exitp)
       (apply #'message arg args))))
