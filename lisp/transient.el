@@ -3203,13 +3203,16 @@ Show the first one that is specified."
         (transient--show-manpage manpage)
       (transient--describe-function (oref obj command)))))
 
-(cl-defmethod transient-show-help ((_   transient-suffix))
+(cl-defmethod transient-show-help ((obj transient-suffix))
   "Show the command doc-string."
   (if (eq this-original-command 'transient-help)
       (if-let ((manpage (oref transient--prefix man-page)))
           (transient--show-manpage manpage)
         (transient--describe-function (oref transient--prefix command)))
-    (transient--describe-function this-original-command)))
+    (if-let ((prefix (get (transient--suffix-command obj) 'transient--prefix))
+             (manpage (oref prefix man-page)))
+        (transient--show-manpage manpage)
+      (transient--describe-function this-original-command))))
 
 (cl-defmethod transient-show-help ((obj transient-infix))
   "Show the manpage if defined or the command doc-string.
