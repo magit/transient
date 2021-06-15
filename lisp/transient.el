@@ -571,10 +571,12 @@ the prototype is stored in the clone's `prototype' slot.")
 
 ;;;; Suffix
 
+(defconst transient--default-child-level 1)
+
 (defclass transient-child ()
   ((level
     :initarg :level
-    :initform 1
+    :initform transient--default-child-level
     :documentation "Enable if level of prefix is equal or greater.")
    (if
     :initarg :if
@@ -937,7 +939,7 @@ example, sets a variable use `transient-define-infix' instead.
           (if (eq k :class)
               (setq class pop)
             (setq args (plist-put args k pop)))))
-      (vector (or level (oref-default 'transient-child level))
+      (vector (or level transient--default-child-level)
               (or class
                   (if (vectorp car)
                       'transient-columns
@@ -1008,7 +1010,7 @@ example, sets a variable use `transient-define-infix' instead.
     (unless (plist-get args :key)
       (when-let ((shortarg (plist-get args :shortarg)))
         (setq args (plist-put args :key shortarg))))
-    (list (or level (oref-default 'transient-child level))
+    (list (or level transient--default-child-level)
           (or class 'transient-suffix)
           args)))
 
