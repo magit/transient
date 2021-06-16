@@ -576,7 +576,7 @@ the prototype is stored in the clone's `prototype' slot.")
 (defclass transient-child ()
   ((level
     :initarg :level
-    :initform transient--default-child-level
+    :initform (symbol-value 'transient--default-child-level)
     :documentation "Enable if level of prefix is equal or greater.")
    (if
     :initarg :if
@@ -3599,9 +3599,9 @@ we stop there."
 ;;;; `transient-lisp-variable'
 
 (defclass transient-lisp-variable (transient-variable)
-  ((reader :initform transient-lisp-variable--reader)
+  ((reader :initform #'transient-lisp-variable--reader)
    (always-read :initform t)
-   (set-value :initarg :set-value :initform set))
+   (set-value :initarg :set-value :initform #'set))
   "[Experimental] Class used for Lisp variables.")
 
 (cl-defmethod transient-init-value ((obj transient-lisp-variable))
