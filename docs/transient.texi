@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.5
+@subtitle for version 0.3.5 (v0.3.5-1-g601ebf55+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.5.
+This manual is for Transient version 0.3.5 (v0.3.5-1-g601ebf55+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1431,7 +1431,8 @@ call @code{transient-export}, @code{transient--stack-zap} or @code{transient--st
 and set the values of @code{transient--exitp}, @code{transient--helpp} or
 @code{transient--editp}.
 
-@subsection Pre-commands for Infixes
+@anchor{Pre-commands for Infixes}
+@subheading Pre-commands for Infixes
 
 The default for infixes is @code{transient--do-stay}.  This is also the only
 function that makes sense for infixes.
@@ -1441,7 +1442,8 @@ function that makes sense for infixes.
 Call the command without exporting variables and stay transient.
 @end defun
 
-@subsection Pre-commands for Suffixes
+@anchor{Pre-commands for Suffixes}
+@subheading Pre-commands for Suffixes
 
 The default for suffixes is @code{transient--do-exit}.
 
@@ -1463,7 +1465,8 @@ This is used for suffixes that are prefixes themselves, i.e. for
 sub-prefixes.
 @end defun
 
-@subsection Pre-commands for Non-Suffixes
+@anchor{Pre-commands for Non-Suffixes}
+@subheading Pre-commands for Non-Suffixes
 
 The default for non-suffixes, i.e commands that are bound in other
 keymaps beside the transient keymap, is @code{transient--do-warn}.  Silently
@@ -1484,7 +1487,8 @@ Call @code{transient-undefined} and stay transient.
 Call @code{transient-noop} and stay transient.
 @end defun
 
-@subsection Special Pre-Commands
+@anchor{Special Pre-Commands}
+@subheading Special Pre-Commands
 
 @defun transient--do-quit-one
 
@@ -1902,7 +1906,8 @@ causes the others to be disabled.
 secondary value, called a "scope".  See @code{transient-define-prefix}.
 @end itemize
 
-@subsection Internal Prefix Slots
+@anchor{Internal Prefix Slots}
+@subheading Internal Prefix Slots
 
 These slots are mostly intended for internal use.  They should not be
 set in calls to @code{transient-define-prefix}.
@@ -1947,7 +1952,8 @@ documented in @ref{Predicate Slots}.
 
 Also see @ref{Suffix Classes}.
 
-@subsection Slots of @code{transient-suffix}
+@anchor{Slots of @code{transient-suffix}}
+@subheading Slots of @code{transient-suffix}
 
 @itemize
 @item
@@ -1983,7 +1989,8 @@ It must contain the following %-placeholders:
 called with no argument and returns a string.
 @end itemize
 
-@subsection Slots of @code{transient-infix}
+@anchor{Slots of @code{transient-infix}}
+@subheading Slots of @code{transient-infix}
 
 Some of these slots are only meaningful for some of the subclasses.
 They are defined here anyway to allow sharing certain methods.
@@ -2051,14 +2058,16 @@ returns a prompt string.
 the class of the object.
 @end itemize
 
-@subsection Slots of @code{transient-variable}
+@anchor{Slots of @code{transient-variable}}
+@subheading Slots of @code{transient-variable}
 
 @itemize
 @item
 @code{variable} The variable.
 @end itemize
 
-@subsection Slots of @code{transient-switches}
+@anchor{Slots of @code{transient-switches}}
+@subheading Slots of @code{transient-switches}
 
 @itemize
 @item
@@ -2142,7 +2151,8 @@ The following diagrams illustrate some of the differences.
 @code{@{NUMBER@}} is a footnote.
 @end itemize
 
-@subsection Regular Prefix Commands
+@anchor{Regular Prefix Commands}
+@subheading Regular Prefix Commands
 
 See @ref{Prefix Keys,,,elisp,}.
 
@@ -2154,7 +2164,8 @@ See @ref{Prefix Keys,,,elisp,}.
                                   `--> command3 --> (c)
 @end example
 
-@subsection Regular Prefix Arguments
+@anchor{Regular Prefix Arguments}
+@subheading Regular Prefix Arguments
 
 See @ref{Prefix Command Arguments,,,elisp,}.
 
@@ -2174,7 +2185,8 @@ See @ref{Prefix Command Arguments,,,elisp,}.
                                       `-------- discards --------'
 @end example
 
-@subsection Transients
+@anchor{Transients}
+@subheading Transients
 
 (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
 
@@ -2337,7 +2349,8 @@ covered elsewhere.
 @node Comparison With Other Packages
 @section Comparison With Other Packages
 
-@subsection Magit-Popup
+@anchor{Magit-Popup}
+@subheading Magit-Popup
 
 Transient is the successor to Magit-Popup (see @ref{Top,,,magit-popup,}).
 
@@ -2357,7 +2370,8 @@ A lot of things are hard-coded in Magit-Popup.  One random example is
 that the key bindings for switches must begin with "-" and those for
 options must begin with "=".
 
-@subsection Hydra
+@anchor{Hydra}
+@subheading Hydra
 
 Hydra (see @uref{https://github.com/abo-abo/hydra}) is another package that
 provides features similar to those of Transient.
@@ -2443,10 +2457,12 @@ currently exist.
 
 
 
+@anchor{Can I control how the popup buffer is displayed?}
 @appendixsec Can I control how the popup buffer is displayed?
 
 Yes, see @code{transient-display-buffer-action} in @ref{Other Options}.
 
+@anchor{Why did some of the key bindings change?}
 @appendixsec Why did some of the key bindings change?
 
 You may have noticed that the bindings for some of the common commands
@@ -2488,6 +2504,7 @@ also using that for a common command would prevent me from doing so.
 
 (Also see the next question.)
 
+@anchor{Why does @code{q} not quit popups anymore?}
 @appendixsec Why does @code{q} not quit popups anymore?
 
 I agree that @code{q} is a good binding for commands that quit something.

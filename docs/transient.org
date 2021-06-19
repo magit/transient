@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.3.5
+#+SUBTITLE: for version 0.3.5 (v0.3.5-1-g601ebf55+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.3.5.
+This manual is for Transient version 0.3.5 (v0.3.5-1-g601ebf55+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -1152,7 +1152,7 @@ and set the values of ~transient--exitp~, ~transient--helpp~ or
 
 *** Pre-commands for Infixes
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 The default for infixes is ~transient--do-stay~.  This is also the only
@@ -1164,7 +1164,7 @@ function that makes sense for infixes.
 
 *** Pre-commands for Suffixes
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 The default for suffixes is ~transient--do-exit~.
@@ -1186,7 +1186,7 @@ The default for suffixes is ~transient--do-exit~.
 
 *** Pre-commands for Non-Suffixes
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 The default for non-suffixes, i.e commands that are bound in other
@@ -1208,7 +1208,7 @@ slot.
 
 *** Special Pre-Commands
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 - Function: transient--do-quit-one
@@ -1544,7 +1544,7 @@ functions use ~describe-function~.
 
 *** Internal Prefix Slots
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 These slots are mostly intended for internal use.  They should not be
@@ -1581,7 +1581,7 @@ Also see [[*Suffix Classes]].
 
 *** Slots of ~transient-suffix~
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 - ~key~ The key, a key vector or a key description string.
@@ -1602,7 +1602,7 @@ Also see [[*Suffix Classes]].
 
 *** Slots of ~transient-infix~
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 Some of these slots are only meaningful for some of the subclasses.
@@ -1648,14 +1648,14 @@ They are defined here anyway to allow sharing certain methods.
 
 *** Slots of ~transient-variable~
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 - ~variable~ The variable.
 
 *** Slots of ~transient-switches~
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 - ~argument-format~ The display format.  Must contain ~%s~, one of the
@@ -1702,7 +1702,7 @@ The following diagrams illustrate some of the differences.
 
 *** Regular Prefix Commands
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 See [[info:elisp#Prefix Keys]].
@@ -1717,7 +1717,7 @@ See [[info:elisp#Prefix Keys]].
 
 *** Regular Prefix Arguments
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 See [[info:elisp#Prefix Command Arguments]].
@@ -1740,7 +1740,7 @@ See [[info:elisp#Prefix Command Arguments]].
 
 *** Transients
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
@@ -1899,7 +1899,7 @@ covered elsewhere.
 ** Comparison With Other Packages
 *** Magit-Popup
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 Transient is the successor to Magit-Popup (see [[info:magit-popup]]).
@@ -1922,7 +1922,7 @@ options must begin with "=".
 
 *** Hydra
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 Hydra (see https://github.com/abo-abo/hydra) is another package that
@@ -2001,14 +2001,14 @@ commands are outlined:
 
 ** Can I control how the popup buffer is displayed?
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 Yes, see ~transient-display-buffer-action~ in [[*Other Options]].
 
 ** Why did some of the key bindings change?
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 You may have noticed that the bindings for some of the common commands
@@ -2052,7 +2052,7 @@ also using that for a common command would prevent me from doing so.
 
 ** Why does ~q~ not quit popups anymore?
 :PROPERTIES:
-:NONODE: t
+:UNNUMBERED: notoc
 :END:
 
 I agree that ~q~ is a good binding for commands that quit something.
