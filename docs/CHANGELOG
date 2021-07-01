@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.3.6    UNRELEASED
+* v0.3.6    2021-07-01
 
 - Added new option ~transient-force-single-column~, which may be useful
   for low vision.  #122
