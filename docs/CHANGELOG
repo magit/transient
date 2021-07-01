@@ -1,11 +1,31 @@
 # -*- mode: org -*-
+* v0.3.6    UNRELEASED
+
+- Added new option ~transient-force-single-column~, which may be useful
+  for low vision.  #122
+
+- Added new option ~transient-highlight-higher-levels~, which is
+  intended for package authors.  90a05622
+
+* v0.3.5    2021-06-16
+
+- Added a kludge to work around some unexpected Emacs behavior.
+  ef921d30
+
+- When showing help for a suffix that is also a subprefix, then also
+  consider the manpage that is set for the prefix, if any.  a9bdd013
+
+* v0.3.4    2021-05-25
+
+- Very minor changes.
+
 * v0.3.3    2021-05-24
 
-- Add SPDX-License-Identifier library header.  7d3d8d79
+- Added SPDX-License-Identifier library header.  7d3d8d79
 
 * v0.3.2    2021-04-20
 
-- Fix an error message.  c145229a
+- Fixed an error message.  c145229a
 
 * v0.3.1    2021-04-19
 
@@ -17,7 +37,7 @@
 
 * v0.3.0    2021-02-21
 
-- Add a temporary kludge to prevent a transient from being invoked
+- Added a temporary kludge to prevent a transient from being invoked
   while the minibuffer is active.  A future release will enable
   this again, once we are sure that cannot cause Emacs to enter an
   inconsistent state, that causes most events to be ignored.  #112
