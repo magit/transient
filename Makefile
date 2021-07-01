@@ -50,6 +50,7 @@ bump-version:
 	@printf "Setting version in transient.el to $(VERSION)\n"
 	@test -n "$(VERSION)" || (echo "Version not specified"; false)
 	@sed -i -e "/Package-Version:/s|[0-9.]\+|$(VERSION)|" lisp/transient.el
+	@sed -i -e "/Package-Version:/s|UNRELEASED|$(shell date +%F)|" docs/CHANGELOG
 
 clean:
 	@printf "Cleaning...\n"
