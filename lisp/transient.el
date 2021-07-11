@@ -2209,7 +2209,18 @@ to `transient--do-warn'."
            (propertize "?"   'face 'transient-key)
            (propertize (symbol-name (transient--suffix-symbol
                                      this-original-command))
-                       'face 'font-lock-warning-face)))
+                       'face 'font-lock-warning-face))
+  (unless (and transient--transient-map
+               (memq transient--transient-map overriding-terminal-local-map))
+    (let ((transient--prefix (or transient--prefix 'sic)))
+      (transient--emergency-exit))
+    (view-lossage)
+    (other-window 1)
+    (display-warning 'transient "Inconsistent transient state detected.
+This should never happen.
+Please open an issue and post the shown command log.
+This is a heisenbug, so any additional details might help.
+Thanks!" :error)))
 
 (defun transient-toggle-common ()
   "Toggle whether common commands are always shown."
