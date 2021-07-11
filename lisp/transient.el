@@ -1442,7 +1442,7 @@ to `transient-predicate-map'.")
 (defvar transient-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map transient-base-map)
-    (define-key map (kbd "C-p") 'universal-argument)
+    (define-key map (kbd "C-u") 'universal-argument)
     (define-key map (kbd "C--") 'negative-argument)
     (define-key map (kbd "C-t") 'transient-show)
     (define-key map (kbd "?")   'transient-help)
