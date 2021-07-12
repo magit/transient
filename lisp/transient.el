@@ -3406,6 +3406,7 @@ resumes the suspended transient.")
               ;; Yes, I know that this is wrong(tm).
               ;; Unfortunately it is also necessary.
               (setq this-original-command command)
+              (transient--pre-command)
               (call-interactively command))))
 
 (defvar transient-popup-navigation-map
