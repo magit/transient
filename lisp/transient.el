@@ -2876,7 +2876,8 @@ have a history of their own.")
             (display-buffer buf transient-display-buffer-action)))
     (with-selected-window transient--window
       (when transient-enable-popup-navigation
-        (setq focus (button-get (point) 'command)))
+        (setq focus (or (button-get (point) 'command)
+                        (transient--heading-at-point))))
       (erase-buffer)
       (set-window-hscroll transient--window 0)
       (set-window-dedicated-p transient--window t)
@@ -3448,13 +3449,23 @@ See `forward-button' for information about N."
     (forward-button n t)))
 
 (defun transient--goto-button (command)
-  (if (not command)
-      (forward-button 1)
+  (cond
+   ((stringp command)
+    (when (search-forward command nil t)
+      (goto-char (match-beginning 0))))
+   (command
     (while (and (ignore-errors (forward-button 1))
                 (not (eq (button-get (button-at (point)) 'command) command))))
     (unless (eq (button-get (button-at (point)) 'command) command)
       (goto-char (point-min))
-      (forward-button 1))))
+      (forward-button 1)))))
+
+(defun transient--heading-at-point ()
+  (and (eq (get-text-property (point) 'face) 'transient-heading)
+       (let ((beg (line-beginning-position)))
+         (buffer-substring-no-properties
+          beg (next-single-property-change
+               beg 'face nil (line-end-position))))))
 
 ;;;; Popup Isearch
 
