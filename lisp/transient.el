@@ -3451,7 +3451,7 @@ See `forward-button' for information about N."
 (defun transient--goto-button (command)
   (cond
    ((stringp command)
-    (when (search-forward command nil t)
+    (when (re-search-forward (concat "^" (regexp-quote command)) nil t)
       (goto-char (match-beginning 0))))
    (command
     (while (and (ignore-errors (forward-button 1))
