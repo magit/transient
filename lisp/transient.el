@@ -3260,7 +3260,7 @@ Show the first one that is specified."
 
 (cl-defmethod transient-show-help ((obj transient-suffix))
   "Show the command doc-string."
-  (if (eq this-original-command 'transient-help)
+  (if (eq this-command 'transient-help)
       (if-let ((manpage (oref transient--prefix man-page)))
           (transient--show-manpage manpage)
         (transient--describe-function (oref transient--prefix command)))
