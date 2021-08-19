@@ -3266,7 +3266,7 @@ Show the first one that is specified."
         (transient--describe-function (oref transient--prefix command)))
     (if-let ((prefix (get (transient--suffix-command obj) 'transient--prefix))
              (manpage (oref prefix man-page))
-             (_ (not (eq this-command (oref transient--prefix command)))))
+             (- (not (eq this-command (oref transient--prefix command)))))
         (transient--show-manpage manpage)
       (transient--describe-function this-original-command))))
 
