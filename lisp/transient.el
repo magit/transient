@@ -1611,9 +1611,10 @@ of the corresponding object.")
           (define-key map (vector sym)
             (let ((do (oref obj transient)))
               (pcase do
-                (`t (if sub-prefix
-                        'transient--do-replace
-                      'transient--do-stay))
+                (`t (cond (sub-prefix 'transient--do-replace)
+                          ((cl-typep obj 'transient-infix)
+                           'transient--do-stay)
+                          (t 'transient--do-call)))
                 (`nil 'transient--do-exit)
                 (_ do)))))
          ((not (lookup-key transient-predicate-map (vector sym)))
