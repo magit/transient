@@ -148,34 +148,46 @@ features are available:
 (defcustom transient-display-buffer-action
   '(display-buffer-in-side-window
     (side . bottom)
-    (inhibit-same-window . t))
+    (dedicated . t)
+    (inhibit-same-window . t)
+    (window-parameters (no-other-window . t)))
   "The action used to display the transient popup buffer.
 
 The transient popup buffer is displayed in a window using
 
-  \(display-buffer buf transient-display-buffer-action)
+  (display-buffer BUFFER transient-display-buffer-action)
 
 The value of this option has the form (FUNCTION . ALIST),
 where FUNCTION is a function or a list of functions.  Each such
-function should accept two arguments: a buffer to display and
-an alist of the same form as ALIST.  See `display-buffer' for
-details.
+function should accept two arguments: a buffer to display and an
+alist of the same form as ALIST.  See info node `(elisp)Choosing
+Window' for details.
 
 The default is:
 
   (display-buffer-in-side-window
     (side . bottom)
-    (inhibit-same-window . t))
+    (dedicated . t)
+    (inhibit-same-window . t)
+    (window-parameters (no-other-window . t)))
 
 This displays the window at the bottom of the selected frame.
-Another useful value is (display-buffer-below-selected).  This
-is what `magit-popup' used by default.  For more alternatives
-see info node `(elisp)Display Action Functions'.
+Another useful FUNCTION is `display-buffer-below-selected', which
+is what `magit-popup' used by default.  For more alternatives see
+info node `(elisp)Display Action Functions' and info node
+`(elisp)Buffer Display Action Alists'.
+
+Note that the buffer that was current before the transient buffer
+is shown should remain the current buffer.  Many suffix commands
+act on the thing at point, if appropriate, and if the transient
+buffer became the current buffer, then that would change what is
+at point.  To that effect `inhibit-same-window' ensures that the
+selected window is not used to show the transient buffer.
 
 It may be possible to display the window in another frame, but
 whether that works in practice depends on the window-manager.
 If the window manager selects the new window (Emacs frame),
-then it doesn't work.
+then that unfortunately changes which buffer is current.
 
 If you change the value of this option, then you might also
 want to change the value of `transient-mode-line-format'."
@@ -1954,8 +1966,10 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
     (let ((buf (window-buffer transient--window)))
-      (with-demoted-errors "Error while exiting transient: %S"
-        (delete-window transient--window))
+      ;; Only delete the window if it never showed another buffer.
+      (unless (eq (car (window-parameter transient--window 'quit-restore)) 'other)
+        (with-demoted-errors "Error while exiting transient: %S"
+          (delete-window transient--window)))
       (kill-buffer buf))))
 
 (defun transient--export ()
@@ -2871,17 +2885,11 @@ have a history of their own.")
   (setq transient--showp t)
   (let ((buf (get-buffer-create transient--buffer-name))
         (focus nil))
-    (unless (window-live-p transient--window)
-      (setq transient--window
-            (display-buffer buf transient-display-buffer-action)))
-    (with-selected-window transient--window
+    (with-current-buffer buf
       (when transient-enable-popup-navigation
         (setq focus (or (button-get (point) 'command)
                         (transient--heading-at-point))))
       (erase-buffer)
-      (set-window-hscroll transient--window 0)
-      (set-window-dedicated-p transient--window t)
-      (set-window-parameter transient--window 'no-other-window t)
       (setq window-size-fixed t)
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
@@ -2908,14 +2916,26 @@ have a history of their own.")
                  'transient-separator)))
           (insert (propertize "__" 'face face 'display '(space :height (1))))
           (insert (propertize "\n" 'face face 'line-height t))))
-      (let ((window-resize-pixelwise t)
-            (window-size-fixed nil))
-        (fit-window-to-buffer nil nil 1))
       (goto-char (point-min))
       (when transient-force-fixed-pitch
         (transient--force-fixed-pitch))
       (when transient-enable-popup-navigation
-        (transient--goto-button focus)))))
+        (transient--goto-button focus)))
+    (unless (window-live-p transient--window)
+      (setq transient--window
+            (display-buffer buf transient-display-buffer-action)))
+    (when (window-live-p transient--window)
+      (with-selected-window transient--window
+        (magit--fit-window-to-buffer transient--window)))))
+
+(defun magit--fit-window-to-buffer (window)
+  (let ((window-resize-pixelwise t)
+        (window-size-fixed nil))
+    (if (eq (car (window-parameter window 'quit-restore)) 'other)
+        ;; Grow but never shrink window that previously displayed
+        ;; another buffer and is going to display that again.
+        (fit-window-to-buffer window nil (window-height window))
+      (fit-window-to-buffer window nil 1))))
 
 (defun transient--insert-groups ()
   (let ((groups (cl-mapcan (lambda (group)

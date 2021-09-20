@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.6
+@subtitle for version 0.3.6 (v0.3.6-10-gbe119ee4+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.6.
+This manual is for Transient version 0.3.6 (v0.3.6-10-gbe119ee4+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -708,24 +708,44 @@ This option specifies the action used to display the transient popup
 buffer.  The transient popup buffer is displayed in a window using
 @code{(display-buffer BUFFER transient-display-buffer-action)}.
 
-The value of this option has the form @code{(FUNCTION . ALIST)}, where
-FUNCTION is a function or a list of functions.  Each such function
-should accept two arguments: a buffer to display and an alist of the
-same form as ALIST@.  See @ref{Choosing Window,,,elisp,}.
+The value of this option has the form @code{(FUNCTION . ALIST)},
+where FUNCTION is a function or a list of functions.  Each such
+function should accept two arguments: a buffer to display and an
+alist of the same form as ALIST@.  See @ref{Choosing Window,,,elisp,}
+for details.
 
-The default is @code{(display-buffer-in-side-window (side . bottom))}.
+The value of this option has the form @code{(FUNCTION . ALIST)},
+where FUNCTION is a function or a list of functions.  Each such
+function should accept two arguments: a buffer to display and
+an alist of the same form as ALIST@.  See @code{display-buffer} for
+details.
+
+The default is:
+
+(display-buffer-in-side-window
+  (side . bottom)
+  (inhibit-same-window . t)
+  (window-parameters (no-other-window . t)))
+
 This displays the window at the bottom of the selected frame.
-Another useful value is @code{(display-buffer-below-selected)}.  This is
-what @code{magit-popup} used by default.  For more alternatives see
-@ref{Display Action Functions,,,elisp,}.
+Another useful FUNCTION is `display-buffer-below-selected', which
+is what `magit-popup' used by default.  For more alternatives see
+@ref{Display Action Functions,,,elisp,} and @ref{Buffer Display Action Alists,,,elisp,}.
+
+Note that the buffer that was current before the transient buffer
+is shown should remain the current buffer.  Many suffix commands
+act on the thing at point, if appropriate, and if the transient
+buffer became the current buffer, then that would change what is
+at point.  To that effect @code{inhibit-same-window} ensures that the
+selected window is not used to show the transient buffer.
 
 It may be possible to display the window in another frame, but
 whether that works in practice depends on the window-manager.
 If the window manager selects the new window (Emacs frame),
-then it doesn't work.
+then that unfortunately changes which buffer is current.
 
-If you change the value of this option, then you might also want
-to change the value of @code{transient-mode-line-format}.
+If you change the value of this option, then you might also
+want to change the value of @code{transient-mode-line-format}.
 @end defopt
 
 @defopt transient-mode-line-format
