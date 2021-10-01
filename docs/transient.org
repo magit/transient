@@ -776,7 +776,7 @@ that is used to invoke that transient.
   the branch whose variables are being configured.
 
 ** Binding Suffix and Infix Commands
-*** _ :ignore:
+*** _
 
 The macro ~transient-define-prefix~ is used to define a transient.
 This defines the actual transient prefix command (see [[*Defining
@@ -1098,7 +1098,7 @@ function, which for infix arguments serves about the same purpose as
   returned value is a symbol, the transient prefix command.
 
 ** Transient State
-*** _ :ignore:
+*** _
 
 Invoking a transient prefix command "activates" the respective
 transient, i.e. it puts a transient keymap into effect, which binds
@@ -1251,7 +1251,7 @@ slot.
   This is used when the user pressed ~C-z~.
 
 * Classes and Methods
-** _ :ignore:
+** _
 
 Transient uses classes and generic functions to make it possible to
 define new types of suffix commands that are similar to existing
@@ -1427,7 +1427,7 @@ classes will likely get generalized and added to Transient.  For now
 they are very much subject to change and not documented.
 
 ** Suffix Methods
-*** _ :ignore:
+*** _
 
 To get information about the methods implementing these generic
 functions use ~describe-function~.
@@ -2135,8 +2135,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 #+END_QUOTE
 
-* _ :ignore:
-
 #  LocalWords:  ARGLIST ARGS DOCSTRING ELEMENTs EVAL GROUPs Infixes
 #  LocalWords:  Infixes KEYWORDs LOC LocalWords MERCHANTABILITY Magit
 #  LocalWords:  Magit's Makefile OBJ OBJ's Pre arglist
@@ -2148,9 +2146,8 @@ General Public License for more details.
 
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
-# eval: (require 'ox-extra    nil t)
 # eval: (require 'ox-texinfo+ nil t)
-# eval: (and (featurep 'ox-extra) (ox-extras-activate '(ignore-headlines)))
+# org-texinfo+-dissolve-noexport-headlines: t
 # indent-tabs-mode: nil
 # org-src-preserve-indentation: nil
 # End:
