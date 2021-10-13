@@ -2695,7 +2695,10 @@ prompt."
                (oref obj argument-regexp))))
     (if-let ((sic (and value arg transient--unset-incompatible))
              (spec (oref transient--prefix incompatible))
-             (incomp (remove arg (cl-find-if (lambda (elt) (member arg elt)) spec))))
+             (incomp (cl-mapcan (lambda (rule)
+                                  (and (member arg rule)
+                                       (remove arg rule)))
+                                spec)))
         (progn
           (cl-call-next-method obj value)
           (dolist (arg incomp)
