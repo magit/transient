@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.6 (v0.3.6-10-gbe119ee4+1)
+@subtitle for version 0.3.6 (v0.3.6-13-gb526b9c7+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.6 (v0.3.6-10-gbe119ee4+1).
+This manual is for Transient version 0.3.6 (v0.3.6-13-gb526b9c7+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1918,7 +1918,8 @@ command is invoked.  See @ref{Transient State}.
 @item
 @code{incompatible} A list of lists.  Each sub-list specifies a set of
 mutually exclusive arguments.  Enabling one of these arguments
-causes the others to be disabled.
+causes the others to be disabled.  An argument may appear in
+multiple sub-lists.
 
 
 @item
