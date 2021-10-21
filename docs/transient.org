@@ -1198,6 +1198,11 @@ The default for suffixes is ~transient--do-exit~.
 
   Call the command after exporting variables and stay transient.
 
+- Function: transient--do-return
+
+  Call the command after exporting variables and exit the current prefix.  If
+  there is a parent prefix, it may be returned to.
+
 - Function: transient--do-replace
 
   Call the transient prefix command, replacing the active transient.

@@ -2146,6 +2146,11 @@ nil, then do nothing."
   (transient--export)
   transient--stay)
 
+(defun transient--do-return ()
+  "Call the command after exporting variables, return from current prefix."
+  (transient--export)
+  transient--exit)
+
 (defun transient--do-exit ()
   "Call the command after exporting variables and exit the transient."
   (transient--export)
@@ -2194,6 +2199,7 @@ to `transient--do-warn'."
 (put 'transient--do-warn       'transient-color 'transient-blue)
 (put 'transient--do-warn-inapt 'transient-color 'transient-blue)
 (put 'transient--do-call       'transient-color 'transient-blue)
+(put 'transient--do-return     'transient-color 'transient-red)
 (put 'transient--do-exit       'transient-color 'transient-red)
 (put 'transient--do-replace    'transient-color 'transient-red)
 (put 'transient--do-suspend    'transient-color 'transient-red)
