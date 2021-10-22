@@ -56,6 +56,7 @@
 (require 'eieio)
 (require 'format-spec)
 (require 'seq)
+(require 'edmacro)
 
 (eval-when-compile
   (require 'subr-x))
