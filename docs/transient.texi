@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.6 (v0.3.6-16-gf5e600d3+1)
+@subtitle for version 0.3.6 (v0.3.6-17-g2281d952+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.6 (v0.3.6-16-gf5e600d3+1).
+This manual is for Transient version 0.3.6 (v0.3.6-17-g2281d952+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1183,6 +1183,18 @@ As mentioned above, the object that is associated with a command can
 be used to set the default for certain values that otherwise have to
 be set in the suffix specification.  Therefore if there is no object,
 then you have to make sure to specify the KEY and the DESCRIPTION@.
+
+As a special case, if you want to add a command that might be neither
+defined nor autoloaded, you can use a workaround like:
+
+@lisp
+(transient-insert-suffix 'some-prefix "k"
+  '("!" "Ceci n'est pas une commande" no-command
+    :if (lambda () (featurep 'no-library))))
+@end lisp
+
+Instead of @code{featurep} you could also use @code{require} with a non-nil value
+for NOERROR@.
 
 
 @item

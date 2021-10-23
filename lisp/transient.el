@@ -1074,7 +1074,8 @@ example, sets a variable use `transient-define-infix' instead.
           (put cmd 'transient--infix-command
                (transient--default-infix-command))
         ;; This is not an anonymous infix argument.
-        (error "Suffix %s is not defined or autoloaded as a command" cmd)))))
+        (when (transient--use-suffix-p obj)
+          (error "Suffix %s is not defined or autoloaded as a command" cmd))))))
 
 (defun transient--derive-shortarg (arg)
   (save-match-data
