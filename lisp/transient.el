@@ -54,6 +54,7 @@
 
 (require 'cl-lib)
 (require 'eieio)
+(require 'edmacro)
 (require 'format-spec)
 (require 'seq)
 
