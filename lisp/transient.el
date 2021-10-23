@@ -524,6 +524,15 @@ These faces are only used if `transient-semantic-coloring'
   "Face used for teal prefixes."
   :group 'transient-color-faces)
 
+(defface transient-purple
+  '((t :inherit transient-key :foreground "#a020f0"))
+  "Face used for purple prefixes.
+
+This is an addition to the colors supported by Hydra.  It is
+used by suffixes that quit the current prefix but return to
+the previous prefix."
+  :group 'transient-color-faces)
+
 ;;; Persistence
 
 (defun transient--read-file-contents (file)
@@ -1735,6 +1744,7 @@ value.  Otherwise return CHILDREN as is."
                       :level (or (alist-get t (alist-get name transient-levels))
                                  transient-default-level)
                       params))))
+    (transient--setup-recursion obj)
     (transient-init-value obj)
     obj))
 
@@ -2143,11 +2153,33 @@ nil, then do nothing."
   (transient--export)
   transient--stay)
 
+(defun transient--do-return ()
+  "Call the command after exporting variables and return to parent prefix.
+If there is no parent prefix, then behave like `transient--do-exit'."
+  (if (not transient--stack)
+      (transient--do-exit)
+    (transient--export)
+    transient--exit))
+
 (defun transient--do-exit ()
   "Call the command after exporting variables and exit the transient."
   (transient--export)
   (transient--stack-zap)
   transient--exit)
+
+(defun transient--do-recurse ()
+  "Call the transient prefix command, preparing for return to active transient.
+If there is no parent prefix, then just call the command."
+  (transient--do-replace))
+
+(defun transient--setup-recursion (prefix-obj)
+  (when transient--stack
+    (let ((command (oref prefix-obj command)))
+      (when-let ((suffix-obj (transient-suffix-object command)))
+        (when (and (slot-boundp suffix-obj 'transient)
+                   (eq (oref suffix-obj transient)
+                       'transient--do-recurse))
+          (oset prefix-obj transient-suffix 'transient--do-return))))))
 
 (defun transient--do-replace ()
   "Call the transient prefix command, replacing the active transient."
@@ -2191,7 +2223,9 @@ to `transient--do-warn'."
 (put 'transient--do-warn       'transient-color 'transient-red)
 (put 'transient--do-warn-inapt 'transient-color 'transient-red)
 (put 'transient--do-call       'transient-color 'transient-red)
+(put 'transient--do-return     'transient-color 'transient-purple)
 (put 'transient--do-exit       'transient-color 'transient-blue)
+(put 'transient--do-recurse    'transient-color 'transient-red)
 (put 'transient--do-replace    'transient-color 'transient-blue)
 (put 'transient--do-suspend    'transient-color 'transient-blue)
 (put 'transient--do-quit-one   'transient-color 'transient-blue)
@@ -3580,6 +3614,7 @@ search instead."
                        'transient-red
                      'transient-blue))))
     (pcase (list suffix nonsuf)
+      (`(transient-purple ,_)           'transient-purple)
       (`(transient-red  disallow)       'transient-amaranth)
       (`(transient-blue disallow)       'transient-teal)
       (`(transient-red  transient-red)  'transient-pink)

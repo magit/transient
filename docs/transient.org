@@ -1200,16 +1200,47 @@ The default for suffixes is ~transient--do-exit~.
 
   Call the command after exporting variables and exit the transient.
 
+- Function: transient--do-return
+
+  Call the command after exporting variables and return to parent
+  prefix.  If there is no parent prefix, then call ~transient--do-exit~.
+
 - Function: transient--do-call
 
   Call the command after exporting variables and stay transient.
+
+The following pre-commands are suitable for sub-prefixes.  Only the
+first should ever explicitly be set as the value of the ~transient~
+slot.
+
+- Function: transient--do-recurse
+
+  Call the transient prefix command, preparing for return to active
+  transient.
+
+  Whether we actually return to the parent transient is ultimately
+  under the control of each invoked suffix.  The difference between
+  this pre-command and ~transient--do-replace~ is that it changes the
+  value of the ~transient-suffix~ slot to ~transient--do-return~.
+
+  If there is no parent transient, then only call this command and
+  skip the second step.
 
 - Function: transient--do-replace
 
   Call the transient prefix command, replacing the active transient.
 
-  This is used for suffixes that are prefixes themselves, i.e. for
-  sub-prefixes.
+  Unless ~transient--do-recurse~ is explicitly used, this pre-command
+  is automatically used for suffixes that are prefixes themselves,
+  i.e. for sub-prefixes.
+
+- Function: transient--do-suspend
+
+  Suspend the active transient, saving the transient stack.
+
+  This is used by the command ~transient-suspend~ and optionally also by
+  "external events" such as ~handle-switch-frame~.  Such bindings should
+  be added to ~transient-predicate-map~.
 
 *** Pre-commands for Non-Suffixes
 :PROPERTIES:
