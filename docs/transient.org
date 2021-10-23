@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.3.6 (v0.3.6-13-gb526b9c7+1)
+#+SUBTITLE: for version 0.3.6 (v0.3.6-16-gf5e600d3+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.3.6 (v0.3.6-13-gb526b9c7+1).
+This manual is for Transient version 0.3.6 (v0.3.6-16-gf5e600d3+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -523,12 +523,6 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   alist of the same form as ALIST.  See [[info:elisp#Choosing Window]]
   for details.
 
-  The value of this option has the form ~(FUNCTION . ALIST)~,
-  where FUNCTION is a function or a list of functions.  Each such
-  function should accept two arguments: a buffer to display and
-  an alist of the same form as ALIST.  See ~display-buffer~ for
-  details.
-
   The default is:
 
   (display-buffer-in-side-window
@@ -537,8 +531,8 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
     (window-parameters (no-other-window . t)))
 
   This displays the window at the bottom of the selected frame.
-  Another useful FUNCTION is `display-buffer-below-selected', which
-  is what `magit-popup' used by default.  For more alternatives see
+  Another useful FUNCTION is ~display-buffer-below-selected~, which
+  is what ~magit-popup~ used by default.  For more alternatives see
   [[info:elisp#Display Action Functions]] and [[info:elisp#Buffer Display
   Action Alists]].
 

@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.6 (v0.3.6-13-gb526b9c7+1)
+@subtitle for version 0.3.6 (v0.3.6-16-gf5e600d3+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.6 (v0.3.6-13-gb526b9c7+1).
+This manual is for Transient version 0.3.6 (v0.3.6-16-gf5e600d3+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -714,12 +714,6 @@ function should accept two arguments: a buffer to display and an
 alist of the same form as ALIST@.  See @ref{Choosing Window,,,elisp,}
 for details.
 
-The value of this option has the form @code{(FUNCTION . ALIST)},
-where FUNCTION is a function or a list of functions.  Each such
-function should accept two arguments: a buffer to display and
-an alist of the same form as ALIST@.  See @code{display-buffer} for
-details.
-
 The default is:
 
 (display-buffer-in-side-window
@@ -728,8 +722,8 @@ The default is:
   (window-parameters (no-other-window . t)))
 
 This displays the window at the bottom of the selected frame.
-Another useful FUNCTION is `display-buffer-below-selected', which
-is what `magit-popup' used by default.  For more alternatives see
+Another useful FUNCTION is @code{display-buffer-below-selected}, which
+is what @code{magit-popup} used by default.  For more alternatives see
 @ref{Display Action Functions,,,elisp,} and @ref{Buffer Display Action Alists,,,elisp,}.
 
 Note that the buffer that was current before the transient buffer
