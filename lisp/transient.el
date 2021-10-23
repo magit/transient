@@ -2434,14 +2434,14 @@ Non-infix suffix commands usually don't have a value."
 
 (cl-defmethod transient-init-value :around ((obj transient-prefix))
   "If bound, then call OBJ's `init-value' function.
-Otherwise call the primary method according to objects class."
+Otherwise call the primary method according to object's class."
   (if (slot-boundp obj 'init-value)
       (funcall (oref obj init-value) obj)
     (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value :around ((obj transient-infix))
   "If bound, then call OBJ's `init-value' function.
-Otherwise call the primary method according to objects class."
+Otherwise call the primary method according to object's class."
   (if (slot-boundp obj 'init-value)
       (funcall (oref obj init-value) obj)
     (cl-call-next-method obj)))
