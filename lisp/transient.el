@@ -2118,8 +2118,8 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
-When no transient is active (i.e. when `transient--prefix') is
-nil, then do nothing."
+When no transient is active (i.e. when `transient--prefix' is
+nil) then do nothing."
   (transient--debug 'emergency-exit)
   (when transient--prefix
     (setq transient--stack nil)
