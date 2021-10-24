@@ -279,7 +279,7 @@ discouraged.
 
 For example, \"=\" is hard to reach using my custom keyboard
 layout, so I substitute \"(\" for that, which is easy to reach
-using a layout optimized for lisp.
+using a layout optimized for Lisp.
 
   (setq transient-substitute-key-function
         (lambda (obj)
@@ -3721,5 +3721,6 @@ we stop there."
 (provide 'transient)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
+;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
 ;; End:
 ;;; transient.el ends here
