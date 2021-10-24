@@ -3,7 +3,7 @@ PKG = transient
 ELS   = $(PKG).el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  =
+DEPS  = compat
 
 VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c2-)
 

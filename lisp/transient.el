@@ -6,7 +6,7 @@
 ;; Homepage: https://github.com/magit/transient
 ;; Keywords: bindings
 
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (compat "28.1.0.0"))
 ;; Package-Version: 0.3.6
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
