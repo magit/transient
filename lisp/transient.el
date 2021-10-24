@@ -923,7 +923,7 @@ keyword.
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
 
-(defalias 'transient-define-argument 'define-infix-command
+(defalias 'transient-define-argument 'transient-define-infix
   "Define NAME as a transient infix command.
 
 Only use this alias to define an infix command that actually
