@@ -2825,13 +2825,23 @@ does nothing." nil)
   (oref obj value))
 
 (cl-defmethod transient-infix-value ((obj transient-option))
-  "Return (concat ARGUMENT VALUE) or nil.
+  "Return ARGUMENT and VALUE as a unit or nil.
+
+Normally return (concat ARGUMENT VALUE).  If `multi-value'
+is `concat', then return a list of (concat ARGUMENT VALUE)
+elements.  If `multi-value' is any other non-nil value,
+then return (cons ARGUMENT VALUES).
 
 ARGUMENT and VALUE are the values of the respective slots of OBJ.
 If VALUE is nil, then return nil.  VALUE may be the empty string,
-which is not the same as nil."
+which is not the same as nil.  If `multi-value' is non-nil then
+VALUE cannot be an empty string."
   (when-let ((value (oref obj value)))
-    (concat (oref obj argument) value)))
+    (let ((arg (oref obj argument)))
+      (pcase (oref obj multi-value)
+        (`nil    (concat arg value))
+        (`concat (mapcar (lambda (v) (concat arg v)) value))
+        (_       (cons arg value))))))
 
 (cl-defmethod transient-infix-value ((_   transient-variable))
   "Return nil, which means \"no value\".
@@ -2840,15 +2850,6 @@ Setting the value of a variable is done by, well, setting the
 value of the variable.  I.e. this is a side-effect and does not
 contribute to the value of the transient."
   nil)
-
-(cl-defmethod transient-infix-value ((obj transient-files))
-  "Return (cons ARGUMENT VALUE) or nil.
-
-ARGUMENT and VALUE are the values of the respective slots of OBJ.
-If VALUE is nil, then return nil.  VALUE may be the empty string,
-which is not the same as nil."
-  (when-let ((value (oref obj value)))
-    (cons (oref obj argument) value)))
 
 ;;;; Utilities
 
