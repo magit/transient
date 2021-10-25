@@ -2744,11 +2744,12 @@ the set, saved or default value for PREFIX."
        (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
-  (delq nil (mapcar (lambda (obj)
-                      (and (or (not (slot-exists-p obj 'unsavable))
-                               (not (oref obj unsavable)))
-                           (transient-infix-value obj)))
-                    transient-current-suffixes)))
+  (transient--with-emergency-exit
+    (delq nil (mapcar (lambda (obj)
+                        (and (or (not (slot-exists-p obj 'unsavable))
+                                 (not (oref obj unsavable)))
+                             (transient-infix-value obj)))
+                      transient-current-suffixes))))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
