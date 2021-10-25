@@ -1693,7 +1693,7 @@ EDIT may be non-nil."
       (transient--pop-keymap 'transient--redisplay-map)
       (setq name (oref transient--prefix command))
       (setq params (list :scope (oref transient--prefix scope))))
-     (transient--transient-map
+     (transient--prefix
       ;; Invoked as a ":transient-non-suffix 'transient--do-{stay,call}"
       ;; of an outer prefix.  Unlike the usual `transient--do-replace',
       ;; these predicates fail to clean up after the outer prefix.
