@@ -3240,14 +3240,15 @@ If the OBJ's `key' is currently unreachable, then apply the face
                       'transient-inactive-argument)))
 
 (cl-defmethod transient-format-value ((obj transient-option))
-  (let ((value (oref obj value)))
-    (propertize (concat (oref obj argument)
-                        (if (listp value)
-                            (mapconcat #'identity value ",")
-                          value))
-                'face (if value
-                          'transient-value
-                        'transient-inactive-value))))
+  (let ((argument (oref obj argument)))
+    (if-let ((value (oref obj value)))
+        (propertize
+         (pcase (oref obj multi-value)
+           (`nil    (concat argument value))
+           (`concat (mapconcat (lambda (v) (concat argument v)) value " "))
+           (_       (concat argument (mapconcat #'identity value ","))))
+         'face 'transient-value)
+      (propertize argument 'face 'transient-inactive-value))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
   (with-slots (value argument-format choices) obj
