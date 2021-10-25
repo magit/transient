@@ -1,4 +1,42 @@
 # -*- mode: org -*-
+* v0.3.7    2021-10-25
+
+- Added an additional safety hatch to prevent Emacs from entering an
+  inconsistent state when an unexpected error occurs.  99e48369
+
+- Added support for implementing section movement commands in
+  third-party packages.  This was requested by the maintainer of
+  Emacspeak.  Because they would be of very limited use to sighted
+  users no such commands are added to Transient itself.  769219b5
+
+- ~transient-read-number-{N0,N+,N}~ now support infix arguments that
+  have three different states: disabled, enabled without an empty
+  value, and enabled with a non-empty value.  626d105e
+
+- If a command is called as a suffix of itself, then the help command
+  shows the function definition instead of the man-page as it usually
+  does for prefixes.  e17e2b2f
+
+- Give users more control over how the transient buffer is displayed.
+  Various aspects that were previously hardcoded can now be changed
+  using the ~transient-display-buffer-action~ option.  7c677737
+
+- Added support for adding suffixes that might be neither defined nor
+  autoloaded when the prefix is invoked.  This usually results in an
+  error and while it is now possible to override that using an extra
+  step, it is still discouraged.  6842305e
+
+Bug fixes:
+
+- 1e740608 transient-map: Bind C-u to universal-argument
+- e9048100 Explicitly call transient--pre-command in button action
+- be119ee4 Export variables for transient non-infix suffixes
+- b526b9c7 transient-infix-set: Consider all incompatibility rules
+- 7126d6aa Fix hydra-inspired colors
+- 0c2255a2 transient-get-value: Add an emergency exit
+
+Also contains various documentation updates and code clean-ups.
+
 * v0.3.6    2021-07-01
 
 - Added new option ~transient-force-single-column~, which may be useful
