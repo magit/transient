@@ -2188,17 +2188,17 @@ to `transient--do-warn'."
     (setq this-command 'transient-popup-navigation-help))
   transient--stay)
 
-(put 'transient--do-stay       'transient-color 'transient-blue)
-(put 'transient--do-noop       'transient-color 'transient-blue)
-(put 'transient--do-warn       'transient-color 'transient-blue)
-(put 'transient--do-warn-inapt 'transient-color 'transient-blue)
-(put 'transient--do-call       'transient-color 'transient-blue)
-(put 'transient--do-exit       'transient-color 'transient-red)
-(put 'transient--do-replace    'transient-color 'transient-red)
-(put 'transient--do-suspend    'transient-color 'transient-red)
-(put 'transient--do-quit-one   'transient-color 'transient-red)
-(put 'transient--do-quit-all   'transient-color 'transient-red)
-(put 'transient--do-move       'transient-color 'transient-blue)
+(put 'transient--do-stay       'transient-color 'transient-red)
+(put 'transient--do-noop       'transient-color 'transient-red)
+(put 'transient--do-warn       'transient-color 'transient-red)
+(put 'transient--do-warn-inapt 'transient-color 'transient-red)
+(put 'transient--do-call       'transient-color 'transient-red)
+(put 'transient--do-exit       'transient-color 'transient-blue)
+(put 'transient--do-replace    'transient-color 'transient-blue)
+(put 'transient--do-suspend    'transient-color 'transient-blue)
+(put 'transient--do-quit-one   'transient-color 'transient-blue)
+(put 'transient--do-quit-all   'transient-color 'transient-blue)
+(put 'transient--do-move       'transient-color 'transient-red)
 
 ;;; Commands
 
