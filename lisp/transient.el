@@ -2922,16 +2922,16 @@ have a history of their own.")
                  'transient-separator)))
           (insert (propertize "__" 'face face 'display '(space :height (1))))
           (insert (propertize "\n" 'face face 'line-height t))))
-      (goto-char (point-min))
       (when transient-force-fixed-pitch
-        (transient--force-fixed-pitch))
-      (when transient-enable-popup-navigation
-        (transient--goto-button focus)))
+        (transient--force-fixed-pitch)))
     (unless (window-live-p transient--window)
       (setq transient--window
             (display-buffer buf transient-display-buffer-action)))
     (when (window-live-p transient--window)
       (with-selected-window transient--window
+        (goto-char (point-min))
+        (when transient-enable-popup-navigation
+          (transient--goto-button focus))
         (magit--fit-window-to-buffer transient--window)))))
 
 (defun magit--fit-window-to-buffer (window)
