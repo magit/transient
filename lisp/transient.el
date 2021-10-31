@@ -3295,7 +3295,7 @@ Show the first one that is specified."
              (manpage (oref prefix man-page))
              (- (not (eq this-command (oref transient--prefix command)))))
         (transient--show-manpage manpage)
-      (transient--describe-function this-original-command))))
+      (transient--describe-function this-command))))
 
 (cl-defmethod transient-show-help ((obj transient-infix))
   "Show the manpage if defined or the command doc-string.
@@ -3303,7 +3303,7 @@ If the manpage is specified, then try to jump to the correct
 location."
   (if-let ((manpage (oref transient--prefix man-page)))
       (transient--show-manpage manpage (ignore-errors (oref obj argument)))
-    (transient--describe-function this-original-command)))
+    (transient--describe-function this-command)))
 
 ;; `cl-generic-generalizers' doesn't support `command' et al.
 (cl-defmethod transient-show-help (cmd)
