@@ -3276,11 +3276,12 @@ a prefix command, while porting a regular keymap to a transient."
 ;;; Help
 
 (cl-defgeneric transient-show-help (obj)
-  "Show help for OBJ's command.")
+  "Show documentation for the command represented by OBJ.")
 
 (cl-defmethod transient-show-help ((obj transient-prefix))
-  "Show the info manual, manpage or command doc-string.
-Show the first one that is specified."
+  "Call `show-help' if non-nil, else show `info-manual',
+if non-nil, else show the `man-page' if non-nil, else use
+`describe-function'."
   (with-slots (show-help info-manual man-page command) obj
     (cond (show-help (funcall show-help obj))
           (info-manual (transient--show-manual info-manual))
@@ -3288,7 +3289,10 @@ Show the first one that is specified."
           (t (transient--describe-function command)))))
 
 (cl-defmethod transient-show-help ((obj transient-suffix))
-  "Show the command doc-string."
+  "Call `show-help' if non-nil, else use `describe-function'.
+Also used to dispatch showing documentation for the current
+prefix.  If the suffix is a sub-prefix, then also call the
+prefix method."
   (cond
    ((eq this-command 'transient-help)
     (transient-show-help transient--prefix))
@@ -3301,9 +3305,9 @@ Show the first one that is specified."
         (transient--describe-function this-command)))))
 
 (cl-defmethod transient-show-help ((obj transient-infix))
-  "Show the manpage if defined or the command doc-string.
-If the manpage is specified, then try to jump to the correct
-location."
+  "Call `show-help' if non-nil, else show the `man-page'
+if non-nil, else use `describe-function'.  When showing the
+manpage, then try to jump to the correct location."
   (if-let ((show-help (oref obj show-help)))
       (funcall show-help obj)
     (if-let ((man-page (oref transient--prefix man-page))
