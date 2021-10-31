@@ -742,9 +742,9 @@ slot is non-nil."
   "Class used for sets of mutually exclusive command-line switches.")
 
 (defclass transient-files (transient-infix) ()
-  "Class used for the \"--\" argument.
-All remaining arguments are treated as files.
-They become the value of this argument.")
+  "This class is deprecated in favor of `transient-option'.
+`transient-option' learned all the tricks of this class.
+Just switch the class and you are ready to go.")
 
 ;;;; Group
 
@@ -2462,29 +2462,29 @@ Otherwise call the primary method according to object's class."
                   default)
               nil)))))
 
+(cl-defmethod transient-init-value ((obj transient-argument))
+  (oset obj value
+        (let ((value (oref transient--prefix value))
+              (argument (and (slot-boundp obj 'argument)
+                             (oref obj argument)))
+              (multi-value (oref obj multi-value))
+              (regexp (if (slot-exists-p obj 'argument-regexp)
+                          (oref obj argument-regexp)
+                        (format "\\`%s\\(.*\\)" (oref obj argument)))))
+          (if (memq multi-value '(t rest))
+              (cdr (assoc argument value))
+            (let ((match (lambda (v)
+                           (and (stringp v)
+                                (string-match regexp v)
+                                (match-string 1 v)))))
+              (if multi-value
+                  (delq nil (mapcar match value))
+                (cl-some match value)))))))
+
 (cl-defmethod transient-init-value ((obj transient-switch))
   (oset obj value
         (car (member (oref obj argument)
                      (oref transient--prefix value)))))
-
-(cl-defmethod transient-init-value ((obj transient-option))
-  (oset obj value
-        (transient--value-match (format "\\`%s\\(.*\\)" (oref obj argument)))))
-
-(cl-defmethod transient-init-value ((obj transient-switches))
-  (oset obj value
-        (transient--value-match (oref obj argument-regexp))))
-
-(defun transient--value-match (re)
-  (when-let ((match (cl-find-if (lambda (v)
-                                  (and (stringp v)
-                                       (string-match re v)))
-                                (oref transient--prefix value))))
-    (match-string 1 match)))
-
-(cl-defmethod transient-init-value ((obj transient-files))
-  (oset obj value
-        (cdr (assoc "--" (oref transient--prefix value)))))
 
 ;;;; Read
 
@@ -2735,7 +2735,7 @@ If the current command was invoked from the transient prefix
 command PREFIX, then return the active infix arguments.  If
 the current command was not invoked from PREFIX, then return
 the set, saved or default value for PREFIX."
-  (delq nil (mapcar #'transient-infix-value (transient-suffixes prefix))))
+  (cl-mapcan #'transient--get-wrapped-value (transient-suffixes prefix)))
 
 (defun transient-suffixes (prefix)
   "Return the suffix objects of the transient prefix command PREFIX."
@@ -2747,11 +2747,19 @@ the set, saved or default value for PREFIX."
 
 (defun transient-get-value ()
   (transient--with-emergency-exit
-    (delq nil (mapcar (lambda (obj)
-                        (and (or (not (slot-exists-p obj 'unsavable))
-                                 (not (oref obj unsavable)))
-                             (transient-infix-value obj)))
-                      transient-current-suffixes))))
+    (cl-mapcan (lambda (obj)
+                 (and (or (not (slot-exists-p obj 'unsavable))
+                          (not (oref obj unsavable)))
+                      (transient--get-wrapped-value obj)))
+               transient-current-suffixes)))
+
+(defun transient--get-wrapped-value (obj)
+  (when-let ((value (transient-infix-value obj)))
+    (cl-ecase (and (slot-exists-p obj 'multi-value)
+                   (oref obj multi-value))
+      ((nil)    (list value))
+      ((t rest) (list value))
+      (repeat   value))))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
@@ -2783,13 +2791,13 @@ does nothing." nil)
   (oref obj value))
 
 (cl-defmethod transient-infix-value ((obj transient-option))
-  "Return (concat ARGUMENT VALUE) or nil.
-
-ARGUMENT and VALUE are the values of the respective slots of OBJ.
-If VALUE is nil, then return nil.  VALUE may be the empty string,
-which is not the same as nil."
+  "Return ARGUMENT and VALUE as a unit or nil if the latter is nil."
   (when-let ((value (oref obj value)))
-    (concat (oref obj argument) value)))
+    (let ((arg (oref obj argument)))
+      (cl-ecase (oref obj multi-value)
+        ((nil)    (concat arg value))
+        ((t rest) (cons arg value))
+        (repeat   (mapcar (lambda (v) (concat arg v)) value))))))
 
 (cl-defmethod transient-infix-value ((_   transient-variable))
   "Return nil, which means \"no value\".
@@ -2798,15 +2806,6 @@ Setting the value of a variable is done by, well, setting the
 value of the variable.  I.e. this is a side-effect and does not
 contribute to the value of the transient."
   nil)
-
-(cl-defmethod transient-infix-value ((obj transient-files))
-  "Return (cons ARGUMENT VALUE) or nil.
-
-ARGUMENT and VALUE are the values of the respective slots of OBJ.
-If VALUE is nil, then return nil.  VALUE may be the empty string,
-which is not the same as nil."
-  (when-let ((value (oref obj value)))
-    (cons (oref obj argument) value)))
 
 ;;;; Utilities
 
@@ -3197,14 +3196,17 @@ If the OBJ's `key' is currently unreachable, then apply the face
                       'transient-inactive-argument)))
 
 (cl-defmethod transient-format-value ((obj transient-option))
-  (let ((value (oref obj value)))
-    (propertize (concat (oref obj argument)
-                        (if (listp value)
-                            (mapconcat #'identity value ",")
-                          value))
-                'face (if value
-                          'transient-value
-                        'transient-inactive-value))))
+  (let ((argument (oref obj argument)))
+    (if-let ((value (oref obj value)))
+        (propertize
+         (cl-ecase (oref obj multi-value)
+           ((nil)    (concat argument value))
+           ((t rest) (concat argument
+                             (and (not (string-suffix-p " " argument)) " ")
+                             (mapconcat #'prin1-to-string value " ")))
+           (repeat   (mapconcat (lambda (v) (concat argument v)) value " ")))
+         'face 'transient-value)
+      (propertize argument 'face 'transient-inactive-value))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
   (with-slots (value argument-format choices) obj
@@ -3223,15 +3225,6 @@ If the OBJ's `key' is currently unreachable, then apply the face
               choices
               (propertize "|" 'face 'transient-inactive-value))
              (propertize "]" 'face 'transient-inactive-value)))))
-
-(cl-defmethod transient-format-value ((obj transient-files))
-  (let ((argument (oref obj argument)))
-    (if-let ((value (oref obj value)))
-        (propertize (concat argument " "
-                            (mapconcat (lambda (f) (format "%S" f))
-                                       (oref obj value) " "))
-                    'face 'transient-argument)
-      (propertize argument 'face 'transient-inactive-argument))))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key

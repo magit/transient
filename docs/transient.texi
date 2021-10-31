@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.3.7
+@subtitle for version 0.3.7 (v0.3.7-8-gc9ab648e+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version 0.3.7.
+This manual is for Transient version 0.3.7 (v0.3.7-8-gc9ab648e+1).
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -1751,8 +1751,9 @@ exclusive command-line switches.
 
 
 @item
-The @code{transient-files} class can be used for a "--" argument that
-indicates that all remaining arguments are files.
+The @code{transient-files} class is deprecated in favor of
+@code{transient-option'}, which learned all the tricks of this class.
+Just switch the class and you are ready to go.
 
 
 @item
@@ -2049,7 +2050,35 @@ the prefixes.
 
 @item
 @code{multi-value} For options, whether the option can have multiple
-values.  If non-nil, then default to use @code{completing-read-multiple}.
+values.  If this is non-nil, then the values are read using
+@code{completing-read-multiple} by default and if you specify your own
+reader, then it should read the values using that function or
+similar.
+
+Supported non-nil values are:
+
+@itemize
+@item
+Use @code{rest} for an option that can have multiple values.  This is
+useful e.g. for an @code{--} argument that indicates that all remaining
+arguments are files (such as @code{git log -- file1 file2}).
+
+In the list returned by @code{transient-args} such an option and its
+values are represented by a single list of the form @code{(ARGUMENT
+    . VALUES)}.
+
+
+@item
+Use @code{repeat} for an option that can be specified multiple times.
+
+In the list returned by @code{transient-args} each instance of the option
+and its value appears separately in the usual from, for example:
+@code{("--another-argument" "--option=first" "--option=second")}.
+@end itemize
+
+In both cases the option's values have to be specified in the
+default value of a prefix using the same format as returned by
+@code{transient-args}, e.g.: @code{("--other" "--o=1" "--o=2" ("--" "f1" "f2"))}.
 
 
 @item

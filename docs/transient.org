@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.3.7
+#+SUBTITLE: for version 0.3.7 (v0.3.7-8-gc9ab648e+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.3.7.
+This manual is for Transient version 0.3.7 (v0.3.7-8-gc9ab648e+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -1421,8 +1421,9 @@ object should not affect later invocations.
 - The ~transient-switches~ class can be used for a set of mutually
   exclusive command-line switches.
 
-- The ~transient-files~ class can be used for a "--" argument that
-  indicates that all remaining arguments are files.
+- The ~transient-files~ class is deprecated in favor of
+  ~transient-option'~, which learned all the tricks of this class.
+  Just switch the class and you are ready to go.
 
 - Classes used for infix commands that represent variables should
   derived from the abstract ~transient-variables~ class.
@@ -1651,7 +1652,30 @@ They are defined here anyway to allow sharing certain methods.
   the prefixes.
 
 - ~multi-value~ For options, whether the option can have multiple
-  values.  If non-nil, then default to use ~completing-read-multiple~.
+  values.  If this is non-nil, then the values are read using
+  ~completing-read-multiple~ by default and if you specify your own
+  reader, then it should read the values using that function or
+  similar.
+
+  Supported non-nil values are:
+
+  - Use ~rest~ for an option that can have multiple values.  This is
+    useful e.g. for an ~--~ argument that indicates that all remaining
+    arguments are files (such as ~git log -- file1 file2~).
+
+    In the list returned by ~transient-args~ such an option and its
+    values are represented by a single list of the form ~(ARGUMENT
+    . VALUES)~.
+
+  - Use ~repeat~ for an option that can be specified multiple times.
+
+    In the list returned by ~transient-args~ each instance of the option
+    and its value appears separately in the usual from, for example:
+    ~("--another-argument" "--option=first" "--option=second")~.
+
+  In both cases the option's values have to be specified in the
+  default value of a prefix using the same format as returned by
+  ~transient-args~, e.g.: ~("--other" "--o=1" "--o=2" ("--" "f1" "f2"))~.
 
 - ~always-read~ For options, whether to read a value on every invocation.
   If this is nil, then options that have a value are simply unset and
