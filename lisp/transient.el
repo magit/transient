@@ -3310,6 +3310,10 @@ location."
   "Show the command doc-string."
   (transient--describe-function cmd))
 
+(defun transient--describe-function (fn)
+  (describe-function fn)
+  (select-window (get-buffer-window (help-buffer))))
+
 (defun transient--show-manpage (manpage &optional argument)
   (require 'man)
   (let* ((Man-notify-method 'meek)
@@ -3320,10 +3324,6 @@ location."
     (switch-to-buffer buf)
     (when argument
       (transient--goto-argument-description argument))))
-
-(defun transient--describe-function (fn)
-  (describe-function fn)
-  (select-window (get-buffer-window (help-buffer))))
 
 (defun transient--goto-argument-description (arg)
   (goto-char (point-min))
