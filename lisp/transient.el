@@ -598,8 +598,9 @@ If `transient-save-history' is nil, then do nothing."
    (history     :initarg :history     :initform nil)
    (history-pos :initarg :history-pos :initform 0)
    (history-key :initarg :history-key :initform nil)
-   (man-page    :initarg :man-page    :initform nil)
+   (show-help   :initarg :show-help   :initform nil)
    (info-manual :initarg :info-manual :initform nil)
+   (man-page    :initarg :man-page    :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
@@ -665,6 +666,7 @@ slot is non-nil."
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
    (description :initarg :description :initform nil)
+   (show-help   :initarg :show-help   :initform nil)
    (inapt                             :initform nil)
    (inapt-if
     :initarg :inapt-if
@@ -3279,8 +3281,9 @@ a prefix command, while porting a regular keymap to a transient."
 (cl-defmethod transient-show-help ((obj transient-prefix))
   "Show the info manual, manpage or command doc-string.
 Show the first one that is specified."
-  (with-slots (info-manual man-page command) obj
-    (cond (info-manual (transient--show-manual info-manual))
+  (with-slots (show-help info-manual man-page command) obj
+    (cond (show-help (funcall show-help obj))
+          (info-manual (transient--show-manual info-manual))
           (man-page (transient--show-manpage man-page))
           (t (transient--describe-function command)))))
 
@@ -3293,17 +3296,21 @@ Show the first one that is specified."
                        'transient--prefix)))
       (and prefix (not (eq (oref transient--prefix command) this-command))
            (prog1 t (transient-show-help prefix)))))
-   (t (transient--describe-function this-command))))
+   (t (if-let ((show-help (oref obj show-help)))
+          (funcall show-help obj)
+        (transient--describe-function this-command)))))
 
 (cl-defmethod transient-show-help ((obj transient-infix))
   "Show the manpage if defined or the command doc-string.
 If the manpage is specified, then try to jump to the correct
 location."
-  (if-let ((man-page (oref transient--prefix man-page))
-           (argument (and (slot-boundp obj 'argument)
-                          (oref obj argument))))
-      (transient--show-manpage man-page argument)
-    (transient--describe-function this-command)))
+  (if-let ((show-help (oref obj show-help)))
+      (funcall show-help obj)
+    (if-let ((man-page (oref transient--prefix man-page))
+             (argument (and (slot-boundp obj 'argument)
+                            (oref obj argument))))
+        (transient--show-manpage man-page argument)
+      (transient--describe-function this-command))))
 
 ;; `cl-generic-generalizers' doesn't support `command' et al.
 (cl-defmethod transient-show-help (cmd)
