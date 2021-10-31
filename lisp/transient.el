@@ -3279,11 +3279,10 @@ a prefix command, while porting a regular keymap to a transient."
 (cl-defmethod transient-show-help ((obj transient-prefix))
   "Show the info manual, manpage or command doc-string.
 Show the first one that is specified."
-  (if-let ((manual (oref obj info-manual)))
-      (transient--show-manual manual)
-    (if-let ((manpage (oref obj man-page)))
-        (transient--show-manpage manpage)
-      (transient--describe-function (oref obj command)))))
+  (with-slots (info-manual man-page command) obj
+    (cond (info-manual (transient--show-manual info-manual))
+          (man-page (transient--show-manpage man-page))
+          (t (transient--describe-function command)))))
 
 (cl-defmethod transient-show-help ((obj transient-suffix))
   "Show the command doc-string."
@@ -3301,8 +3300,10 @@ Show the first one that is specified."
   "Show the manpage if defined or the command doc-string.
 If the manpage is specified, then try to jump to the correct
 location."
-  (if-let ((manpage (oref transient--prefix man-page)))
-      (transient--show-manpage manpage (ignore-errors (oref obj argument)))
+  (if-let ((man-page (oref transient--prefix man-page))
+           (argument (and (slot-boundp obj 'argument)
+                          (oref obj argument))))
+      (transient--show-manpage man-page argument)
     (transient--describe-function this-command)))
 
 ;; `cl-generic-generalizers' doesn't support `command' et al.
