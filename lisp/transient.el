@@ -3280,7 +3280,7 @@ a prefix command, while porting a regular keymap to a transient."
   "Show the info manual, manpage or command doc-string.
 Show the first one that is specified."
   (if-let ((manual (oref obj info-manual)))
-      (info manual)
+      (transient--show-manual manual)
     (if-let ((manpage (oref obj man-page)))
         (transient--show-manpage manpage)
       (transient--describe-function (oref obj command)))))
@@ -3313,6 +3313,9 @@ location."
 (defun transient--describe-function (fn)
   (describe-function fn)
   (select-window (get-buffer-window (help-buffer))))
+
+(defun transient--show-manual (manual)
+  (info manual))
 
 (defun transient--show-manpage (manpage &optional argument)
   (require 'man)
