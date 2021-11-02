@@ -604,7 +604,8 @@ If `transient-save-history' is nil, then do nothing."
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
-   (suffix-description   :initarg :suffix-description))
+   (suffix-description   :initarg :suffix-description)
+   (variable-pitch       :initarg :variable-pitch       :initform nil))
   "Transient prefix command.
 
 Each transient prefix command consists of a command, which is
@@ -2994,11 +2995,17 @@ have a history of their own.")
                  (push desc rows))
                rows))
            (oref group suffixes)))
+         (vp (oref transient--prefix variable-pitch))
          (rs (apply #'max (mapcar #'length columns)))
          (cs (length columns))
-         (cw (mapcar (lambda (col) (apply #'max (mapcar #'length col)))
+         (cw (mapcar (lambda (col)
+                       (apply #'max
+                              (mapcar (if vp #'transient--pixel-width #'length)
+                                      col)))
                      columns))
-         (cc (transient--seq-reductions-from (apply-partially #'+ 3) cw 0)))
+         (cc (transient--seq-reductions-from
+              (apply-partially #'+ (* 3 (if vp (transient--pixel-width " ") 1)))
+              cw 0)))
     (if transient-force-single-column
         (dotimes (c cs)
           (dotimes (r rs)
@@ -3009,11 +3016,28 @@ have a history of their own.")
             (insert ?\n)))
       (dotimes (r rs)
         (dotimes (c cs)
-          (insert (make-string (- (nth c cc) (current-column)) ?\s))
-          (when-let ((cell (nth r (nth c columns))))
-            (insert cell))
-          (when (= c (1- cs))
-            (insert ?\n)))))))
+          (if vp
+              (progn
+                (when-let ((cell (nth r (nth c columns))))
+                  (insert cell))
+                (if (= c (1- cs))
+                    (insert ?\n)
+                  (insert (propertize " " 'display
+                                      `(space :align-to (,(nth (1+ c) cc)))))))
+            (insert (make-string (- (nth c cc) (current-column)) ?\s))
+            (when-let ((cell (nth r (nth c columns))))
+              (insert cell))
+            (when (= c (1- cs))
+              (insert ?\n))))))))
+
+(defun transient--pixel-width (string)
+  (save-window-excursion
+    (with-temp-buffer
+      (insert string)
+      (set-window-dedicated-p nil nil)
+      (set-window-buffer nil (current-buffer))
+      (car (window-text-pixel-size
+            nil (line-beginning-position) (point))))))
 
 (cl-defmethod transient--insert-group ((group transient-subgroups))
   (let* ((subgroups (oref group suffixes))
