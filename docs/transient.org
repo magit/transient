@@ -8,7 +8,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Transient: (transient).
 #+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version 0.3.7 (v0.3.7-8-gc9ab648e+1)
+#+SUBTITLE: for version 0.3.7 (v0.3.7-9-g667488eb+1)
 
 #+TEXINFO_DEFFN: t
 #+OPTIONS: H:4 num:4 toc:2
@@ -37,7 +37,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+TEXINFO: @noindent
-This manual is for Transient version 0.3.7 (v0.3.7-8-gc9ab648e+1).
+This manual is for Transient version 0.3.7 (v0.3.7-9-g667488eb+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@bernoul.li>
@@ -1421,9 +1421,8 @@ object should not affect later invocations.
 - The ~transient-switches~ class can be used for a set of mutually
   exclusive command-line switches.
 
-- The ~transient-files~ class is deprecated in favor of
-  ~transient-option'~, which learned all the tricks of this class.
-  Just switch the class and you are ready to go.
+- The ~transient-files~ class can be used for a "--" argument that
+  indicates that all remaining arguments are files.
 
 - Classes used for infix commands that represent variables should
   derived from the abstract ~transient-variables~ class.

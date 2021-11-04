@@ -741,10 +741,14 @@ slot is non-nil."
    (argument-regexp  :initarg :argument-regexp))
   "Class used for sets of mutually exclusive command-line switches.")
 
-(defclass transient-files (transient-infix) ()
-  "This class is deprecated in favor of `transient-option'.
-`transient-option' learned all the tricks of this class.
-Just switch the class and you are ready to go.")
+(defclass transient-files (transient-option) ()
+  ((key         :initform "--")
+   (argument    :initform "--")
+   (multi-value :initform rest)
+   (reader      :initform transient-read-files))
+  "Class used for the \"--\" argument or similar.
+All remaining arguments are treated as files.
+They become the value of this argument.")
 
 ;;;; Group
 
