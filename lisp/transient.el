@@ -911,7 +911,7 @@ functions.  Different infix commands behave differently because
 the concrete methods are different for different infix command
 classes.  In rare case the above command function might not be
 suitable, even if you define your own infix command class.  In
-that case you have to use `transient-suffix-command' to define
+that case you have to use `transient-define-suffix' to define
 the infix command and use t as the value of the `:transient'
 keyword.
 
