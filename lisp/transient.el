@@ -3638,6 +3638,19 @@ search instead."
 
 ;;;; Miscellaneous
 
+(with-eval-after-load 'lisp-mode
+  (cl-pushnew (list nil (concat "^\\s-*("
+                                (eval-when-compile
+			          (regexp-opt
+			           '("transient-define-prefix"
+                                     "transient-define-suffix"
+                                     "transient-define-infix"
+                                     "transient-define-argument")
+                                   t))
+		                "\\s-+\\(" lisp-mode-symbol-regexp "\\)")
+	            2)
+              lisp-imenu-generic-expression :test #'equal))
+
 (declare-function which-key-mode "which-key" (&optional arg))
 
 (defun transient--suspend-which-key-mode ()
