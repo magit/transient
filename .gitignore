@@ -3,6 +3,7 @@
 /docs/*.info
 /docs/*.pdf
 /docs/dir
+/docs/stats/
 /docs/transient/
 /lisp/*.elc
 /lisp/transient-autoloads.el
