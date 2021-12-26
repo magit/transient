@@ -2473,6 +2473,7 @@ Otherwise call the primary method according to object's class."
               (argument (and (slot-boundp obj 'argument)
                              (oref obj argument)))
               (multi-value (oref obj multi-value))
+              (case-fold-search nil)
               (regexp (if (slot-exists-p obj 'argument-regexp)
                           (oref obj argument-regexp)
                         (format "\\`%s\\(.*\\)" (oref obj argument)))))
@@ -2822,7 +2823,8 @@ a string, using the empty string for the empty value, or nil if
 the option does not appear in ARGS."
   (if (string-match-p "=\\'" arg)
       (save-match-data
-        (when-let ((match (let ((re (format "\\`%s\\(?:=\\(.+\\)\\)?\\'"
+        (when-let ((match (let ((case-fold-search nil)
+                                (re (format "\\`%s\\(?:=\\(.+\\)\\)?\\'"
                                             (substring arg 0 -1))))
                             (cl-find-if (lambda (a)
                                           (and (stringp a)
