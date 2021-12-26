@@ -1,20 +1,20 @@
-#+TITLE: Transient User and Developer Manual
+#+title: Transient User and Developer Manual
 :PREAMBLE:
-#+AUTHOR: Jonas Bernoulli
-#+EMAIL: jonas@bernoul.li
-#+DATE: 2018-{{{year}}}
-#+LANGUAGE: en
+#+author: Jonas Bernoulli
+#+email: jonas@bernoul.li
+#+date: 2018-{{{year}}}
+#+language: en
 
-#+TEXINFO_DIR_CATEGORY: Emacs
-#+TEXINFO_DIR_TITLE: Transient: (transient).
-#+TEXINFO_DIR_DESC: Transient Commands
-#+SUBTITLE: for version {{{version}}}
+#+texinfo_dir_category: Emacs
+#+texinfo_dir_title: Transient: (transient).
+#+texinfo_dir_desc: Transient Commands
+#+subtitle: for version {{{version}}}
 
-#+TEXINFO_DEFFN: t
-#+OPTIONS: H:4 num:4 toc:2
-#+PROPERTY: header-args :eval never
-#+MACRO: version (eval (ox-texinfo+-get-version 'mixed))
-#+MACRO: year (eval (format-time-string "%Y"))
+#+texinfo_deffn: t
+#+options: H:4 num:4 toc:2
+#+property: header-args :eval never
+#+macro: version (eval (ox-texinfo+-get-version 'mixed))
+#+macro: year (eval (format-time-string "%Y"))
 
 Taking inspiration from prefix keys and prefix arguments, Transient
 implements a similar abstraction involving a prefix command, infix
@@ -36,10 +36,10 @@ reading a new value in the minibuffer.
 Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
-#+TEXINFO: @noindent
+#+texinfo: @noindent
 This manual is for Transient version {{{version}}}.
 
-#+BEGIN_QUOTE
+#+begin_quote
 Copyright (C) 2018-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
@@ -51,7 +51,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
-#+END_QUOTE
+#+end_quote
 :END:
 * Introduction
 
@@ -62,7 +62,7 @@ arguments and suffix commands.  We could call this abstraction a
 commands (a prefix and a suffix) we prefer to call it just a
 "transient".
 
-#+BEGIN_QUOTE
+#+begin_quote
 Transient keymaps are a feature provided by Emacs.  Transients as
 implemented by this package involve the use of transient keymaps.
 
@@ -71,7 +71,7 @@ talk about "prefix commands" in this manual, then we mean our own kind
 of "prefix commands", unless specified otherwise.  To avoid ambiguity
 we sometimes use the terms "transient prefix command" for our kind and
 "regular prefix command" for Emacs' kind.
-#+END_QUOTE
+#+end_quote
 
 When the user calls a transient prefix command, then a transient
 (temporary) keymap is activated, which binds the transient's infix and
@@ -106,7 +106,7 @@ arguments have been set using a command such as ~universal-argument~.
 The information shown in the popup buffer while a transient is active
 looks a bit like this:
 
-#+BEGIN_EXAMPLE
+#+begin_example
 ,-----------------------------------------
 |Arguments
 | -f Force (--force)
@@ -116,15 +116,15 @@ looks a bit like this:
 | t tag
 | r release
 `-----------------------------------------
-#+END_EXAMPLE
+#+end_example
 
-#+BEGIN_QUOTE
+#+begin_quote
 This is a simplified version of ~magit-tag~.  Info manuals do not
 support images or colored text, so the above "screenshot" lacks some
 information; in practice you would be able to tell whether the
 arguments ~--force~ and ~--annotate~ are enabled or not based on their
 color.
-#+END_QUOTE
+#+end_quote
 
 Transient can be used to implement simple "command dispatchers".  The
 main benefit then is that the user can see all the available commands
@@ -800,9 +800,9 @@ brackets to do the latter.
 
 Group specifications then have this form:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   [{LEVEL} {DESCRIPTION} {KEYWORD VALUE}... ELEMENT...]
-#+END_SRC
+#+end_src
 
 The LEVEL is optional and defaults to 4.  See [[*Enabling and Disabling
 Suffixes]].
@@ -895,9 +895,9 @@ suffixes".  Here it means the former.
 
 Suffix specifications have this form:
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ([LEVEL] [KEY] [DESCRIPTION] COMMAND|ARGUMENT [KEYWORD VALUE]...)
-#+END_SRC
+#+end_src
 
 LEVEL, KEY and DESCRIPTION can also be specified using the KEYWORDs
 ~:level~, ~:key~ and ~:description~.  If the object that is associated with
@@ -1754,13 +1754,13 @@ The following diagrams illustrate some of the differences.
 
 See [[info:elisp#Prefix Keys]].
 
-#+BEGIN_EXAMPLE
+#+begin_example
                                     ,--> command1 --> (c)
                                     |
   (c)-(+)-> prefix command or key --+--> command2 --> (c)
                                     |
                                     `--> command3 --> (c)
-#+END_EXAMPLE
+#+end_example
 
 *** Regular Prefix Arguments
 :PROPERTIES:
@@ -1769,7 +1769,7 @@ See [[info:elisp#Prefix Keys]].
 
 See [[info:elisp#Prefix Command Arguments]].
 
-#+BEGIN_EXAMPLE
+#+begin_example
           ,----------------------------------,
           |                                  |
           v                                  |
@@ -1783,7 +1783,7 @@ See [[info:elisp#Prefix Command Arguments]].
                                         ^                          |
                                         |                          |
                                         `-------- discards --------'
-#+END_EXAMPLE
+#+end_example
 
 *** Transients
 :PROPERTIES:
@@ -1794,7 +1794,7 @@ See [[info:elisp#Prefix Command Arguments]].
 
 This diagram ignores the infix value and external state:
 
-#+BEGIN_EXAMPLE
+#+begin_example
   (c)
    |        ,- {stay} ------<-,-<------------<-,-<---,
   (+)       |                 |                |     |
@@ -1818,12 +1818,12 @@ This diagram ignores the infix value and external state:
                                     |--> {call} -->--'
                                     |
                                     `------------------> {exit} --> (c)
-#+END_EXAMPLE
+#+end_example
 
 This diagram takes the infix value into account to an extend, while
 still ignoring external state:
 
-#+BEGIN_EXAMPLE
+#+begin_example
   (c)
    |        ,- {stay} ------<-,-<------------<-,-<---,
   (+)       |                 |                |     |
@@ -1863,12 +1863,12 @@ still ignoring external state:
                                     |--> {call} -->--'     ^
                                     |                      |
                                     `------------------> {exit} --> (c)
-#+END_EXAMPLE
+#+end_example
 
 This diagram provides more information about the infix value
 and also takes external state into account.
 
-#+BEGIN_EXAMPLE
+#+begin_example
                                          ,----sets--- "anything"
                                          |
                                          v
@@ -1922,7 +1922,7 @@ and also takes external state into account.
                                     |--> {call} -->--'     ^
                                     |                      |
                                     `------------------> {exit} --> (c)
-#+END_EXAMPLE
+#+end_example
 
 - ~{1}~ Transients can be configured to be exited when a suffix command
   is invoked.  The default is to do so for all suffixes except for
@@ -2147,7 +2147,7 @@ necessary changes.  See its doc string for more information.
 :COPYING:    t
 :END:
 
-#+BEGIN_QUOTE
+#+begin_quote
 Copyright (C) 2018-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
@@ -2159,7 +2159,7 @@ This document is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
-#+END_QUOTE
+#+end_quote
 
 #  LocalWords:  ARGLIST ARGS DOCSTRING ELEMENTs EVAL GROUPs Infixes
 #  LocalWords:  Infixes KEYWORDs LOC LocalWords MERCHANTABILITY Magit
