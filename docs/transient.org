@@ -3,18 +3,13 @@
 #+author: Jonas Bernoulli
 #+email: jonas@bernoul.li
 #+date: 2018-{{{year}}}
-#+language: en
 
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: Transient: (transient).
 #+texinfo_dir_desc: Transient Commands
 #+subtitle: for version {{{version}}}
 
-#+texinfo_deffn: t
-#+options: H:4 num:4 toc:2
-#+property: header-args :eval never
-#+macro: version (eval (ox-texinfo+-get-version 'mixed))
-#+macro: year (eval (format-time-string "%Y"))
+#+setupfile: .orgconfig
 
 Taking inspiration from prefix keys and prefix arguments, Transient
 implements a similar abstraction involving a prefix command, infix
