@@ -530,10 +530,12 @@ Also see [[* Common Suffix Commands]].
 
   The default is:
 
-  (display-buffer-in-side-window
-    (side . bottom)
-    (inhibit-same-window . t)
-    (window-parameters (no-other-window . t)))
+  #+BEGIN_SRC emacs-lisp
+    (display-buffer-in-side-window
+      (side . bottom)
+      (inhibit-same-window . t)
+      (window-parameters (no-other-window . t)))
+  #+END_SRC
 
   This displays the window at the bottom of the selected frame.
   Another useful FUNCTION is ~display-buffer-below-selected~, which
