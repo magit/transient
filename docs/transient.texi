@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version v0.3.7-22-gabbe1756+1
+@subtitle for version v0.3.7-54-g4c31a101+1
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version v0.3.7-22-gabbe1756+1.
+This manual is for Transient version v0.3.7-54-g4c31a101+1.
 
 @quotation
 Copyright (C) 2018-2021 Jonas Bernoulli <jonas@@bernoul.li>
@@ -108,7 +108,7 @@ Usage
 * Getting Help for Suffix Commands::
 * Enabling and Disabling Suffixes::
 * Other Commands::
-* Other Options::
+* Configuration::
 
 Defining New Commands
 
@@ -282,7 +282,7 @@ to implementing yet).
 * Getting Help for Suffix Commands::
 * Enabling and Disabling Suffixes::
 * Other Commands::
-* Other Options::
+* Configuration::
 @end menu
 
 @node Invoking Transients
@@ -619,8 +619,15 @@ lines.  If ARG is @code{nil}, then it scrolls near full screen.  This
 is a wrapper around @code{scroll-down-command} (which see).
 @end deffn
 
-@node Other Options
-@section Other Options
+@node Configuration
+@section Configuration
+
+More options are described in @ref{Common Suffix Commands}, in @ref{Saving Values}, in @ref{Using History} and in @ref{Enabling and Disabling Suffixes}.
+
+@anchor{Essential Options}
+@subheading Essential Options
+
+Also see @ref{Common Suffix Commands}.
 
 @defopt transient-show-popup
 This option controls whether the current transient's infix and
@@ -682,10 +689,12 @@ for details.
 
 The default is:
 
+@lisp
 (display-buffer-in-side-window
   (side . bottom)
   (inhibit-same-window . t)
   (window-parameters (no-other-window . t)))
+@end lisp
 
 This displays the window at the bottom of the selected frame.
 Another useful FUNCTION is @code{display-buffer-below-selected}, which
@@ -708,6 +717,22 @@ If you change the value of this option, then you might also
 want to change the value of @code{transient-mode-line-format}.
 @end defopt
 
+@anchor{Accessibility Options}
+@subheading Accessibility Options
+
+@itemize
+@item
+User Option: transient-force-single-column
+
+This option controls whether the use of a single column to display
+suffixes is enforced.  This might be useful for users with low
+vision who use large text and might otherwise have to scroll in two
+dimensions.
+@end itemize
+
+@anchor{Auxiliary Options}
+@subheading Auxiliary Options
+
 @defopt transient-mode-line-format
 This option controls whether the transient popup buffer has a
 mode-line, separator line, or neither.
@@ -724,11 +749,18 @@ therefore fallback to treating @code{line} like @code{nil}.
 Otherwise this can be any mode-line format.  See @ref{Mode Line Format,,,elisp,} for details.
 @end defopt
 
-@defopt transient-read-with-initial-input
-This option controls whether the last history element is used as the
-initial minibuffer input when reading the value of an infix argument
-from the user.  If @code{nil}, then there is no initial input and the first
-element has to be accessed the same way as the older elements.
+@defopt transient-semantic-coloring
+This option controls whether prefixes and suffixes are colored in
+a Hydra-like fashion.
+
+If non-nil, then the key binding of each suffix is colorized to
+indicate whether it exits the transient state or not.  The color of
+the prefix is indicated using the line that is drawn when the value
+of @code{transient-mode-line-format} is @code{line}.
+
+For more information about how Hydra uses colors see
+@uref{https://github.com/abo-abo/hydra#color} and
+@uref{https://oremacs.com/2015/02/19/hydra-colors-reloaded}.
 @end defopt
 
 @defopt transient-highlight-mismatched-keys
@@ -774,6 +806,45 @@ optimized for lisp.
 @end lisp
 @end defopt
 
+@defopt transient-read-with-initial-input
+This option controls whether the last history element is used as the
+initial minibuffer input when reading the value of an infix argument
+from the user.  If @code{nil}, then there is no initial input and the first
+element has to be accessed the same way as the older elements.
+@end defopt
+
+@defopt transient-hide-during-minibuffer-read
+This option controls whether the transient buffer is hidden while
+user input is being read in the minibuffer.
+@end defopt
+
+@defopt transient-align-variable-pitch
+This option controls whether columns are align pixel-wise in the
+popup buffer.
+
+If this is non-nil, then columns are aligned pixel-wise to support
+variable-pitch fonts.  Keys are not aligned, so you should use a
+fixed-pitch font for the @code{transient-key} face.  Other key faces
+inherit from that face unless a theme is used that breaks that
+relationship.
+
+This option is intended for users who use a variable-pitch font for
+the @code{default} face.
+@end defopt
+
+@defopt transient-force-fixed-pitch
+This option controls whether to force the use of a monospaced font
+in popup buffer.  Even if you use a proportional font for the
+@code{default} face, you might still want to use a monospaced font in
+transient's popup buffer.  Setting this option to t causes @code{default}
+to be remapped to @code{fixed-pitch} in that buffer.
+@end defopt
+
+@anchor{Developer Options}
+@subheading Developer Options
+
+These options are mainly intended for developers.
+
 @defopt transient-detect-key-conflicts
 This option controls whether key binding conflicts should be
 detected at the time the transient is invoked.  If so, then this
@@ -788,13 +859,19 @@ predicates of those suffixes prevent that more than one of them is
 enabled at a time.
 @end defopt
 
-@defopt transient-force-fixed-pitch
-This option controls whether to force the use of a monospaced font
-in popup buffer.  Even if you use a proportional font for the
-@code{default} face, you might still want to use a monospaced font in
-transient's popup buffer.  Setting this option to t causes @code{default}
-to be remapped to @code{fixed-pitch} in that buffer.
-@end defopt
+@table @asis
+@item
+User Option: transient-highlight-higher-levels
+
+This option controls whether to suffixes suffixes that would not
+be available by default are highlighted.
+
+When non-nil then the descriptions of suffixes are highlighted if
+their level is above 4, the default of @code{transient-default-level}.
+Assuming you have set that variable to 7, this highlights all
+suffixes that won't be available to users without them making the
+same customization.
+@end table
 
 @node Modifying Existing Transients
 @chapter Modifying Existing Transients
@@ -1110,7 +1187,7 @@ argument that is mandatory in all cases.
 
 @itemize
 @item
-Usually COMMAND is a symbol that is bound as a function, which has
+COMMAND should be a symbol that is bound as a function, which has
 to be defined or at least autoloaded as a command by the time the
 containing prefix command is invoked.
 
@@ -1118,10 +1195,8 @@ Any command will do; it does not need to have an object associated
 with it (as would be the case if @code{transient-define-suffix} or
 @code{transient-define-infix} were used to define it).
 
-The command can also be a closure or lambda expression, but that
-should only be used for dynamic transients whose suffixes are
-defined when the prefix command is invoked.  See information about
-the @code{:setup-children} function in @ref{Group Specifications}.
+Anonymous, dynamically defined suffix commands are also support.
+See information about the @code{:setup-children} function in @ref{Group Specifications}.
 
 As mentioned above, the object that is associated with a command can
 be used to set the default for certain values that otherwise have to
@@ -1404,15 +1479,46 @@ The default for suffixes is @code{transient--do-exit}.
 Call the command after exporting variables and exit the transient.
 @end defun
 
+@defun transient--do-return
+Call the command after exporting variables and return to parent
+prefix.  If there is no parent prefix, then call @code{transient--do-exit}.
+@end defun
+
 @defun transient--do-call
 Call the command after exporting variables and stay transient.
+@end defun
+
+The following pre-commands are suitable for sub-prefixes.  Only the
+first should ever explicitly be set as the value of the @code{transient}
+slot.
+
+@defun transient--do-recurse
+Call the transient prefix command, preparing for return to active
+transient.
+
+Whether we actually return to the parent transient is ultimately
+under the control of each invoked suffix.  The difference between
+this pre-command and @code{transient--do-replace} is that it changes the
+value of the @code{transient-suffix} slot to @code{transient--do-return}.
+
+If there is no parent transient, then only call this command and
+skip the second step.
 @end defun
 
 @defun transient--do-replace
 Call the transient prefix command, replacing the active transient.
 
-This is used for suffixes that are prefixes themselves, i.e. for
-sub-prefixes.
+Unless @code{transient--do-recurse} is explicitly used, this pre-command
+is automatically used for suffixes that are prefixes themselves,
+i.e. for sub-prefixes.
+@end defun
+
+@defun transient--do-suspend
+Suspend the active transient, saving the transient stack.
+
+This is used by the command @code{transient-suspend} and optionally also by
+"external events" such as @code{handle-switch-frame}.  Such bindings should
+be added to @code{transient-predicate-map}.
 @end defun
 
 @anchor{Pre-commands for Non-Suffixes}
@@ -2367,7 +2473,7 @@ currently exist.
 @anchor{Can I control how the popup buffer is displayed?}
 @appendixsec Can I control how the popup buffer is displayed?
 
-Yes, see @code{transient-display-buffer-action} in @ref{Other Options}.
+Yes, see @code{transient-display-buffer-action} in @ref{Configuration}.
 
 @anchor{Why did some of the key bindings change?}
 @appendixsec Why did some of the key bindings change?
