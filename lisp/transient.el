@@ -2100,9 +2100,12 @@ value.  Otherwise return CHILDREN as is."
       (transient--post-exit))
      ((eq this-command (oref transient--prefix command)))
      (t
-      (transient--pop-keymap 'transient--redisplay-map)
-      (setq transient--redisplay-map (transient--make-redisplay-map))
-      (transient--push-keymap 'transient--redisplay-map)
+      (let ((old transient--redisplay-map)
+            (new (transient--make-redisplay-map)))
+        (unless (equal old new)
+          (transient--pop-keymap 'transient--redisplay-map)
+          (setq transient--redisplay-map new)
+          (transient--push-keymap 'transient--redisplay-map)))
       (transient--redisplay)))))
 
 (defun transient--post-exit ()
