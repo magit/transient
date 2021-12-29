@@ -77,6 +77,8 @@
 (define-obsolete-function-alias 'define-infix-argument
   #'transient-define-argument "Transient 0.3.0")
 
+(define-obsolete-variable-alias 'transient--source-buffer
+  'transient--original-buffer "Transient 0.2.0")
 (define-obsolete-variable-alias 'current-transient-prefix
   'transient-current-prefix "Transient 0.3.0")
 (define-obsolete-variable-alias 'current-transient-command
@@ -1364,9 +1366,6 @@ variable instead.")
 (defvar transient--original-window nil
   "The window that was selected before the transient was invoked.
 Usually it remains selected while the transient is active.")
-
-(define-obsolete-variable-alias 'transient--source-buffer
-  'transient--original-buffer "Transient 0.2.0")
 
 (defvar transient--original-buffer nil
   "The buffer that was current before the transient was invoked.
