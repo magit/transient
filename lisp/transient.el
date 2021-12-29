@@ -1958,8 +1958,9 @@ value.  Otherwise return CHILDREN as is."
         (transient--pre-exit))))))
 
 (defun transient--get-predicate-for (cmd)
-  (or (lookup-key transient--predicate-map
-                  (vector (transient--suffix-symbol cmd)))
+  (or (ignore-errors
+        (lookup-key transient--predicate-map
+                    (vector (transient--suffix-symbol cmd))))
       (oref transient--prefix transient-non-suffix)))
 
 (defun transient--pre-exit ()
