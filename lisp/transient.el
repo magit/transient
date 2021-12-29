@@ -2170,8 +2170,10 @@ value.  Otherwise return CHILDREN as is."
       (if (symbolp arg)
           (message "-- %-16s (cmd: %s, event: %S, exit: %s%s)"
                    arg
-                   (or (transient--suffix-symbol this-command)
-                       (list this-command this-original-command last-command))
+                   (or (ignore-errors (transient--suffix-symbol this-command))
+                       (if (byte-code-function-p this-command)
+                           "#[...]"
+                         this-command))
                    (key-description (this-command-keys-vector))
                    transient--exitp
                    (cond ((stringp (car args))
