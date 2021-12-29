@@ -2150,7 +2150,14 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--redisplay ()
   (if (or (eq transient-show-popup t)
           transient--showp)
-      (unless (memq this-command transient--scroll-commands)
+      (unless
+          (or (memq this-command transient--scroll-commands)
+              (and (or (memq this-command '(mouse-drag-region
+                                            mouse-set-region))
+                       (equal (key-description (this-command-keys-vector))
+                              "<mouse-movement>"))
+                   (and (eq (current-buffer)
+                            (get-buffer transient--buffer-name)))))
         (transient--show))
     (when (and (numberp transient-show-popup)
                (not (zerop transient-show-popup))
