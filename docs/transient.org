@@ -994,7 +994,7 @@ the object's values just for the binding inside this transient.
 The next element is either a command or an argument.  This is the only
 argument that is mandatory in all cases.
 
-- Usually COMMAND is a symbol that is bound as a function, which has
+- COMMAND should be a symbol that is bound as a function, which has
   to be defined or at least autoloaded as a command by the time the
   containing prefix command is invoked.
 
@@ -1002,10 +1002,9 @@ argument that is mandatory in all cases.
   with it (as would be the case if ~transient-define-suffix~ or
   ~transient-define-infix~ were used to define it).
 
-  The command can also be a closure or lambda expression, but that
-  should only be used for dynamic transients whose suffixes are
-  defined when the prefix command is invoked.  See information about
-  the ~:setup-children~ function in [[*Group Specifications]].
+  Anonymous, dynamically defined suffix commands are also support.
+  See information about the ~:setup-children~ function in [[*Group
+  Specifications]].
 
   As mentioned above, the object that is associated with a command can
   be used to set the default for certain values that otherwise have to
