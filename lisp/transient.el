@@ -1551,6 +1551,7 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
          ["Value commands"
           ("C-x s  " "Set"            transient-set)
           ("C-x C-s" "Save"           transient-save)
+          ("C-x C-k" "Reset"          transient-reset)
           ("C-x p  " "Previous value" transient-history-prev)
           ("C-x n  " "Next value"     transient-history-next)]
          ["Sticky commands"
@@ -1585,6 +1586,7 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
     (define-key map [transient-toggle-common] #'transient--do-stay)
     (define-key map [transient-set]           #'transient--do-call)
     (define-key map [transient-save]          #'transient--do-call)
+    (define-key map [transient-reset]         #'transient--do-call)
     (define-key map [describe-key-briefly]    #'transient--do-stay)
     (define-key map [describe-key]            #'transient--do-stay)
     (define-key map [transient-scroll-up]     #'transient--do-stay)
@@ -2498,6 +2500,11 @@ transient is active."
   (interactive)
   (transient-save-value (or transient--prefix transient-current-prefix)))
 
+(defun transient-reset ()
+  "Clear the set and save value of the active transient."
+  (interactive)
+  (transient-reset-value (or transient--prefix transient-current-prefix)))
+
 (defun transient-history-next ()
   "Switch to the next value used for the active transient."
   (interactive)
@@ -2608,12 +2615,7 @@ Otherwise call the primary method according to object's class."
     (oset obj value
           (if-let ((saved (assq (oref obj command) transient-values)))
               (cdr saved)
-            (if-let ((default (and (slot-boundp obj 'default-value)
-                                   (oref obj default-value))))
-                (if (functionp default)
-                    (funcall default)
-                  default)
-              nil)))))
+            (transient-default-value obj)))))
 
 (cl-defmethod transient-init-value ((obj transient-argument))
   (oset obj value
@@ -2639,6 +2641,20 @@ Otherwise call the primary method according to object's class."
   (oset obj value
         (car (member (oref obj argument)
                      (oref transient--prefix value)))))
+
+;;;; Default
+
+(cl-defgeneric transient-default-value (_)
+  "Return the default value."
+  nil)
+
+(cl-defmethod transient-default-value ((obj transient-prefix))
+  (if-let ((default (and (slot-boundp obj 'default-value)
+                         (oref obj default-value))))
+      (if (functionp default)
+          (funcall default)
+        default)
+    nil))
 
 ;;;; Read
 
@@ -2892,6 +2908,17 @@ prompt."
     (setf (alist-get (oref obj command) transient-values) value)
     (transient-save-values))
   (transient--history-push obj))
+
+;;;; Reset
+
+(cl-defmethod transient-reset-value ((obj transient-prefix))
+  (let ((value (transient-default-value obj)))
+    (oset obj value value)
+    (oset (oref obj prototype) value value)
+    (setf (alist-get (oref obj command) transient-values nil 'remove) nil)
+    (transient-save-values))
+  (transient--history-push obj)
+  (mapc #'transient-init-value transient--suffixes))
 
 ;;;; Get
 
