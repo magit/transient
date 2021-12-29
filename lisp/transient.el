@@ -1581,12 +1581,12 @@ of the corresponding object.")
 (defvar transient--redisplay-key nil)
 
 (defun transient--push-keymap (map)
-  (transient--debug "   push %s%s" map (if (symbol-value map) "" " VOID"))
+  (transient--debug "     push %s%s" map (if (symbol-value map) "" " VOID"))
   (with-demoted-errors "transient--push-keymap: %S"
     (internal-push-keymap (symbol-value map) 'overriding-terminal-local-map)))
 
 (defun transient--pop-keymap (map)
-  (transient--debug "   pop  %s%s" map (if (symbol-value map) "" " VOID"))
+  (transient--debug "     pop  %s%s" map (if (symbol-value map) "" " VOID"))
   (with-demoted-errors "transient--pop-keymap: %S"
     (internal-pop-keymap (symbol-value map) 'overriding-terminal-local-map)))
 
@@ -2106,14 +2106,20 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--debug (arg &rest args)
   (when transient--debug
-    (if (symbolp arg)
-        (message "-- %-16s (cmd: %s, event: %S, exit: %s)"
-                 arg
-                 (or (transient--suffix-symbol this-command)
-                     (list this-command this-original-command last-command))
-                 (key-description (this-command-keys-vector))
-                 transient--exitp)
-      (apply #'message arg args))))
+    (let ((inhibit-message (not (eq transient--debug 'message))))
+      (if (symbolp arg)
+          (message "-- %-16s (cmd: %s, event: %S, exit: %s%s)"
+                   arg
+                   (or (transient--suffix-symbol this-command)
+                       (list this-command this-original-command last-command))
+                   (key-description (this-command-keys-vector))
+                   transient--exitp
+                   (cond ((stringp (car args))
+                          (concat ", " (apply #'format args)))
+                         (args
+                          (concat ", " (apply (car args) (cdr args))))
+                         (t "")))
+        (apply #'message arg args)))))
 
 (defun transient--emergency-exit ()
   "Exit the current transient command after an error occurred.
