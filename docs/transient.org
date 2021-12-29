@@ -556,6 +556,18 @@ Also see [[* Common Suffix Commands]].
   If you change the value of this option, then you might also
   want to change the value of ~transient-mode-line-format~.
 
+*** Accessibility Options
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+- User Option: transient-force-single-column
+
+  This option controls whether the use of a single column to display
+  suffixes is enforced.  This might be useful for users with low
+  vision who use large text and might otherwise have to scroll in two
+  dimensions.
+
 *** Auxiliary Options
 :PROPERTIES:
 :UNNUMBERED: notoc
@@ -577,6 +589,20 @@ Also see [[* Common Suffix Commands]].
 
   Otherwise this can be any mode-line format.  See [[info:elisp#Mode
   Line Format]] for details.
+
+- User Option: transient-semantic-coloring ::
+
+  This option controls whether prefixes and suffixes are colored in
+  a Hydra-like fashion.
+
+  If non-nil, then the key binding of each suffix is colorized to
+  indicate whether it exits the transient state or not.  The color of
+  the prefix is indicated using the line that is drawn when the value
+  of ~transient-mode-line-format~ is ~line~.
+
+  For more information about how Hydra uses colors see
+  https://github.com/abo-abo/hydra#color and
+  https://oremacs.com/2015/02/19/hydra-colors-reloaded.
 
 - User Option: transient-highlight-mismatched-keys ::
 
@@ -656,6 +682,17 @@ These options are mainly intended for developers.
   multiple suffixes to share a common key binding, provided the
   predicates of those suffixes prevent that more than one of them is
   enabled at a time.
+
+- User Option: transient-highlight-higher-levels
+
+  This option controls whether to suffixes suffixes that would not
+  be available by default are highlighted.
+
+  When non-nil then the descriptions of suffixes are highlighted if
+  their level is above 4, the default of ~transient-default-level~.
+  Assuming you have set that variable to 7, this highlights all
+  suffixes that won't be available to users without them making the
+  same customization.
 
 * Modifying Existing Transients
 
