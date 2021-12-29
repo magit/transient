@@ -1961,7 +1961,11 @@ value.  Otherwise return CHILDREN as is."
   (or (ignore-errors
         (lookup-key transient--predicate-map
                     (vector (transient--suffix-symbol cmd))))
-      (oref transient--prefix transient-non-suffix)))
+      (let ((pred (oref transient--prefix transient-non-suffix)))
+        (pcase pred
+          (`t   #'transient--do-stay)
+          (`nil #'transient--do-warn)
+          (_    pred)))))
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
