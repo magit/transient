@@ -2033,13 +2033,15 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
-  (if transient--exitp
-      (transient--post-exit)
-    (unless (eq this-command (oref transient--prefix command))
-      (transient--pop-keymap 'transient--redisplay-map)
-      (setq transient--redisplay-map (transient--make-redisplay-map))
-      (transient--push-keymap 'transient--redisplay-map)
-      (transient--redisplay))))
+  (cond
+   (transient--exitp
+    (transient--post-exit))
+   ((eq this-command (oref transient--prefix command)))
+   (t
+    (transient--pop-keymap 'transient--redisplay-map)
+    (setq transient--redisplay-map (transient--make-redisplay-map))
+    (transient--push-keymap 'transient--redisplay-map)
+    (transient--redisplay))))
 
 (defun transient--post-exit ()
   (transient--debug 'post-exit)
