@@ -1554,6 +1554,11 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
     (define-key map [transient-forward-button]    #'transient--do-move)
     (define-key map [transient-isearch-backward]  #'transient--do-move)
     (define-key map [transient-isearch-forward]   #'transient--do-move)
+    ;; If a valid but incomplete prefix sequence is followed by
+    ;; an unbound key, then Emacs calls the `undefined' command
+    ;; but does not set `this-command', `this-original-command'
+    ;; or `real-this-command' accordingly.  Instead they are nil.
+    (define-key map [nil] #'transient--do-warn)
     map)
   "Base keymap used to map common commands to their transient behavior.
 
@@ -2029,11 +2034,6 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
-  (unless this-command
-    (transient--debug "-- force pre-exit from post-command")
-    (message "Quit transient!")
-    (transient--pre-exit)
-    (setq transient--exitp t))
   (if transient--exitp
       (progn
         (unless (and (eq transient--exitp 'replace)
