@@ -1920,41 +1920,42 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--pre-command ()
   (transient--debug 'pre-command)
-  (cond
-   ((memq this-command '(transient-update transient-quit-seq))
-    (transient--pop-keymap 'transient--redisplay-map))
-   ((and transient--helpp
-         (not (memq this-command '(transient-quit-one
-                                   transient-quit-all))))
+  (transient--with-emergency-exit
     (cond
-     ((transient-help)
-      (transient--do-suspend)
-      (setq this-command 'transient-suspend)
-      (transient--pre-exit))
-     ((not (transient--edebug-command-p))
-      (setq this-command 'transient-undefined))))
-   ((and transient--editp
-         (transient-suffix-object)
-         (not (memq this-command '(transient-quit-one
-                                   transient-quit-all
-                                   transient-help))))
-    (setq this-command 'transient-set-level))
-   (t
-    (setq transient--exitp nil)
-    (when (eq (if-let ((fn (transient--get-predicate-for
-                            this-original-command)))
-                  (let ((action (funcall fn)))
-                    (when (eq action transient--exit)
-                      (setq transient--exitp (or transient--exitp t)))
-                    action)
-                (if (let ((keys (this-command-keys-vector)))
-                      (eq (aref keys (1- (length keys))) ?\C-g))
-                    (setq this-command 'transient-noop)
-                  (unless (transient--edebug-command-p)
-                    (setq this-command 'transient-undefined)))
-                transient--stay)
-              transient--exit)
-      (transient--pre-exit)))))
+     ((memq this-command '(transient-update transient-quit-seq))
+      (transient--pop-keymap 'transient--redisplay-map))
+     ((and transient--helpp
+           (not (memq this-command '(transient-quit-one
+                                     transient-quit-all))))
+      (cond
+       ((transient-help)
+        (transient--do-suspend)
+        (setq this-command 'transient-suspend)
+        (transient--pre-exit))
+       ((not (transient--edebug-command-p))
+        (setq this-command 'transient-undefined))))
+     ((and transient--editp
+           (transient-suffix-object)
+           (not (memq this-command '(transient-quit-one
+                                     transient-quit-all
+                                     transient-help))))
+      (setq this-command 'transient-set-level))
+     (t
+      (setq transient--exitp nil)
+      (when (eq (if-let ((fn (transient--get-predicate-for
+                              this-original-command)))
+                    (let ((action (funcall fn)))
+                      (when (eq action transient--exit)
+                        (setq transient--exitp (or transient--exitp t)))
+                      action)
+                  (if (let ((keys (this-command-keys-vector)))
+                        (eq (aref keys (1- (length keys))) ?\C-g))
+                      (setq this-command 'transient-noop)
+                    (unless (transient--edebug-command-p)
+                      (setq this-command 'transient-undefined)))
+                  transient--stay)
+                transient--exit)
+        (transient--pre-exit))))))
 
 (defun transient--get-predicate-for (cmd)
   (or (lookup-key transient--predicate-map
@@ -2083,20 +2084,21 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
-  (cond
-   ((and (eq (this-command-keys-vector) [])
-         (= (minibuffer-depth)
-            (1+ transient--minibuffer-depth)))
-    (transient--suspend-override)
-    (transient--delay-post-command))
-   (transient--exitp
-    (transient--post-exit))
-   ((eq this-command (oref transient--prefix command)))
-   (t
-    (transient--pop-keymap 'transient--redisplay-map)
-    (setq transient--redisplay-map (transient--make-redisplay-map))
-    (transient--push-keymap 'transient--redisplay-map)
-    (transient--redisplay))))
+  (transient--with-emergency-exit
+    (cond
+     ((and (eq (this-command-keys-vector) [])
+           (= (minibuffer-depth)
+              (1+ transient--minibuffer-depth)))
+      (transient--suspend-override)
+      (transient--delay-post-command))
+     (transient--exitp
+      (transient--post-exit))
+     ((eq this-command (oref transient--prefix command)))
+     (t
+      (transient--pop-keymap 'transient--redisplay-map)
+      (setq transient--redisplay-map (transient--make-redisplay-map))
+      (transient--push-keymap 'transient--redisplay-map)
+      (transient--redisplay)))))
 
 (defun transient--post-exit ()
   (transient--debug 'post-exit)
