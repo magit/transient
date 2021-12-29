@@ -962,6 +962,7 @@ keyword.
     `(progn
        (defalias ',name ,(transient--default-infix-command))
        (put ',name 'interactive-only t)
+       (put ',name 'command-modes (list 'not-a-mode))
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
