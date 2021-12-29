@@ -2034,33 +2034,36 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--post-command ()
   (transient--debug 'post-command)
   (if transient--exitp
-      (progn
-        (unless (and (eq transient--exitp 'replace)
-                     (or transient--prefix
-                         ;; The current command could act as a prefix,
-                         ;; but decided not to call `transient-setup'.
-                         (prog1 nil (transient--stack-zap))))
-          (remove-hook   'pre-command-hook      #'transient--pre-command)
-          (remove-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
-          (remove-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
-          (advice-remove 'abort-recursive-edit  #'transient--minibuffer-exit)
-          (remove-hook   'post-command-hook     #'transient--post-command))
-        (setq transient-current-prefix nil)
-        (setq transient-current-command nil)
-        (setq transient-current-suffixes nil)
-        (let ((resume (and transient--stack
-                           (not (memq transient--exitp '(replace suspend))))))
-          (setq transient--exitp nil)
-          (setq transient--helpp nil)
-          (setq transient--editp nil)
-          (run-hooks 'transient-exit-hook)
-          (when resume
-            (transient--stack-pop))))
+      (transient--post-exit)
     (unless (eq this-command (oref transient--prefix command))
       (transient--pop-keymap 'transient--redisplay-map)
       (setq transient--redisplay-map (transient--make-redisplay-map))
       (transient--push-keymap 'transient--redisplay-map)
       (transient--redisplay))))
+
+(defun transient--post-exit ()
+  (transient--debug 'post-exit)
+  (unless (and (eq transient--exitp 'replace)
+               (or transient--prefix
+                   ;; The current command could act as a prefix,
+                   ;; but decided not to call `transient-setup'.
+                   (prog1 nil (transient--stack-zap))))
+    (remove-hook 'pre-command-hook  #'transient--pre-command)
+    (remove-hook 'minibuffer-setup-hook #'transient--minibuffer-setup)
+    (remove-hook 'minibuffer-exit-hook #'transient--minibuffer-exit)
+    (advice-remove 'abort-recursive-edit #'transient--minibuffer-exit)
+    (remove-hook 'post-command-hook #'transient--post-command))
+  (setq transient-current-prefix nil)
+  (setq transient-current-command nil)
+  (setq transient-current-suffixes nil)
+  (let ((resume (and transient--stack
+                     (not (memq transient--exitp '(replace suspend))))))
+    (setq transient--exitp nil)
+    (setq transient--helpp nil)
+    (setq transient--editp nil)
+    (run-hooks 'transient-exit-hook)
+    (when resume
+      (transient--stack-pop))))
 
 (defun transient--stack-push ()
   (transient--debug 'stack-push)
@@ -2130,7 +2133,7 @@ nil) then do nothing."
     (setq transient--stack nil)
     (setq transient--exitp t)
     (transient--pre-exit)
-    (transient--post-command)))
+    (transient--post-exit)))
 
 ;;; Pre-Commands
 
