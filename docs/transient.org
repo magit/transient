@@ -467,7 +467,17 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   lines.  If ARG is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-down-command~ (which see).
 
-** Other Options
+** Configuration
+
+More options are described in [[* Common Suffix Commands]], in [[* Saving
+Values]], in [[* Using History]] and in [[* Enabling and Disabling Suffixes]].
+
+*** Essential Options
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+Also see [[* Common Suffix Commands]].
 
 - User Option: transient-show-popup ::
 
@@ -546,6 +556,11 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   If you change the value of this option, then you might also
   want to change the value of ~transient-mode-line-format~.
 
+*** Auxiliary Options
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
 - User Option: transient-mode-line-format ::
 
   This option controls whether the transient popup buffer has a
@@ -562,13 +577,6 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
 
   Otherwise this can be any mode-line format.  See [[info:elisp#Mode
   Line Format]] for details.
-
-- User Option: transient-read-with-initial-input ::
-
-  This option controls whether the last history element is used as the
-  initial minibuffer input when reading the value of an infix argument
-  from the user.  If ~nil~, then there is no initial input and the first
-  element has to be accessed the same way as the older elements.
 
 - User Option: transient-highlight-mismatched-keys ::
 
@@ -613,6 +621,28 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
                 key))))
   #+END_SRC
 
+- User Option: transient-read-with-initial-input ::
+
+  This option controls whether the last history element is used as the
+  initial minibuffer input when reading the value of an infix argument
+  from the user.  If ~nil~, then there is no initial input and the first
+  element has to be accessed the same way as the older elements.
+
+- User Option: transient-force-fixed-pitch ::
+
+  This option controls whether to force the use of a monospaced font
+  in popup buffer.  Even if you use a proportional font for the
+  ~default~ face, you might still want to use a monospaced font in
+  transient's popup buffer.  Setting this option to t causes ~default~
+  to be remapped to ~fixed-pitch~ in that buffer.
+
+*** Developer Options
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+These options are mainly intended for developers.
+
 - User Option: transient-detect-key-conflicts ::
 
   This option controls whether key binding conflicts should be
@@ -626,14 +656,6 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   multiple suffixes to share a common key binding, provided the
   predicates of those suffixes prevent that more than one of them is
   enabled at a time.
-
-- User Option: transient-force-fixed-pitch ::
-
-  This option controls whether to force the use of a monospaced font
-  in popup buffer.  Even if you use a proportional font for the
-  ~default~ face, you might still want to use a monospaced font in
-  transient's popup buffer.  Setting this option to t causes ~default~
-  to be remapped to ~fixed-pitch~ in that buffer.
 
 * Modifying Existing Transients
 
@@ -2077,7 +2099,7 @@ commands are outlined:
 :UNNUMBERED: notoc
 :END:
 
-Yes, see ~transient-display-buffer-action~ in [[*Other Options]].
+Yes, see ~transient-display-buffer-action~ in [[*Configuration]].
 
 ** Why did some of the key bindings change?
 :PROPERTIES:
