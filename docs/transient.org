@@ -661,6 +661,20 @@ Also see [[* Common Suffix Commands]].
   This option controls whether the transient buffer is hidden while
   user input is being read in the minibuffer.
 
+- User Option: transient-align-variable-pitch ::
+
+  This option controls whether columns are align pixel-wise in the
+  popup buffer.
+
+  If this is non-nil, then columns are aligned pixel-wise to support
+  variable-pitch fonts.  Keys are not aligned, so you should use a
+  fixed-pitch font for the ~transient-key~ face.  Other key faces
+  inherit from that face unless a theme is used that breaks that
+  relationship.
+
+  This option is intended for users who use a variable-pitch font for
+  the ~default~ face.
+
 - User Option: transient-force-fixed-pitch ::
 
   This option controls whether to force the use of a monospaced font

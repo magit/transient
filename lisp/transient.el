@@ -317,13 +317,32 @@ used."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-align-variable-pitch nil
+  "Whether to align columns pixel-wise in the popup buffer.
+
+If this is non-nil, then columns are aligned pixel-wise to
+support variable-pitch fonts.  Keys are not aligned, so you
+should use a fixed-pitch font for the `transient-key' face.
+Other key faces inherit from that face unless a theme is
+used that breaks that relationship.
+
+This option is intended for users who use a variable-pitch
+font for the `default' face.
+
+Also see `transient-force-fixed-pitch'."
+  :package-version '(transient . "0.4.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-force-fixed-pitch nil
   "Whether to force use of monospaced font in the popup buffer.
 
 Even if you use a proportional font for the `default' face,
 you might still want to use a monospaced font in transient's
 popup buffer.  Setting this option to t causes `default' to
-be remapped to `fixed-pitch' in that buffer."
+be remapped to `fixed-pitch' in that buffer.
+
+Also see `transient-align-variable-pitch'."
   :package-version '(transient . "0.2.0")
   :group 'transient
   :type 'boolean)
@@ -451,7 +470,7 @@ give you as many additional suffixes as you hoped.)"
   "Face used for the infix for which the value is being read."
   :group 'transient-faces)
 
-(defface transient-unreachable-key '((t :inherit shadow))
+(defface transient-unreachable-key '((t :inherit (transient-key shadow)))
   "Face used for keys unreachable from the current prefix sequence."
   :group 'transient-faces)
 
@@ -3139,7 +3158,8 @@ have a history of their own.")
                  (push desc rows))
                rows))
            (oref group suffixes)))
-         (vp (oref transient--prefix variable-pitch))
+         (vp (or (oref transient--prefix variable-pitch)
+                 transient-align-variable-pitch))
          (rs (apply #'max (mapcar #'length columns)))
          (cs (length columns))
          (cw (mapcar (lambda (col)
@@ -3287,12 +3307,13 @@ Optional support for popup buttons is also implemented here."
               (unless (string-match-p " " key)
                 (setq pre (replace-regexp-in-string " " "" pre))
                 (setq suf (replace-regexp-in-string " " "" suf)))
-              (concat (propertize pre 'face 'default)
+              (concat (propertize pre 'face 'transient-unreachable-key)
                       (and (string-prefix-p (concat pre " ") key) " ")
                       (transient--colorize-key suf cmd)
                       (save-excursion
-                        (when (string-match " +\\'" key)
-                          (match-string 0 key))))))
+                        (and (string-match " +\\'" key)
+                             (propertize (match-string 0 key)
+                                         'face 'fixed-pitch))))))
            ((transient--lookup-key transient-sticky-map (kbd key))
             (transient--colorize-key key cmd))
            (t
