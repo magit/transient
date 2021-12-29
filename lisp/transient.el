@@ -337,6 +337,12 @@ text and might otherwise have to scroll in two dimensions."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-hide-during-minibuffer-read nil
+  "Whether to hide the transient buffer while reading in the minibuffer."
+  :package-version '(transient . "0.4.0")
+  :group 'transient
+  :type 'boolean)
+
 (defconst transient--default-child-level 1)
 
 (defconst transient--default-prefix-level 4)
@@ -2023,8 +2029,10 @@ value.  Otherwise return CHILDREN as is."
   (setq transient-current-suffixes transient--suffixes)
   (transient--history-push transient--prefix))
 
-(defun transient--suspend-override ()
+(defun transient--suspend-override (&optional nohide)
   (transient--debug 'suspend-override)
+  (when (and (not nohide) transient-hide-during-minibuffer-read)
+    (transient--delete-window))
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook  #'transient--pre-command)
@@ -2032,6 +2040,8 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--resume-override ()
   (transient--debug 'resume-override)
+  (when (and transient--showp transient-hide-during-minibuffer-read)
+    (transient--show))
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command)
@@ -3711,7 +3721,7 @@ search instead."
 
 (defun transient--isearch-setup ()
   (select-window transient--window)
-  (transient--suspend-override))
+  (transient--suspend-override t))
 
 (defun transient--isearch-exit ()
   (select-window transient--original-window)
@@ -3753,7 +3763,7 @@ search instead."
   (transient--debug 'edebug--recursive-edit)
   (if (not transient--prefix)
       (funcall fn arg-mode)
-    (transient--suspend-override)
+    (transient--suspend-override t)
     (funcall fn arg-mode)
     (transient--resume-override)))
 

@@ -656,6 +656,11 @@ Also see [[* Common Suffix Commands]].
   from the user.  If ~nil~, then there is no initial input and the first
   element has to be accessed the same way as the older elements.
 
+- User Option: transient-hide-during-minibuffer-read ::
+
+  This option controls whether the transient buffer is hidden while
+  user input is being read in the minibuffer.
+
 - User Option: transient-force-fixed-pitch ::
 
   This option controls whether to force the use of a monospaced font
