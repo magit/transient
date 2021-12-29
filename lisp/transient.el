@@ -1319,6 +1319,8 @@ variable instead.")
 
 (defvar transient--stack nil)
 
+(defvar transient--minibuffer-depth nil)
+
 (defvar transient--buffer-name " *transient*"
   "Name of the transient buffer.")
 
@@ -1339,6 +1341,16 @@ Usually it remains current while the transient is active.")
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
 (defvar transient--history nil)
+
+(defvar transient--abort-commands
+  '(abort-minibuffers                   ; (minibuffer-quit-recursive-edit)
+    abort-recursive-edit                ; (throw 'exit t)
+    exit-recursive-edit                 ; (throw 'exit nil)
+    keyboard-quit                       ; (signal 'quit nil)
+    minibuffer-keyboard-quit            ; (abort-minibuffers)
+    minibuffer-quit-recursive-edit      ; (throw 'exit (lambda ()
+                                        ;      (signal 'minibuffer-quit nil)))
+    top-level))                         ; (throw 'top-level nil)
 
 (defvar transient--scroll-commands
   '(transient-scroll-up
@@ -1695,8 +1707,6 @@ be nil and PARAMS may be (but usually is not) used to set e.g. the
 This function is also called internally in which case LAYOUT and
 EDIT may be non-nil."
   (transient--debug 'setup)
-  (when (> (minibuffer-depth) 0)
-    (user-error "Cannot invoke transient %s while minibuffer is active" name))
   (transient--with-emergency-exit
     (cond
      ((not name)
@@ -1724,6 +1734,7 @@ EDIT may be non-nil."
     (setq transient--redisplay-map (transient--make-redisplay-map))
     (setq transient--original-window (selected-window))
     (setq transient--original-buffer (current-buffer))
+    (setq transient--minibuffer-depth (minibuffer-depth))
     (transient--redisplay)
     (transient--init-transient)
     (transient--suspend-which-key-mode)))
@@ -1899,11 +1910,8 @@ value.  Otherwise return CHILDREN as is."
   (transient--debug 'init-transient)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
-  (add-hook 'pre-command-hook      #'transient--pre-command)
-  (add-hook 'minibuffer-setup-hook #'transient--minibuffer-setup)
-  (add-hook 'minibuffer-exit-hook  #'transient--minibuffer-exit)
-  (add-hook 'post-command-hook     #'transient--post-command)
-  (advice-add 'abort-recursive-edit :after #'transient--minibuffer-exit)
+  (add-hook 'pre-command-hook  #'transient--pre-command)
+  (add-hook 'post-command-hook #'transient--post-command)
   (when transient--exitp
     ;; This prefix command was invoked as the suffix of another.
     ;; Prevent `transient--post-command' from removing the hooks
@@ -1978,12 +1986,17 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
-    (let ((buf (window-buffer transient--window)))
+    (let ((remain-in-minibuffer-window
+           (and (minibuffer-selected-window)
+                (selected-window)))
+          (buf (window-buffer transient--window)))
       ;; Only delete the window if it never showed another buffer.
       (unless (eq (car (window-parameter transient--window 'quit-restore)) 'other)
         (with-demoted-errors "Error while exiting transient: %S"
           (delete-window transient--window)))
-      (kill-buffer buf))))
+      (kill-buffer buf)
+      (when remain-in-minibuffer-window
+        (select-window remain-in-minibuffer-window)))))
 
 (defun transient--export ()
   (setq transient-current-prefix transient--prefix)
@@ -1991,49 +2004,91 @@ value.  Otherwise return CHILDREN as is."
   (setq transient-current-suffixes transient--suffixes)
   (transient--history-push transient--prefix))
 
-(defun transient--minibuffer-setup ()
-  (transient--debug 'minibuffer-setup)
-  (unless (> (minibuffer-depth) 1)
-    (unless transient--exitp
-      (transient--pop-keymap 'transient--transient-map)
-      (transient--pop-keymap 'transient--redisplay-map))
-    (remove-hook 'pre-command-hook  #'transient--pre-command)
-    (remove-hook 'post-command-hook #'transient--post-command)))
-
-(defun transient--minibuffer-exit ()
-  (transient--debug 'minibuffer-exit)
-  (unless (> (minibuffer-depth) 1)
-    (unless transient--exitp
-      (transient--push-keymap 'transient--transient-map)
-      (transient--push-keymap 'transient--redisplay-map))
-    (add-hook 'pre-command-hook  #'transient--pre-command)
-    (add-hook 'post-command-hook #'transient--post-command)))
-
-(defun transient--suspend-override (&optional minibuffer-hooks)
+(defun transient--suspend-override ()
   (transient--debug 'suspend-override)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook  #'transient--pre-command)
-  (remove-hook 'post-command-hook #'transient--post-command)
-  (when minibuffer-hooks
-    (remove-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
-    (remove-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
-    (advice-remove 'abort-recursive-edit  #'transient--minibuffer-exit)))
+  (remove-hook 'post-command-hook #'transient--post-command))
 
-(defun transient--resume-override (&optional minibuffer-hooks)
+(defun transient--resume-override ()
   (transient--debug 'resume-override)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command)
-  (add-hook 'post-command-hook #'transient--post-command)
-  (when minibuffer-hooks
-    (add-hook   'minibuffer-setup-hook #'transient--minibuffer-setup)
-    (add-hook   'minibuffer-exit-hook  #'transient--minibuffer-exit)
-    (advice-add 'abort-recursive-edit :after #'transient--minibuffer-exit)))
+  (add-hook 'post-command-hook #'transient--post-command))
+
+(defmacro transient--with-suspended-override (&rest body)
+  (let ((depth (make-symbol "depth"))
+        (setup (make-symbol "setup"))
+        (exit  (make-symbol "exit")))
+    `(if (and transient--transient-map
+              (memq transient--transient-map
+                    overriding-terminal-local-map))
+         (let ((,depth (1+ (minibuffer-depth))) ,setup ,exit)
+           (setq ,setup
+                 (lambda () "@transient--with-suspended-override"
+                   (transient--debug 'minibuffer-setup)
+                   (remove-hook 'minibuffer-setup-hook ,setup)
+                   (transient--suspend-override)))
+           (setq ,exit
+                 (lambda () "@transient--with-suspended-override"
+                   (transient--debug 'minibuffer-exit)
+                   (when (= (minibuffer-depth) ,depth)
+                     (transient--resume-override))))
+           (unwind-protect
+               (progn
+                 (add-hook 'minibuffer-setup-hook ,setup)
+                 (add-hook 'minibuffer-exit-hook ,exit)
+                 ,@body)
+             (remove-hook 'minibuffer-setup-hook ,setup)
+             (remove-hook 'minibuffer-exit-hook ,exit)))
+       ,@body)))
+
+(defun transient--post-command-hook ()
+  (run-hooks 'transient--post-command-hook))
+
+(add-hook 'post-command-hook 'transient--post-command-hook)
+
+(defun transient--delay-post-command ()
+  (let ((depth (minibuffer-depth))
+        (command this-command)
+        (delayed (if transient--exitp
+                     #'transient--post-exit
+                   #'transient--resume-override))
+        post-command abort-minibuffer)
+    (setq post-command
+          (lambda () "@transient--delay-post-command"
+            (let ((act (and (eq this-command command)
+                            (not (eq (this-command-keys-vector) [])))))
+              (transient--debug 'post-command-hook "act: %s" act)
+              (when act
+                (remove-hook 'transient--post-command-hook post-command)
+                (remove-hook 'minibuffer-exit-hook abort-minibuffer)
+                (funcall delayed)))))
+    (setq abort-minibuffer
+          (lambda () "@transient--delay-post-command"
+            (let ((act (and (or (memq this-command transient--abort-commands)
+                                (equal (this-command-keys) ""))
+                            (= (minibuffer-depth) depth))))
+              (transient--debug
+               'abort-minibuffer
+               "mini: %s|%s, act %s" (minibuffer-depth) depth act)
+              (when act
+                (remove-hook 'transient--post-command-hook post-command)
+                (remove-hook 'minibuffer-exit-hook abort-minibuffer)
+                (funcall delayed)))))
+    (add-hook 'transient--post-command-hook post-command)
+    (add-hook 'minibuffer-exit-hook abort-minibuffer)))
 
 (defun transient--post-command ()
   (transient--debug 'post-command)
   (cond
+   ((and (eq (this-command-keys-vector) [])
+         (= (minibuffer-depth)
+            (1+ transient--minibuffer-depth)))
+    (transient--suspend-override)
+    (transient--delay-post-command))
    (transient--exitp
     (transient--post-exit))
    ((eq this-command (oref transient--prefix command)))
@@ -2051,9 +2106,6 @@ value.  Otherwise return CHILDREN as is."
                    ;; but decided not to call `transient-setup'.
                    (prog1 nil (transient--stack-zap))))
     (remove-hook 'pre-command-hook  #'transient--pre-command)
-    (remove-hook 'minibuffer-setup-hook #'transient--minibuffer-setup)
-    (remove-hook 'minibuffer-exit-hook #'transient--minibuffer-exit)
-    (advice-remove 'abort-recursive-edit #'transient--minibuffer-exit)
     (remove-hook 'post-command-hook #'transient--post-command))
   (setq transient-current-prefix nil)
   (setq transient-current-command nil)
@@ -2063,6 +2115,7 @@ value.  Otherwise return CHILDREN as is."
     (setq transient--exitp nil)
     (setq transient--helpp nil)
     (setq transient--editp nil)
+    (setq transient--minibuffer-depth nil)
     (run-hooks 'transient-exit-hook)
     (when resume
       (transient--stack-pop))))
@@ -2523,13 +2576,24 @@ on the previous value.")
 (cl-defmethod transient-infix-read :around ((obj transient-infix))
   "Highlight the infix in the popup buffer.
 
-Also arrange for the transient to be exited in case of an error
-because otherwise Emacs would get stuck in an inconsistent state,
-which might make it necessary to kill it from the outside."
+This also wraps the call to `cl-call-next-method' with two
+macros.
+
+`transient--with-suspended-override' is necessary to allow
+reading user input using the minibuffer.
+
+`transient--with-emergency-exit' arranges for the transient to
+be exited in case of an error because otherwise Emacs would get
+stuck in an inconsistent state, which might make it necessary to
+kill it from the outside.
+
+If you replace this method, then you must make sure to always use
+the latter macro and most likely also the former."
   (let ((transient--active-infix obj))
     (transient--show))
   (transient--with-emergency-exit
-    (cl-call-next-method obj)))
+    (transient--with-suspended-override
+     (cl-call-next-method obj))))
 
 (cl-defmethod transient-infix-read ((obj transient-infix))
   "Read a value while taking care of history.
@@ -3632,9 +3696,9 @@ search instead."
   (transient--debug 'edebug--recursive-edit)
   (if (not transient--prefix)
       (funcall fn arg-mode)
-    (transient--suspend-override t)
+    (transient--suspend-override)
     (funcall fn arg-mode)
-    (transient--resume-override t)))
+    (transient--resume-override)))
 
 (advice-add 'edebug--recursive-edit :around #'transient--edebug--recursive-edit)
 
