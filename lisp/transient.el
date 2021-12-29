@@ -860,11 +860,11 @@ to the setup function:
   (transient-setup \\='NAME nil nil :scope SCOPE)
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]... GROUP... [BODY...])"
-  (declare (debug (&define name lambda-list
-                           [&optional lambda-doc]
-                           [&rest keywordp sexp]
-                           [&rest vectorp]
-                           [&optional ("interactive" interactive) def-body]))
+  (declare (debug ( &define name lambda-list
+                    [&optional lambda-doc]
+                    [&rest keywordp sexp]
+                    [&rest vectorp]
+                    [&optional ("interactive" interactive) def-body]))
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body)
@@ -901,11 +901,11 @@ ARGLIST.  The infix arguments are usually accessed by using
 `transient-args' inside `interactive'.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]... BODY...)"
-  (declare (debug (&define name lambda-list
-                           [&optional lambda-doc]
-                           [&rest keywordp sexp]
-                           ("interactive" interactive)
-                           def-body))
+  (declare (debug ( &define name lambda-list
+                    [&optional lambda-doc]
+                    [&rest keywordp sexp]
+                    ("interactive" interactive)
+                    def-body))
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
@@ -952,9 +952,9 @@ the infix command and use t as the value of the `:transient'
 keyword.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)"
-  (declare (debug (&define name lambda-list
-                           [&optional lambda-doc]
-                           [&rest keywordp sexp]))
+  (declare (debug ( &define name lambda-list
+                    [&optional lambda-doc]
+                    [&rest keywordp sexp]))
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,_)
