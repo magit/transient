@@ -1380,6 +1380,7 @@ Usually it remains current while the transient is active.")
   '(abort-minibuffers                   ; (minibuffer-quit-recursive-edit)
     abort-recursive-edit                ; (throw 'exit t)
     exit-recursive-edit                 ; (throw 'exit nil)
+    keyboard-escape-quit                ; dwim
     keyboard-quit                       ; (signal 'quit nil)
     minibuffer-keyboard-quit            ; (abort-minibuffers)
     minibuffer-quit-recursive-edit      ; (throw 'exit (lambda ()
