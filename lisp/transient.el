@@ -3270,6 +3270,16 @@ stand-alone command."
   "Read an existing file."
   (file-local-name (expand-file-name (read-file-name prompt nil nil t))))
 
+(defun transient-read-files (prompt _initial-input _history)
+  "Read multiple files."
+  (mapcar (lambda (file) (file-local-name (expand-file-name file)))
+          (completing-read-multiple prompt #'completion-file-name-table)))
+
+(defun transient-read-existing-files (prompt _initial-input _history)
+  "Read multiple existing files."
+  (mapcar (lambda (file) (file-local-name (expand-file-name file)))
+          (completing-read-multiple prompt #'completion-file-name-table nil t)))
+
 (defun transient-read-directory (prompt _initial-input _history)
   "Read a directory."
   (file-local-name (expand-file-name (read-directory-name prompt))))
