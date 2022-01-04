@@ -1356,7 +1356,7 @@ variable instead.")
 
 (defvar transient--stack nil)
 
-(defvar transient--minibuffer-depth nil)
+(defvar transient--minibuffer-depth 0)
 
 (defvar transient--buffer-name " *transient*"
   "Name of the transient buffer.")
@@ -2170,7 +2170,7 @@ value.  Otherwise return CHILDREN as is."
     (setq transient--exitp nil)
     (setq transient--helpp nil)
     (setq transient--editp nil)
-    (setq transient--minibuffer-depth nil)
+    (setq transient--minibuffer-depth 0)
     (run-hooks 'transient-exit-hook)
     (when resume
       (transient--stack-pop))))
