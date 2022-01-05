@@ -706,7 +706,7 @@ These options are mainly intended for developers.
   predicates of those suffixes prevent that more than one of them is
   enabled at a time.
 
-- User Option: transient-highlight-higher-levels
+- User Option: transient-highlight-higher-levels ::
 
   This option controls whether to suffixes suffixes that would not
   be available by default are highlighted.

@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version v0.3.7-59-g45241225+1
+@subtitle for version v0.3.7-60-g9412f261+1
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version v0.3.7-59-g45241225+1.
+This manual is for Transient version v0.3.7-60-g9412f261+1.
 
 @quotation
 Copyright (C) 2018-2022 Jonas Bernoulli <jonas@@bernoul.li>
@@ -859,10 +859,7 @@ predicates of those suffixes prevent that more than one of them is
 enabled at a time.
 @end defopt
 
-@table @asis
-@item
-User Option: transient-highlight-higher-levels
-
+@defopt transient-highlight-higher-levels
 This option controls whether to suffixes suffixes that would not
 be available by default are highlighted.
 
@@ -871,7 +868,7 @@ their level is above 4, the default of @code{transient-default-level}.
 Assuming you have set that variable to 7, this highlights all
 suffixes that won't be available to users without them making the
 same customization.
-@end table
+@end defopt
 
 @node Modifying Existing Transients
 @chapter Modifying Existing Transients
