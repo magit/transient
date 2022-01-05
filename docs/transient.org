@@ -209,8 +209,9 @@ transient.
 the latter, then you can later resume the stack of transients using
 ~M-x transient-resume~.
 
+#+attr_texinfo: :compact t
 - Key: C-g (transient-quit-seq) ::
-+ Key: C-g (transient-quit-one) ::
+- Key: C-g (transient-quit-one) ::
 
   This key quits the currently active incomplete key sequence, if any,
   or else the current transient.  When quitting the current transient,
@@ -323,14 +324,15 @@ value is saved to its history.  These values can be cycled through the
 same way one can cycle through the history of commands that read
 user-input in the minibuffer.
 
+#+attr_texinfo: :compact t
 - Key: C-M-p (transient-history-prev) ::
-+ Key: C-x p ::
+- Key: C-x p ::
 
   This command switches to the previous value used for the active
   transient.
 
 - Key: C-M-n (transient-history-next) ::
-+ Key: C-x n ::
+- Key: C-x n ::
 
   This command switches to the next value used for the active
   transient.
