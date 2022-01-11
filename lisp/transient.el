@@ -1542,6 +1542,11 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
 
 (defvar transient--common-command-prefixes '(?\C-x))
 
+(defvar transient--transient-map nil)
+(defvar transient--predicate-map nil)
+(defvar transient--redisplay-map nil)
+(defvar transient--redisplay-key nil)
+
 (put 'transient-common-commands
      'transient--layout
      (cl-mapcan
@@ -1627,11 +1632,6 @@ the transient behavior is specified using the `:transient' slot
 of the corresponding object.")
 
 (defvar transient-popup-navigation-map)
-
-(defvar transient--transient-map nil)
-(defvar transient--predicate-map nil)
-(defvar transient--redisplay-map nil)
-(defvar transient--redisplay-key nil)
 
 (defun transient--push-keymap (map)
   (transient--debug "     push %s%s" map (if (symbol-value map) "" " VOID"))
