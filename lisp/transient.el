@@ -1547,7 +1547,8 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
      (cl-mapcan
       (lambda (s) (transient--parse-child 'transient-common-commands s))
       `([:hide ,(lambda ()
-                  (and (not (memq (car transient--redisplay-key)
+                  (and (not (memq (car (bound-and-true-p
+                                        transient--redisplay-key))
                                   transient--common-command-prefixes))
                        (not transient-show-common-commands)))
          ["Value commands"
