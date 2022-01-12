@@ -2229,7 +2229,7 @@ value.  Otherwise return CHILDREN as is."
   (when transient--debug
     (let ((inhibit-message (not (eq transient--debug 'message))))
       (if (symbolp arg)
-          (message "-- %-16s (cmd: %s, event: %S, exit: %s%s)"
+          (message "-- %-18s (cmd: %s, event: %S, exit: %s%s)"
                    arg
                    (or (ignore-errors (transient--suffix-symbol this-command))
                        (if (byte-code-function-p this-command)
