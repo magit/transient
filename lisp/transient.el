@@ -1634,15 +1634,19 @@ of the corresponding object.")
 (defvar transient--redisplay-map nil)
 (defvar transient--redisplay-key nil)
 
-(defun transient--push-keymap (map)
-  (transient--debug "     push %s%s" map (if (symbol-value map) "" " VOID"))
-  (with-demoted-errors "transient--push-keymap: %S"
-    (internal-push-keymap (symbol-value map) 'overriding-terminal-local-map)))
+(defun transient--push-keymap (var)
+  (let ((map (symbol-value var)))
+    (transient--debug "     push %s%s" var (if map "" " VOID"))
+    (when map
+      (with-demoted-errors "transient--push-keymap: %S"
+        (internal-push-keymap map 'overriding-terminal-local-map)))))
 
-(defun transient--pop-keymap (map)
-  (transient--debug "     pop  %s%s" map (if (symbol-value map) "" " VOID"))
-  (with-demoted-errors "transient--pop-keymap: %S"
-    (internal-pop-keymap (symbol-value map) 'overriding-terminal-local-map)))
+(defun transient--pop-keymap (var)
+  (let ((map (symbol-value var)))
+    (transient--debug "     pop  %s%s" var (if map "" " VOID"))
+    (when map
+      (with-demoted-errors "transient--pop-keymap: %S"
+        (internal-pop-keymap map 'overriding-terminal-local-map)))))
 
 (defun transient--make-transient-map ()
   (let ((map (make-sparse-keymap)))
