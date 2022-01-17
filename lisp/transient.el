@@ -2107,6 +2107,7 @@ value.  Otherwise return CHILDREN as is."
 (add-hook 'post-command-hook 'transient--post-command-hook)
 
 (defun transient--delay-post-command ()
+  (transient--debug 'delay-post-command)
   (let ((depth (minibuffer-depth))
         (command this-command)
         (delayed (if transient--exitp
