@@ -2111,7 +2111,7 @@ value.  Otherwise return CHILDREN as is."
   (let ((depth (minibuffer-depth))
         (command this-command)
         (delayed (if transient--exitp
-                     #'transient--post-exit
+                     (apply-partially #'transient--post-exit this-command)
                    #'transient--resume-override))
         post-command abort-minibuffer)
     (unless abort-only
@@ -2160,7 +2160,7 @@ value.  Otherwise return CHILDREN as is."
           (transient--push-keymap 'transient--redisplay-map)))
       (transient--redisplay)))))
 
-(defun transient--post-exit ()
+(defun transient--post-exit (&optional command)
   (transient--debug 'post-exit)
   (unless (and (eq transient--exitp 'replace)
                (or transient--prefix
@@ -2169,7 +2169,14 @@ value.  Otherwise return CHILDREN as is."
                    ;; or it is prevented from doing so because it
                    ;; uses the minibuffer and the user aborted
                    ;; that.
-                   (prog1 nil (transient--stack-zap))))
+                   (prog1 nil
+                     (if (with-demoted-errors "transient--post-exit: %S"
+                           (oref (transient-suffix-object command) transient))
+                         ;; This sub-prefix is a transient suffix;
+                         ;; go back to outer prefix, by calling
+                         ;; `transient--stack-pop' further down.
+                         (setq transient--exitp nil)
+                       (transient--stack-zap)))))
     (remove-hook 'pre-command-hook  #'transient--pre-command)
     (remove-hook 'post-command-hook #'transient--post-command))
   (setq transient-current-prefix nil)
