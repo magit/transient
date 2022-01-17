@@ -2106,7 +2106,7 @@ value.  Otherwise return CHILDREN as is."
 
 (add-hook 'post-command-hook 'transient--post-command-hook)
 
-(defun transient--delay-post-command ()
+(defun transient--delay-post-command (&optional abort-only)
   (transient--debug 'delay-post-command)
   (let ((depth (minibuffer-depth))
         (command this-command)
@@ -2114,15 +2114,17 @@ value.  Otherwise return CHILDREN as is."
                      #'transient--post-exit
                    #'transient--resume-override))
         post-command abort-minibuffer)
-    (setq post-command
-          (lambda () "@transient--delay-post-command"
-            (let ((act (and (eq this-command command)
-                            (not (eq (this-command-keys-vector) [])))))
-              (transient--debug 'post-command-hook "act: %s" act)
-              (when act
-                (remove-hook 'transient--post-command-hook post-command)
-                (remove-hook 'minibuffer-exit-hook abort-minibuffer)
-                (funcall delayed)))))
+    (unless abort-only
+      (setq post-command
+            (lambda () "@transient--delay-post-command"
+              (let ((act (and (eq this-command command)
+                              (not (eq (this-command-keys-vector) [])))))
+                (transient--debug 'post-command-hook "act: %s" act)
+                (when act
+                  (remove-hook 'transient--post-command-hook post-command)
+                  (remove-hook 'minibuffer-exit-hook abort-minibuffer)
+                  (funcall delayed)))))
+      (add-hook 'transient--post-command-hook post-command))
     (setq abort-minibuffer
           (lambda () "@transient--delay-post-command"
             (let ((act (and (or (memq this-command transient--abort-commands)
@@ -2135,7 +2137,6 @@ value.  Otherwise return CHILDREN as is."
                 (remove-hook 'transient--post-command-hook post-command)
                 (remove-hook 'minibuffer-exit-hook abort-minibuffer)
                 (funcall delayed)))))
-    (add-hook 'transient--post-command-hook post-command)
     (add-hook 'minibuffer-exit-hook abort-minibuffer)))
 
 (defun transient--post-command ()
@@ -2146,7 +2147,7 @@ value.  Otherwise return CHILDREN as is."
            (= (minibuffer-depth)
               (1+ transient--minibuffer-depth)))
       (transient--suspend-override)
-      (transient--delay-post-command))
+      (transient--delay-post-command (eq transient--exitp 'replace)))
      (transient--exitp
       (transient--post-exit))
      ((eq this-command (oref transient--prefix command)))
@@ -2164,7 +2165,10 @@ value.  Otherwise return CHILDREN as is."
   (unless (and (eq transient--exitp 'replace)
                (or transient--prefix
                    ;; The current command could act as a prefix,
-                   ;; but decided not to call `transient-setup'.
+                   ;; but decided not to call `transient-setup',
+                   ;; or it is prevented from doing so because it
+                   ;; uses the minibuffer and the user aborted
+                   ;; that.
                    (prog1 nil (transient--stack-zap))))
     (remove-hook 'pre-command-hook  #'transient--pre-command)
     (remove-hook 'post-command-hook #'transient--post-command))
