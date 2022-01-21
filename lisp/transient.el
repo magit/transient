@@ -2170,8 +2170,9 @@ value.  Otherwise return CHILDREN as is."
                    ;; uses the minibuffer and the user aborted
                    ;; that.
                    (prog1 nil
-                     (if (with-demoted-errors "transient--post-exit: %S"
-                           (oref (transient-suffix-object command) transient))
+                     (if (let ((obj (transient-suffix-object command)))
+                           (and (slot-boundp obj 'transient)
+                                (oref obj transient)))
                          ;; This sub-prefix is a transient suffix;
                          ;; go back to outer prefix, by calling
                          ;; `transient--stack-pop' further down.
