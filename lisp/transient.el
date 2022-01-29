@@ -3987,7 +3987,7 @@ we stop there."
            (oset obj value value)))
 
 (cl-defmethod transient-format-description ((obj transient-lisp-variable))
-  (or (oref obj description)
+  (or (cl-call-next-method obj)
       (symbol-name (oref obj variable))))
 
 (cl-defmethod transient-format-value ((obj transient-lisp-variable))
