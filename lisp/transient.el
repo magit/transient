@@ -3172,13 +3172,18 @@ have a history of their own.")
       (when groups
         (insert ?\n)))))
 
+(defvar transient--max-group-level 1)
+
 (cl-defgeneric transient--insert-group (group)
   "Format GROUP and its elements and insert the result.")
 
-(cl-defmethod transient--insert-group :before ((group transient-group))
+(cl-defmethod transient--insert-group :around ((group transient-group))
   "Insert GROUP's description, if any."
   (when-let ((desc (transient-format-description group)))
-    (insert desc ?\n)))
+    (insert desc ?\n))
+  (let ((transient--max-group-level
+         (max (oref group level) transient--max-group-level)))
+    (cl-call-next-method group)))
 
 (cl-defmethod transient--insert-group ((group transient-row))
   (transient--maybe-pad-keys group)
@@ -3419,7 +3424,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
     (cond ((transient--key-unreachable-p obj)
            (propertize desc 'face 'transient-unreachable))
           ((and transient-highlight-higher-levels
-                (> (oref obj level) transient--default-prefix-level))
+                (> (max (oref obj level) transient--max-group-level)
+                   transient--default-prefix-level))
            (add-face-text-property
             0 (length desc) 'transient-higher-level nil desc)
            desc)
