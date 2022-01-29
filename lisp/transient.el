@@ -1835,7 +1835,9 @@ of the corresponding object."
 
 (defun transient--push-keymap (var)
   (let ((map (symbol-value var)))
-    (transient--debug "     push %s%s" var (if map "" " VOID"))
+    (transient--debug "     push %s %s%s" var
+                      (keymap-prompt map)
+                      (if map "" " VOID"))
     (when map
       (with-demoted-errors "transient--push-keymap: %S"
         (internal-push-keymap map 'overriding-terminal-local-map)))))
@@ -1843,12 +1845,13 @@ of the corresponding object."
 (defun transient--pop-keymap (var)
   (let ((map (symbol-value var)))
     (when map
-      (transient--debug "     pop  %s" var)
+      (transient--debug "     pop  %s %s" var (keymap-prompt map))
       (with-demoted-errors "transient--pop-keymap: %S"
         (internal-pop-keymap map 'overriding-terminal-local-map)))))
 
 (defun transient--make-transient-map ()
-  (let ((map (make-sparse-keymap)))
+  (let ((map (make-sparse-keymap
+              (format "@%s" (oref transient--prefix command)))))
     (set-keymap-parent map (if transient--editp
                                transient-edit-map
                              transient-map))
@@ -1886,7 +1889,8 @@ of the corresponding object."
   (let* ((default (transient--resolve-pre-command
                    (oref transient--prefix transient-suffix)))
          (return (and transient--stack (eq default t)))
-         (map (make-sparse-keymap)))
+         (map (make-sparse-keymap
+               (format "@%s" (oref transient--prefix command)))))
     (set-keymap-parent map transient-predicate-map)
     (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
                    (transient--resolve-pre-command
@@ -1943,7 +1947,8 @@ of the corresponding object."
                           2))
            (butlast transient--redisplay-key))
           (_ nil)))
-  (let ((topmap (make-sparse-keymap))
+  (let ((topmap (make-sparse-keymap
+                 (format "@%s" (oref transient--prefix command))))
         (submap (make-sparse-keymap)))
     (when transient--redisplay-key
       (define-key topmap (vconcat transient--redisplay-key) submap)
