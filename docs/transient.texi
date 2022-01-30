@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version v0.3.7-60-g9412f261+1
+@subtitle for version 0.3.7-git
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -65,7 +65,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 @noindent
-This manual is for Transient version v0.3.7-60-g9412f261+1.
+This manual is for Transient version 0.3.7-git.
 
 @quotation
 Copyright (C) 2018-2022 Jonas Bernoulli <jonas@@bernoul.li>

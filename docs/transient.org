@@ -7,7 +7,7 @@
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: Transient: (transient).
 #+texinfo_dir_desc: Transient Commands
-#+subtitle: for version {{{version}}}
+#+subtitle: for version 0.3.7-git
 
 #+setupfile: .orgconfig
 
@@ -32,7 +32,7 @@ Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
 #+texinfo: @noindent
-This manual is for Transient version {{{version}}}.
+This manual is for Transient version 0.3.7-git.
 
 #+begin_quote
 Copyright (C) 2018-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
