@@ -565,7 +565,7 @@ Also see [[* Common Suffix Commands]].
 :UNNUMBERED: notoc
 :END:
 
-- User Option: transient-force-single-column
+- User Option: transient-force-single-column ::
 
   This option controls whether the use of a single column to display
   suffixes is enforced.  This might be useful for users with low
@@ -665,7 +665,7 @@ Also see [[* Common Suffix Commands]].
 
 - User Option: transient-align-variable-pitch ::
 
-  This option controls whether columns are align pixel-wise in the
+  This option controls whether columns are aligned pixel-wise in the
   popup buffer.
 
   If this is non-nil, then columns are aligned pixel-wise to support
@@ -708,8 +708,8 @@ These options are mainly intended for developers.
 
 - User Option: transient-highlight-higher-levels ::
 
-  This option controls whether to suffixes suffixes that would not
-  be available by default are highlighted.
+  This option controls whether suffixes that would not be available by
+  default are highlighted.
 
   When non-nil then the descriptions of suffixes are highlighted if
   their level is above 4, the default of ~transient-default-level~.
