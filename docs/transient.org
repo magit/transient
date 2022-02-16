@@ -184,10 +184,10 @@ transient prefix command; infix and suffix commands.  Infix commands
 set some value (which is then shown in a popup buffer), without
 leaving the transient.  Suffix commands, on the other hand, usually
 quit the transient and they may use the values set by the infix
-commands, i.e. the infix *arguments*.
+commands, i.e., the infix *arguments*.
 
 Instead of setting arguments to be used by a suffix command, infix
-commands may also set some value by side-effect, e.g. by setting the
+commands may also set some value by side-effect, e.g., by setting the
 value of some variable.
 
 ** Aborting and Resuming Transients
@@ -205,7 +205,7 @@ prefix key, but not the complete transient).
 
 A transient prefix command can be bound as a suffix of another
 transient.  Invoking such a suffix replaces the current transient
-state with a new transient state, i.e. the available bindings change
+state with a new transient state, i.e., the available bindings change
 and the information displayed in the popup buffer is updated
 accordingly.  Pressing ~C-g~ while a nested transient is active only
 quits the innermost transient, causing a return to the previous
@@ -629,7 +629,7 @@ Also see [[* Common Suffix Commands]].
   For other infix commands this option has no effect.
 
   When this option is non-~nil~, the key binding for an infix argument
-  is highlighted when only a long argument (e.g. ~--verbose~) is
+  is highlighted when only a long argument (e.g., ~--verbose~) is
   specified but no shorthand (e.g ~-v~).  In the rare case that a
   shorthand is specified but the key binding does not match, then it
   is highlighted differently.
@@ -713,7 +713,7 @@ These options are mainly intended for developers.
   in an error, which prevents the transient from being used.  Because
   of that, conflicts are ignored by default.
 
-  Conflicts cannot be determined earlier, i.e. when the transient is
+  Conflicts cannot be determined earlier, i.e., when the transient is
   being defined and when new suffixes are being added, because at that
   time there can be false-positives.  It is actually valid for
   multiple suffixes to share a common key binding, provided the
@@ -1057,7 +1057,7 @@ argument that is mandatory in all cases.
 
   Unless the class is specified explicitly, the appropriate class is
   guessed based on the long argument.  If the argument ends with "=​"
-  (e.g. "--format=") then ~transient-option~ is used, otherwise
+  (e.g., "--format=") then ~transient-option~ is used, otherwise
   ~transient-switch~.
 
 Finally, details can be specified using optional KEYWORD-VALUE pairs.
@@ -1185,7 +1185,7 @@ function, which for infix arguments serves about the same purpose as
   invoked.  This is a list of objects.  Usually it is sufficient to
   instead use the function ~transient-args~, which returns a list of
   values.  In complex cases it might be necessary to use this variable
-  instead, i.e. if you need access to information beside the value.
+  instead, i.e., if you need access to information beside the value.
 
 - Variable: transient-current-prefix ::
 
@@ -1202,7 +1202,7 @@ function, which for infix arguments serves about the same purpose as
 #+cindex: transient state
 
 Invoking a transient prefix command "activates" the respective
-transient, i.e. it puts a transient keymap into effect, which binds
+transient, i.e., it puts a transient keymap into effect, which binds
 the transient's infix and suffix commands.
 
 The default behavior while a transient is active is as follows:
@@ -1240,7 +1240,7 @@ configurable per transient.
     slot is ~nil~, so the suffix's ~transient~ slot being unbound is
     essentially equivalent to it being ~nil~.
 
-- A suffix command can be a prefix command itself, i.e. a
+- A suffix command can be a prefix command itself, i.e., a
   "sub-prefix".  While a sub-prefix is active we nearly always want
   ~C-g~ to take the user back to the "super-prefix".  However in rare
   cases this may not be desirable, and that makes the following
@@ -1327,7 +1327,7 @@ slot.
 
   Unless ~transient--do-recurse~ is explicitly used, this pre-command
   is automatically used for suffixes that are prefixes themselves,
-  i.e. for sub-prefixes.
+  i.e., for sub-prefixes.
 
 - Function: transient--do-suspend ::
 
@@ -1416,7 +1416,7 @@ This happens in two ways.
   command.  The values of such slots are regular functions.
 
   Generic functions are used when a function should do something
-  different based on the type of the command, i.e. when all commands
+  different based on the type of the command, i.e., when all commands
   of a certain type should behave the same way but different from the
   behavior for other types.  Object slots that hold a regular function
   as value are used when the task that they perform is likely to
@@ -1425,7 +1425,7 @@ This happens in two ways.
 ** Group Classes
 
 The type of a group can be specified using the ~:class~ property at the
-beginning of the class specification, e.g. ~[:class transient-columns
+beginning of the class specification, e.g., ~[:class transient-columns
 ...]~ in a call to ~transient-define-prefix~.
 
 - The abstract ~transient-child~ class is the base class of both
@@ -1441,7 +1441,7 @@ beginning of the class specification, e.g. ~[:class transient-columns
 - The ~transient-column~ class is the simplest group.
 
   This is the default "flat" group.  If the class is not specified
-  explicitly and the first element is not a vector (i.e. not a group),
+  explicitly and the first element is not a vector (i.e., not a group),
   then this class is used.
 
   This class displays each element on a separate line.
@@ -1455,7 +1455,7 @@ beginning of the class specification, e.g. ~[:class transient-columns
   care of inserting the subgroups' elements.
 
   This is the default "nested" group.  If the class is not specified
-  explicitly and the first element is a vector (i.e. a group), then
+  explicitly and the first element is a vector (i.e., a group), then
   this class is used.
 
 - The ~transient-subgroups~ class wraps other groups.
@@ -1590,7 +1590,7 @@ functions use ~describe-function~.
   ~transient-infix-value~ method described below).
 
   For some infix classes the value is changed without reading
-  anything in the minibuffer, i.e. the mere act of invoking the
+  anything in the minibuffer, i.e., the mere act of invoking the
   infix command determines what the new value should be, based
   on the previous value.
 
@@ -1761,9 +1761,9 @@ Also see [[*Suffix Classes]].
 Some of these slots are only meaningful for some of the subclasses.
 They are defined here anyway to allow sharing certain methods.
 
-- ~argument~ The long argument, e.g. ~--verbose~.
+- ~argument~ The long argument, e.g., ~--verbose~.
 
-- ~shortarg~ The short argument, e.g. ~-v~.
+- ~shortarg~ The short argument, e.g., ~-v~.
 
 - ~value~ The value.  Should not be accessed directly.
 
@@ -1784,7 +1784,7 @@ They are defined here anyway to allow sharing certain methods.
   Supported non-~nil~ values are:
 
   - Use ~rest~ for an option that can have multiple values.  This is
-    useful e.g. for an ~--~ argument that indicates that all remaining
+    useful e.g., for an ~--~ argument that indicates that all remaining
     arguments are files (such as ~git log -- file1 file2~).
 
     In the list returned by ~transient-args~ such an option and its
@@ -1799,7 +1799,7 @@ They are defined here anyway to allow sharing certain methods.
 
   In both cases the option's values have to be specified in the
   default value of a prefix using the same format as returned by
-  ~transient-args~, e.g.: ~("--other" "--o=1" "--o=2" ("--" "f1" "f2"))~.
+  ~transient-args~, e.g., ~("--other" "--o=1" "--o=2" ("--" "f1" "f2"))~.
 
 - ~always-read~ For options, whether to read a value on every invocation.
   If this is nil, then options that have a value are simply unset and
@@ -1835,10 +1835,10 @@ They are defined here anyway to allow sharing certain methods.
 :END:
 
 - ~argument-format~ The display format.  Must contain ~%s~, one of the
-  ~choices~ is substituted for that.  E.g. ~--%s-order~.
+  ~choices~ is substituted for that.  e.g., ~--%s-order~.
 
 - ~argument-regexp~ The regexp used to match any one of the switches.
-  E.g. ~\\(--\\(topo\\|author-date\\|date\\)-order\\)~.
+  e.g., ~\\(--\\(topo\\|author-date\\|date\\)-order\\)~.
 
 ** Predicate Slots
 
@@ -2126,7 +2126,7 @@ command dispatchers:
 
 - Invoking a command from a hydra does not necessarily exit the hydra.
   That makes it possible to invoke the same command again, but using a
-  shorter key sequence (i.e. the key that was used to enter the hydra
+  shorter key sequence (i.e., the key that was used to enter the hydra
   does not have to be pressed again).
 
   Transient supports that too, but for now this feature is not a focus
@@ -2208,7 +2208,7 @@ other* transient-specific prefix.  The non-prefix keys that *are* grayed
 out however, are not available when any incomplete prefix key sequence
 is active.  They do not use the "common command key prefix" because it
 is likely that users want to invoke them several times in a row and
-e.g. ~M-p M-p M-p~ is much more convenient than ~C-x M-p C-x M-p C-x M-p~.
+e.g., ~M-p M-p M-p~ is much more convenient than ~C-x M-p C-x M-p C-x M-p~.
 
 You may also have noticed that the "Set" command is bound to ~C-x s~,
 while Magit-Popup used to bind ~C-c C-c~ instead.  I have seen several
@@ -2216,7 +2216,7 @@ users praise the latter binding (sic), so I did not change it
 willy-nilly.  The reason that I changed it is that using different
 prefix keys for different common commands, would have made the
 temporary display of the common commands even more confusing,
-i.e. after pressing ~C-c~ all the ~C-x ...~ bindings would be grayed out.
+i.e., after pressing ~C-c~ all the ~C-x ...~ bindings would be grayed out.
 
 Using a single prefix for common commands key means that all other
 potential prefix keys can be used for transient-specific commands
