@@ -18,7 +18,7 @@ arguments and suffix commands.  We could call this abstraction a
 commands (a prefix and a suffix) we prefer to call it just a
 "transient".
 
-When the user calls a transient prefix command, then a transient
+When the user calls a transient prefix command, a transient
 (temporary) keymap is activated, which binds the transient's infix
 and suffix commands, and functions that control the transient state
 are added to ~pre-command-hook~ and ~post-command-hook~.  The available
@@ -68,7 +68,7 @@ we sometimes use the terms "transient prefix command" for our kind and
 "regular prefix command" for Emacs' kind.
 #+end_quote
 
-When the user calls a transient prefix command, then a transient
+When the user calls a transient prefix command, a transient
 (temporary) keymap is activated, which binds the transient's infix and
 suffix commands, and functions that control the transient state are
 added to ~pre-command-hook~ and ~post-command-hook~.  The available suffix
@@ -92,7 +92,7 @@ the transient.
 
 A suffix command can, but does not have to, use the infix arguments in
 much the same way any command can choose to use or ignore the prefix
-arguments.  For a suffix command that was invoked from a transient the
+arguments.  For a suffix command that was invoked from a transient, the
 variable ~transient-current-suffixes~ and the function ~transient-args~
 serve about the same purpose as the variables ~prefix-arg~ and
 ~current-prefix-arg~ do for any command that was called after the prefix
@@ -133,26 +133,26 @@ In addition to that, Transient also allows users to interactively pass
 arguments to commands.  These arguments can be much more complex than
 what is reasonable when using prefix arguments.  There is a limit to
 how many aspects of a command can be controlled using prefix
-arguments.  Furthermore what a certain prefix argument means for
+arguments.  Furthermore, what a certain prefix argument means for
 different commands can be completely different, and users have to read
 documentation to learn and then commit to memory what a certain prefix
 argument means to a certain command.
 
-Transient suffix commands on the other hand can accept dozens of
+Transient suffix commands, on the other hand, can accept dozens of
 different arguments without the user having to remember anything.
-When using Transient, then one can call a command with arguments that
-are just as complex as when calling the same function non-interactively
-using code.
+When using Transient, one can call a command with arguments that are
+just as complex as when calling the same function non-interactively
+from Lisp.
 
 Invoking a transient command with arguments is similar to invoking a
 command in a shell with command-line completion and history enabled.
 One benefit of the Transient interface is that it remembers history
 not only on a global level ("this command was invoked using these
-arguments and previously it was invoked using those other arguments"),
+arguments, and previously it was invoked using those other arguments"),
 but also remembers the values of individual arguments independently.
 See [[*Using History]].
 
-After a transient prefix command is invoked ~C-h <key>~ can be used to
+After a transient prefix command is invoked, ~C-h <key>~ can be used to
 show the documentation for the infix or suffix command that ~<key>~ is
 bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
 suffixes can be removed from the transient using ~C-x l <key>~.  Infixes
@@ -160,9 +160,9 @@ and suffixes that are disabled by default can be enabled the same way.
 See [[*Enabling and Disabling Suffixes]].
 
 Transient ships with support for a few different types of specialized
-infix commands.  A command that sets a command line option for example
+infix commands.  A command that sets a command line option, for example,
 has different needs than a command that merely toggles a boolean flag.
-Additionally Transient provides abstractions for defining new types,
+Additionally, Transient provides abstractions for defining new types,
 which the author of Transient did not anticipate (or didn't get around
 to implementing yet).
 
@@ -179,9 +179,9 @@ disabled while the transient state is in effect.
 There are two kinds of commands that are available after invoking a
 transient prefix command; infix and suffix commands.  Infix commands
 set some value (which is then shown in a popup buffer), without
-leaving the transient.  Suffix commands on the other hand usually quit
-the transient and they may use the values set by the infix commands,
-i.e. the infix *arguments*.
+leaving the transient.  Suffix commands, on the other hand, usually
+quit the transient and they may use the values set by the infix
+commands, i.e. the infix *arguments*.
 
 Instead of setting arguments to be used by a suffix command, infix
 commands may also set some value by side-effect, e.g. by setting the
@@ -215,7 +215,7 @@ the latter, then you can later resume the stack of transients using
 
   This key quits the currently active incomplete key sequence, if any,
   or else the current transient.  When quitting the current transient,
-  then it returns to the previous transient, if any.
+  it returns to the previous transient, if any.
 
 Transient's predecessor bound ~q~ instead of ~C-g~ to the quit command.
 To learn how to get that binding back see ~transient-bind-q-to-quit~'s
@@ -230,10 +230,10 @@ doc string.
 - Key: C-z (transient-suspend) ::
 
   Like ~transient-quit-all~, this command quits an incomplete key
-  sequence, if any, and all transients.  Additionally it saves the
+  sequence, if any, and all transients.  Additionally, it saves the
   stack of transients so that it can easily be resumed (which is
   particularly useful if you quickly need to do "something else" and
-  the stack is deeper than a single transient and/or you have already
+  the stack is deeper than a single transient, and/or you have already
   changed the values of some infix arguments).
 
   Note that only a single stack of transients can be saved at a time.
@@ -250,8 +250,8 @@ doc string.
 A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the popup buffer by default.
 
-This includes the aborting commands mentioned in the previous node as
-well as some other commands that are all bound to ~C-x <key>~.  After
+This includes the aborting commands mentioned in the previous section,
+as well as some other commands that are all bound to ~C-x <key>~.  After
 ~C-x~ is pressed, a section featuring all these common commands is
 temporarily shown in the popup buffer.  After invoking one of them,
 the section disappears again.  Note however that one of these commands
@@ -269,15 +269,15 @@ common commands to always be shown for all transients.
 
   This option controls whether shared suffix commands are shown
   alongside the transient-specific infix and suffix commands.  By
-  default the shared commands are not shown to avoid overwhelming
-  the user with to many options.
+  default, the shared commands are not shown to avoid overwhelming
+  the user with to. many options.
 
   While a transient is active, pressing ~C-x~ always shows the common
-  command.  The value of this option can be changed for the current
+  commands.  The value of this option can be changed for the current
   Emacs session by typing ~C-x t~ while a transient is active.
 
-The other common commands are described in either the previous node or
-in one of the following nodes.
+The other common commands are described in either the previous or in
+one of the following sections.
 
 Some of Transient's key bindings differ from the respective bindings
 of Magit-Popup; see [[*FAQ]] for more information.
@@ -288,14 +288,14 @@ After setting the infix arguments in a transient, the user can save
 those arguments for future invocations.
 
 Most transients will start out with the saved arguments when they are
-invoked.  There are a few exceptions though.  Some transients are
+invoked.  There are a few exceptions, though.  Some transients are
 designed so that the value that they use is stored externally as the
 buffer-local value of some variable.  Invoking such a transient again
 uses the buffer-local value. [fn:1]
 
 If the user does not save the value and just exits using a regular
 suffix command, then the value is merely saved to the transient's
-history.  That value won't be used when the transient is next invoked
+history.  That value won't be used when the transient is next invoked,
 but it is easily accessible (see [[*Using History]]).
 
 - Key: C-x s (transient-set) ::
@@ -310,8 +310,8 @@ but it is easily accessible (see [[*Using History]]).
 
 - User Option: transient-values-file ::
 
-  This file is used to persist the values of transients between Emacs
-  sessions.
+  This option names the file that is used to persist the values of
+  transients between Emacs sessions.
 
 [fn:1] ~magit-diff~ and ~magit-log~ are two prominent examples, and their
 handling of buffer-local values is actually a bit more complicated
@@ -339,9 +339,9 @@ user-input in the minibuffer.
 
 In addition to the transient-wide history, Transient of course
 supports per-infix history.  When an infix reads user-input using the
-minibuffer, then the user can use the regular minibuffer history
-commands to cycle through previously used values.  Usually the same
-keys as those mentioned above are bound to those commands.
+minibuffer, the user can use the regular minibuffer history commands
+to cycle through previously used values.  Usually the same keys as
+those mentioned above are bound to those commands.
 
 Authors of transients should arrange for different infix commands that
 read the same kind of value to also use the same history key (see
@@ -351,8 +351,8 @@ Both kinds of history are saved to a file when Emacs is exited.
 
 - User Option: transient-history-file ::
 
-  This file is used to persist the history of transients and their
-  infixes between Emacs sessions.
+  This option names the file that is used to persist the history of
+  transients and their infixes between Emacs sessions.
 
 - User Option: transient-history-limit ::
 
@@ -368,12 +368,12 @@ transient.
 
 - Key: C-h (transient-help) ::
 
-  This command enters help mode.  When help mode is active, then
-  typing ~<key>~ shows information about the suffix command that ~<key>~
-  normally is bound to (instead of invoking it).  Pressing ~C-h~ a
-  second time shows information about the /prefix/ command.
+  This command enters help mode.  When help mode is active, typing a
+  key shows information about the suffix command that the key normally
+  is bound to (instead of invoking it).  Pressing ~C-h~ a second time
+  shows information about the /prefix/ command.
 
-  After typing ~<key>~ the stack of transient states is suspended and
+  After typing a key, the stack of transient states is suspended and
   information about the suffix command is shown instead.  Typing ~q~ in
   the help buffer buries that buffer and resumes the transient state.
 
@@ -420,8 +420,8 @@ available even if the user lowers the transient level.
 
 - User Option: transient-levels-file ::
 
-  This file is used to persist the levels of transients and their
-  suffixes between Emacs sessions.
+  This option names the file that is used to persist the levels of
+  transients and their suffixes between Emacs sessions.
 
 - Key: C-x l (transient-set-level) ::
 
@@ -442,9 +442,9 @@ available even if the user lowers the transient level.
   To exit edit mode press ~C-g~.
 
   Note that edit mode does not display any suffixes that are not
-  currently usable.  ~magit-rebase~ for example shows different suffixes
-  depending on whether a rebase is already in progress or not.  The
-  predicates also apply in edit mode.
+  currently usable.  ~magit-rebase~, for example, shows different
+  suffixes depending on whether a rebase is already in progress or
+  not.  The predicates also apply in edit mode.
 
   Therefore, to control which suffixes are available given a certain
   state, you have to make sure that that state is currently active.
@@ -499,8 +499,8 @@ Also see [[* Common Suffix Commands]].
 
     The popup is shown when the user explicitly requests it by
     pressing an incomplete prefix key sequence.  Unless this is zero,
-    then the popup is shown after that many seconds of inactivity
-    (using the absolute value).
+    the popup is shown after that many seconds of inactivity (using
+    the absolute value).
 
 - User Option: transient-enable-popup-navigation ::
 
@@ -527,7 +527,7 @@ Also see [[* Common Suffix Commands]].
   The value of this option has the form ~(FUNCTION . ALIST)~,
   where FUNCTION is a function or a list of functions.  Each such
   function should accept two arguments: a buffer to display and an
-  alist of the same form as ALIST.  See [[info:elisp#Choosing Window]]
+  alist of the same form as ALIST.  See [[info:elisp#Choosing Window]],
   for details.
 
   The default is:
@@ -588,11 +588,11 @@ Also see [[* Common Suffix Commands]].
 
   If ~line~ (the default), then the buffer also has no mode-line, but a
   thin line is drawn instead, using the background color of the face
-  ~transient-separator~.  Termcap frames cannot display thin lines and
-  therefore fallback to treating ~line~ like ~nil~.
+  ~transient-separator~.  Text-mode frames cannot display thin lines,
+  and therefore fall back to treating ~line~ like ~nil~.
 
   Otherwise this can be any mode-line format.  See [[info:elisp#Mode
-  Line Format]] for details.
+  Line Format]], for details.
 
 - User Option: transient-semantic-coloring ::
 
@@ -614,7 +614,7 @@ Also see [[* Common Suffix Commands]].
   not match the respective command-line argument should be highlighted.
   For other infix commands this option has no effect.
 
-  When this option is non-nil, then the key binding for an infix argument
+  When this option is non-nil, the key binding for an infix argument
   is highlighted when only a long argument (e.g. ~--verbose~) is
   specified but no shorthand (e.g ~-v~).  In the rare case that a
   shorthand is specified but the key binding does not match, then it
@@ -655,7 +655,7 @@ Also see [[* Common Suffix Commands]].
 
   This option controls whether the last history element is used as the
   initial minibuffer input when reading the value of an infix argument
-  from the user.  If ~nil~, then there is no initial input and the first
+  from the user.  If ~nil~, there is no initial input and the first
   element has to be accessed the same way as the older elements.
 
 - User Option: transient-hide-during-minibuffer-read ::
@@ -695,9 +695,9 @@ These options are mainly intended for developers.
 - User Option: transient-detect-key-conflicts ::
 
   This option controls whether key binding conflicts should be
-  detected at the time the transient is invoked.  If so, then this
-  results in an error, which prevents the transient from being used.
-  Because of that, conflicts are ignored by default.
+  detected at the time the transient is invoked.  If so, this results
+  in an error, which prevents the transient from being used.  Because
+  of that, conflicts are ignored by default.
 
   Conflicts cannot be determined earlier, i.e. when the transient is
   being defined and when new suffixes are being added, because at that
@@ -719,9 +719,9 @@ These options are mainly intended for developers.
 
 * Modifying Existing Transients
 
-To an extent transients can be customized interactively, see [[*Enabling
-and Disabling Suffixes]].  This section explains how existing transients
-can be further modified non-interactively.
+To an extent, transients can be customized interactively, see
+[[*Enabling and Disabling Suffixes]].  This section explains how existing
+transients can be further modified non-interactively.
 
 The following functions share a few arguments:
 
@@ -738,7 +738,7 @@ The following functions share a few arguments:
 
 - LOC is a command, a key vector, a key description (a string as
   returned by ~key-description~), or a list specifying coordinates (the
-  last element may also be a command or key). For example ~(1 0 -1)~
+  last element may also be a command or key).  For example ~(1 0 -1)~
   identifies the last suffix (~-1~) of the first subgroup (~0~) of the
   second group (~1~).
 
@@ -829,8 +829,8 @@ that is used to invoke that transient.
   #+END_SRC
 
   If BODY is specified, then it must begin with an ~interactive~ form
-  that matches ARGLIST, and it must call ~transient-setup~.  It may
-  however call that function only when some condition is satisfied.
+  that matches ARGLIST, and it must call ~transient-setup~.  It may,
+  however, call that function only when some condition is satisfied.
 
   All transients have a (possibly ~nil~) value, which is exported when
   suffix commands are called, so that they can consume that value.
@@ -884,7 +884,7 @@ Group specifications then have this form:
 The LEVEL is optional and defaults to 4.  See [[*Enabling and Disabling
 Suffixes]].
 
-The DESCRIPTION is optional.  If present it is used as the heading of
+The DESCRIPTION is optional.  If present, it is used as the heading of
 the group.
 
 The KEYWORD-VALUE pairs are optional.  Each keyword has to be a
@@ -925,7 +925,7 @@ constructor of that class.
 
 - The value of ~:setup-children~, if non-nil, is a function that takes
   two arguments the group object itself and a list of children.
-  The children are given as a, potentially empty, list consisting
+  The children are given as a (potentially empty) list consisting
   of either group or suffix specifications.  It can make arbitrary
   changes to the children including constructing new children from
   scratch.  Also see ~transient-setup-children~.
@@ -946,9 +946,9 @@ particularly useful if the suffixes are outlined as a table.
 
 Variables are supported inside group specifications.  For example in
 place of a direct subgroup specification, a variable can be used whose
-value is a vector that qualifies as a group specification.  Likewise a
-variable can be used where a suffix specification is expected.  Lists
-of group or suffix specifications are also supported.  Indirect
+value is a vector that qualifies as a group specification.  Likewise,
+a variable can be used where a suffix specification is expected.
+Lists of group or suffix specifications are also supported.  Indirect
 specifications are resolved when the transient prefix is being
 defined.
 
@@ -1118,7 +1118,7 @@ suffixes".
 
 ** Using Infix Arguments
 
-The function and the variables described below allow suffix commands
+The functions and the variables described below allow suffix commands
 to access the value of the transient from which they were invoked;
 which is the value of its infix arguments.  These variables are set
 when the user invokes a suffix command that exits the transient, but
@@ -1128,7 +1128,7 @@ When returning to the command-loop after calling the suffix command,
 the arguments are reset to ~nil~ (which causes the function to return
 ~nil~ too).
 
-Like for Emacs' prefix arguments it is advisable, but not mandatory,
+Like for Emacs' prefix arguments, it is advisable, but not mandatory,
 to access the infix arguments inside the command's ~interactive~ form.
 The preferred way of doing that is to call the ~transient-args~
 function, which for infix arguments serves about the same purpose as
@@ -1245,7 +1245,7 @@ To do so the value of one of the constants ~transient--exit~ or
 ~transient--stay~ is used (that way we don't have to remember if ~t~ means
 "exit" or "stay").
 
-Additionally these functions may change the value of ~this-command~
+Additionally, these functions may change the value of ~this-command~
 (which explains why they have to be called using ~pre-command-hook~),
 call ~transient-export~, ~transient--stack-zap~ or ~transient--stack-push~;
 and set the values of ~transient--exitp~, ~transient--helpp~ or
@@ -1454,7 +1454,7 @@ beginning of the class specification, e.g. ~[:class transient-columns
   it calls that function with CHILDREN as the only argument and
   returns the value.
 
-  The children are given as a, potentially empty, list consisting of
+  The children are given as a (potentially empty) list consisting of
   either group or suffix specifications.  These functions can make
   arbitrary changes to the children including constructing new
   children from scratch.
@@ -1641,8 +1641,8 @@ functions use ~describe-function~.
   OBJ.
 
   For prefixes, show the info manual, if that is specified using the
-  ~info-manual~ slot.  Otherwise show the manpage if that is specified
-  using the ~man-page~ slot.  Otherwise show the command's doc string.
+  ~info-manual~ slot.  Otherwise, show the manpage if that is specified
+  using the ~man-page~ slot.  Otherwise, show the command's doc string.
 
   For suffixes, show the command's doc string.
 
