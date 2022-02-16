@@ -524,7 +524,7 @@ Also see [[* Common Suffix Commands]].
   While a transient is active the transient popup buffer is not the
   current buffer, making it necessary to use dedicated commands to act
   on that buffer itself.  This is disabled by default.  If this option
-  is non-nil, then the following features are available:
+  is non-~nil~, then the following features are available:
 
   - ~<up>~ moves the cursor to the previous suffix.
     ~<down>~ moves the cursor to the next suffix.
@@ -613,7 +613,7 @@ Also see [[* Common Suffix Commands]].
   This option controls whether prefixes and suffixes are colored in
   a Hydra-like fashion.
 
-  If non-nil, then the key binding of each suffix is colorized to
+  If non-~nil~, then the key binding of each suffix is colorized to
   indicate whether it exits the transient state or not.  The color of
   the prefix is indicated using the line that is drawn when the value
   of ~transient-mode-line-format~ is ~line~.
@@ -628,7 +628,7 @@ Also see [[* Common Suffix Commands]].
   not match the respective command-line argument should be highlighted.
   For other infix commands this option has no effect.
 
-  When this option is non-nil, the key binding for an infix argument
+  When this option is non-~nil~, the key binding for an infix argument
   is highlighted when only a long argument (e.g. ~--verbose~) is
   specified but no shorthand (e.g ~-v~).  In the rare case that a
   shorthand is specified but the key binding does not match, then it
@@ -682,7 +682,7 @@ Also see [[* Common Suffix Commands]].
   This option controls whether columns are aligned pixel-wise in the
   popup buffer.
 
-  If this is non-nil, then columns are aligned pixel-wise to support
+  If this is non-~nil~, then columns are aligned pixel-wise to support
   variable-pitch fonts.  Keys are not aligned, so you should use a
   fixed-pitch font for the ~transient-key~ face.  Other key faces
   inherit from that face unless a theme is used that breaks that
@@ -696,7 +696,7 @@ Also see [[* Common Suffix Commands]].
   This option controls whether to force the use of a monospaced font
   in popup buffer.  Even if you use a proportional font for the
   ~default~ face, you might still want to use a monospaced font in
-  transient's popup buffer.  Setting this option to t causes ~default~
+  transient's popup buffer.  Setting this option to ~t~ causes ~default~
   to be remapped to ~fixed-pitch~ in that buffer.
 
 *** Developer Options
@@ -725,7 +725,7 @@ These options are mainly intended for developers.
   This option controls whether suffixes that would not be available by
   default are highlighted.
 
-  When non-nil then the descriptions of suffixes are highlighted if
+  When non-~nil~ then the descriptions of suffixes are highlighted if
   their level is above 4, the default of ~transient-default-level~.
   Assuming you have set that variable to 7, this highlights all
   suffixes that won't be available to users without them making the
@@ -928,7 +928,7 @@ constructor of that class.
   These predicates can also be used on individual suffixes and are
   only documented once, see [[*Predicate Slots]].
 
-- The value of ~:hide~, if non-nil, is a predicate that controls
+- The value of ~:hide~, if non-~nil~, is a predicate that controls
   whether the group is hidden by default.  The key bindings for
   suffixes of a hidden group should all use the same prefix key.
   Pressing that prefix key should temporarily show the group and its
@@ -940,7 +940,7 @@ constructor of that class.
           ?\C-c)) ; the prefix key shared by all bindings
   #+END_SRC
 
-- The value of ~:setup-children~, if non-nil, is a function that takes
+- The value of ~:setup-children~, if non-~nil~, is a function that takes
   two arguments the group object itself and a list of children.
   The children are given as a (potentially empty) list consisting
   of either group or suffix specifications.  It can make arbitrary
@@ -1040,7 +1040,7 @@ argument that is mandatory in all cases.
         :if (lambda () (featurep 'no-library))))
   #+END_SRC
 
-  Instead of ~featurep~ you could also use ~require~ with a non-nil value
+  Instead of ~featurep~ you could also use ~require~ with a non-~nil~ value
   for NOERROR.
 
 - The mandatory argument can also be a command-line argument, a
@@ -1472,7 +1472,7 @@ beginning of the class specification, e.g. ~[:class transient-columns
   This generic function can be used to setup the children or a group.
 
   The default implementation usually just returns the children
-  unchanged, but if the ~setup-children~ slot of GROUP is non-nil, then
+  unchanged, but if the ~setup-children~ slot of GROUP is non-~nil~, then
   it calls that function with CHILDREN as the only argument and
   returns the value.
 
@@ -1776,12 +1776,12 @@ They are defined here anyway to allow sharing certain methods.
   the prefixes.
 
 - ~multi-value~ For options, whether the option can have multiple
-  values.  If this is non-nil, then the values are read using
+  values.  If this is non-~nil~, then the values are read using
   ~completing-read-multiple~ by default and if you specify your own
   reader, then it should read the values using that function or
   similar.
 
-  Supported non-nil values are:
+  Supported non-~nil~ values are:
 
   - Use ~rest~ for an option that can have multiple values.  This is
     useful e.g. for an ~--~ argument that indicates that all remaining
@@ -1847,9 +1847,9 @@ whether a group or suffix should be available depending on some state.
 Only one of these slots can be used at the same time.  It is undefined
 what happens if you use more than one.
 
-- ~if~ Enable if predicate returns non-nil.
+- ~if~ Enable if predicate returns non-~nil~.
 - ~if-not~ Enable if predicate returns nil.
-- ~if-non-nil~ Enable if variable's value is non-nil.
+- ~if-non-~nil~~ Enable if variable's value is non-~nil~.
 - ~if-nil~ Enable if variable's value is nil.
 - ~if-mode~ Enable if major-mode matches value.
 - ~if-not-mode~ Enable if major-mode does not match value.
