@@ -57,6 +57,7 @@ arguments and suffix commands.  We could call this abstraction a
 commands (a prefix and a suffix) we prefer to call it just a
 "transient".
 
+#+cindex: transient prefix command
 #+begin_quote
 Transient keymaps are a feature provided by Emacs.  Transients as
 implemented by this package involve the use of transient keymaps.
@@ -121,6 +122,7 @@ arguments ~--force~ and ~--annotate~ are enabled or not based on their
 color.
 #+end_quote
 
+#+cindex: command dispatchers
 Transient can be used to implement simple "command dispatchers".  The
 main benefit then is that the user can see all the available commands
 in a popup buffer.  That is useful by itself because it frees the user
@@ -168,6 +170,7 @@ to implementing yet).
 
 * Usage
 ** Invoking Transients
+#+cindex: invoking transients
 
 A transient prefix command is invoked like any other command by
 pressing the key that is bound to that command.  The main difference
@@ -188,7 +191,10 @@ commands may also set some value by side-effect, e.g. by setting the
 value of some variable.
 
 ** Aborting and Resuming Transients
+#+cindex: aborting transients
+#+cindex: resuming transients
 
+#+cindex: quit transient
 To quit the transient without invoking a suffix command press ~C-g~.
 
 Key bindings in transient keymaps may be longer than a single event.
@@ -246,6 +252,7 @@ doc string.
   if any.
 
 ** Common Suffix Commands
+#+cindex: common suffix commands
 
 A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the popup buffer by default.
@@ -283,6 +290,7 @@ Some of Transient's key bindings differ from the respective bindings
 of Magit-Popup; see [[*FAQ]] for more information.
 
 ** Saving Values
+#+cindex: saving values of arguments
 
 After setting the infix arguments in a transient, the user can save
 those arguments for future invocations.
@@ -318,6 +326,7 @@ handling of buffer-local values is actually a bit more complicated
 than outlined above and even customizable.
 
 ** Using History
+#+cindex: value history
 
 Every time the user invokes a suffix command the transient's current
 value is saved to its history.  These values can be cycled through the
@@ -360,6 +369,7 @@ Both kinds of history are saved to a file when Emacs is exited.
   the history is saved in ~transient-history-file~.
 
 ** Getting Help for Suffix Commands
+#+cindex: getting help
 
 Transients can have many suffixes and infixes that the user might not
 be familiar with.  To make it trivial to get help for these, Transient
@@ -385,15 +395,19 @@ supported.  The fallback is to show the command's doc string, for
 non-infix suffixes this is usually appropriate.
 
 ** Enabling and Disabling Suffixes
+#+cindex: enabling suffixes
+#+cindex: disabling suffixes
 
 The user base of a package that uses transients can be very diverse.
 This is certainly the case for Magit; some users have been using it and
 Git for a decade, while others are just getting started now.
 
+#+cindex: levels
 For that reason a mechanism is needed that authors can use to classify a
 transient's infixes and suffixes along the essentials...everything
 spectrum.  We use the term "levels" to describe that mechanism.
 
+#+cindex: transient-level
 Each suffix command is placed on a level and each transient has a
 level (called transient-level), which controls which suffix commands
 are available.  Integers between 1 and 7 (inclusive) are valid levels.
@@ -718,6 +732,7 @@ These options are mainly intended for developers.
   same customization.
 
 * Modifying Existing Transients
+#+cindex: modifying existing transients
 
 To an extent, transients can be customized interactively, see
 [[*Enabling and Disabling Suffixes]].  This section explains how existing
@@ -832,6 +847,7 @@ that is used to invoke that transient.
   that matches ARGLIST, and it must call ~transient-setup~.  It may,
   however, call that function only when some condition is satisfied.
 
+  #+cindex: scope of a transient
   All transients have a (possibly ~nil~) value, which is exported when
   suffix commands are called, so that they can consume that value.
   For some transients it might be necessary to have a sort of
@@ -860,6 +876,7 @@ their arguments, which has the same form as the specifications used in
 ~transient-define-prefix~.
 
 *** Group Specifications
+#+cindex: group specifications
 
 The suffix and infix commands of a transient are organized in groups.
 The grouping controls how the descriptions of the suffixes are
@@ -955,6 +972,7 @@ defined.
 The form of suffix specifications is documented in the next node.
 
 *** Suffix Specifications
+#+cindex: suffix specifications
 
 A transient's suffix and infix commands are bound when the transient
 prefix command is defined using ~transient-define-prefix~, see
@@ -1048,6 +1066,8 @@ argument supported by the constructor of that class.  See [[*Suffix
 Slots]].
 
 ** Defining Suffix and Infix Commands
+#+cindex: defining suffix commands
+#+cindex: defining infix commands
 
 Note that an infix is a special kind of suffix. Depending on context
 "suffixes" means "suffixes (including infixes)" or "non-infix
@@ -1179,6 +1199,7 @@ function, which for infix arguments serves about the same purpose as
   returned value is a symbol, the transient prefix command.
 
 ** Transient State
+#+cindex: transient state
 
 Invoking a transient prefix command "activates" the respective
 transient, i.e. it puts a transient keymap into effect, which binds
@@ -1362,6 +1383,7 @@ slot.
   This is used when the user pressed ~C-z~.
 
 * Classes and Methods
+#+cindex: classes and methods
 
 Transient uses classes and generic functions to make it possible to
 define new types of suffix commands that are similar to existing
@@ -2233,7 +2255,7 @@ necessary changes.  See its doc string for more information.
 :INDEX:      ky
 :COOKIE_DATA: recursive
 :END:
-* Function and Command Index
+* Command and Function Index
 :PROPERTIES:
 :APPENDIX:   t
 :INDEX:      fn
@@ -2242,6 +2264,11 @@ necessary changes.  See its doc string for more information.
 :PROPERTIES:
 :APPENDIX:   t
 :INDEX:      vr
+:END:
+* Concept Index
+:PROPERTIES:
+:APPENDIX:   t
+:INDEX:      cp
 :END:
 
 * Copying
