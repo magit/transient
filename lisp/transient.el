@@ -2522,7 +2522,7 @@ transient is active."
   (transient-save-value (or transient--prefix transient-current-prefix)))
 
 (defun transient-reset ()
-  "Clear the set and save value of the active transient."
+  "Clear the set and saved value of the active transient."
   (interactive)
   (transient-reset-value (or transient--prefix transient-current-prefix)))
 
