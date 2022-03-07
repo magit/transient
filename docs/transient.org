@@ -316,6 +316,10 @@ but it is easily accessible (see [[*Using History]]).
   Save the value of the active transient persistently across Emacs
   sessions.
 
+- Key: C-x C-k (transient-save) ::
+
+  Clear the set and saved value of the active transient.
+
 - User Option: transient-values-file ::
 
   This option names the file that is used to persist the values of
@@ -1673,10 +1677,10 @@ functions use ~describe-function~.
 
 ** Prefix Slots
 
-- ~man-page~ or ~info-manual~ can be used to specify the documentation for
-  the prefix and its suffixes.  The command ~transient-help~ uses the
-  method ~transient-show-help~ (which see) to lookup and use these
-  values.
+- ~show-help~, ~man-page~ or ~info-manual~ can be used to specify the
+  documentation for the prefix and its suffixes.  The command
+  ~transient-help~ uses the method ~transient-show-help~ (which see) to
+  lookup and use these values.
 
 - ~history-key~ If multiple prefix commands should share a single value,
   then this slot has to be set to the same value for all of them.  You
@@ -1752,6 +1756,10 @@ Also see [[*Suffix Classes]].
 
 - ~description~ The description, either a string or a function that is
   called with no argument and returns a string.
+
+- ~show-help~ A function used to display help for the suffix.  If
+  unspecified, the prefix controls how hlep is displayed for its
+  suffixes.
 
 *** Slots of ~transient-infix~
 :PROPERTIES:

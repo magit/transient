@@ -458,6 +458,11 @@ session.
 @findex transient-save
 Save the value of the active transient persistently across Emacs
 sessions.
+
+@item @kbd{C-x C-k} (@code{transient-save})
+@kindex C-x C-k
+@findex transient-save
+Clear the set and saved value of the active transient.
 @end table
 
 @defopt transient-values-file
@@ -1931,10 +1936,10 @@ the command's doc string.
 
 @itemize
 @item
-@code{man-page} or @code{info-manual} can be used to specify the documentation for
-the prefix and its suffixes.  The command @code{transient-help} uses the
-method @code{transient-show-help} (which see) to lookup and use these
-values.
+@code{show-help}, @code{man-page} or @code{info-manual} can be used to specify the
+documentation for the prefix and its suffixes.  The command
+@code{transient-help} uses the method @code{transient-show-help} (which see) to
+lookup and use these values.
 
 @item
 @code{history-key} If multiple prefix commands should share a single value,
@@ -2029,6 +2034,11 @@ It must contain the following %-placeholders:
 @item
 @code{description} The description, either a string or a function that is
 called with no argument and returns a string.
+
+@item
+@code{show-help} A function used to display help for the suffix.  If
+unspecified, the prefix controls how hlep is displayed for its
+suffixes.
 @end itemize
 
 @anchor{Slots of @code{transient-infix}}
