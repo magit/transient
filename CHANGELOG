@@ -1,4 +1,60 @@
 # -*- mode: org -*-
+* v0.4.0    UNRELEASED
+
+- Compatibility of transient with various uses of the minibuffer has
+  been greatly improved, addressing several edge-cases and making it
+  possible to invoke a transient prefix command when the minibuffer
+  is active.  7b8a7d71 et al.
+
+- Each prefix and suffix can now have its own help function.  This is
+  configured using the new ~show-help~ slot.  ea5ac99f
+
+- The ~transient-options~ now supports two types of options that can
+  have multiple values: repeated option-value pairs and a final option
+  that takes all remaining arguments as value.  #154
+
+- Added support for the use of non-proportional text in the transient
+  popup.  7f5520b3
+
+- Imenu was taught about Transient's definition macros.  #178
+
+- It is now possible to return to the parent prefix from a sub-prefix.
+  e90f7a16
+
+- Boolean values of the ~transient~ slot of sub-prefixes are now
+  interpreted correctly.  4a36b1d9
+
+- Added new option ~transient-hide-during-minibuffer-read~.  5762bd9a
+
+- Added new option ~transient-align-variable-pitch~.  cda6a120
+
+- Added new command ~transient-reset~, which clears the set and saved
+  value of the active transient.  51585b8d
+
+- When using Emacs 28, ~execute-extended-command~ can be told to ignore
+  transient infix commands.  Even when using that Emacs version that
+  command does not ignore any commands by default, but this behaviour
+  can be easily be enabled using:
+
+    (setq read-extended-command-predicate
+          'command-completion-default-include-p)
+
+- Added new command ~transient-toggle-debug~.  b466cd9a
+
+- Expressions inside the group vectors that are prefixed with a comma
+  are now evaluated when the ~transient-define-prefix~ macro is expanded.
+  99943f73
+
+Bug fixes:
+
+- 938b0591 #173 transient--show: Set point after displaying window again
+- c26cbac5 #181 transient-{init,set}-value: Use case-sensitive matching
+- 28491e1f Properly deal with stealth undefined command
+- 714e3482 No longer always suspend when handle-switch-frame is called
+- 0f39af0e #188 transient-format-description: Use cl-call-next-method
+
+Also contains various documentation updates and code clean-ups.
+
 * v0.3.7    2021-10-25
 
 - Added an additional safety hatch to prevent Emacs from entering an
