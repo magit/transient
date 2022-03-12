@@ -1,7 +1,7 @@
 -include config.mk
 include default.mk
 
-.PHONY: lisp docs
+.PHONY: lisp docs test
 
 all: lisp docs
 
@@ -23,6 +23,8 @@ help:
 lisp:
 	@$(MAKE) -C lisp lisp
 
+test:
+	@$(MAKE) -C test test
 docs:
 	@$(MAKE) -C docs docs
 texi:
