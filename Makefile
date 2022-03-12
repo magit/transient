@@ -23,7 +23,9 @@ help:
 lisp:
 	@$(MAKE) -C lisp lisp
 
-test: lisp
+test:
+	@$(MAKE) -C lisp clean
+	@$(MAKE) -C lisp lisp
 	@$(MAKE) -C test test
 docs:
 	@$(MAKE) -C docs docs
