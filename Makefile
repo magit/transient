@@ -23,7 +23,7 @@ help:
 lisp:
 	@$(MAKE) -C lisp lisp
 
-test:
+test: lisp
 	@$(MAKE) -C test test
 docs:
 	@$(MAKE) -C docs docs
