@@ -1997,9 +1997,7 @@ value.  Otherwise return CHILDREN as is."
               (eq (aref keys (1- (length keys))) ?\C-g))
             (setq this-command 'transient-noop)
           (unless (transient--edebug-command-p)
-            (setq this-command 'transient-undefined)))
-        (when (eq transient--exit transient--stay)
-          (transient--pre-exit)))))))
+            (setq this-command 'transient-undefined))))))))
 
 (defun transient--get-predicate-for (cmd)
   (or (ignore-errors
