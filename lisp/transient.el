@@ -69,11 +69,11 @@
 (defvar Man-notify-method)
 
 (define-obsolete-function-alias 'define-transient-command
-  #'transient-define-prefix "Transient 0.3.0")
+  'transient-define-prefix "Transient 0.3.0")
 (define-obsolete-function-alias 'define-suffix-command
-  #'transient-define-suffix "Transient 0.3.0")
+  'transient-define-suffix "Transient 0.3.0")
 (define-obsolete-function-alias 'define-infix-command
-  #'transient-define-infix "Transient 0.3.0")
+  'transient-define-infix "Transient 0.3.0")
 (define-obsolete-function-alias 'define-infix-argument
   #'transient-define-argument "Transient 0.3.0")
 
