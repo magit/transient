@@ -2522,7 +2522,7 @@ transient is active."
   (transient-save-value (or transient--prefix transient-current-prefix)))
 
 (defun transient-reset ()
-  "Clear the set and saved value of the active transient."
+  "Clear the set and saved values of the active transient."
   (interactive)
   (transient-reset-value (or transient--prefix transient-current-prefix)))
 
@@ -2916,11 +2916,17 @@ prompt."
                 (transient-infix-set obj nil)))))
       (cl-call-next-method obj value))))
 
+(cl-defgeneric transient-set-value (obj)
+  "Set the value of the transient prefix OBJ.")
+
 (cl-defmethod transient-set-value ((obj transient-prefix))
   (oset (oref obj prototype) value (transient-get-value))
   (transient--history-push obj))
 
 ;;;; Save
+
+(cl-defgeneric transient-save-value (obj)
+  "Save the value of the transient prefix OBJ.")
 
 (cl-defmethod transient-save-value ((obj transient-prefix))
   (let ((value (transient-get-value)))
@@ -2930,6 +2936,9 @@ prompt."
   (transient--history-push obj))
 
 ;;;; Reset
+
+(cl-defgeneric transient-reset-value (obj)
+  "Clear the set and saved values of the transient prefix OBJ.")
 
 (cl-defmethod transient-reset-value ((obj transient-prefix))
   (let ((value (transient-default-value obj)))
