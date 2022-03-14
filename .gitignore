@@ -9,3 +9,7 @@
 /lisp/*.elc
 
 /docs/transient/
+
+# For ELPA:
+/*-autoloads.el
+/*-pkg.el
