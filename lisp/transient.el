@@ -778,6 +778,13 @@ slot is non-nil."
    (argument-regexp  :initarg :argument-regexp))
   "Class used for sets of mutually exclusive command-line switches.")
 
+(defclass transient-linable-option (transient-option)
+  ((selector :initarg :selector :initform nil)
+   (alteror :initarg :alteror :initform nil)
+   (value-formatter :initarg :value-formatter :initform #'prin1-to-string)
+   (value-parser :initarg :value-parser :initform #'read)
+   (format :initform " %k %d\n %v")))
+
 (defclass transient-files (transient-option) ()
   ((key         :initform "--")
    (argument    :initform "--")
@@ -2789,6 +2796,73 @@ The last value is \"don't use any of these switches\"."
         (cadr (member value choices))
       (car choices))))
 
+(cl-defmethod transient-infix-read ((obj transient-linable-option))
+  (with-slots (value multi-value always-read allow-empty choices reader selector alteror value-formatter value-parser) obj
+    (if (and value
+             (not multi-value)
+             (not always-read)
+             transient--prefix)
+        (oset obj value nil)
+      (let* ((enable-recursive-minibuffers t)
+             (prompt (transient-prompt obj))
+             (value (if multi-value value (if (null value) nil `(,value))))
+             (history-key (or (oref obj history-key)
+                              (oref obj command)))
+             (transient--history (alist-get history-key transient-history))
+             (transient--history (let* ((value (mapcar value-formatter value)))
+                                   (append value (cl-set-difference transient--history value))))
+             (initial-input (and transient-read-with-initial-input
+                                 (car transient--history)))
+             (history (if initial-input
+                          (cons 'transient--history 1)
+                        'transient--history))
+             (reader (or reader #'completing-read))
+             (selector (or selector #'completing-read))
+             (alteror (or alteror #'completing-read))
+             (operations (if multi-value
+                             '(("add" ?a "add new option")
+                               ("edit" ?e "edit existing option")
+                               ("delete" ?d "delete existing option")
+                               ("clear" ?c "delete all options"))
+                           '(("edit" ?e "edit option")
+                             ("delete" ?c "delete option"))))
+             (value
+              (cl-flet ((operation (prompt) (read-answer prompt operations))
+                        (read-value (prompt)
+                          (funcall value-parser
+                                   (funcall reader prompt choices nil (not (null choices)) initial-input history)))
+                        (select-value (prompt)
+                          (funcall value-parser
+                                   (funcall selector prompt (mapcar value-formatter value) nil t)))
+                        (alter-value (prompt oldval)
+                          (funcall value-parser
+                                   (funcall alteror prompt choices nil (not (null choices)) (funcall value-formatter oldval) nil))))
+                (if multi-value
+                    (pcase (operation "Operation: ")
+                      ("add" (cons (read-value "add: ") value))
+                      ("edit" (let* ((selected (select-value "edit: "))
+                                     (altered (alter-value "edit as: " selected)))
+                                (cons altered (cl-remove selected value :count 1 :test #'equal))))
+                      ("delete" (let* ((selected (select-value "delete: ")))
+                                  (cl-remove selected value :count 1 :test #'equal)))
+                      ("clear" nil))
+                  (if value
+                      (alter-value prompt value)
+                    (read-value prompt))))))
+        (cond ((and multi-value (not allow-empty))
+               (delete nil value)
+               (delete "" value))
+              ((and (not multi-value) (not allow-empty) (equal "" value))
+               (setq value nil)))
+        (when value
+          (when (and (bound-and-true-p ivy-mode)
+                     (stringp (car transient--history)))
+            (set-text-properties 0 (length (car transient--history)) nil
+                                 (car transient--history)))
+          (setf (alist-get history-key transient-history)
+                (delete-dups transient--history)))
+        value))))
+
 (cl-defmethod transient-infix-read ((command symbol))
   "Elsewhere use the reader of the infix command COMMAND.
 Use this if you want to share an infix's history with a regular
@@ -3216,7 +3290,9 @@ have a history of their own.")
              (let ((rows (mapcar #'transient-format (oref column suffixes))))
                (when-let ((desc (transient-format-description column)))
                  (push desc rows))
-               rows))
+               (flatten-list (mapcar (lambda (multiline-row)
+                                       (split-string multiline-row "\n"))
+                                     rows))))
            (oref group suffixes)))
          (vp (or (oref transient--prefix variable-pitch)
                  transient-align-variable-pitch))
@@ -3460,6 +3536,25 @@ If the OBJ's `key' is currently unreachable, then apply the face
                              (mapconcat #'prin1-to-string value " ")))
            (repeat   (mapconcat (lambda (v) (concat argument v)) value " ")))
          'face 'transient-value)
+      (propertize argument 'face 'transient-inactive-value))))
+
+(cl-defmethod transient-format-value ((obj transient-linable-option))
+  (let ((argument (oref obj argument)))
+    (if-let* ((face 'transient-value)
+              (value (oref obj value))
+              (value-formatter (oref obj value-formatter)))
+        (cl-ecase (oref obj multi-value)
+          ((nil) (propertize
+                  (concat argument (funcall value-formatter value))
+                  'face 'transient-value))
+          ((t rest repeat)
+           (mapconcat (lambda (v)
+                        (propertize
+                         (concat argument
+                                 (and (not (string-suffix-p " " argument)) " ")
+                                 (funcall value-formatter v))
+                         'face face))
+                      value "\n ")))
       (propertize argument 'face 'transient-inactive-value))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
