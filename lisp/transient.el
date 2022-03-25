@@ -131,7 +131,7 @@
                  (const  :tag "on demand (no summary)" 0)
                  (number :tag "after delay" 1)))
 
-(defcustom transient-enable-popup-navigation nil
+(defcustom transient-enable-popup-navigation t
   "Whether navigation commands are enabled in the transient popup.
 
 While a transient is active the transient popup buffer is not the
@@ -151,7 +151,7 @@ bindings are available:
 
 Each of these bindings is defined in either `transient-button-map'
 or `transient-popup-navigation-map'."
-  :package-version '(transient . "0.2.0")
+  :package-version '(transient . "0.4.0")
   :group 'transient
   :type 'boolean)
 
