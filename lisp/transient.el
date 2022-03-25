@@ -136,14 +136,21 @@
 
 While a transient is active the transient popup buffer is not the
 current buffer, making it necessary to use dedicated commands to
-act on that buffer itself.  If this non-nil, then the following
-features are available:
+act on that buffer itself.  If this is non-nil, then the following
+bindings are available:
 
-- \"<up>\" moves the cursor to the previous suffix.
-  \"<down>\" moves the cursor to the next suffix.
-  \"RET\" invokes the suffix the cursor is on.
-- \"<mouse-1>\" invokes the clicked on suffix.
-- \"C-s\" and \"C-r\" start isearch in the popup buffer."
+\\<transient-popup-navigation-map>\
+- \\[transient-backward-button] moves the cursor to the previous suffix.
+- \\[transient-forward-button] moves the cursor to the next suffix.
+\\<transient-button-map>\
+- \\[transient-push-button] invokes the suffix the cursor is on.
+- \\`<mouse-1>' and \\`<mouse-2>' invoke the clicked on suffix.
+\\<transient-popup-navigation-map>\
+- \\[transient-isearch-backward]\
+ and \\[transient-isearch-forward] start isearch in the popup buffer.
+
+Each of these bindings is defined in either `transient-button-map'
+or `transient-popup-navigation-map'."
   :package-version '(transient . "0.2.0")
   :group 'transient
   :type 'boolean)
