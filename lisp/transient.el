@@ -2507,7 +2507,8 @@ transient is active."
         (oset (transient-suffix-object command) level level))
       (setf (alist-get sym alist) level)
       (setf (alist-get prefix transient-levels) alist))
-    (transient-save-levels))
+    (transient-save-levels)
+    (transient--show))
    (t
     (transient-undefined))))
 
