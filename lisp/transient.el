@@ -1694,8 +1694,12 @@ of the corresponding object.")
                      cmd conflict)))
           (define-key map kbd cmd))))
     (when transient-enable-popup-navigation
-      (setq map
-            (make-composed-keymap (list map transient-popup-navigation-map))))
+      ;; `transient--make-redisplay-map' maps only over bindings that are
+      ;; directly in the base keymap, so that cannot be a composed keymap.
+      (set-keymap-parent
+       map (make-composed-keymap
+            (keymap-parent map)
+            transient-popup-navigation-map)))
     map))
 
 (defun transient--make-predicate-map ()
