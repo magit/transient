@@ -1572,6 +1572,22 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
                              "Show common permanently")))
           ("C-x l" "Show/hide suffixes" transient-set-level)]])))
 
+(defvar transient-popup-navigation-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<down-mouse-1>") #'transient-noop)
+    (define-key map (kbd "<up>")   #'transient-backward-button)
+    (define-key map (kbd "<down>") #'transient-forward-button)
+    (define-key map (kbd "C-r")    #'transient-isearch-backward)
+    (define-key map (kbd "C-s")    #'transient-isearch-forward)
+    map))
+
+(defvar transient-button-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<mouse-1>") #'transient-push-button)
+    (define-key map (kbd "<mouse-2>") #'transient-push-button)
+    (define-key map (kbd "RET")       #'transient-push-button)
+    map))
+
 (defvar transient-predicate-map
   (let ((map (make-sparse-keymap)))
     (define-key map [transient-suspend]       #'transient--do-suspend)
@@ -1627,8 +1643,6 @@ transient behavior of the respective command.
 For transient commands that are bound in individual transients,
 the transient behavior is specified using the `:transient' slot
 of the corresponding object.")
-
-(defvar transient-popup-navigation-map)
 
 (defvar transient--transient-map nil)
 (defvar transient--predicate-map nil)
@@ -3721,30 +3735,13 @@ resumes the suspended transient.")
   (message "Debugging transient %s"
            (if transient--debug "enabled" "disabled")))
 
-;;; Compatibility
-;;;; Popup Navigation
+;;; Popup Navigation
 
 (defun transient-popup-navigation-help ()
   "Inform the user how to enable popup navigation commands."
   (interactive)
   (message "This command is only available if `%s' is non-nil"
            'transient-enable-popup-navigation))
-
-(defvar transient-popup-navigation-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "<down-mouse-1>") #'transient-noop)
-    (define-key map (kbd "<up>")   #'transient-backward-button)
-    (define-key map (kbd "<down>") #'transient-forward-button)
-    (define-key map (kbd "C-r")    #'transient-isearch-backward)
-    (define-key map (kbd "C-s")    #'transient-isearch-forward)
-    map))
-
-(defvar transient-button-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "<mouse-1>") #'transient-push-button)
-    (define-key map (kbd "<mouse-2>") #'transient-push-button)
-    (define-key map (kbd "RET")       #'transient-push-button)
-    map))
 
 (define-button-type 'transient-button
   'face nil
@@ -3783,6 +3780,7 @@ See `forward-button' for information about N."
           beg (next-single-property-change
                beg 'face nil (line-end-position))))))
 
+;;; Compatibility
 ;;;; Popup Isearch
 
 (defvar transient--isearch-mode-map
