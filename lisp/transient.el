@@ -1439,7 +1439,7 @@ probably use this instead:
           transient-current-prefix)
       (cl-find-if (lambda (obj)
                     (eq (transient--suffix-command obj)
-                        (or command this-original-command)))
+                        (or command this-command)))
                   (or transient--suffixes
                       transient-current-suffixes))
     (when-let ((obj (get (or command this-command) 'transient--suffix))
@@ -1989,8 +1989,7 @@ value.  Otherwise return CHILDREN as is."
       (setq this-command 'transient-set-level))
      (t
       (setq transient--exitp nil)
-      (when (eq (if-let ((fn (transient--get-predicate-for
-                              this-original-command)))
+      (when (eq (if-let ((fn (transient--get-predicate-for this-command)))
                     (let ((action (funcall fn)))
                       (when (eq action transient--exit)
                         (setq transient--exitp (or transient--exitp t)))
@@ -2402,8 +2401,7 @@ to `transient--do-warn'."
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
            (propertize "?"   'face 'transient-key)
-           (propertize (symbol-name (transient--suffix-symbol
-                                     this-original-command))
+           (propertize (symbol-name (transient--suffix-symbol this-command))
                        'face 'font-lock-warning-face))
   (unless (and transient--transient-map
                (memq transient--transient-map overriding-terminal-local-map))
@@ -3715,9 +3713,7 @@ resumes the suspended transient.")
   'face nil
   'action (lambda (button)
             (let ((command (button-get button 'command)))
-              ;; Yes, I know that this is wrong(tm).
-              ;; Unfortunately it is also necessary.
-              (setq this-original-command command)
+              (setq this-command command)
               (transient--pre-command)
               (call-interactively command))))
 
