@@ -1845,13 +1845,13 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--flatten-suffixes (layout)
   (cl-labels ((s (def)
-                 (cond
-                  ((stringp def) nil)
-                  ((listp def) (cl-mapcan #'s def))
-                  ((transient-group--eieio-childp def)
-                   (cl-mapcan #'s (oref def suffixes)))
-                  ((transient-suffix--eieio-childp def)
-                   (list def)))))
+                (cond
+                 ((stringp def) nil)
+                 ((listp def) (cl-mapcan #'s def))
+                 ((transient-group--eieio-childp def)
+                  (cl-mapcan #'s (oref def suffixes)))
+                 ((transient-suffix--eieio-childp def)
+                  (list def)))))
     (cl-mapcan #'s layout)))
 
 (defun transient--init-child (levels spec)
