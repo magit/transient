@@ -1993,6 +1993,14 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--pre-command ()
   (transient--debug 'pre-command)
   (transient--with-emergency-exit
+    ;; The use of `overriding-terminal-local-map' does not prevent the
+    ;; lookup of command remappings in the overridden maps, which can
+    ;; lead to a suffix being remapped to a non-suffix.  We have to undo
+    ;; the remapping in that case.  However, remapping a non-suffix to
+    ;; another should remain possible.
+    (when (and (transient--get-predicate-for this-original-command 'suffix)
+               (not (transient--get-predicate-for this-command 'suffix)))
+      (setq this-command this-original-command))
     (cond
      ((memq this-command '(transient-update transient-quit-seq))
       (transient--pop-keymap 'transient--redisplay-map))
@@ -2030,15 +2038,16 @@ value.  Otherwise return CHILDREN as is."
         (setq this-command 'transient-undefined)))
     transient--stay))
 
-(defun transient--get-predicate-for (cmd)
+(defun transient--get-predicate-for (cmd &optional suffix-only)
   (or (ignore-errors
         (lookup-key transient--predicate-map
                     (vector (transient--suffix-symbol cmd))))
-      (let ((pred (oref transient--prefix transient-non-suffix)))
-        (pcase pred
-          (`t   #'transient--do-stay)
-          (`nil #'transient--do-warn)
-          (_    pred)))))
+      (and (not suffix-only)
+           (let ((pred (oref transient--prefix transient-non-suffix)))
+             (pcase pred
+               (`t   #'transient--do-stay)
+               (`nil #'transient--do-warn)
+               (_    pred))))))
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
@@ -2443,7 +2452,10 @@ to `transient--do-warn'."
                        'face 'font-lock-warning-face)
            (propertize "C-g" 'face 'transient-key)
            (propertize "?"   'face 'transient-key)
-           (propertize (symbol-name (transient--suffix-symbol this-command))
+           ;; `this-command' is `transient--undefined' or similar at this
+           ;; point.  Show the command the user actually tried to invoke.
+           (propertize (symbol-name (transient--suffix-symbol
+                                     this-original-command))
                        'face 'font-lock-warning-face))
   (unless (and transient--transient-map
                (memq transient--transient-map overriding-terminal-local-map))
