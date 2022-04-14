@@ -1016,8 +1016,8 @@ example, sets a variable use `transient-define-infix' instead.
                             (vectorp (car value))))
                    (cl-mapcan (lambda (s) (transient--parse-child prefix s)) value)
                  (transient--parse-child prefix value))))
-    (vector  (when-let ((c (transient--parse-group  prefix spec))) (list c)))
-    (list    (when-let ((c (transient--parse-suffix prefix spec))) (list c)))
+    (vector  (and-let* ((c (transient--parse-group  prefix spec))) (list c)))
+    (list    (and-let* ((c (transient--parse-suffix prefix spec))) (list c)))
     (string  (list spec))))
 
 (defun transient--parse-group (prefix spec)
@@ -1314,7 +1314,7 @@ See info node `(transient)Modifying Existing Transients'."
          (plist-get plist :command)))))
 
 (defun transient--command-key (cmd)
-  (when-let ((obj (get cmd 'transient--suffix)))
+  (and-let* ((obj (get cmd 'transient--suffix)))
     (cond ((slot-boundp obj 'key)
            (oref obj key))
           ((slot-exists-p obj 'shortarg)
@@ -1450,8 +1450,9 @@ probably use this instead:
                         (or command this-command)))
                   (or transient--suffixes
                       transient-current-suffixes))
-    (when-let ((obj (get (or command this-command) 'transient--suffix))
-               (obj (clone obj)))
+    (when-let* ((obj (get (or command this-command) 'transient--suffix))
+                (obj (clone obj)))
+      ;; Cannot use and-let* because of debbugs#31840.
       (transient-init-scope obj)
       (transient-init-value obj)
       obj)))
@@ -1863,14 +1864,14 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--init-group (levels spec)
   (pcase-let ((`(,level ,class ,args ,children) (append spec nil)))
-    (when (transient--use-level-p level)
-      (let ((obj (apply class :level level args)))
-        (when (transient--use-suffix-p obj)
-          (when-let ((suffixes
-                      (cl-mapcan (lambda (c) (transient--init-child levels c))
-                                 (transient-setup-children obj children))))
-            (oset obj suffixes suffixes)
-            (list obj)))))))
+    (when-let* ((- (transient--use-level-p level))
+                (obj (apply class :level level args))
+                (- (transient--use-suffix-p obj))
+                (suffixes (cl-mapcan (lambda (c) (transient--init-child levels c))
+                                     (transient-setup-children obj children))))
+      ;; Cannot use and-let* because of debbugs#31840.
+      (oset obj suffixes suffixes)
+      (list obj))))
 
 (defun transient--init-suffix (levels spec)
   (pcase-let* ((`(,level ,class ,args) spec)
@@ -1966,7 +1967,7 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--suffix-predicate (spec)
   (let ((plist (nth 2 spec)))
     (seq-some (lambda (prop)
-                (when-let ((pred (plist-get plist prop)))
+                (and-let* ((pred (plist-get plist prop)))
                   (list prop pred)))
               '( :if :if-not
                  :if-nil :if-non-nil
@@ -2932,11 +2933,11 @@ prompt."
         (if (stringp prompt)
             prompt
           "(BUG: no prompt): "))
-    (or (when-let ((arg (and (slot-boundp obj 'argument) (oref obj argument))))
+    (or (and-let* ((arg (and (slot-boundp obj 'argument) (oref obj argument))))
           (if (and (stringp arg) (string-suffix-p "=" arg))
               arg
             (concat arg ": ")))
-        (when-let ((var (and (slot-boundp obj 'variable) (oref obj variable))))
+        (and-let* ((var (and (slot-boundp obj 'variable) (oref obj variable))))
           (and (stringp var)
                (concat var ": ")))
         "(BUG: no prompt): ")))
@@ -3034,7 +3035,7 @@ the set, saved or default value for PREFIX."
                transient-current-suffixes)))
 
 (defun transient--get-wrapped-value (obj)
-  (when-let ((value (transient-infix-value obj)))
+  (and-let* ((value (transient-infix-value obj)))
     (cl-ecase (and (slot-exists-p obj 'multi-value)
                    (oref obj multi-value))
       ((nil)    (list value))
@@ -3072,7 +3073,7 @@ does nothing." nil)
 
 (cl-defmethod transient-infix-value ((obj transient-option))
   "Return ARGUMENT and VALUE as a unit or nil if the latter is nil."
-  (when-let ((value (oref obj value)))
+  (and-let* ((value (oref obj value)))
     (let ((arg (oref obj argument)))
       (cl-ecase (oref obj multi-value)
         ((nil)    (concat arg value))
@@ -3097,7 +3098,7 @@ a string, using the empty string for the empty value, or nil if
 the option does not appear in ARGS."
   (if (string-suffix-p "=" arg)
       (save-match-data
-        (when-let ((match (let ((case-fold-search nil)
+        (and-let* ((match (let ((case-fold-search nil)
                                 (re (format "\\`%s\\(?:=\\(.+\\)\\)?\\'"
                                             (substring arg 0 -1))))
                             (cl-find-if (lambda (a)
@@ -3462,7 +3463,7 @@ Optional support for popup buttons is also implemented here."
   "The `description' slot may be a function, in which case that is
 called inside the correct buffer (see `transient-insert-group')
 and its value is returned to the caller."
-  (when-let ((desc (oref obj description)))
+  (and-let* ((desc (oref obj description)))
     (if (functionp desc)
         (with-current-buffer transient--original-buffer
           (funcall desc))
@@ -3472,7 +3473,7 @@ and its value is returned to the caller."
   "Format the description by calling the next method.  If the result
 doesn't use the `face' property at all, then apply the face
 `transient-heading' to the complete string."
-  (when-let ((desc (cl-call-next-method obj)))
+  (and-let* ((desc (cl-call-next-method obj)))
     (if (text-property-not-all 0 (length desc) 'face nil desc)
         desc
       (propertize desc 'face 'transient-heading))))
