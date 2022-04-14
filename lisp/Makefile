@@ -12,7 +12,7 @@ loaddefs: $(PKG)-autoloads.el
 CLEAN = $(ELCS) $(PKG)-autoloads.el
 
 clean:
-	@printf "Cleaning lisp/*...\n"
+	@printf " Cleaning lisp/*...\n"
 	@rm -rf $(CLEAN)
 
 define LOADDEFS_TMPL
@@ -33,7 +33,7 @@ export LOADDEFS_TMPL
 #'
 
 $(PKG)-autoloads.el: $(ELS)
-	@printf "Generating $@\n"
+	@printf " Creating $@\n"
 	@printf "%s" "$$LOADDEFS_TMPL" > $@
 	@$(EMACS) -Q --batch --eval "(progn\
 	(setq make-backup-files nil)\

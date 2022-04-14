@@ -97,5 +97,5 @@ stats-upload:
 CLEAN = $(PKG).info dir $(PKG) $(PKG).html $(PKG).pdf
 
 clean:
-	@printf "Cleaning docs/*...\n"
+	@printf " Cleaning docs/*...\n"
 	@rm -rf $(CLEAN)
