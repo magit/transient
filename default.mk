@@ -5,7 +5,7 @@ PKG = transient
 ELS   = $(PKG).el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  =
+DEPS  = compat
 
 DOMAIN      ?= magit.vc
 CFRONT_DIST ?= E2LUHBKU1FBV02
