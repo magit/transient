@@ -3094,7 +3094,7 @@ contribute to the value of the transient."
 For a switch return a boolean.  For an option return the value as
 a string, using the empty string for the empty value, or nil if
 the option does not appear in ARGS."
-  (if (string-match-p "=\\'" arg)
+  (if (string-suffix-p "=" arg)
       (save-match-data
         (when-let ((match (let ((case-fold-search nil)
                                 (re (format "\\`%s\\(?:=\\(.+\\)\\)?\\'"
