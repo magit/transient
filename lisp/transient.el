@@ -67,6 +67,7 @@
 (declare-function Man-next-section 'man)
 (declare-function Man-getpage-in-background 'man)
 
+(defvar display-line-numbers) ; since Emacs 26.1
 (defvar Man-notify-method)
 
 (define-obsolete-function-alias 'define-transient-command
