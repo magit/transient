@@ -59,8 +59,7 @@
 (require 'format-spec)
 (require 'seq)
 
-(eval-when-compile
-  (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
 (declare-function info 'info)
 (declare-function Man-find-section 'man)
