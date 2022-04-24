@@ -1605,7 +1605,7 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
     (define-key map [transient-history-prev]  #'transient--do-stay)
     (define-key map [transient-history-next]  #'transient--do-stay)
     (define-key map [universal-argument]      #'transient--do-stay)
-    (define-key map [negative-argument]       #'transient--do-stay)
+    (define-key map [negative-argument]       #'transient--do-minus)
     (define-key map [digit-argument]          #'transient--do-stay)
     (define-key map [transient-quit-all]      #'transient--do-quit-all)
     (define-key map [transient-quit-one]      #'transient--do-quit-one)
@@ -2416,6 +2416,14 @@ to `transient--do-warn'."
     (setq this-command 'transient-popup-navigation-help))
   transient--stay)
 
+(defun transient--do-minus ()
+  "Call `negative-argument' or pivot to `transient-update'.
+If `negative-argument' is invoked using \"-\" then preserve the
+prefix argument and pivot to `transient-update'."
+  (when (equal (this-command-keys) "-")
+    (setq this-command 'transient-update))
+  transient--stay)
+
 (put 'transient--do-stay       'transient-color 'transient-red)
 (put 'transient--do-noop       'transient-color 'transient-red)
 (put 'transient--do-warn       'transient-color 'transient-red)
@@ -2429,6 +2437,7 @@ to `transient--do-warn'."
 (put 'transient--do-quit-one   'transient-color 'transient-blue)
 (put 'transient--do-quit-all   'transient-color 'transient-blue)
 (put 'transient--do-move       'transient-color 'transient-red)
+(put 'transient--do-minus      'transient-color 'transient-red)
 
 ;;; Commands
 
@@ -2496,7 +2505,9 @@ transient is active."
 
 (defun transient-update ()
   "Redraw the transient's state in the popup buffer."
-  (interactive))
+  (interactive)
+  (when (equal this-original-command 'negative-argument)
+    (setq prefix-arg current-prefix-arg)))
 
 (defun transient-show ()
   "Show the transient's state in the popup buffer."
