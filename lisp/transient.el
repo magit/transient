@@ -143,15 +143,15 @@ bindings are available:
 \\<transient-popup-navigation-map>\
 - \\[transient-backward-button] moves the cursor to the previous suffix.
 - \\[transient-forward-button] moves the cursor to the next suffix.
-\\<transient-button-map>\
 - \\[transient-push-button] invokes the suffix the cursor is on.
+\\<transient-button-map>\
 - \\`<mouse-1>' and \\`<mouse-2>' invoke the clicked on suffix.
 \\<transient-popup-navigation-map>\
 - \\[transient-isearch-backward]\
- and \\[transient-isearch-forward] start isearch in the popup buffer.
+ and \\[transient-isearch-forward] starts isearch in the popup buffer.
 
-Each of these bindings is defined in either `transient-button-map'
-or `transient-popup-navigation-map'."
+\\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-push-button'.
+All other bindings are in `transient-popup-navigation-map'."
   :package-version '(transient . "0.4.0")
   :group 'transient
   :type 'boolean)
@@ -1588,14 +1588,18 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
     (define-key map (kbd "<down>") #'transient-forward-button)
     (define-key map (kbd "C-r")    #'transient-isearch-backward)
     (define-key map (kbd "C-s")    #'transient-isearch-forward)
-    map))
+    (define-key map (kbd "RET")    #'transient-push-button)
+    map)
+  "One of the keymaps used when popup navigation is enabled.
+See `transient-enable-popup-navigation'.")
 
 (defvar transient-button-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<mouse-1>") #'transient-push-button)
     (define-key map (kbd "<mouse-2>") #'transient-push-button)
-    (define-key map (kbd "RET")       #'transient-push-button)
-    map))
+    map)
+  "One of the keymaps used when popup navigation is enabled.
+See `transient-enable-popup-navigation'.")
 
 (defvar transient-predicate-map
   (let ((map (make-sparse-keymap)))
