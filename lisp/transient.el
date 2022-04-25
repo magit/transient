@@ -148,7 +148,7 @@ bindings are available:
 - \\`<mouse-1>' and \\`<mouse-2>' invoke the clicked on suffix.
 \\<transient-popup-navigation-map>\
 - \\[transient-isearch-backward]\
- and \\[transient-isearch-forward] starts isearch in the popup buffer.
+ and \\[transient-isearch-forward] start isearch in the popup buffer.
 
 \\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-push-button'.
 All other bindings are in `transient-popup-navigation-map'.
