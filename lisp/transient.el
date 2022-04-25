@@ -151,7 +151,12 @@ bindings are available:
  and \\[transient-isearch-forward] starts isearch in the popup buffer.
 
 \\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-push-button'.
-All other bindings are in `transient-popup-navigation-map'."
+All other bindings are in `transient-popup-navigation-map'.
+
+By default \\`M-RET' is bound to `transient-push-button', instead of
+\\`RET', because if a transient allows the invocation of non-suffixes
+then it is likely that you would want \\`RET' to do what it would do
+if no transient were active."
   :package-version '(transient . "0.4.0")
   :group 'transient
   :type 'boolean)
@@ -1588,7 +1593,7 @@ to `transient-predicate-map'.  Also see `transient-base-map'.")
     (define-key map (kbd "<down>") #'transient-forward-button)
     (define-key map (kbd "C-r")    #'transient-isearch-backward)
     (define-key map (kbd "C-s")    #'transient-isearch-forward)
-    (define-key map (kbd "RET")    #'transient-push-button)
+    (define-key map (kbd "M-RET")  #'transient-push-button)
     map)
   "One of the keymaps used when popup navigation is enabled.
 See `transient-enable-popup-navigation'.")
