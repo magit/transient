@@ -1275,6 +1275,10 @@ Intended for use in a group's `:setup-children' function."
 ;;; Edit
 
 (defun transient--insert-suffix (prefix loc suffix action &optional keep-other)
+  (unless (or (get prefix 'transient--layout)
+              (autoloadp prefix))
+    (message "WARNING: %s was only autoloaded" prefix)
+    (autoload-do-load prefix))
   (let* ((suf (cl-etypecase suffix
                 (vector (transient--parse-group  prefix suffix))
                 (list   (transient--parse-suffix prefix suffix))
@@ -1391,6 +1395,10 @@ See info node `(transient)Modifying Existing Transients'."
 
 (defun transient--layout-member (loc prefix &optional remove)
   (let ((val (or (get prefix 'transient--layout)
+                 (and (autoloadp prefix)
+                      (message "WARNING: %s was only autoloaded" prefix)
+                      (autoload-do-load prefix)
+                      (get prefix 'transient--layout))
                  (error "%s is not a transient command" prefix))))
     (when (listp loc)
       (while (integerp (car loc))
