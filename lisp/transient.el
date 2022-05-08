@@ -1340,7 +1340,7 @@ This is an object representing that transient, use
 (defvar transient-current-command nil
   "The transient from which this suffix command was invoked.
 This is a symbol representing that transient, use
-`current-transient-object' to get the respective object.")
+`transient-current-prefix' to get the respective object.")
 
 (defvar transient-current-suffixes nil
   "The suffixes of the transient from which this suffix command was invoked.
