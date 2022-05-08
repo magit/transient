@@ -2169,8 +2169,13 @@ value.  Otherwise return CHILDREN as is."
     (unless abort-only
       (setq post-command
             (lambda () "@transient--delay-post-command"
-              (let ((act (and (eq this-command command)
-                              (not (eq (this-command-keys-vector) [])))))
+              (let ((act (and (not (eq (this-command-keys-vector) []))
+                              (or (eq this-command command)
+                                  ;; `execute-extended-command' was
+                                  ;; used to call another command
+                                  ;; that also uses the minibuffer.
+                                  (equal (this-command-keys)
+                                         (format "\M-x%s\r" this-command))))))
                 (transient--debug 'post-command-hook "act: %s" act)
                 (when act
                   (remove-hook 'transient--post-command-hook post-command)
