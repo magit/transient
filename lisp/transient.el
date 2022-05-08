@@ -2105,6 +2105,7 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--suspend-override (&optional nohide)
   (transient--debug 'suspend-override)
+  (transient--timer-cancel)
   (when (and (not nohide) transient-hide-during-minibuffer-read)
     (transient--delete-window))
   (transient--pop-keymap 'transient--transient-map)
