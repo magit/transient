@@ -61,10 +61,10 @@
 
 (eval-when-compile (require 'subr-x))
 
-(declare-function info 'info)
-(declare-function Man-find-section 'man)
-(declare-function Man-next-section 'man)
-(declare-function Man-getpage-in-background 'man)
+(declare-function info "info" (&optional file-or-node buffer))
+(declare-function Man-find-section "man" (section))
+(declare-function Man-next-section "man" (n))
+(declare-function Man-getpage-in-background "man" (topic))
 
 (defvar display-line-numbers) ; since Emacs 26.1
 (defvar Man-notify-method)
