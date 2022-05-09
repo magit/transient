@@ -1704,6 +1704,9 @@ of the corresponding object.")
                      (string-trim key)
                      cmd conflict)))
           (define-key map kbd cmd))))
+    (when-let ((b (lookup-key map "-"))) (define-key map [kp-subtract] b))
+    (when-let ((b (lookup-key map "="))) (define-key map [kp-equal] b))
+    (when-let ((b (lookup-key map "+"))) (define-key map [kp-add] b))
     (when transient-enable-popup-navigation
       ;; `transient--make-redisplay-map' maps only over bindings that are
       ;; directly in the base keymap, so that cannot be a composed keymap.
@@ -1772,7 +1775,10 @@ of the corresponding object.")
          (define-key topmap (vconcat transient--redisplay-key (list key))
            #'transient-update)))
      (if transient--redisplay-key
-         (lookup-key transient--transient-map (vconcat transient--redisplay-key))
+         (let ((key (vconcat transient--redisplay-key)))
+           (or (lookup-key transient--transient-map key)
+               (and-let* ((regular (lookup-key local-function-key-map key)))
+                 (lookup-key transient--transient-map (vconcat regular)))))
        transient--transient-map))
     topmap))
 
@@ -3442,7 +3448,12 @@ Optional support for popup buttons is also implemented here."
         (let ((len (length transient--redisplay-key))
               (seq (cl-coerce (edmacro-parse-keys key t) 'list)))
           (cond
-           ((equal (seq-take seq len) transient--redisplay-key)
+           ((member (seq-take seq len)
+                    (list transient--redisplay-key
+                          (thread-last transient--redisplay-key
+                            (cl-substitute ?- 'kp-subtract)
+                            (cl-substitute ?= 'kp-equal)
+                            (cl-substitute ?+ 'kp-add))))
             (let ((pre (key-description (vconcat (seq-take seq len))))
                   (suf (key-description (vconcat (seq-drop seq len)))))
               (setq pre (string-replace "RET" "C-m" pre))
