@@ -3415,7 +3415,7 @@ Optional support for popup buttons is also implemented here."
       (add-face-text-property 0 (length str) 'transient-inapt-suffix nil str))
     (if transient-enable-popup-navigation
         (make-text-button str nil
-                          'type 'transient-button
+                          'type 'transient
                           'command (transient--suffix-command obj))
       str)))
 
@@ -3810,7 +3810,7 @@ resumes the suspended transient.")
   (message "This command is only available if `%s' is non-nil"
            'transient-enable-popup-navigation))
 
-(define-button-type 'transient-button
+(define-button-type 'transient
   'face nil
   'keymap transient-button-map)
 
