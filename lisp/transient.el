@@ -2078,7 +2078,6 @@ value.  Otherwise return CHILDREN as is."
   (setq transient--predicate-map nil)
   (setq transient--redisplay-map nil)
   (setq transient--redisplay-key nil)
-  (setq transient--showp nil)
   (setq transient--helpp nil)
   (setq transient--editp nil)
   (setq transient--prefix nil)
@@ -2247,6 +2246,8 @@ value.  Otherwise return CHILDREN as is."
   (setq transient-current-suffixes nil)
   (let ((resume (and transient--stack
                      (not (memq transient--exitp '(replace suspend))))))
+    (unless (or resume (eq transient--exitp 'replace))
+      (setq transient--showp nil))
     (setq transient--exitp nil)
     (setq transient--helpp nil)
     (setq transient--editp nil)
