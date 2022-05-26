@@ -2521,9 +2521,10 @@ value.  Otherwise return CHILDREN as is."
   (setq transient-current-prefix nil)
   (setq transient-current-command nil)
   (setq transient-current-suffixes nil)
-  (let ((resume (and transient--stack
+  (let ((replace (eq transient--exitp 'replace))
+        (resume (and transient--stack
                      (not (memq transient--exitp '(replace suspend))))))
-    (unless (or resume (eq transient--exitp 'replace))
+    (unless (or resume replace)
       (setq transient--showp nil))
     (setq transient--exitp nil)
     (setq transient--helpp nil)
@@ -2531,8 +2532,9 @@ value.  Otherwise return CHILDREN as is."
     (setq transient--all-levels-p nil)
     (setq transient--minibuffer-depth 0)
     (run-hooks 'transient-exit-hook)
-    (when resume
-      (transient--stack-pop))))
+    (cond (resume (transient--stack-pop))
+          ((not replace)
+           (run-hooks 'transient-complete-exit-hook)))))
 
 (defun transient--stack-push ()
   (transient--debug 'stack-push)
