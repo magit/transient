@@ -940,12 +940,20 @@ These functions operate on the information stored in the
 that tree are not objects but have the form @code{(LEVEL CLASS PLIST)}, where
 plist should set at least @code{:key}, @code{:description} and @code{:command}.
 
-@defun transient-insert-suffix prefix loc suffix
-This function inserts suffix or group SUFFIX into PREFIX before LOC@.
+@defun transient-insert-suffix prefix loc suffix &optional keep-other
 @end defun
+@defun transient-append-suffix prefix loc suffix &optional keep-other
+These functions insert the suffix or group SUFFIX into PREFIX before
+or after LOC@.
 
-@defun transient-append-suffix prefix loc suffix
-This function inserts suffix or group SUFFIX into PREFIX after LOC@.
+Conceptually adding a binding to a transient prefix is similar to
+adding a binding to a keymap, but this is complicated by the fact
+that multiple suffix commands can be bound to the same key, provided
+they are never active at the same time, see @ref{Predicate Slots}.
+
+Unfortunately both false-positives and false-negatives are possible.
+To deal with the former use non-nil KEEP-OTHER@.  To deal with the
+latter remove the conflicting binding explicitly.
 @end defun
 
 @defun transient-replace-suffix prefix loc suffix

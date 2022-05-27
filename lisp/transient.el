@@ -1141,7 +1141,7 @@ example, sets a variable use `transient-define-infix' instead.
 
 ;;; Edit
 
-(defun transient--insert-suffix (prefix loc suffix action)
+(defun transient--insert-suffix (prefix loc suffix action &optional keep-other)
   (let* ((suf (cl-etypecase suffix
                 (vector (transient--parse-group  prefix suffix))
                 (list   (transient--parse-suffix prefix suffix))
@@ -1159,25 +1159,18 @@ example, sets a variable use `transient-define-infix' instead.
                suffix prefix loc
                "suffixes and groups cannot be siblings"))
      (t
-      (when (and (listp suffix)
-                 (listp elt))
-        ;; Both suffixes are key bindings; not heading strings.
-        (let ((key (transient--spec-key suf)))
-          (if (equal (transient--kbd key)
-                     (transient--kbd (transient--spec-key elt)))
-              ;; We must keep `mem' until after we have inserted
-              ;; behind it, which `transient-remove-suffix' does
-              ;; not allow us to do.
-              (let ((spred (transient--suffix-predicate suf))
-                    (epred (transient--suffix-predicate elt)))
-                ;; If both suffixes have a predicate and they
-                ;; are not identical, then there is a high
-                ;; probability that we want to keep both.
-                (when (or (not spred)
-                          (not epred)
-                          (equal spred epred))
-                  (setq action 'replace)))
-            (transient-remove-suffix prefix key))))
+      (when-let* ((bindingp (listp suf))
+                  (key (transient--spec-key suf))
+                  (conflict (car (transient--layout-member key prefix)))
+                  (conflictp
+                   (and (not (and (eq action 'replace)
+                                  (eq conflict elt)))
+                        (or (not keep-other)
+                            (eq (plist-get (nth 2 suf) :command)
+                                (plist-get (nth 2 conflict) :command)))
+                        (equal (transient--suffix-predicate suf)
+                               (transient--suffix-predicate conflict)))))
+        (transient-remove-suffix prefix key))
       (cl-ecase action
         (insert  (setcdr mem (cons elt (cdr mem)))
                  (setcar mem suf))
@@ -1185,7 +1178,7 @@ example, sets a variable use `transient-define-infix' instead.
         (replace (setcar mem suf)))))))
 
 ;;;###autoload
-(defun transient-insert-suffix (prefix loc suffix)
+(defun transient-insert-suffix (prefix loc suffix &optional keep-other)
   "Insert a SUFFIX into PREFIX before LOC.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
@@ -1193,12 +1186,14 @@ SUFFIX is a suffix command or a group specification (of
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
+Remove a conflicting binding unless optional KEEP-OTHER is
+  non-nil.
 See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
-  (transient--insert-suffix prefix loc suffix 'insert))
+  (transient--insert-suffix prefix loc suffix 'insert keep-other))
 
 ;;;###autoload
-(defun transient-append-suffix (prefix loc suffix)
+(defun transient-append-suffix (prefix loc suffix &optional keep-other)
   "Insert a SUFFIX into PREFIX after LOC.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
@@ -1206,9 +1201,11 @@ SUFFIX is a suffix command or a group specification (of
 LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
+Remove a conflicting binding unless optional KEEP-OTHER is
+  non-nil.
 See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
-  (transient--insert-suffix prefix loc suffix 'append))
+  (transient--insert-suffix prefix loc suffix 'append keep-other))
 
 ;;;###autoload
 (defun transient-replace-suffix (prefix loc suffix)
