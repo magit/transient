@@ -2175,8 +2175,9 @@ value.  Otherwise return CHILDREN as is."
                                   ;; `execute-extended-command' was
                                   ;; used to call another command
                                   ;; that also uses the minibuffer.
-                                  (equal (this-command-keys)
-                                         (format "\M-x%s\r" this-command))))))
+                                  (equal
+                                   (string-to-multibyte (this-command-keys))
+                                   (format "\M-x%s\r" this-command))))))
                 (transient--debug 'post-command-hook "act: %s" act)
                 (when act
                   (remove-hook 'transient--post-command-hook post-command)
