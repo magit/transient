@@ -75,7 +75,7 @@ Bug fixes:
 - f2e0dfcc transient--get-predicate-for: Ignore error in transient--suffix-symbol
 - bf29731a transient--post-command: Don't pop and push equal redisplay maps
 - 3c78b10f transient--redisplay: Don't redisplay during mouse-drag-region
-+ 714e3482 No longer always suspend when handle-switch-frame is called
+- 714e3482 No longer always suspend when handle-switch-frame is called
 - ecb815bc transient--abort-commands: Add keyboard-escape-quit
 - 8b1f8dcc transient--minibuffer-depth: Must always be a number
 - 686b7ebc Fix handling of sub-prefix command that use the minibuffer
