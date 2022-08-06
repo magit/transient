@@ -1664,7 +1664,7 @@ The abstract @code{transient-child} class is the base class of both
 @code{transient-group} (and therefore all groups) as well as of
 @code{transient-suffix} (and therefore all suffix and infix commands).
 
-This class exists because the elements (aka “children”) of certain
+This class exists because the elements (or “children”) of certain
 groups can be other groups instead of suffix and infix commands.
 
 @item
@@ -2545,8 +2545,9 @@ while Magit-Popup used to bind @kbd{C-c C-c} instead.  I have seen several
 users praise the latter binding (sic), so I did not change it
 willy-nilly.  The reason that I changed it is that using different
 prefix keys for different common commands, would have made the
-temporary display of the common commands even more confusing,
-i.e., after pressing @kbd{C-c} all the @kbd{C-x @dots{}} bindings would be grayed out.
+temporary display of the common commands even more confusing, i.e.,
+after pressing @kbd{C-c} all the bindings that begin with the @kbd{C-x} prefix
+would be grayed out.
 
 Using a single prefix for common commands key means that all other
 potential prefix keys can be used for transient-specific commands
