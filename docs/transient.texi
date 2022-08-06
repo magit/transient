@@ -1268,8 +1268,8 @@ Only the long argument is displayed in the popup buffer.  See
 used.
 
 Unless the class is specified explicitly, the appropriate class is
-guessed based on the long argument.  If the argument ends with "=​"
-(e.g., "--format=") then @code{transient-option} is used, otherwise
+guessed based on the long argument.  If the argument ends with @samp{=}
+(e.g., @samp{--format=}) then @code{transient-option} is used, otherwise
 @code{transient-switch}.
 @end itemize
 
@@ -1807,7 +1807,7 @@ The @code{transient-switches} class can be used for a set of mutually
 exclusive command-line switches.
 
 @item
-The @code{transient-files} class can be used for a "--" argument that
+The @code{transient-files} class can be used for a @samp{--} argument that
 indicates that all remaining arguments are files.
 
 @item

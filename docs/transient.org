@@ -1067,8 +1067,8 @@ argument that is mandatory in all cases.
   used.
 
   Unless the class is specified explicitly, the appropriate class is
-  guessed based on the long argument.  If the argument ends with "=​"
-  (e.g., "--format=") then ~transient-option~ is used, otherwise
+  guessed based on the long argument.  If the argument ends with ===
+  (e.g., =--format==) then ~transient-option~ is used, otherwise
   ~transient-switch~.
 
 Finally, details can be specified using optional {{{var(KEYWORD-VALUE)}}} pairs.
@@ -1558,7 +1558,7 @@ object should not affect later invocations.
 - The ~transient-switches~ class can be used for a set of mutually
   exclusive command-line switches.
 
-- The ~transient-files~ class can be used for a "--" argument that
+- The ~transient-files~ class can be used for a =--= argument that
   indicates that all remaining arguments are files.
 
 - Classes used for infix commands that represent variables should
