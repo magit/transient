@@ -382,9 +382,9 @@ This includes the aborting commands mentioned in the previous section,
 as well as some other commands that are all bound to @kbd{C-x @var{KEY}}.  After
 @kbd{C-x} is pressed, a section featuring all these common commands is
 temporarily shown in the popup buffer.  After invoking one of them,
-the section disappears again.  Note however that one of these commands
-is described as “Show common permanently”; invoke that if you want the
-common commands to always be shown for all transients.
+the section disappears again.  Note, however, that one of these
+commands is described as “Show common permanently”; invoke that if you
+want the common commands to always be shown for all transients.
 
 @table @asis
 @item @kbd{C-x t} (@code{transient-toggle-common})
@@ -400,7 +400,7 @@ Emacs session.
 This option controls whether shared suffix commands are shown
 alongside the transient-specific infix and suffix commands.  By
 default, the shared commands are not shown to avoid overwhelming
-the user with to. many options.
+the user with too many options.
 
 While a transient is active, pressing @kbd{C-x} always shows the common
 commands.  The value of this option can be changed for the current
@@ -784,7 +784,7 @@ For other infix commands this option has no effect.
 
 When this option is non-@code{nil}, the key binding for an infix argument
 is highlighted when only a long argument (e.g., @code{--verbose}) is
-specified but no shorthand (e.g @code{-v}).  In the rare case that a
+specified but no shorthand (e.g., @code{-v}).  In the rare case that a
 shorthand is specified but the key binding does not match, then it
 is highlighted differently.
 
@@ -798,7 +798,7 @@ The highlighting is done using one of the faces
 
 @defopt transient-substitute-key-function
 This function is used to modify key bindings.  If the value of this
-option is nil (the default), then no substitution is performed.
+option is @code{nil} (the default), then no substitution is performed.
 
 This function is called with one argument, the prefix object, and
 must return a key binding description, either the existing key
@@ -1261,7 +1261,7 @@ guessed based on the long argument.  If the argument ends with @samp{=}
 @code{transient-switch}.
 @end itemize
 
-Finally, details can be specified using optional @var{KEYWORD-VALUE} pairs.
+Finally, details can be specified using optional @var{KEYWORD}-@var{VALUE} pairs.
 Each keyword has to be a keyword symbol, either @code{:class} or a keyword
 argument supported by the constructor of that class.  See @ref{Suffix Slots}.
 
@@ -1372,7 +1372,7 @@ This function return the value of @var{ARG} as it appears in @var{ARGS}.
 
 For a switch a boolean is returned.  For an option the value is
 returned as a string, using the empty string for the empty value,
-or nil if the option does not appear in @var{ARGS}.
+or @code{nil} if the option does not appear in @var{ARGS}.
 @end defun
 
 @defun transient-suffixes prefix
@@ -1556,7 +1556,7 @@ be added to @code{transient-predicate-map}.
 @anchor{Pre-commands for Non-Suffixes}
 @subheading Pre-commands for Non-Suffixes
 
-The default for non-suffixes, i.e commands that are bound in other
+The default for non-suffixes, i.e., commands that are bound in other
 keymaps beside the transient keymap, is @code{transient--do-warn}.  Silently
 ignoring the user-error is also an option, though probably not a good
 one.
@@ -2138,11 +2138,11 @@ the class of the object.
 @itemize
 @item
 @code{argument-format} The display format.  Must contain @code{%s}, one of the
-@code{choices} is substituted for that.  e.g., @code{--%s-order}.
+@code{choices} is substituted for that.  E.g., @code{--%s-order}.
 
 @item
 @code{argument-regexp} The regexp used to match any one of the switches.
-e.g., @code{\\(--\\(topo\\|author-date\\|date\\)-order\\)}.
+E.g., @code{\\(--\\(topo\\|author-date\\|date\\)-order\\)}.
 @end itemize
 
 @node Predicate Slots
@@ -2157,11 +2157,11 @@ what happens if you use more than one.
 @item
 @code{if} Enable if predicate returns non-@code{nil}.
 @item
-@code{if-not} Enable if predicate returns nil.
+@code{if-not} Enable if predicate returns @code{nil}.
 @item
-@code{if-non-~nil~} Enable if variable's value is non-@code{nil}.
+@code{if-non-nil} Enable if variable's value is non-@code{nil}.
 @item
-@code{if-nil} Enable if variable's value is nil.
+@code{if-nil} Enable if variable's value is @code{nil}.
 @item
 @code{if-mode} Enable if major-mode matches value.
 @item
