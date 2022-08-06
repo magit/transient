@@ -4,7 +4,7 @@
 #+email: jonas@bernoul.li
 #+date: 2018-{{{year}}}
 
-#+texinfo_dir_category: Emacs
+#+texinfo_dir_category: Emacs misc features
 #+texinfo_dir_title: Transient: (transient).
 #+texinfo_dir_desc: Transient Commands
 #+subtitle: for version 0.3.7-git
