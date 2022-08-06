@@ -2275,6 +2275,12 @@ necessary changes.  See its doc string for more information.
 :INDEX:      cp
 :END:
 
+* GNU General Public License
+:PROPERTIES:
+:APPENDIX:   t
+:END:
+#+texinfo: @include gpl.texi
+
 * Copying
 :PROPERTIES:
 :COPYING:    t

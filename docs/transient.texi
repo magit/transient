@@ -82,6 +82,7 @@ This manual is for Transient version 0.3.7-git.
 * Command and Function Index::
 * Variable Index::
 * Concept Index::
+* GNU General Public License::
 
 @detailmenu
 --- The Detailed Node Listing ---
@@ -2595,5 +2596,10 @@ necessary changes.  See its doc string for more information.
 @appendix Concept Index
 
 @printindex cp
+
+@node GNU General Public License
+@appendix GNU General Public License
+
+@include gpl.texi
 
 @bye
