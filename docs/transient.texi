@@ -8,7 +8,7 @@
 
 @copying
 @quotation
-Copyright (C) 2018-2022 Jonas Bernoulli <jonas@@bernoul.li>
+Copyright (C) 2018-2022 Free Software Foundation, Inc.
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -68,7 +68,7 @@ but suffix commands can also be configured to not exit the transient.
 This manual is for Transient version 0.3.7-git.
 
 @quotation
-Copyright (C) 2018-2022 Jonas Bernoulli <jonas@@bernoul.li>
+Copyright (C) 2018-2022 Free Software Foundation, Inc.
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
