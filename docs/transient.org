@@ -1886,10 +1886,10 @@ prefix arguments, they are also quite different and much more complex.
 
 The following diagrams illustrate some of the differences.
 
-- ~(c)~ represents a return to the command loop.
-- ~(+)~ represents the user's choice to press one key or another.
-- ~{WORD}~ are possible behaviors.
-- ~{NUMBER}~ is a footnote.
+- =(c)= represents a return to the command loop.
+- =(+)= represents the user's choice to press one key or another.
+- ={WORD}= are possible behaviors.
+- ={NUMBER}= is a footnote.
 
 *** Regular Prefix Commands
 :PROPERTIES:
@@ -2068,7 +2068,7 @@ and also takes external state into account.
                                     `------------------> {exit} --> (c)
 #+end_example
 
-- ~{1}~ Transients can be configured to be exited when a suffix command
+- ={1}= Transients can be configured to be exited when a suffix command
   is invoked.  The default is to do so for all suffixes except for
   those that are common to all transients and which are used to
   perform tasks such as providing help and saving the value of the
@@ -2076,7 +2076,7 @@ and also takes external state into account.
   specified for individual suffix commands and may even depend on
   state.
 
-- ~{2}~ Transients can be configured to allow the user to invoke
+- ={2}= Transients can be configured to allow the user to invoke
   non-suffix commands.  The default is to not allow that and instead
   warn the user.
 

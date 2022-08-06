@@ -2209,13 +2209,13 @@ The following diagrams illustrate some of the differences.
 
 @itemize
 @item
-@code{(c)} represents a return to the command loop.
+@samp{(c)} represents a return to the command loop.
 @item
-@code{(+)} represents the user's choice to press one key or another.
+@samp{(+)} represents the user's choice to press one key or another.
 @item
-@code{@{WORD@}} are possible behaviors.
+@samp{@{WORD@}} are possible behaviors.
 @item
-@code{@{NUMBER@}} is a footnote.
+@samp{@{NUMBER@}} is a footnote.
 @end itemize
 
 @anchor{Regular Prefix Commands}
@@ -2391,7 +2391,7 @@ and also takes external state into account.
 
 @itemize
 @item
-@code{@{1@}} Transients can be configured to be exited when a suffix command
+@samp{@{1@}} Transients can be configured to be exited when a suffix command
 is invoked.  The default is to do so for all suffixes except for
 those that are common to all transients and which are used to
 perform tasks such as providing help and saving the value of the
@@ -2400,7 +2400,7 @@ specified for individual suffix commands and may even depend on
 state.
 
 @item
-@code{@{2@}} Transients can be configured to allow the user to invoke
+@samp{@{2@}} Transients can be configured to allow the user to invoke
 non-suffix commands.  The default is to not allow that and instead
 warn the user.
 @end itemize
