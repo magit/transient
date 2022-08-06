@@ -62,10 +62,10 @@ commands (a prefix and a suffix) we prefer to call it just a
 Transient keymaps are a feature provided by Emacs.  Transients as
 implemented by this package involve the use of transient keymaps.
 
-Emacs provides a feature that it calls "prefix commands".  When we
+Emacs provides a feature that it calls {{{dfn(prefix commands)}}}.  When we
 talk about "prefix commands" in this manual, then we mean our own kind
 of "prefix commands", unless specified otherwise.  To avoid ambiguity
-we sometimes use the terms "transient prefix command" for our kind and
+we sometimes use the terms {{{dfn(transient prefix command)}}} for our kind and
 "regular prefix command" for Emacs' kind.
 #+end_quote
 
@@ -409,11 +409,11 @@ Git for a decade, while others are just getting started now.
 #+cindex: levels
 For that reason a mechanism is needed that authors can use to classify a
 transient's infixes and suffixes along the essentials...everything
-spectrum.  We use the term "levels" to describe that mechanism.
+spectrum.  We use the term {{{dfn(levels)}}} to describe that mechanism.
 
 #+cindex: transient-level
 Each suffix command is placed on a level and each transient has a
-level (called transient-level), which controls which suffix commands
+level (called {{{dfn(transient-level)}}}), which controls which suffix commands
 are available.  Integers between 1 and 7 (inclusive) are valid levels.
 For suffixes, 0 is also valid; it means that the suffix is not
 displayed at any level.
