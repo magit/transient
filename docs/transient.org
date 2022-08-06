@@ -540,9 +540,9 @@ Also see [[* Common Suffix Commands]].
 
   This option specifies the action used to display the transient popup
   buffer.  The transient popup buffer is displayed in a window using
-  ~(display-buffer BUFFER transient-display-buffer-action)~.
+  {{{codevar((display-buffer BUFFER transient-display-buffer-action))}}}.
 
-  The value of this option has the form ~(FUNCTION . ALIST)~,
+  The value of this option has the form {{{codevar((FUNCTION . ALIST))}}},
   where {{{var(FUNCTION)}}} is a function or a list of functions.  Each such
   function should accept two arguments: a buffer to display and an
   alist of the same form as {{{var(ALIST)}}}.  See [[info:elisp#Choosing Window]],
@@ -771,7 +771,7 @@ The following functions share a few arguments:
 
 These functions operate on the information stored in the
 ~transient--layout~ property of the {{{var(PREFIX)}}} symbol.  Suffix entries in
-that tree are not objects but have the form ~(LEVEL CLASS PLIST)~, where
+that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, where
 {{{var(PLIST)}}} should set at least ~:key~, ~:description~ and ~:command~.
 
 - Function: transient-insert-suffix prefix loc suffix &optional keep-other ::
