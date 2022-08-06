@@ -127,7 +127,7 @@ Transient can be used to implement simple "command dispatchers".  The
 main benefit then is that the user can see all the available commands
 in a popup buffer.  That is useful by itself because it frees the user
 from having to remember all the keys that are valid after a certain
-prefix key or command.  Magit's ~magit-dispatch~ (on ~C-x M-g~) command is
+prefix key or command.  Magit's ~magit-dispatch~ (on {{{kbd(C-x M-g)}}}) command is
 an example of using Transient to merely implement a command
 dispatcher.
 
@@ -154,10 +154,10 @@ arguments, and previously it was invoked using those other arguments"),
 but also remembers the values of individual arguments independently.
 See [[*Using History]].
 
-After a transient prefix command is invoked, ~C-h <key>~ can be used to
-show the documentation for the infix or suffix command that ~<key>~ is
+After a transient prefix command is invoked, {{{kbd(C-h <key>)}}} can be used to
+show the documentation for the infix or suffix command that {{{kbd(<key>)}}} is
 bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
-suffixes can be removed from the transient using ~C-x l <key>~.  Infixes
+suffixes can be removed from the transient using {{{kbd(C-x l <key>)}}}.  Infixes
 and suffixes that are disabled by default can be enabled the same way.
 See [[*Enabling and Disabling Suffixes]].
 
@@ -195,25 +195,25 @@ value of some variable.
 #+cindex: resuming transients
 
 #+cindex: quit transient
-To quit the transient without invoking a suffix command press ~C-g~.
+To quit the transient without invoking a suffix command press {{{kbd(C-g)}}}.
 
 Key bindings in transient keymaps may be longer than a single event.
 After pressing a valid prefix key, all commands whose bindings do not
 begin with that prefix key are temporarily unavailable and grayed out.
-To abort the prefix key press ~C-g~ (which in this case only quits the
+To abort the prefix key press {{{kbd(C-g)}}} (which in this case only quits the
 prefix key, but not the complete transient).
 
 A transient prefix command can be bound as a suffix of another
 transient.  Invoking such a suffix replaces the current transient
 state with a new transient state, i.e., the available bindings change
 and the information displayed in the popup buffer is updated
-accordingly.  Pressing ~C-g~ while a nested transient is active only
+accordingly.  Pressing {{{kbd(C-g)}}} while a nested transient is active only
 quits the innermost transient, causing a return to the previous
 transient.
 
-~C-q~ or ~C-z~ on the other hand always exits all transients.  If you use
+{{{kbd(C-q)}}} or {{{kbd(C-z)}}} on the other hand always exits all transients.  If you use
 the latter, then you can later resume the stack of transients using
-~M-x transient-resume~.
+{{{kbd(M-x transient-resume)}}}.
 
 #+attr_texinfo: :compact t
 - Key: C-g (transient-quit-seq) ::
@@ -223,7 +223,7 @@ the latter, then you can later resume the stack of transients using
   or else the current transient.  When quitting the current transient,
   it returns to the previous transient, if any.
 
-Transient's predecessor bound ~q~ instead of ~C-g~ to the quit command.
+Transient's predecessor bound {{{kbd(q)}}} instead of {{{kbd(C-g)}}} to the quit command.
 To learn how to get that binding back see ~transient-bind-q-to-quit~'s
 doc string.
 
@@ -258,8 +258,8 @@ A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the popup buffer by default.
 
 This includes the aborting commands mentioned in the previous section,
-as well as some other commands that are all bound to ~C-x <key>~.  After
-~C-x~ is pressed, a section featuring all these common commands is
+as well as some other commands that are all bound to {{{kbd(C-x <key>)}}}.  After
+{{{kbd(C-x)}}} is pressed, a section featuring all these common commands is
 temporarily shown in the popup buffer.  After invoking one of them,
 the section disappears again.  Note however that one of these commands
 is described as "Show common permanently"; invoke that if you want the
@@ -269,7 +269,7 @@ common commands to always be shown for all transients.
 
   This command toggles whether the generic commands that are common to
   all transients are always displayed or only after typing the
-  incomplete prefix key sequence ~C-x~.  This only affects the current
+  incomplete prefix key sequence {{{kbd(C-x)}}}.  This only affects the current
   Emacs session.
 
 - User Option: transient-show-common-commands ::
@@ -279,9 +279,9 @@ common commands to always be shown for all transients.
   default, the shared commands are not shown to avoid overwhelming
   the user with to. many options.
 
-  While a transient is active, pressing ~C-x~ always shows the common
+  While a transient is active, pressing {{{kbd(C-x)}}} always shows the common
   commands.  The value of this option can be changed for the current
-  Emacs session by typing ~C-x t~ while a transient is active.
+  Emacs session by typing {{{kbd(C-x t)}}} while a transient is active.
 
 The other common commands are described in either the previous or in
 one of the following sections.
@@ -384,11 +384,11 @@ transient.
 
   This command enters help mode.  When help mode is active, typing a
   key shows information about the suffix command that the key normally
-  is bound to (instead of invoking it).  Pressing ~C-h~ a second time
+  is bound to (instead of invoking it).  Pressing {{{kbd(C-h)}}} a second time
   shows information about the /prefix/ command.
 
   After typing a key, the stack of transient states is suspended and
-  information about the suffix command is shown instead.  Typing ~q~ in
+  information about the suffix command is shown instead.  Typing {{{kbd(q)}}} in
   the help buffer buries that buffer and resumes the transient state.
 
 What sort of documentation is shown depends on how the transient was
@@ -420,7 +420,7 @@ displayed at any level.
 
 The levels of individual transients and/or their individual suffixes
 can be changed interactively, by invoking the transient and then
-pressing ~C-x l~ to enter the "edit" mode, see below.
+pressing {{{kbd(C-x l)}}} to enter the "edit" mode, see below.
 
 The default level for both transients and their suffixes is 4.  The
 ~transient-default-level~ option only controls the default for
@@ -455,9 +455,9 @@ available even if the user lowers the transient level.
 
   Help mode is available in edit mode.
 
-  To change the transient level press ~C-x l~ again.
+  To change the transient level press {{{kbd(C-x l)}}} again.
 
-  To exit edit mode press ~C-g~.
+  To exit edit mode press {{{kbd(C-g)}}}.
 
   Note that edit mode does not display any suffixes that are not
   currently usable.  ~magit-rebase~, for example, shows different
@@ -530,11 +530,11 @@ Also see [[* Common Suffix Commands]].
   on that buffer itself.  This is disabled by default.  If this option
   is non-~nil~, then the following features are available:
 
-  - ~<up>~ moves the cursor to the previous suffix.
-    ~<down>~ moves the cursor to the next suffix.
-    ~RET~ invokes the suffix the cursor is on.
-  - ~<mouse-1>~ invokes the clicked on suffix.
-  - ~C-s~ and ~C-r~ start isearch in the popup buffer.
+  - {{{kbd(UP)}}} moves the cursor to the previous suffix.
+  - {{{kbd(DOWN)}}} moves the cursor to the next suffix.
+  - {{{kbd(RET)}}} invokes the suffix the cursor is on.
+  - {{{kbd(mouse-1)}}} invokes the clicked on suffix.
+  - {{{kbd(C-s)}}} and {{{kbd(C-r)}}} start isearch in the popup buffer.
 
 - User Option: transient-display-buffer-action ::
 
@@ -656,8 +656,8 @@ Also see [[* Common Suffix Commands]].
   replaces the prefix key.  It could be used to make other
   substitutions, but that is discouraged.
 
-  For example, ~=~ is hard to reach using my custom keyboard layout,
-  so I substitute ~(~ for that, which is easy to reach using a layout
+  For example, {{{kbd(=)}}} is hard to reach using my custom keyboard layout,
+  so I substitute {{{kbd(()}}} for that, which is easy to reach using a layout
   optimized for lisp.
 
   #+BEGIN_SRC emacs-lisp
@@ -1253,7 +1253,7 @@ configurable per transient.
 
 - A suffix command can be a prefix command itself, i.e., a
   "sub-prefix".  While a sub-prefix is active we nearly always want
-  ~C-g~ to take the user back to the "super-prefix".  However in rare
+  {{{kbd(C-g)}}} to take the user back to the "super-prefix".  However in rare
   cases this may not be desirable, and that makes the following
   complication necessary:
 
@@ -1379,19 +1379,19 @@ slot.
 
   If active, quit help or edit mode, else exit the active transient.
 
-  This is used when the user pressed ~C-g~.
+  This is used when the user pressed {{{kbd(C-g)}}}.
 
 - Function: transient--do-quit-all ::
 
   Exit all transients without saving the transient stack.
 
-  This is used when the user pressed ~C-q~.
+  This is used when the user pressed {{{kbd(C-q)}}}.
 
 - Function: transient--do-suspend ::
 
   Suspend the active transient, saving the transient stack.
 
-  This is used when the user pressed ~C-z~.
+  This is used when the user pressed {{{kbd(C-z)}}}.
 
 * Classes and Methods
 #+cindex: classes and methods
@@ -2203,7 +2203,7 @@ Yes, see ~transient-display-buffer-action~ in [[*Configuration]].
 :END:
 
 You may have noticed that the bindings for some of the common commands
-do *not* have the prefix ~C-x~ and that furthermore some of these commands
+do *not* have the prefix {{{kbd(C-x)}}} and that furthermore some of these commands
 are grayed out while others are not.  That unfortunately is a bit
 confusing if the section of common commands is not shown permanently,
 making the following explanation necessary.
@@ -2223,43 +2223,43 @@ other* transient-specific prefix.  The non-prefix keys that *are* grayed
 out however, are not available when any incomplete prefix key sequence
 is active.  They do not use the "common command key prefix" because it
 is likely that users want to invoke them several times in a row and
-e.g., ~M-p M-p M-p~ is much more convenient than ~C-x M-p C-x M-p C-x M-p~.
+e.g., {{{kbd(M-p M-p M-p)}}} is much more convenient than {{{kbd(C-x M-p C-x M-p C-x M-p)}}}.
 
-You may also have noticed that the "Set" command is bound to ~C-x s~,
-while Magit-Popup used to bind ~C-c C-c~ instead.  I have seen several
+You may also have noticed that the "Set" command is bound to {{{kbd(C-x s)}}},
+while Magit-Popup used to bind {{{kbd(C-c C-c)}}} instead.  I have seen several
 users praise the latter binding (sic), so I did not change it
 willy-nilly.  The reason that I changed it is that using different
 prefix keys for different common commands, would have made the
 temporary display of the common commands even more confusing,
-i.e., after pressing ~C-c~ all the ~C-x ...~ bindings would be grayed out.
+i.e., after pressing {{{kbd(C-c)}}} all the {{{kbd(C-x ...)}}} bindings would be grayed out.
 
 Using a single prefix for common commands key means that all other
 potential prefix keys can be used for transient-specific commands
-*without* the section of common commands also popping up.  ~C-c~ in
+*without* the section of common commands also popping up.  {{{kbd(C-c)}}} in
 particular is a prefix that I want to (and already do) use for Magit, and
 also using that for a common command would prevent me from doing so.
 
 (Also see the next question.)
 
-** Why does ~q~ not quit popups anymore?
+** Why does {{{kbd(q)}}} not quit popups anymore?
 :PROPERTIES:
 :UNNUMBERED: notoc
 :END:
 
-I agree that ~q~ is a good binding for commands that quit something.
+I agree that {{{kbd(q)}}} is a good binding for commands that quit something.
 This includes quitting whatever transient is currently active, but it
 also includes quitting whatever it is that some specific transient is
-controlling.  The transient ~magit-blame~ for example binds ~q~ to the
+controlling.  The transient ~magit-blame~ for example binds {{{kbd(q)}}} to the
 command that turns ~magit-blame-mode~ off.
 
-So I had to decide if ~q~ should quit the active transient (like
-Magit-Popup used to) or whether ~C-g~ should do that instead, so that ~q~
+So I had to decide if {{{kbd(q)}}} should quit the active transient (like
+Magit-Popup used to) or whether {{{kbd(C-g)}}} should do that instead, so that {{{kbd(q)}}}
 could be bound in individual transient to whatever commands make sense
 for them.  Because all other letters are already reserved for use by
 individual transients, I have decided to no longer make an exception
-for ~q~.
+for {{{kbd(q)}}}.
 
-If you want to get ~q~'s old binding back then you can do so.  Doing
+If you want to get {{{kbd(q)}}}'s old binding back then you can do so.  Doing
 that is a bit more complicated than changing a single key binding, so
 I have implemented a function, ~transient-bind-q-to-quit~ that makes the
 necessary changes.  See its doc string for more information.
@@ -2317,5 +2317,6 @@ General Public License for more details.
 # IMPORTANT: Also update ORG_ARGS and ORG_EVAL in the Makefile.
 # Local Variables:
 # indent-tabs-mode: nil
+# org-hide-macro-markers: t
 # org-src-preserve-indentation: nil
 # End:
