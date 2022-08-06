@@ -7,4 +7,6 @@
 #+macro: year (eval (format-time-string "%Y"))
 #+macro: version (eval (or (getenv "PACKAGE_REVDESC") (getenv "PACKAGE_VERSION") (ignore-errors (car (process-lines "git" "describe" "--exact"))) (ignore-errors (concat (car (process-lines "git" "describe" (if (getenv "AMEND") "HEAD~" "HEAD"))) "+1"))))
 
+#+macro: var @@texinfo:@var{@@$1@@texinfo:}@@
+
 #+language: en

@@ -155,7 +155,7 @@ but also remembers the values of individual arguments independently.
 See [[*Using History]].
 
 After a transient prefix command is invoked, {{{kbd(C-h <key>)}}} can be used to
-show the documentation for the infix or suffix command that {{{kbd(<key>)}}} is
+show the documentation for the infix or suffix command that {{{var(KEY)}}} is
 bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
 suffixes can be removed from the transient using {{{kbd(C-x l <key>)}}}.  Infixes
 and suffixes that are disabled by default can be enabled the same way.
@@ -477,14 +477,14 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
 
 - Command: transient-scroll-up arg ::
 
-  This command scrolls text of transient popup window upward ARG
-  lines.  If ARG is ~nil~, then it scrolls near full screen.  This
+  This command scrolls text of transient popup window upward {{{var(ARG)}}}
+  lines.  If {{{var(ARG)}}} is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-up-command~ (which see).
 
 - Command: transient-scroll-down arg ::
 
-  This command scrolls text of transient popup window down ARG
-  lines.  If ARG is ~nil~, then it scrolls near full screen.  This
+  This command scrolls text of transient popup window down {{{var(ARG)}}}
+  lines.  If {{{var(ARG)}}} is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-down-command~ (which see).
 
 ** Configuration
@@ -543,9 +543,9 @@ Also see [[* Common Suffix Commands]].
   ~(display-buffer BUFFER transient-display-buffer-action)~.
 
   The value of this option has the form ~(FUNCTION . ALIST)~,
-  where FUNCTION is a function or a list of functions.  Each such
+  where {{{var(FUNCTION)}}} is a function or a list of functions.  Each such
   function should accept two arguments: a buffer to display and an
-  alist of the same form as ALIST.  See [[info:elisp#Choosing Window]],
+  alist of the same form as {{{var(ALIST)}}}.  See [[info:elisp#Choosing Window]],
   for details.
 
   The default is:
@@ -558,7 +558,7 @@ Also see [[* Common Suffix Commands]].
   #+END_SRC
 
   This displays the window at the bottom of the selected frame.
-  Another useful FUNCTION is ~display-buffer-below-selected~, which
+  Another useful {{{var(FUNCTION)}}} is ~display-buffer-below-selected~, which
   is what ~magit-popup~ used by default.  For more alternatives see
   [[info:elisp#Display Action Functions]] and [[info:elisp#Buffer Display
   Action Alists]].
@@ -744,24 +744,24 @@ transients can be further modified non-interactively.
 
 The following functions share a few arguments:
 
-- PREFIX is a transient prefix command, a symbol.
+- {{{var(PREFIX)}}} is a transient prefix command, a symbol.
 
-- SUFFIX is a transient infix or suffix specification in the same form
+- {{{var(SUFFIX)}}} is a transient infix or suffix specification in the same form
   as expected by ~transient-define-prefix~.  Note that an infix is a
   special kind of suffix.  Depending on context "suffixes" means
   "suffixes (including infixes)" or "non-infix suffixes".  Here it
   means the former.  See [[*Suffix Specifications]].
 
-  SUFFIX may also be a group in the same form as expected by
+  {{{var(SUFFIX)}}} may also be a group in the same form as expected by
   ~transient-define-prefix~.  See [[*Group Specifications]].
 
-- LOC is a command, a key vector, a key description (a string as
+- {{{var(LOC)}}} is a command, a key vector, a key description (a string as
   returned by ~key-description~), or a list specifying coordinates (the
   last element may also be a command or key).  For example ~(1 0 -1)~
   identifies the last suffix (~-1~) of the first subgroup (~0~) of the
   second group (~1~).
 
-  If LOC is a list of coordinates, then it can be used to identify a
+  If {{{var(LOC)}}} is a list of coordinates, then it can be used to identify a
   group, not just an individual suffix command.
 
   The function ~transient-get-suffix~ can be useful to determine whether
@@ -770,15 +770,15 @@ The following functions share a few arguments:
   at the definition of the transient prefix command.
 
 These functions operate on the information stored in the
-~transient--layout~ property of the PREFIX symbol.  Suffix entries in
+~transient--layout~ property of the {{{var(PREFIX)}}} symbol.  Suffix entries in
 that tree are not objects but have the form ~(LEVEL CLASS PLIST)~, where
-plist should set at least ~:key~, ~:description~ and ~:command~.
+{{{var(PLIST)}}} should set at least ~:key~, ~:description~ and ~:command~.
 
 - Function: transient-insert-suffix prefix loc suffix &optional keep-other ::
 - Function: transient-append-suffix prefix loc suffix &optional keep-other ::
 
-  These functions insert the suffix or group SUFFIX into PREFIX before
-  or after LOC.
+  These functions insert the suffix or group {{{var(SUFFIX)}}} into {{{var(PREFIX)}}} before
+  or after {{{var(LOC)}}}.
 
   Conceptually adding a binding to a transient prefix is similar to
   adding a binding to a keymap, but this is complicated by the fact
@@ -786,31 +786,31 @@ plist should set at least ~:key~, ~:description~ and ~:command~.
   they are never active at the same time, see [[*Predicate Slots]].
 
   Unfortunately both false-positives and false-negatives are possible.
-  To deal with the former use non-nil KEEP-OTHER.  To deal with the
+  To deal with the former use non-nil {{{var(KEEP-OTHER.)}}}  To deal with the
   latter remove the conflicting binding explicitly.
 
 - Function: transient-replace-suffix prefix loc suffix ::
 
-  This function replaces the suffix or group at LOC in PREFIX with
-  suffix or group SUFFIX.
+  This function replaces the suffix or group at {{{var(LOC)}}} in {{{var(PREFIX)}}} with
+  suffix or group {{{var(SUFFIX)}}}.
 
 - Function: transient-remove-suffix prefix loc ::
 
-  This function removes the suffix or group at LOC in PREFIX.
+  This function removes the suffix or group at {{{var(LOC)}}} in {{{var(PREFIX)}}}.
 
 - Function: transient-get-suffix prefix loc ::
 
-  This function returns the suffix or group at LOC in PREFIX.  The
+  This function returns the suffix or group at {{{var(LOC)}}} in {{{var(PREFIX)}}}.  The
   returned value has the form mentioned above.
 
 - Function: transient-suffix-put prefix loc prop value ::
 
-  This function edits the suffix or group at LOC in PREFIX, by setting
-  the PROP of its plist to VALUE.
+  This function edits the suffix or group at {{{var(LOC)}}} in {{{var(PREFIX)}}}, by setting
+  the {{{var(PROP)}}} of its plist to {{{var(VALUE)}}}.
 
 Most of these functions do not signal an error if they cannot perform
 the requested modification.  The functions that insert new suffixes
-show a warning if LOC cannot be found in PREFIX, without signaling an
+show a warning if {{{var(LOC)}}} cannot be found in {{{var(PREFIX,)}}} without signaling an
 error.  The reason for doing it like this is that establishing a key
 binding (and that is what we essentially are trying to do here) should
 not prevent the rest of the configuration from loading.  Among these
@@ -829,11 +829,11 @@ that is used to invoke that transient.
 
 - Macro: transient-define-prefix name arglist [docstring] [keyword value]... group... [body...] ::
 
-  This macro defines NAME as a transient prefix command and binds the
+  This macro defines {{{var(NAME)}}} as a transient prefix command and binds the
   transient's infix and suffix commands.
 
-  ARGLIST are the arguments that the prefix command takes.
-  DOCSTRING is the documentation string and is optional.
+  {{{var(ARGLIST)}}} are the arguments that the prefix command takes.
+  {{{var(DOCSTRING)}}} is the documentation string and is optional.
 
   These arguments can optionally be followed by keyword-value pairs.
   Each key has to be a keyword symbol, either ~:class~ or a keyword
@@ -841,11 +841,11 @@ that is used to invoke that transient.
   ~transient-prefix~ class is used if the class is not specified
   explicitly.
 
-  GROUPs add key bindings for infix and suffix commands and specify
+  {{{var(GROUP)}}}s add key bindings for infix and suffix commands and specify
   how these bindings are presented in the popup buffer.  At least one
-  GROUP has to be specified.  See [[*Binding Suffix and Infix Commands]].
+  {{{var(GROUP)}}} has to be specified.  See [[*Binding Suffix and Infix Commands]].
 
-  The BODY is optional.  If it is omitted, then ARGLIST is ignored and
+  The {{{var(BODY)}}} is optional.  If it is omitted, then {{{var(ARGLIST)}}} is ignored and
   the function definition becomes:
 
   #+BEGIN_SRC emacs-lisp
@@ -854,8 +854,8 @@ that is used to invoke that transient.
       (transient-setup 'NAME))
   #+END_SRC
 
-  If BODY is specified, then it must begin with an ~interactive~ form
-  that matches ARGLIST, and it must call ~transient-setup~.  It may,
+  If {{{var(BODY)}}} is specified, then it must begin with an ~interactive~ form
+  that matches {{{var(ARGLIST)}}}, and it must call ~transient-setup~.  It may,
   however, call that function only when some condition is satisfied.
 
   #+cindex: scope of a transient
@@ -909,22 +909,22 @@ Group specifications then have this form:
   [{LEVEL} {DESCRIPTION} {KEYWORD VALUE}... ELEMENT...]
 #+end_src
 
-The LEVEL is optional and defaults to 4.  See [[*Enabling and Disabling
+The {{{var(LEVEL)}}} is optional and defaults to 4.  See [[*Enabling and Disabling
 Suffixes]].
 
-The DESCRIPTION is optional.  If present, it is used as the heading of
+The {{{var(DESCRIPTION)}}} is optional.  If present, it is used as the heading of
 the group.
 
-The KEYWORD-VALUE pairs are optional.  Each keyword has to be a
+The {{{var(KEYWORD)}}}-{{{var(VALUE)}}} pairs are optional.  Each keyword has to be a
 keyword symbol, either ~:class~ or a keyword argument supported by the
 constructor of that class.
 
 - One of these keywords, ~:description~, is equivalent to specifying
-  DESCRIPTION at the very beginning of the vector.  The recommendation
+  {{{var(DESCRIPTION)}}} at the very beginning of the vector.  The recommendation
   is to use ~:description~ if some other keyword is also used, for
-  consistency, or DESCRIPTION otherwise, because it looks better.
+  consistency, or {{{var(DESCRIPTION)}}} otherwise, because it looks better.
 
-- Likewise ~:level~ is equivalent to LEVEL.
+- Likewise ~:level~ is equivalent to {{{var(LEVEL)}}}.
 
 - Other important keywords include the ~:if...~ keywords.  These
   keywords control whether the group is available in a certain
@@ -962,12 +962,12 @@ constructor of that class.
   contained in a group are right padded, effectively aligning the
   descriptions.
 
-The ELEMENTs are either all subgroups (vectors), or all suffixes
+The {{{var(ELEMENT)}}}s are either all subgroups (vectors), or all suffixes
 (lists) and strings.  (At least currently no group type exists that
 would allow mixing subgroups with commands at the same level, though
 in principle there is nothing that prevents that.)
 
-If the ELEMENTs are not subgroups, then they can be a mixture of lists
+If the {{{var(ELEMENT)}}}s are not subgroups, then they can be a mixture of lists
 that specify commands and strings.  Strings are inserted verbatim.
 The empty string can be used to insert gaps between suffixes, which is
 particularly useful if the suffixes are outlined as a table.
@@ -1005,18 +1005,18 @@ Suffix specifications have this form:
   ([LEVEL] [KEY] [DESCRIPTION] COMMAND|ARGUMENT [KEYWORD VALUE]...)
 #+end_src
 
-LEVEL, KEY and DESCRIPTION can also be specified using the KEYWORDs
+{{{var(LEVEL)}}}, {{{var(KEY)}}} and {{{var(DESCRIPTION)}}} can also be specified using the {{{var(KEYWORD)}}}s
 ~:level~, ~:key~ and ~:description~.  If the object that is associated with
-COMMAND sets these properties, then they do not have to be specified
+{{{var(COMMAND)}}} sets these properties, then they do not have to be specified
 here.  You can however specify them here anyway, possibly overriding
 the object's values just for the binding inside this transient.
 
-- LEVEL is the suffix level, an integer between 1 and 7.  See
+- {{{var(LEVEL)}}} is the suffix level, an integer between 1 and 7.  See
   [[*Enabling and Disabling Suffixes]].
 
-- KEY is the key binding, either a vector or key description string.
+- {{{var(KEY)}}} is the key binding, either a vector or key description string.
 
-- DESCRIPTION is the description, either a string or a function that
+- {{{var(DESCRIPTION)}}} is the description, either a string or a function that
   returns a string.  The function should be a lambda expression to
   avoid ambiguity.  In some cases a symbol that is bound as a function
   would also work but to be safe you should use ~:description~ in that
@@ -1025,7 +1025,7 @@ the object's values just for the binding inside this transient.
 The next element is either a command or an argument.  This is the only
 argument that is mandatory in all cases.
 
-- COMMAND should be a symbol that is bound as a function, which has
+- {{{var(COMMAND)}}} should be a symbol that is bound as a function, which has
   to be defined or at least autoloaded as a command by the time the
   containing prefix command is invoked.
 
@@ -1040,7 +1040,7 @@ argument that is mandatory in all cases.
   As mentioned above, the object that is associated with a command can
   be used to set the default for certain values that otherwise have to
   be set in the suffix specification.  Therefore if there is no object,
-  then you have to make sure to specify the KEY and the DESCRIPTION.
+  then you have to make sure to specify the {{{var(KEY)}}} and the {{{var(DESCRIPTION)}}}.
 
   As a special case, if you want to add a command that might be neither
   defined nor autoloaded, you can use a workaround like:
@@ -1052,7 +1052,7 @@ argument that is mandatory in all cases.
   #+END_SRC
 
   Instead of ~featurep~ you could also use ~require~ with a non-~nil~ value
-  for NOERROR.
+  for {{{var(NOERROR)}}}.
 
 - The mandatory argument can also be a command-line argument, a
   string.  In that case an anonymous command is defined and bound.
@@ -1071,7 +1071,7 @@ argument that is mandatory in all cases.
   (e.g., "--format=") then ~transient-option~ is used, otherwise
   ~transient-switch~.
 
-Finally, details can be specified using optional KEYWORD-VALUE pairs.
+Finally, details can be specified using optional {{{var(KEYWORD-VALUE)}}} pairs.
 Each keyword has to be a keyword symbol, either ~:class~ or a keyword
 argument supported by the constructor of that class.  See [[*Suffix
 Slots]].
@@ -1086,10 +1086,10 @@ suffixes".
 
 - Macro: transient-define-suffix name arglist [docstring] [keyword value]... body... ::
 
-  This macro defines NAME as a transient suffix command.
+  This macro defines {{{var(NAME)}}} as a transient suffix command.
 
-  ARGLIST are the arguments that the command takes.
-  DOCSTRING is the documentation string and is optional.
+  {{{var(ARGLIST)}}} are the arguments that the command takes.
+  {{{var(DOCSTRING)}}} is the documentation string and is optional.
 
   These arguments can optionally be followed by keyword-value pairs.
   Each keyword has to be a keyword symbol, either ~:class~ or a keyword
@@ -1097,16 +1097,16 @@ suffixes".
   ~transient-suffix~ class is used if the class is not specified
   explicitly.
 
-  The BODY must begin with an ~interactive~ form that matches ARGLIST.
+  The {{{var(BODY)}}} must begin with an ~interactive~ form that matches {{{var(ARGLIST)}}}.
   The infix arguments are usually accessed by using ~transient-args~
   inside ~interactive~.
 
 - Macro: transient-define-infix name arglist [docstring] [keyword value]... ::
 
-  This macro defines NAME as a transient infix command.
+  This macro defines {{{var(NAME)}}} as a transient infix command.
 
-  ARGLIST is always ignored (but mandatory never-the-less) and
-  reserved for future use.  DOCSTRING is the documentation string and
+  {{{var(ARGLIST)}}} is always ignored (but mandatory never-the-less) and
+  reserved for future use.  {{{var(DOCSTRING)}}} is the documentation string and
   is optional.
 
   The keyword-value pairs are mandatory.  All transient infix commands
@@ -1140,7 +1140,7 @@ suffixes".
 
 - Macro: transient-define-argument name arglist [docstring] [keyword value]... ::
 
-  This macro defines NAME as a transient infix command.
+  This macro defines {{{var(NAME)}}} as a transient infix command.
 
   This is an alias for ~transient-define-infix~.  Only use this alias
   to define an infix command that actually sets an infix argument.
@@ -1168,27 +1168,27 @@ function, which for infix arguments serves about the same purpose as
 - Function: transient-args prefix ::
 
   This function returns the value of the transient prefix command
-  PREFIX.
+  {{{var(PREFIX)}}}.
 
   If the current command was invoked from the transient prefix command
-  PREFIX, then it returns the active infix arguments.  If the current
-  command was not invoked from PREFIX, then it returns the set, saved
-  or default value for PREFIX.
+  {{{var(PREFIX)}}}, then it returns the active infix arguments.  If the current
+  command was not invoked from {{{var(PREFIX)}}}, then it returns the set, saved
+  or default value for {{{var(PREFIX)}}}.
 
 - Function: transient-arg-value arg args ::
 
-  This function return the value of ARG as it appears in ARGS.
+  This function return the value of {{{var(ARG)}}} as it appears in {{{var(ARGS)}}}.
 
   For a switch a boolean is returned.  For an option the value is
   returned as a string, using the empty string for the empty value,
-  or nil if the option does not appear in ARGS.
+  or nil if the option does not appear in {{{var(ARGS)}}}.
 
 - Function: transient-suffixes prefix ::
 
   This function returns the suffixes of the transient prefix command
-  PREFIX.  This is a list of objects.  This function should only be
+  {{{var(PREFIX)}}}.  This is a list of objects.  This function should only be
   used if you need the objects (as opposed to just their values) and
-  if the current command is not being invoked from PREFIX.
+  if the current command is not being invoked from {{{var(PREFIX)}}}.
 
 - Variable: transient-current-suffixes ::
 
@@ -1483,8 +1483,8 @@ beginning of the class specification, e.g., ~[:class transient-columns
   This generic function can be used to setup the children or a group.
 
   The default implementation usually just returns the children
-  unchanged, but if the ~setup-children~ slot of GROUP is non-~nil~, then
-  it calls that function with CHILDREN as the only argument and
+  unchanged, but if the ~setup-children~ slot of {{{var(GROUP)}}} is non-~nil~, then
+  it calls that function with {{{var(CHILDREN)}}} as the only argument and
   returns the value.
 
   The children are given as a (potentially empty) list consisting of
@@ -1578,7 +1578,7 @@ functions use ~describe-function~.
 
 - Function: transient-init-value obj ::
 
-  This generic function sets the initial value of the object OBJ.
+  This generic function sets the initial value of the object {{{var(OBJ)}}}.
 
   This function is called for all suffix commands, but unless a
   concrete method is implemented this falls through to the default
@@ -1591,7 +1591,7 @@ functions use ~describe-function~.
 - Function: transient-infix-read obj ::
 
   This generic function determines the new value of the infix object
-  OBJ.
+  {{{var(OBJ)}}}.
 
   This function merely determines the value; ~transient-infix-set~ is
   used to actually store the new value in the object.
@@ -1608,15 +1608,15 @@ functions use ~describe-function~.
 - Function: transient-prompt obj ::
 
   This generic function returns the prompt to be used to read infix
-  object OBJ's value.
+  object {{{var(OBJ)}}}'s value.
 
 - Function: transient-infix-set obj value ::
 
-  This generic function sets the value of infix object OBJ to VALUE.
+  This generic function sets the value of infix object {{{var(OBJ)}}} to {{{var(VALUE)}}}.
 
 - Function: transient-infix-value obj ::
 
-  This generic function returns the value of the suffix object OBJ.
+  This generic function returns the value of the suffix object {{{var(OBJ)}}}.
 
   This function is called by ~transient-args~ (which see), meaning this
   function is how the value of a transient is determined so that the
@@ -1630,7 +1630,7 @@ functions use ~describe-function~.
 
 - Function: transient-init-scope obj ::
 
-  This generic function sets the scope of the suffix object OBJ.
+  This generic function sets the scope of the suffix object {{{var(OBJ)}}}.
 
   The scope is actually a property of the transient prefix, not of
   individual suffixes.  However it is possible to invoke a suffix
@@ -1646,7 +1646,7 @@ functions use ~describe-function~.
 
 - Function: transient-format obj ::
 
-  This generic function formats and returns OBJ for display.
+  This generic function formats and returns {{{var(OBJ)}}} for display.
 
   When this function is called, then the current buffer is some
   temporary buffer.  If you need the buffer from which the prefix
@@ -1655,23 +1655,23 @@ functions use ~describe-function~.
 
 - Function: transient-format-key obj ::
 
-  This generic function formats OBJ's ~key~ for display and returns the
+  This generic function formats {{{var(OBJ)}}}'s ~key~ for display and returns the
   result.
 
 - Function: transient-format-description obj ::
 
-  This generic function formats OBJ's ~description~ for display and
+  This generic function formats {{{var(OBJ)}}}'s ~description~ for display and
   returns the result.
 
 - Function: transient-format-value obj ::
 
-  This generic function formats OBJ's value for display and returns
+  This generic function formats {{{var(OBJ)}}}'s value for display and returns
   the result.
 
 - Function: transient-show-help obj ::
 
   Show help for the prefix, infix or suffix command represented by
-  OBJ.
+  {{{var(OBJ)}}}.
 
   For prefixes, show the info manual, if that is specified using the
   ~info-manual~ slot.  Otherwise, show the manpage if that is specified
@@ -1827,8 +1827,8 @@ They are defined here anyway to allow sharing certain methods.
   same history because their values are of the same kind.
 
 - ~reader~ The function used to read the value of an infix.  Not used
-  for switches.  The function takes three arguments, PROMPT,
-  INITIAL-INPUT and HISTORY, and must return a string.
+  for switches.  The function takes three arguments, {{{var(PROMPT)}}},
+  {{{var(INITIAL-INPUT)}}} and {{{var(HISTORY)}}}, and must return a string.
 
 - ~prompt~ The prompt used when reading the value, either a string or a
   function that takes the object as the only argument and which
