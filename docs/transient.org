@@ -154,10 +154,10 @@ arguments, and previously it was invoked using those other arguments"),
 but also remembers the values of individual arguments independently.
 See [[*Using History]].
 
-After a transient prefix command is invoked, {{{kbd(C-h <key>)}}} can be used to
+After a transient prefix command is invoked, {{{kbdvar(C-h <KEY>)}}} can be used to
 show the documentation for the infix or suffix command that {{{var(KEY)}}} is
 bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
-suffixes can be removed from the transient using {{{kbd(C-x l <key>)}}}.  Infixes
+suffixes can be removed from the transient using {{{kbdvar(C-x l <KEY>)}}}. Infixes
 and suffixes that are disabled by default can be enabled the same way.
 See [[*Enabling and Disabling Suffixes]].
 
@@ -258,7 +258,7 @@ A few shared suffix commands are available in all transients.  These
 suffix commands are not shown in the popup buffer by default.
 
 This includes the aborting commands mentioned in the previous section,
-as well as some other commands that are all bound to {{{kbd(C-x <key>)}}}.  After
+as well as some other commands that are all bound to {{{kbdvar(C-x <KEY>)}}}.  After
 {{{kbd(C-x)}}} is pressed, a section featuring all these common commands is
 temporarily shown in the popup buffer.  After invoking one of them,
 the section disappears again.  Note however that one of these commands

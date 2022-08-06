@@ -8,5 +8,6 @@
 #+macro: version (eval (or (getenv "PACKAGE_REVDESC") (getenv "PACKAGE_VERSION") (ignore-errors (car (process-lines "git" "describe" "--exact"))) (ignore-errors (concat (car (process-lines "git" "describe" (if (getenv "AMEND") "HEAD~" "HEAD"))) "+1"))))
 
 #+macro: var @@texinfo:@var{@@$1@@texinfo:}@@
+#+macro: kbdvar (eval (format "@@texinfo:@kbd{@@%s@@texinfo:}@@" (let (case-fold-search) (replace-regexp-in-string "<\\([a-zA-Z-]+\\)>" "@@texinfo:@var{@@\\1@@texinfo:}@@" (replace-regexp-in-string org-texinfo--quoted-keys-regexp "@@texinfo:@key{@@\\&@@texinfo:}@@" $1 t) t))))
 
 #+language: en
