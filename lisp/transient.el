@@ -2877,7 +2877,12 @@ it\", in which case it is pointless to preserve history.)"
   "Cycle through the mutually exclusive switches.
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
-                         (oref obj choices))))
+                         (mapcar
+                          (lambda (x)
+                            ;; Return car of X if it is a cons
+                            ;; otherwise return X.
+                            (if (consp x) (car x) x))
+                          (oref obj choices)))))
     (if-let ((value (oref obj value)))
         (cadr (member value choices))
       (car choices))))
@@ -3571,10 +3576,14 @@ If the OBJ's `key' is currently unreachable, then apply the face
              (propertize "[" 'face 'transient-inactive-value)
              (mapconcat
               (lambda (choice)
-                (propertize choice 'face
-                            (if (equal (format argument-format choice) value)
-                                'transient-value
-                              'transient-inactive-value)))
+                (propertize
+                 (if (consp choice) (cdr choice) choice)
+                 'face
+                 (if (equal (format argument-format
+                                    (if (consp choice) (car choice) choice))
+                            value)
+                     'transient-value
+                   'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-inactive-value))
              (propertize "]" 'face 'transient-inactive-value)))))
