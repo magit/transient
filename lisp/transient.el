@@ -799,6 +799,10 @@ slot is non-nil."
 All remaining arguments are treated as files.
 They become the value of this argument.")
 
+(defclass transient-dynamic-option (transient-option)
+  ((choices-function :initarg :choices-function))
+  "Class used for command-line argument that can take dynamically-determined value.")
+
 ;;;; Group
 
 (defclass transient-group (transient-child)
@@ -2881,6 +2885,14 @@ The last value is \"don't use any of these switches\"."
     (if-let ((value (oref obj value)))
         (cadr (member value choices))
       (car choices))))
+
+(cl-defmethod transient-infix-read :around ((obj transient-dynamic-option))
+  "Populate object choices dynamically."
+  (with-slots (choices-function) obj
+    (let ((choices (funcall choices-function)))
+      (setf (oref obj choices) choices)
+      (prog1 (cl-call-next-method obj)
+        (slot-make-unbound obj 'choices)))))
 
 (cl-defmethod transient-infix-read ((command symbol))
   "Elsewhere use the reader of the infix command COMMAND.
