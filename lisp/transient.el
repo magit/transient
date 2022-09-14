@@ -3669,7 +3669,13 @@ manpage, then try to jump to the correct location."
 
 (defun transient--describe-function (fn)
   (describe-function (if (symbolp fn) fn 'transient--anonymous-infix-argument))
-  (select-window (get-buffer-window (help-buffer))))
+  (unless (derived-mode-p 'help-mode)
+    (when-let ((bw (or (get-buffer "*Help*")
+                       (cl-find-if (lambda (win)
+                                     (with-current-buffer (window-buffer win)
+                                       (derived-mode-p 'help-mode)))
+                                   (window-list)))))
+      (select-window (if (windowp bw) bw (get-buffer-window bw))))))
 
 (defun transient--anonymous-infix-argument ()
   "Cannot show any documentation for this anonymous infix command.
