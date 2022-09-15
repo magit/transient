@@ -1448,7 +1448,10 @@ probably use this instead:
           transient-current-prefix)
       (cl-find-if (lambda (obj)
                     (eq (transient--suffix-command obj)
-                        (or command this-command)))
+                        ;; When `this-command' is `transient-set-level',
+                        ;; its reader needs to know what command is being
+                        ;; configured.
+                        (or command this-original-command)))
                   (or transient--suffixes
                       transient-current-suffixes))
     (when-let* ((obj (get (or command this-command) 'transient--suffix))
