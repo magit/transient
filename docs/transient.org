@@ -1021,7 +1021,7 @@ argument that is mandatory in all cases.
   with it (as would be the case if ~transient-define-suffix~ or
   ~transient-define-infix~ were used to define it).
 
-  Anonymous, dynamically defined suffix commands are also support.
+  Anonymous, dynamically defined suffix commands are also supported.
   See information about the ~:setup-children~ function in [[*Group
   Specifications]].
 
@@ -1550,7 +1550,7 @@ object should not affect later invocations.
   indicates that all remaining arguments are files.
 
 - Classes used for infix commands that represent variables should
-  derived from the abstract ~transient-variables~ class.
+  derived from the abstract ~transient-variable~ class.
 
 Magit defines additional classes, which can serve as examples for the
 fancy things you can do without modifying Transient.  Some of these
@@ -1753,7 +1753,7 @@ Also see [[*Suffix Classes]].
   called with no argument and returns a string.
 
 - ~show-help~ A function used to display help for the suffix.  If
-  unspecified, the prefix controls how hlep is displayed for its
+  unspecified, the prefix controls how help is displayed for its
   suffixes.
 
 *** Slots of ~transient-infix~

@@ -1222,7 +1222,7 @@ Any command will do; it does not need to have an object associated
 with it (as would be the case if @code{transient-define-suffix} or
 @code{transient-define-infix} were used to define it).
 
-Anonymous, dynamically defined suffix commands are also support.
+Anonymous, dynamically defined suffix commands are also supported.
 See information about the @code{:setup-children} function in @ref{Group Specifications}.
 
 As mentioned above, the object that is associated with a command can
@@ -1800,7 +1800,7 @@ indicates that all remaining arguments are files.
 
 @item
 Classes used for infix commands that represent variables should
-derived from the abstract @code{transient-variables} class.
+derived from the abstract @code{transient-variable} class.
 @end itemize
 
 Magit defines additional classes, which can serve as examples for the
@@ -2035,7 +2035,7 @@ called with no argument and returns a string.
 
 @item
 @code{show-help} A function used to display help for the suffix.  If
-unspecified, the prefix controls how hlep is displayed for its
+unspecified, the prefix controls how help is displayed for its
 suffixes.
 @end itemize
 
