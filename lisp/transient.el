@@ -2179,7 +2179,8 @@ value.  Otherwise return CHILDREN as is."
                                   ;; used to call another command
                                   ;; that also uses the minibuffer.
                                   (equal
-                                   (string-to-multibyte (this-command-keys))
+                                   (ignore-errors
+                                     (string-to-multibyte (this-command-keys)))
                                    (format "\M-x%s\r" this-command))))))
                 (transient--debug 'post-command-hook "act: %s" act)
                 (when act
