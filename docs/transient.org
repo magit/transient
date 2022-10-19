@@ -304,9 +304,9 @@ but it is easily accessible (see [[*Using History]]).
   Save the value of the active transient persistently across Emacs
   sessions.
 
-- Key: C-x C-k (transient-save) ::
+- Key: C-x C-k (transient-reset) ::
 
-  Clear the set and saved value of the active transient.
+  Clear the set and saved values of the active transient.
 
 - User Option: transient-values-file ::
 

@@ -447,10 +447,10 @@ session.
 Save the value of the active transient persistently across Emacs
 sessions.
 
-@item @kbd{C-x C-k} (@code{transient-save})
+@item @kbd{C-x C-k} (@code{transient-reset})
 @kindex C-x C-k
-@findex transient-save
-Clear the set and saved value of the active transient.
+@findex transient-reset
+Clear the set and saved values of the active transient.
 @end table
 
 @defopt transient-values-file
