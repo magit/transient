@@ -861,6 +861,18 @@ that is used to invoke that transient.
   For example, the scope of the ~magit-branch-configure~ transient is
   the branch whose variables are being configured.
 
+It is possible to define one or more groups independently of a prefix
+definition, which is useful when those groups are to be used by more
+than just one prefix command.
+
+- Macro: transient-define-groups name group... ::
+
+  This macro defines one or more groups of infix and suffix commands
+  and stores them in a property of the symbol {{{var(NAME)}}}.  {{{var(GROUP)}}} has the
+  same form as for ~transient-define-prefix~.  Subsequently {{{var(NAME)}}} can
+  be used in a {{{var(GROUP)}}} of ~transient-define-prefix~, as described in the
+  next section.
+
 ** Binding Suffix and Infix Commands
 
 The macro ~transient-define-prefix~ is used to define a transient.
@@ -950,23 +962,35 @@ constructor of that class.
   contained in a group are right padded, effectively aligning the
   descriptions.
 
-The {{{var(ELEMENT)}}}s are either all subgroups (vectors), or all suffixes
-(lists) and strings.  (At least currently no group type exists that
-would allow mixing subgroups with commands at the same level, though
-in principle there is nothing that prevents that.)
+The {{{var(ELEMENT)}}}s are either all subgroups, or all suffixes and strings.
+(At least currently no group type exists that would allow mixing
+subgroups with commands at the same level, though in principle there
+is nothing that prevents that.)
 
 If the {{{var(ELEMENT)}}}s are not subgroups, then they can be a mixture of lists
-that specify commands and strings.  Strings are inserted verbatim.
-The empty string can be used to insert gaps between suffixes, which is
-particularly useful if the suffixes are outlined as a table.
+that specify commands and strings.  Strings are inserted verbatim into
+the buffer.  The empty string can be used to insert gaps between
+suffixes, which is particularly useful if the suffixes are outlined as
+a table.
 
-Variables are supported inside group specifications.  For example in
-place of a direct subgroup specification, a variable can be used whose
-value is a vector that qualifies as a group specification.  Likewise,
-a variable can be used where a suffix specification is expected.
-Lists of group or suffix specifications are also supported.  Indirect
-specifications are resolved when the transient prefix is being
-defined.
+Inside group specifications, including inside contained suffix
+specifications, nothing has to be quoted and quoting anyway is
+invalid.
+
+How symbols are treated, depends on context.  Inside suffix
+specifications they often name functions.  However if they appear in
+a place where a group is expected, then they are treated as indirect
+group specifications. Such a symbol must have an associated group
+specification, created using ~transient-define-groups~.
+
+Likewise a symbol can appear in a place where a suffix specification
+is expected.  The value of the ~transient--layout~ property of that
+symbol must be a single suffix specification or a list of such
+specifications.  Currently no macro exist that would create such a
+symbol, and this feature should usually not be used.
+
+The value following a keyword, can be explicitly unquoted using ~,~.
+This feature is experimental and should be avoided as well.
 
 The form of suffix specifications is documented in the next node.
 
