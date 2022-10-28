@@ -1143,11 +1143,17 @@ suffixes, which assumes that a predicate like this is used:
 
 @item
 The value of @code{:setup-children}, if non-@code{nil}, is a function that takes
-two arguments the group object itself and a list of children.
-The children are given as a (potentially empty) list consisting
-of either group or suffix specifications.  It can make arbitrary
-changes to the children including constructing new children from
-scratch.  Also see @code{transient-setup-children}.
+one argument, a potentially list of children, and must return a list
+of children or an empty list.  This can either be used to somehow
+transform the prefix's children that were defined the normal way, or
+to dynamically create the children from scratch.
+
+The returned children must have the same form as stored in the
+prefix's @code{transient--layout} property, but it is often more convenient
+to use the same form as understood by @code{transient-define-prefix},
+described below.  If you use the latter approach, you can use the
+@code{transient-parse-child} and @code{transient-parse-children} functions to
+transform them from the convenient to the expected form.
 
 @item
 The boolean @code{:pad-keys} argument controls whether keys of all suffixes
@@ -1155,22 +1161,26 @@ contained in a group are right padded, effectively aligning the
 descriptions.
 @end itemize
 
-The @var{ELEMENT}s are either all subgroups (vectors), or all suffixes
-(lists) and strings.  (At least currently no group type exists that
-would allow mixing subgroups with commands at the same level, though
-in principle there is nothing that prevents that.)
+The @var{ELEMENT}s are either all subgroups, or all suffixes and strings.
+(At least currently no group type exists that would allow mixing
+subgroups with commands at the same level, though in principle there
+is nothing that prevents that.)
 
 If the @var{ELEMENT}s are not subgroups, then they can be a mixture of lists
-that specify commands and strings.  Strings are inserted verbatim.
-The empty string can be used to insert gaps between suffixes, which is
-particularly useful if the suffixes are outlined as a table.
+that specify commands and strings.  Strings are inserted verbatim into
+the buffer.  The empty string can be used to insert gaps between
+suffixes, which is particularly useful if the suffixes are outlined as
+a table.
 
-Inside group specifications, including contained suffix specifications,
-nothing has to be quoted.  How symbols are treated, depends on context.
-In most places they are expected to name functions.  However if they
-appear in a place where a group vector is expected, then they are
-treated as indirect group specifications. Such a symbol must have an
-associated group specification, created using @code{transient-define-groups}.
+Inside group specifications, including inside contained suffix
+specifications, nothing has to be quoted and quoting anyway is
+invalid.
+
+How symbols are treated, depends on context.  Inside suffix
+specifications they often name functions.  However if they appear in
+a place where a group is expected, then they are treated as indirect
+group specifications. Such a symbol must have an associated group
+specification, created using @code{transient-define-groups}.
 
 Likewise a symbol can appear in a place where a suffix specification
 is expected.  The value of the @code{transient--layout} property of that

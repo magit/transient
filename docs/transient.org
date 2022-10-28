@@ -952,11 +952,17 @@ constructor of that class.
   #+END_SRC
 
 - The value of ~:setup-children~, if non-~nil~, is a function that takes
-  two arguments the group object itself and a list of children.
-  The children are given as a (potentially empty) list consisting
-  of either group or suffix specifications.  It can make arbitrary
-  changes to the children including constructing new children from
-  scratch.  Also see ~transient-setup-children~.
+  one argument, a potentially list of children, and must return a list
+  of children or an empty list.  This can either be used to somehow
+  transform the prefix's children that were defined the normal way, or
+  to dynamically create the children from scratch.
+
+  The returned children must have the same form as stored in the
+  prefix's ~transient--layout~ property, but it is often more convenient
+  to use the same form as understood by ~transient-define-prefix~,
+  described below.  If you use the latter approach, you can use the
+  ~transient-parse-child~ and ~transient-parse-children~ functions to
+  transform them from the convenient to the expected form.
 
 - The boolean ~:pad-keys~ argument controls whether keys of all suffixes
   contained in a group are right padded, effectively aligning the
