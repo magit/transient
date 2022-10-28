@@ -69,26 +69,6 @@
 (defvar display-line-numbers) ; since Emacs 26.1
 (defvar Man-notify-method)
 
-(define-obsolete-function-alias 'define-transient-command
-  'transient-define-prefix "Transient 0.3.0")
-(define-obsolete-function-alias 'define-suffix-command
-  'transient-define-suffix "Transient 0.3.0")
-(define-obsolete-function-alias 'define-infix-command
-  'transient-define-infix "Transient 0.3.0")
-(define-obsolete-function-alias 'define-infix-argument
-  #'transient-define-argument "Transient 0.3.0")
-
-(define-obsolete-variable-alias 'transient--source-buffer
-  'transient--original-buffer "Transient 0.2.0")
-(define-obsolete-variable-alias 'current-transient-prefix
-  'transient-current-prefix "Transient 0.3.0")
-(define-obsolete-variable-alias 'current-transient-command
-  'transient-current-command "Transient 0.3.0")
-(define-obsolete-variable-alias 'current-transient-suffixes
-  'transient-current-suffixes "Transient 0.3.0")
-(define-obsolete-variable-alias 'post-transient-hook
-  'transient-exit-hook "Transient 0.3.0")
-
 (defmacro transient--with-emergency-exit (&rest body)
   (declare (indent defun))
   `(condition-case err
