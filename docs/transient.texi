@@ -1145,7 +1145,7 @@ suffixes, which assumes that a predicate like this is used:
 The value of @code{:setup-children}, if non-@code{nil}, is a function that takes
 one argument, a potentially list of children, and must return a list
 of children or an empty list.  This can either be used to somehow
-transform the prefix's children that were defined the normal way, or
+transform the group's children that were defined the normal way, or
 to dynamically create the children from scratch.
 
 The returned children must have the same form as stored in the
