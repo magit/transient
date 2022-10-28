@@ -3376,7 +3376,7 @@ have a history of their own.")
                     (insert ?\n)
                   (insert (propertize " " 'display
                                       `(space :align-to (,(nth (1+ c) cc)))))))
-            (insert (make-string (- (nth c cc) (current-column)) ?\s))
+            (insert (make-string (max 1 (- (nth c cc) (current-column))) ?\s))
             (when-let ((cell (nth r (nth c columns))))
               (insert cell))
             (when (= c (1- cs))
