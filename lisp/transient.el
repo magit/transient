@@ -2199,7 +2199,7 @@ value.  Otherwise return CHILDREN as is."
         (delayed (if transient--exitp
                      (apply-partially #'transient--post-exit this-command)
                    #'transient--resume-override))
-        post-command abort-minibuffer)
+        outside-interactive post-command abort-minibuffer)
     (unless abort-only
       (setq post-command
             (lambda () "@transient--delay-post-command"
@@ -2211,7 +2211,9 @@ value.  Otherwise return CHILDREN as is."
                                   (equal
                                    (ignore-errors
                                      (string-to-multibyte (this-command-keys)))
-                                   (format "\M-x%s\r" this-command))))))
+                                   (format "\M-x%s\r" this-command))
+                                  ;; Minibuffer used outside `interactive'.
+                                  (and outside-interactive 'post-cmd)))))
                 (transient--debug 'post-command-hook "act: %s" act)
                 (when act
                   (remove-hook 'transient--post-command-hook post-command)
@@ -2220,12 +2222,15 @@ value.  Otherwise return CHILDREN as is."
       (add-hook 'transient--post-command-hook post-command))
     (setq abort-minibuffer
           (lambda () "@transient--delay-post-command"
-            (let ((act (and (or (memq this-command transient--abort-commands)
-                                (equal (this-command-keys) ""))
-                            (= (minibuffer-depth) depth))))
+            (let ((act (and (= (minibuffer-depth) depth)
+                            (or (memq this-command transient--abort-commands)
+                                (equal (this-command-keys) "")
+                                (prog1 nil
+                                  (setq outside-interactive t))))))
               (transient--debug
                'abort-minibuffer
-               "mini: %s|%s, act %s" (minibuffer-depth) depth act)
+               "mini: %s|%s, act: %s" (minibuffer-depth) depth
+               (or act (and outside-interactive '->post-cmd)))
               (when act
                 (remove-hook 'transient--post-command-hook post-command)
                 (remove-hook 'minibuffer-exit-hook abort-minibuffer)
