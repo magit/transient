@@ -4124,7 +4124,10 @@ we stop there."
               'face 'transient-value))
 
 (cl-defmethod transient-prompt ((obj transient-lisp-variable))
-  (format "Set %s: " (oref obj variable)))
+  (if (and (slot-boundp obj 'prompt)
+           (oref obj prompt))
+      (cl-call-next-method obj)
+    (format "Set %s: " (oref obj variable))))
 
 (defun transient-lisp-variable--reader (prompt initial-input _history)
   (read--expression prompt initial-input))
