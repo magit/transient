@@ -1318,7 +1318,18 @@ function that makes sense for infixes.
 :UNNUMBERED: notoc
 :END:
 
-The default for suffixes is ~transient--do-exit~.
+By default, invoking a suffix causes the transient to be exited.
+
+If you want a different default behavior for a certain transient
+prefix command, then set its ~:transient-suffix~ slot.  The value can be
+a boolean, answering the question "does the transient stay active,
+when a suffix command is invoked?"  ~t~ means that the transient stays
+active, while ~nil~ means that invoking a suffix exits the transient.
+In either case, the exact behavior depends on whether the suffix is
+itself a prefix (i.e., a sub-prefix), an infix or a regular suffix.
+
+The behavior for an individual suffix command can be changed by
+setting its ~transient~ slot to one of the following pre-commands.
 
 - Function: transient--do-exit ::
 

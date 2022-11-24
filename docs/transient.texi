@@ -1535,7 +1535,18 @@ Call the command without exporting variables and stay transient.
 @anchor{Pre-commands for Suffixes}
 @subheading Pre-commands for Suffixes
 
-The default for suffixes is @code{transient--do-exit}.
+By default, invoking a suffix causes the transient to be exited.
+
+If you want a different default behavior for a certain transient
+prefix command, then set its @code{:transient-suffix} slot.  The value can be
+a boolean, answering the question "does the transient stay active,
+when a suffix command is invoked?"  @code{t} means that the transient stays
+active, while @code{nil} means that invoking a suffix exits the transient.
+In either case, the exact behavior depends on whether the suffix is
+itself a prefix (i.e., a sub-prefix), an infix or a regular suffix.
+
+The behavior for an individual suffix command can be changed by
+setting its @code{transient} slot to one of the following pre-commands.
 
 @defun transient--do-exit
 Call the command after exporting variables and exit the transient.
