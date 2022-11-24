@@ -2412,6 +2412,10 @@ If there is no parent prefix, then behave like `transient--do-exit'."
   (transient--stack-zap)
   transient--exit)
 
+(defun transient--do-leave ()
+  "Call the command without exporting variables and exit the transient."
+  transient--stay)
+
 (defun transient--do-push-button ()
   "Call the command represented by the activated button.
 Use that command's pre-command to determine transient behavior."

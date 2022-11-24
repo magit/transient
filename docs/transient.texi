@@ -1586,21 +1586,32 @@ be added to @code{transient-predicate-map}.
 @anchor{Pre-commands for Non-Suffixes}
 @subheading Pre-commands for Non-Suffixes
 
-The default for non-suffixes, i.e., commands that are bound in other
-keymaps beside the transient keymap, is @code{transient--do-warn}.  Silently
-ignoring the user-error is also an option, though probably not a good
-one.
+By default, non-suffixes (commands that are bound in other keymaps
+beside the transient keymap) cannot be invoked.  Trying to invoke
+such a command results in a warning and the transient stays active.
 
-If you want to let the user invoke non-suffix commands, then use
-@code{transient--do-stay} as the value of the prefix's @code{transient-non-suffix}
-slot.
+If you want a different behavior, then set the @code{:transient-non-suffix}
+slot of the transient prefix command.  The value can be a boolean,
+answering the question, "is it allowed to invoke non-suffix commands?"
+
+If the value is @code{t} or @code{transient--do-stay}, then non-suffixes can be
+invoked, when it is @code{nil} or @code{transient--do-warn} (the default) then they
+cannot be invoked.
+
+The only other recommended value is @code{transient--do-leave}.  If that is
+used, then non-suffixes can be invoked, but if one is invoked, then
+that exits the transient.
 
 @defun transient--do-warn
 Call @code{transient-undefined} and stay transient.
 @end defun
 
-@defun transient--do-noop
-Call @code{transient-noop} and stay transient.
+@defun transient--do-stay
+Call the command without exporting variables and stay transient.
+@end defun
+
+@defun transient--do-leave
+Call the command without exporting variables and exit the transient.
 @end defun
 
 @anchor{Special Pre-Commands}

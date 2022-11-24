@@ -1371,22 +1371,35 @@ slot.
 :UNNUMBERED: notoc
 :END:
 
-The default for non-suffixes, i.e., commands that are bound in other
-keymaps beside the transient keymap, is ~transient--do-warn~.  Silently
-ignoring the user-error is also an option, though probably not a good
-one.
+By default, non-suffixes (commands that are bound in other keymaps
+beside the transient keymap) cannot be invoked.  Trying to invoke
+such a command results in a warning and the transient stays active.
 
-If you want to let the user invoke non-suffix commands, then use
-~transient--do-stay~ as the value of the prefix's ~transient-non-suffix~
-slot.
+If you want a different behavior, then set the ~:transient-non-suffix~
+slot of the transient prefix command.  The value can be a boolean,
+answering the question, "is it allowed to invoke non-suffix commands?"
+
+If the value is ~t~ or ~transient--do-stay~, then non-suffixes can be
+invoked, when it is ~nil~ or ~transient--do-warn~ (the default) then they
+cannot be invoked.
+
+The only other recommended value is ~transient--do-leave~.  If that is
+used, then non-suffixes can be invoked, but if one is invoked, then
+that exits the transient.
 
 - Function: transient--do-warn ::
 
   Call ~transient-undefined~ and stay transient.
 
-- Function: transient--do-noop ::
+- Function: transient--do-stay ::
 
-  Call ~transient-noop~ and stay transient.
+  Call the command without exporting variables and stay transient.
+
+- Function: transient--do-leave ::
+
+  Call the command without exporting variables and exit the transient.
+
+# transient--do-noop intentionally left undocumented.
 
 *** Special Pre-Commands
 :PROPERTIES:
