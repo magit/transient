@@ -774,7 +774,7 @@ that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, 
   they are never active at the same time, see [[*Predicate Slots]].
 
   Unfortunately both false-positives and false-negatives are possible.
-  To deal with the former use non-nil {{{var(KEEP-OTHER.)}}}  To deal with the
+  To deal with the former use non-~nil~ {{{var(KEEP-OTHER.)}}}  To deal with the
   latter remove the conflicting binding explicitly.
 
 - Function: transient-replace-suffix prefix loc suffix ::
