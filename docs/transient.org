@@ -144,7 +144,7 @@ See [[*Using History]].
 
 After a transient prefix command is invoked, {{{kbdvar(C-h <KEY>)}}} can be used to
 show the documentation for the infix or suffix command that {{{var(KEY)}}} is
-bound to (see [[*Getting Help for Suffix Commands]]) and infixes and
+bound to (see [[*Getting Help for Suffix Commands]]), and infixes and
 suffixes can be removed from the transient using {{{kbdvar(C-x l <KEY>)}}}. Infixes
 and suffixes that are disabled by default can be enabled the same way.
 See [[*Enabling and Disabling Suffixes]].
@@ -548,8 +548,8 @@ Also see [[* Common Suffix Commands]].
   This displays the window at the bottom of the selected frame.
   Another useful {{{var(FUNCTION)}}} is ~display-buffer-below-selected~, which
   is what ~magit-popup~ used by default.  For more alternatives see
-  [[info:elisp#Display Action Functions]] and [[info:elisp#Buffer Display
-  Action Alists]].
+  [[info:elisp#Buffer Display Action Functions]], and [[info:elisp#Buffer
+  Display Action Alists]].
 
   Note that the buffer that was current before the transient buffer
   is shown should remain the current buffer.  Many suffix commands
@@ -1737,7 +1737,7 @@ functions use ~describe-function~.
 
 - ~transient-suffix~ and ~transient-non-suffix~ play a part when
   determining whether the currently active transient prefix command
-  remains active/transient when a suffix or abitrary non-suffix
+  remains active/transient when a suffix or arbitrary non-suffix
   command is invoked.  See [[*Transient State]].
 
 - ~incompatible~ A list of lists.  Each sub-list specifies a set of
