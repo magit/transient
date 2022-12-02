@@ -31,6 +31,14 @@ reading a new value in the minibuffer.
 Calling a suffix command usually causes the transient to be exited
 but suffix commands can also be configured to not exit the transient.
 
+#+begin_quote
+The second part of this manual, which describes how to modify existing
+transients and create new transients from scratch, can be hard to
+digest if you are just getting started.  A useful resource to get over
+that hurdle is Psionic K's interactive tutorial, available at
+https://github.com/positron-solutions/transient-showcase.
+#+end_quote
+
 #+texinfo: @noindent
 This manual is for Transient version 0.3.7.50-git.
 
