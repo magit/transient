@@ -2890,6 +2890,7 @@ it\", in which case it is pointless to preserve history.)"
              (history (if initial-input
                           (cons 'transient--history 1)
                         'transient--history))
+             (original-value value)
              (value
               (cond
                (reader (funcall reader prompt initial-input history))
@@ -2900,7 +2901,7 @@ it\", in which case it is pointless to preserve history.)"
                 (completing-read prompt choices nil t initial-input history))
                (t (read-string prompt initial-input history)))))
         (cond ((and (equal value "") (not allow-empty))
-               (setq value nil))
+               (setq value original-value))
               ((and (equal value "\"\"") allow-empty)
                (setq value "")))
         (when value
