@@ -2901,6 +2901,7 @@ it\", in which case it is pointless to preserve history.)"
                 (completing-read prompt choices nil t initial-input history))
                (t (read-string prompt initial-input history)))))
         (cond ((and (equal value "") (not allow-empty))
+               (message "Empty input not allowed.")
                (setq value original-value))
               ((and (equal value "\"\"") allow-empty)
                (setq value "")))
