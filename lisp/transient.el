@@ -3208,7 +3208,7 @@ limited number of possible values should you replace this with a
 simple method that does not handle history.  (E.g., for a command
 line switch the only possible values are \"use it\" and \"don't use
 it\", in which case it is pointless to preserve history.)"
-  (with-slots (value multi-value always-read allow-empty choices) obj
+  (with-slots (value multi-value always-read allow-empty) obj
     (if (and value
              (not multi-value)
              (not always-read)
@@ -3231,6 +3231,7 @@ it\", in which case it is pointless to preserve history.)"
              (history (if initial-input
                           (cons 'transient--history 1)
                         'transient--history))
+             (choices (transient-infix-choices obj))
              (value
               (cond
                (reader (funcall reader prompt initial-input history))
@@ -3261,7 +3262,7 @@ it\", in which case it is pointless to preserve history.)"
   "Cycle through the mutually exclusive switches.
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
-                         (oref obj choices))))
+                         (transient-infix-choices obj))))
     (if-let ((value (oref obj value)))
         (cadr (member value choices))
       (car choices))))
@@ -3522,6 +3523,12 @@ Setting the value of a variable is done by, well, setting the
 value of the variable.  I.e., this is a side-effect and does
 not contribute to the value of the transient."
   nil)
+
+(cl-defmethod transient-infix-choices ((obj transient-infix))
+  (let ((choices (oref obj choices)))
+    (if (functionp choices)
+        (oset obj choices (funcall choices obj))
+      choices)))
 
 ;;;; Utilities
 
@@ -3995,7 +4002,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
       (propertize argument 'face 'transient-inactive-argument))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
-  (with-slots (value argument-format choices) obj
+  (with-slots (value argument-format) obj
     (format (propertize argument-format
                         'face (if value
                                   'transient-argument
@@ -4008,7 +4015,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                             (if (equal (format argument-format choice) value)
                                 'transient-value
                               'transient-inactive-value)))
-              choices
+              (transient-infix-choices obj)
               (propertize "|" 'face 'transient-delimiter))))))
 
 (defun transient--add-face (string face &optional append beg end)
