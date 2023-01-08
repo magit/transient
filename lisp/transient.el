@@ -3510,7 +3510,12 @@ does nothing." nil)
 (cl-defmethod transient-infix-value ((obj transient-option))
   "Return ARGUMENT and VALUE as a unit or nil if the latter is nil."
   (and-let* ((value (oref obj value)))
-    (let ((arg (oref obj argument)))
+    (with-slots ((arg argument) choices multi-value) obj
+      (when (consp (car choices))
+        (setq value
+              (if multi-value
+                  (mapcar (lambda (v) (car (rassoc v choices))) value)
+                (car (rassoc value choices)))))
       (pcase-exhaustive (oref obj multi-value)
         ('nil          (concat arg value))
         ((or 't 'rest) (cons arg value))
@@ -3528,6 +3533,12 @@ not contribute to the value of the transient."
   (let ((choices (oref obj choices)))
     (if (functionp choices)
         (oset obj choices (funcall choices obj))
+      choices)))
+
+(cl-defmethod transient-infix-choices ((obj transient-argument))
+  (let ((choices (cl-call-next-method obj)))
+    (if (consp (car choices))
+        (mapcar #'cdr choices)
       choices)))
 
 ;;;; Utilities
