@@ -49,3 +49,10 @@ for any command that was called after the prefix arguments have been
 set using a command such as ~universal-argument~.
 
 [[http://readme.emacsair.me/transient.png]]
+
+#+html: <br><br>
+#+html: <a href="https://github.com/magit/transient/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/magit/transient/actions/workflows/compile.yml/badge.svg"/></a>
+#+html: <a href="https://github.com/magit/transient/actions/workflows/manual.yml"><img alt="Compile" src="https://github.com/magit/transient/actions/workflows/manual.yml/badge.svg"/></a>
+#+html: <a href="https://elpa.gnu.org/packages/transient.html"><img alt="GNU ELPA" src="https://elpa.gnu.org/packages/transient.svg"/></a>
+#+html: <a href="https://stable.melpa.org/#/transient"><img alt="MELPA Stable" src="https://stable.melpa.org/packages/transient-badge.svg"/></a>
+#+html: <a href="https://melpa.org/#/transient"><img alt="MELPA" src="https://melpa.org/packages/transient-badge.svg"/></a>
