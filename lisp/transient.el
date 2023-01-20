@@ -860,7 +860,7 @@ to the setup function:
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body)
-               (transient--expand-define-args args)))
+               (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name
          ,(if body
@@ -913,7 +913,7 @@ ARGLIST.  The infix arguments are usually accessed by using
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
-               (transient--expand-define-args args)))
+               (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name (lambda ,arglist ,@body))
        (put ',name 'interactive-only t)
@@ -921,7 +921,7 @@ ARGLIST.  The infix arguments are usually accessed by using
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
 
-(defmacro transient-define-infix (name _arglist &rest args)
+(defmacro transient-define-infix (name arglist &rest args)
   "Define NAME as a transient infix command.
 
 ARGLIST is always ignored and reserved for future use.
@@ -962,7 +962,7 @@ keyword.
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,_)
-               (transient--expand-define-args args)))
+               (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name ,(transient--default-infix-command))
        (put ',name 'interactive-only t)
@@ -980,7 +980,9 @@ example, sets a variable use `transient-define-infix' instead.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)")
 
-(defun transient--expand-define-args (args)
+(defun transient--expand-define-args (args &optional arglist)
+  (unless (listp arglist)
+    (error "Mandatory ARGLIST is missing"))
   (let (class keys suffixes docstr)
     (when (stringp (car args))
       (setq docstr (pop args)))
