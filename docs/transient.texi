@@ -900,7 +900,16 @@ same customization.
 
 To an extent, transients can be customized interactively, see
 @ref{Enabling and Disabling Suffixes}.  This section explains how existing
-transients can be further modified non-interactively.
+transients can be further modified non-interactively.  Let's begin
+with an example:
+
+@lisp
+(transient-append-suffix 'magit-patch-apply "-3"
+  '("-R" "Apply in reverse" "--reverse"))
+@end lisp
+
+This inserts a new infix argument to toggle the @code{--reverse} argument
+after the infix argument that toggles @code{-3} in @code{magit-patch-apply}.
 
 The following functions share a few arguments:
 

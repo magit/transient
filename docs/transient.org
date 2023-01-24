@@ -736,7 +736,16 @@ These options are mainly intended for developers.
 
 To an extent, transients can be customized interactively, see
 [[*Enabling and Disabling Suffixes]].  This section explains how existing
-transients can be further modified non-interactively.
+transients can be further modified non-interactively.  Let's begin
+with an example:
+
+#+begin_src emacs-lisp
+  (transient-append-suffix 'magit-patch-apply "-3"
+    '("-R" "Apply in reverse" "--reverse"))
+#+end_src
+
+This inserts a new infix argument to toggle the ~--reverse~ argument
+after the infix argument that toggles ~-3~ in ~magit-patch-apply~.
 
 The following functions share a few arguments:
 
