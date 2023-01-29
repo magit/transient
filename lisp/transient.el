@@ -799,8 +799,8 @@ They become the value of this argument.")
 (defclass transient-columns (transient-group) ()
   "Group class that displays elements organized in columns.
 Direct elements have to be groups whose elements have to be
-commands or string.  Each subgroup represents a column.  This
-class takes care of inserting the subgroups' elements.")
+commands or strings.  Each subgroup represents a column.
+This class takes care of inserting the subgroups' elements.")
 
 (defclass transient-subgroups (transient-group) ()
   "Group class that wraps other groups.
