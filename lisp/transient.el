@@ -1152,7 +1152,7 @@ example, sets a variable use `transient-define-infix' instead.
 PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
   the same forms as expected by `transient-define-prefix').
-Intended for use in PREFIX's `:setup-children' function."
+Intended for use in a group's `:setup-children' function."
   (eval (car (transient--parse-child prefix suffix))))
 
 (defun transient-parse-suffixes (prefix suffixes)
@@ -1160,7 +1160,7 @@ Intended for use in PREFIX's `:setup-children' function."
 PREFIX is a prefix command, a symbol.
 SUFFIXES is a list of suffix command or a group specification
   (of the same forms as expected by `transient-define-prefix').
-Intended for use in PREFIX's `:setup-children' function."
+Intended for use in a group's `:setup-children' function."
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
 ;;; Edit
