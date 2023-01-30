@@ -2358,7 +2358,7 @@ necessary changes.  See its doc string for more information.
 :END:
 
 #+begin_quote
-Copyright (C) 2018-{{{year}}} Free Software Foundation, Inc.
+Copyright (C) 2018--{{{year}}} Free Software Foundation, Inc.
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
