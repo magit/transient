@@ -1471,14 +1471,24 @@ probably use this instead:
     (cl-check-type command command))
   (if (or transient--prefix
           transient-current-prefix)
-      (cl-find-if (lambda (obj)
-                    (eq (transient--suffix-command obj)
+      (let ((suffixes
+             (cl-remove-if-not
+              (lambda (obj)
+                (eq (transient--suffix-command obj)
+                    (or command
                         ;; When `this-command' is `transient-set-level',
                         ;; its reader needs to know what command is being
                         ;; configured.
-                        (or command this-original-command)))
-                  (or transient--suffixes
-                      transient-current-suffixes))
+                        this-original-command)))
+              (or transient--suffixes
+                  transient-current-suffixes))))
+        (or (and (cdr suffixes)
+                 (cl-find-if
+                  (lambda (obj)
+                    (equal (listify-key-sequence (transient--kbd (oref obj key)))
+                           (listify-key-sequence (this-command-keys))))
+                  suffixes))
+            (car suffixes)))
     (when-let* ((obj (get (or command this-command) 'transient--suffix))
                 (obj (clone obj)))
       ;; Cannot use and-let* because of debbugs#31840.
