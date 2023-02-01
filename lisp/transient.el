@@ -1476,10 +1476,11 @@ probably use this instead:
               (lambda (obj)
                 (eq (transient--suffix-command obj)
                     (or command
-                        ;; When `this-command' is `transient-set-level',
-                        ;; its reader needs to know what command is being
-                        ;; configured.
-                        this-original-command)))
+                        (if (eq this-command 'transient-set-level)
+                            ;; This is how it can look up for which
+                            ;; command it is setting the level.
+                            this-original-command
+                          this-command))))
               (or transient--suffixes
                   transient-current-suffixes))))
         (or (and (cdr suffixes)
