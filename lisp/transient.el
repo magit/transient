@@ -1718,8 +1718,8 @@ of the corresponding object.")
 
 (defun transient--pop-keymap (var)
   (let ((map (symbol-value var)))
-    (transient--debug "     pop  %s%s" var (if map "" " VOID"))
     (when map
+      (transient--debug "     pop  %s" var)
       (with-demoted-errors "transient--pop-keymap: %S"
         (internal-pop-keymap map 'overriding-terminal-local-map)))))
 
