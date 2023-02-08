@@ -927,6 +927,18 @@ to the setup function:
             (list ,@(cl-mapcan (lambda (s) (transient--parse-child name s))
                                suffixes))))))
 
+(defmacro transient-define-groups (name &rest groups)
+  "Define one or more GROUPS and store them in symbol NAME.
+GROUPS, defined using this macro, can be used inside the
+definition of transient prefix commands, by using the symbol
+NAME where a group vector is expected.  GROUPS has the same
+form as for `transient-define-prefix'."
+  (declare (debug (&define name [&rest vectorp]))
+           (indent defun))
+  `(put ',name 'transient--layout
+        (list ,@(cl-mapcan (lambda (group) (transient--parse-child name group))
+                           groups))))
+
 (defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
 
@@ -1087,12 +1099,7 @@ commands are aliases for."
 (defun transient--parse-child (prefix spec)
   (cl-typecase spec
     (null    (error "Invalid transient--parse-child spec: %s" spec))
-    (symbol  (let ((value (symbol-value spec)))
-               (if (and (listp value)
-                        (or (listp (car value))
-                            (vectorp (car value))))
-                   (cl-mapcan (lambda (s) (transient--parse-child prefix s)) value)
-                 (transient--parse-child prefix value))))
+    (symbol  (list (list 'quote spec)))
     (vector  (and-let* ((c (transient--parse-group  prefix spec))) (list c)))
     (list    (and-let* ((c (transient--parse-suffix prefix spec))) (list c)))
     (string  (list spec))
@@ -2074,6 +2081,8 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--init-child (levels spec)
   (cl-etypecase spec
+    (symbol  (cl-mapcan (lambda (c) (transient--init-child levels c))
+                        (get spec 'transient--layout)))
     (vector  (transient--init-group  levels spec))
     (list    (transient--init-suffix levels spec))
     (string  (list spec))))
