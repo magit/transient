@@ -1648,6 +1648,7 @@ See `transient-enable-popup-navigation'.")
     (define-key map [universal-argument]      #'transient--do-stay)
     (define-key map [negative-argument]       #'transient--do-minus)
     (define-key map [digit-argument]          #'transient--do-stay)
+    (define-key map [top-level]               #'transient--do-quit-all)
     (define-key map [transient-quit-all]      #'transient--do-quit-all)
     (define-key map [transient-quit-one]      #'transient--do-quit-one)
     (define-key map [transient-quit-seq]      #'transient--do-stay)
@@ -3996,7 +3997,6 @@ search instead."
     (transient--emergency-exit)))
 
 (advice-add 'abort-recursive-edit :before #'transient--abort-edebug)
-(advice-add 'top-level :before #'transient--abort-edebug)
 
 (defun transient--edebug-command-p ()
   (and (bound-and-true-p edebug-active)
