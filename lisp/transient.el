@@ -877,18 +877,6 @@ to the setup function:
             (list ,@(cl-mapcan (lambda (s) (transient--parse-child name s))
                                suffixes))))))
 
-(defmacro transient-define-groups (name &rest groups)
-  "Define one or more GROUPS and store them in symbol NAME.
-GROUPS, defined using this macro, can be used inside the
-definition of transient prefix commands, by using the symbol
-NAME where a group vector is expected.  GROUPS has the same
-form as for `transient-define-prefix'."
-  (declare (debug (&define name [&rest vectorp]))
-           (indent defun))
-  `(put ',name 'transient--layout
-        (list ,@(cl-mapcan (lambda (group) (transient--parse-child name group))
-                           groups))))
-
 (defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
 
