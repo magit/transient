@@ -2573,10 +2573,10 @@ transient is active."
 
 (defvar transient-resume-mode)
 
-(defun transient-help ()
-  "Show help for the active transient or one of its suffixes."
-  (interactive)
-  (if (called-interactively-p 'any)
+(defun transient-help (&optional interactive)
+  "Show help for the active transient or one of its suffixes.\n\n(fn)"
+  (interactive (list t))
+  (if interactive
       (setq transient--helpp t)
     (with-demoted-errors "transient-help: %S"
       (when (lookup-key transient--transient-map
