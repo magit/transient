@@ -1711,9 +1711,9 @@ of the corresponding object."
                      (string-trim key)
                      cmd conflict)))
           (define-key map kbd cmd))))
-    (when-let ((b (lookup-key map "-"))) (define-key map [kp-subtract] b))
-    (when-let ((b (lookup-key map "="))) (define-key map [kp-equal] b))
-    (when-let ((b (lookup-key map "+"))) (define-key map [kp-add] b))
+    (when-let ((b (keymap-lookup map "-"))) (keymap-set map "<kp-subtract>" b))
+    (when-let ((b (keymap-lookup map "="))) (keymap-set map "<kp-equal>" b))
+    (when-let ((b (keymap-lookup map "+"))) (keymap-set map "<kp-add>" b))
     (when transient-enable-popup-navigation
       ;; `transient--make-redisplay-map' maps only over bindings that are
       ;; directly in the base keymap, so that cannot be a composed keymap.
@@ -1728,7 +1728,7 @@ of the corresponding object."
     (set-keymap-parent map transient-predicate-map)
     (when (memq (oref transient--prefix transient-non-suffix)
                 '(nil transient--do-warn transient--do-noop))
-      (define-key map [handle-switch-frame] #'transient--do-suspend))
+      (keymap-set map "<handle-switch-frame>" #'transient--do-suspend))
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
              (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix) t))
@@ -4016,8 +4016,8 @@ that does that.  Of course \"Q\" may already be bound to something
 else, so that function binds \"M-q\" to that command instead.
 Of course \"M-q\" may already be bound to something else, but
 we stop there."
-  (define-key transient-base-map   "q" #'transient-quit-one)
-  (define-key transient-sticky-map "q" #'transient-quit-seq)
+  (keymap-set transient-base-map   "q" #'transient-quit-one)
+  (keymap-set transient-sticky-map "q" #'transient-quit-seq)
   (setq transient-substitute-key-function
         #'transient-rebind-quit-commands))
 
