@@ -965,7 +965,7 @@ keyword.
 
 Only use this alias to define an infix command that actually
 sets an infix argument.  To define a infix command that, for
-example, sets a variable use `transient-define-infix' instead.
+example, sets a variable, use `transient-define-infix' instead.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)")
 
@@ -1619,7 +1619,7 @@ See `transient-enable-popup-navigation'."
 
 The \"transient behavior\" of a command controls, among other
 things, whether invoking the command causes the transient to be
-exited or not and whether infix arguments are exported before
+exited or not, and whether infix arguments are exported before
 doing so.
 
 Each \"key\" is a command that is common to all transients and
@@ -1796,8 +1796,8 @@ of the corresponding object."
 
 This function is called by transient prefix commands to setup the
 transient.  In that case NAME is mandatory, LAYOUT and EDIT must
-be nil and PARAMS may be (but usually is not) used to set e.g. the
-\"scope\" of the transient (see `transient-define-prefix').
+be nil and PARAMS may be (but usually is not) used to set, e.g.,
+the \"scope\" of the transient (see `transient-define-prefix').
 
 This function is also called internally in which case LAYOUT and
 EDIT may be non-nil."
