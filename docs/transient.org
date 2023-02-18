@@ -1011,7 +1011,7 @@ suffixes”.  Here it means the former.
 Suffix specifications have this form:
 
 #+begin_src emacs-lisp
-  ([LEVEL] [KEY] [DESCRIPTION] COMMAND|ARGUMENT [KEYWORD VALUE]...)
+  ([LEVEL] [KEY [DESCRIPTION]] COMMAND|ARGUMENT [KEYWORD VALUE]...)
 #+end_src
 
 {{{var(LEVEL)}}}, {{{var(KEY)}}} and {{{var(DESCRIPTION)}}} can also be specified using the {{{var(KEYWORD)}}}s
@@ -1042,9 +1042,7 @@ argument that is mandatory in all cases.
   with it (as would be the case if ~transient-define-suffix~ or
   ~transient-define-infix~ were used to define it).
 
-  Anonymous, dynamically defined suffix commands are also supported.
-  See information about the ~:setup-children~ function in [[*Group
-  Specifications]].
+  COMMAND can also be a ~lambda~ expression.
 
   As mentioned above, the object that is associated with a command can
   be used to set the default for certain values that otherwise have to
