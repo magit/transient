@@ -1037,7 +1037,9 @@ example, sets a variable, use `transient-define-infix' instead.
                              spec))))))
 
 (defun transient--parse-suffix (prefix spec)
-  (let (level class args)
+  (let ((args (list :key nil :command nil :description nil))
+        (level nil)
+        (class nil))
     (cl-symbol-macrolet
         ((car (car spec))
          (pop (pop spec)))
