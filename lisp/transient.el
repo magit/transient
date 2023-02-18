@@ -1048,7 +1048,8 @@ example, sets a variable, use `transient-define-infix' instead.
         (setq args (plist-put args :key pop)))
       (cond
        ((or (stringp car)
-            (eq (car-safe car) 'lambda))
+            (and (eq (car-safe car) 'lambda)
+                 (not (commandp car))))
         (setq args (plist-put args :description pop)))
        ((and (symbolp car)
              (not (keywordp car))
