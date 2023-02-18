@@ -1066,10 +1066,13 @@ example, sets a variable, use `transient-define-infix' instead.
        ((and (commandp car)
              (not (stringp car)))
         (let ((cmd pop)
-              (sym (intern (format "transient:%s:%s"
-                                   prefix
-                                   (or (plist-get args :description)
-                                       (plist-get args :key))))))
+              (sym (intern
+                    (format "transient:%s:%s"
+                            prefix
+                            (let ((desc (plist-get args :description)))
+                              (if (and desc (or (stringp desc) (symbolp desc)))
+                                  desc
+                                (plist-get args :key)))))))
           (defalias sym cmd)
           (setq args (plist-put args :command (macroexp-quote sym)))))
        ((or (stringp car)
