@@ -2228,6 +2228,22 @@ commands are outlined:
 
 Yes, see ~transient-display-buffer-action~ in [[*Configuration]].
 
+** How can I copy text from the popup buffer?
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+To be able to mark text in any transient popup buffer using the mouse,
+you have to add the following binding.  Note that the region won't be
+visualized, while doing so.  After you have quit the transient popup,
+you will be able to yank it another buffer.
+
+#+begin_src emacs-lisp
+  (keymap-set transient-predicate-map
+              "<mouse-set-region>"
+              #'transient--do-stay)
+#+end_src
+
 ** Why did some of the key bindings change?
 :PROPERTIES:
 :UNNUMBERED: notoc
