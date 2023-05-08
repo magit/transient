@@ -3934,8 +3934,13 @@ search instead."
 (defun transient-isearch-abort ()
   "Like `isearch-abort' but adapted for `transient'."
   (interactive)
-  (condition-case nil (isearch-abort) (quit))
-  (transient--isearch-exit))
+  (let ((around (lambda (fn)
+                  (condition-case nil (funcall fn) (quit))
+                  (transient--isearch-exit))))
+    (advice-add 'isearch-cancel :around around)
+    (unwind-protect
+        (isearch-abort)
+      (advice-remove 'isearch-cancel around))))
 
 (defun transient--isearch-setup ()
   (select-window transient--window)
