@@ -1,10 +1,34 @@
 # -*- mode: org -*-
 * v0.4.0    UNRELEASED
 
-- Compatibility of Transient with various uses of the minibuffer has
-  been greatly improved, addressing several edge-cases and making it
-  possible to invoke a transient prefix command when the minibuffer
-  is active.  7b8a7d71 et al.
+- Transient has to update state after every suffix command.  If that
+  fails for some reason, then Emacs ends up in an badly broken state.
+  It was rare, but in the worst case scenario, that meant that Emacs
+  refused to call any more commands and had to be killed.
+
+  Naturally ~post-command-hook~ is the first choice to run something
+  after commands, but unfortunately that hook is not guaranteed to run
+  only once, and worse it is not guaranteed run /after/ the command.
+  Working around this limitation made an essential part of Transient
+  much more complex and fragile.  As new edge-cases were discovered,
+  new and increasingly desperate heuristics had to be added, until I
+  finally decided that relying solely on hooks was just not feasible.
+
+  Now ~pre-command-hook~ is used to advice ~this-command~, to add an
+  around advice, which ensures that the state update takes place, even
+  when ~post-command-hook~ is run prematurely.  The advice wraps both
+  the function body and the interactive spec with ~unwind-protect~, so
+  we can finally be sure that the state change is always performed,
+  and that the advice is removed again.
+
+  It has been an interesting journey, and I have documented it in long
+  commit messages.  If you are interested in the details, see 7b8a7d71
+  (which still tries to avoid using any advice), 51c68c87, 52cac9c0,
+  bug#61179 and bug#61176.
+
+- The ~transient-define-prefix~ now expands to code instead of data,
+  meaning that lambda expressions are finally properly evaluated and
+  byte-compiled.  ea851f3b e88f51d6 277e5f2d a1774182
 
 - Popup navigation is no longer considered a second-class feature and
   is enabled by default.  Some transients allow arbitrary non-suffixes
@@ -44,11 +68,12 @@
     (setq read-extended-command-predicate
           'command-completion-default-include-p)
 
-- Added new command ~transient-toggle-debug~.  b466cd9a
+  Infix arguments are implemented as commands, so they by default show
+  up as completion candidates of ~execute-extended-command~, which is
+  useless because they are only intended to be invoked from transient
+  prefix commands.  Enable this feature to prevent that.
 
-- Expressions inside the group vectors that are prefixed with a comma
-  are now evaluated when the ~transient-define-prefix~ macro is expanded.
-  99943f73
+- Added new command ~transient-toggle-debug~.  b466cd9a
 
 - Depend on the Compat package, allowing me to use convenient features
   that were added to Emacs over the last few years, without having to
@@ -62,6 +87,21 @@
   use a negative prefix argument use "C--".  "-" cannot be used anymore
   because it conflicts with the most common prefix key used for infix
   arguments.  ed2febd0
+
+- Removed obsolete aliases for functions deprecated in v0.3.0.  #192
+
+- Duplicated suffix commands are now disambiguated, making it possible
+  to bind a command multiple times as a suffix of a transient command,
+  but still have it do different things depending on what binding is
+  used, based on the value of some slot of the corresponding suffix
+  object, similar to how ~self-insert-command~ inserts the pressed key.
+  f27c840a
+
+- ~recursive-edit~ and ~top-level~ can now be used while a transient is
+  active.  fcdeadc1 5a1b2bac
+
+- Switched to Emacs 29's new keymap functions, which are also supported
+  in newer releases, thanks to the Compat package.  87f70af5 5a966aa8
 
 Bug fixes:
 
@@ -93,6 +133,20 @@ Bug fixes:
 - 5686a792 transient--suspend-override: Cancel prefix key display
 - 1c84d7ad Remap kp-subtract, kp-equal and kp-add
 - 5302db18 Once popup is showing keep doing so until full exit
+- cc887ebe transient--delay-post-command: Fix execute-extended-command handling
+- 3b267425 transient--fit-window-to-buffer: Use correct package prefix
+- 9d4fabc3 #208 transient--describe-function: Handle renamed help buffer
+- 555792f7 #209 Fix setting level of anonymous infixes
+- 0a3b22f1 #215 transient--delay-post-command: Account for events returned as vector
+- ad953cc3 #204 transient--insert-group: Add fallback for failed alignment calculation
+- 5337e5eb #230 transient-define-{*}: Error if ARGLIST is missing
+- d800ce01 Use equal to compare with empty vector
+- 3657117b #234 transient--parse-suffix: Detect when mandatory command is missing
+- f88cbbc5 #234 transient--parse-suffix: Differentiate command and desc lambda
+- 0204a243 #234 transient--parse-suffix: Define suffix aliases at load-time
+- 0ae0de43 #241 transient--invalid: Add special-case for anonymous inapt commands
+- af7fe42b #244 transient--parse-suffix: Don't try to evaluate closures again
+- 6ff5c51f transient-isearch-abort: Fix partial match case
 
 Also contains various documentation updates, code clean-ups and
 build improvements.
