@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.4.0    UNRELEASED
+* v0.4.0    2023-05-10
 
 - Transient has to update state after every suffix command.  If that
   fails for some reason, then Emacs ends up in an badly broken state.
