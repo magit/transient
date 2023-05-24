@@ -3044,10 +3044,12 @@ prompt."
         (progn
           (cl-call-next-method obj value)
           (dolist (arg incomp)
-            (when-let ((obj (cl-find-if (lambda (obj)
-                                          (and (slot-boundp obj 'argument)
-                                               (equal (oref obj argument) arg)))
-                                        transient--suffixes)))
+            (when-let ((obj (cl-find-if
+                             (lambda (obj)
+                               (and (slot-exists-p obj 'argument)
+                                    (slot-boundp obj 'argument)
+                                    (equal (oref obj argument) arg)))
+                             transient--suffixes)))
               (let ((transient--unset-incompatible nil))
                 (transient-infix-set obj nil)))))
       (cl-call-next-method obj value))))
