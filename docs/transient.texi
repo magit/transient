@@ -2141,7 +2141,7 @@ default value of a prefix using the same format as returned by
 
 @item
 @code{always-read} For options, whether to read a value on every invocation.
-If this is nil, then options that have a value are simply unset and
+If this is @code{nil}, then options that have a value are simply unset and
 have to be invoked a second time to set a new value.
 
 @item
