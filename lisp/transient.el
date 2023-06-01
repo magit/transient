@@ -3256,6 +3256,8 @@ have a history of their own.")
     (with-current-buffer buf
       (when transient-enable-popup-navigation
         (setq focus (or (button-get (point) 'command)
+                        (and (not (bobp))
+                             (button-get (1- (point)) 'command))
                         (transient--heading-at-point))))
       (erase-buffer)
       (setq window-size-fixed t)
