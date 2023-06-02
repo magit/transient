@@ -1,4 +1,13 @@
 # -*- mode: org -*-
+* v0.4.1    2023-06-02
+
+Bug fixes:
+
+- 070d47b0 Support searches that end right after suffix
+- ab831828 transient--insert-group(columns): Drop separator before first column
+- 62edeffd #247 Fix bug using :incompatible using suffixes before infixes
+- 6efa9fad transient-predicate-map: Bind univeral-argument-more
+
 * v0.4.0    2023-05-10
 
 - Transient has to update state after every suffix command.  If that
