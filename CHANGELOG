@@ -241,7 +241,7 @@ Also contains various documentation updates and code clean-ups.
   this again, once we are sure that cannot cause Emacs to enter an
   inconsistent state, that causes most events to be ignored.  #112
 
-- Improved the backtrace that is shown when a fatal error occured in a
+- Improved the backtrace that is shown when a fatal error occurred in a
   critical context.  This involved some back and forth.  See commits
   mentioning the "emergency exit".
 
