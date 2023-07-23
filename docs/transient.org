@@ -142,13 +142,13 @@ When using Transient, one can call a command with arguments that are
 just as complex as when calling the same function non-interactively
 from Lisp.
 
-Invoking a transient command with arguments is similar to invoking a
-command in a shell with command-line completion and history enabled.
-One benefit of the Transient interface is that it remembers history
-not only on a global level (“this command was invoked using these
-arguments, and previously it was invoked using those other arguments”),
-but also remembers the values of individual arguments independently.
-See [[*Using History]].
+Invoking a transient suffix command with arguments is similar to
+invoking a command in a shell with command-line completion and history
+enabled.  One benefit of the Transient interface is that it remembers
+history not only on a global level (“this command was invoked using
+these arguments, and previously it was invoked using those other
+arguments”), but also remembers the values of individual arguments
+independently.  See [[*Using History]].
 
 After a transient prefix command is invoked, {{{kbdvar(C-h <KEY>)}}} can be used to
 show the documentation for the infix or suffix command that {{{var(KEY)}}} is
@@ -163,6 +163,23 @@ has different needs than a command that merely toggles a boolean flag.
 Additionally, Transient provides abstractions for defining new types,
 which the author of Transient did not anticipate (or didn't get around
 to implementing yet).
+
+Note that suffix commands also support regular prefix arguments.  A
+suffix command may even be called with both infix and prefix arguments
+at the same time.  If you invoke a command as a suffix of a transient
+prefix command, but also want to pass prefix arguments to it, then
+first invoke the prefix command, and only after doing that invoke the
+prefix arguments, before finally invoking the suffix command.  If you
+instead began by providing the prefix arguments, then those would
+apply to the prefix command, not the suffix command.  Likewise, if you
+want to change infix arguments before invoking a suffix command with
+prefix arguments, then change the infix arguments before invoking the
+prefix arguments.  In other words, regular prefix arguments always
+apply to the next command, and since transient prefix, infix and
+suffix commands are just regular commands, the same applies to them.
+(Regular prefix keys behave differently because they are not commands
+at all, instead they are just incomplete key sequences, and those
+cannot be interrupted with prefix commands.)
 
 * Usage
 ** Invoking Transients
