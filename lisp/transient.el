@@ -68,6 +68,7 @@
 
 (defvar display-line-numbers) ; since Emacs 26.1
 (defvar Man-notify-method)
+(defvar pp-default-function) ; since Emacs 29.1
 
 (defmacro transient--with-emergency-exit (&rest body)
   (declare (indent defun))
@@ -566,7 +567,9 @@ the previous prefix."
   (setq list (cl-sort (copy-sequence list) #'string< :key #'car))
   (with-temp-file file
     (let ((print-level nil)
-          (print-length nil))
+          (print-length nil)
+          (pp-default-function 'pp-28)
+          (fill-column 999))
       (pp list (current-buffer)))))
 
 (defvar transient-values
