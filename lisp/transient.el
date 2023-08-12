@@ -1444,7 +1444,7 @@ commands) may also need the object to guide their behavior.
 This function attempts to return the object associated with the
 current suffix command even if the suffix command was not invoked
 from a transient.  (For some suffix command that is a valid thing
-to do, for others it is not.)  In that case nil may be returned
+to do, for others it is not.)  In that case nil may be returned,
 if the command was not defined using one of the macros intended
 to define such commands.
 
