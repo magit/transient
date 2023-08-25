@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v0.4.3    2023-08-25
+
+- Added a second implementation of ~transient--wrap-command~, taking
+  advantage of improvements in Emacs 30.
+
 * v0.4.2    2023-08-25
 
 - Infix commands are only useful when invoked from a transient prefix
