@@ -257,7 +257,7 @@ arguments”), but also remembers the values of individual arguments
 independently.  See @ref{Using History}.
 
 After a transient prefix command is invoked, @kbd{C-h @var{KEY}} can be used to
-show the documentation for the infix or suffix command that @var{KEY} is
+show the documentation for the infix or suffix command that @kbd{@var{KEY}} is
 bound to (see @ref{Getting Help for Suffix Commands}), and infixes and
 suffixes can be removed from the transient using @kbd{C-x l @var{KEY}}. Infixes
 and suffixes that are disabled by default can be enabled the same way.
