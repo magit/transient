@@ -2163,6 +2163,37 @@ value.  Otherwise return CHILDREN as is."
        ,@body)))
 
 (defun transient--wrap-command ()
+  (if (>= emacs-major-version 30)
+      (transient--wrap-command-30)
+    (transient--wrap-command-29)))
+
+(defun transient--wrap-command-30 ()
+  (letrec
+      ((prefix transient--prefix)
+       (suffix this-command)
+       (advice (lambda (fn &rest args)
+                 (interactive
+                  (lambda (spec)
+                    (let ((abort t))
+                      (unwind-protect
+	                  (prog1 (advice-eval-interactive-spec spec)
+	                    (setq abort nil))
+	                (when abort
+                          (when-let ((unwind (oref prefix unwind-suffix)))
+                            (transient--debug 'unwind-interactive)
+                            (funcall unwind suffix))
+                          (advice-remove suffix advice)
+                          (oset prefix unwind-suffix nil))))))
+                 (unwind-protect
+                     (apply fn args)
+                   (when-let ((unwind (oref prefix unwind-suffix)))
+                     (transient--debug 'unwind-command)
+                     (funcall unwind suffix))
+                   (advice-remove suffix advice)
+                   (oset prefix unwind-suffix nil)))))
+    (advice-add suffix :around advice '((depth . -99)))))
+
+(defun transient--wrap-command-29 ()
   (let* ((prefix transient--prefix)
          (suffix this-command)
          (advice nil)
