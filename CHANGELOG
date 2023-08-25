@@ -1,4 +1,27 @@
 # -*- mode: org -*-
+* v0.4.2    2023-08-25
+
+- Infix commands are only useful when invoked from a transient prefix
+  command and ~execute-extended-command~ should not offer them as
+  completion candidates.  In the past we used a weird kludge to
+  accomplish that, but now we rely on ~read-extended-command-predicate~.
+  That allowed the removal of some complications and made it possible
+  to fix a bug in ~transient--wrap-command~.
+
+  To hide infix commands, users now have to update to Emacs 28, or
+  later, and customize ~read-extended-command-predicate~.
+
+  #+begin_src emacs-lisp
+    (setq read-extended-command-predicate
+          'command-completion-default-include-p)
+  #+end_src
+
+- Due to changes in Emacs 29.1, pretty-printing isn't consistent
+  across Emacs releases anymore by default, which is unfortunate
+  in our case because we use it to write to files that are likely
+  to be checked into version control.  We now force the use of the
+  old style across releases.
+
 * v0.4.1    2023-06-02
 
 Bug fixes:

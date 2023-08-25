@@ -7,7 +7,7 @@
 #+texinfo_dir_category: Emacs misc features
 #+texinfo_dir_title: Transient: (transient).
 #+texinfo_dir_desc: Transient Commands
-#+subtitle: for version 0.4.1
+#+subtitle: for version 0.4.2
 
 #+setupfile: .orgconfig
 
@@ -40,7 +40,7 @@ https://github.com/positron-solutions/transient-showcase.
 #+end_quote
 
 #+texinfo: @noindent
-This manual is for Transient version 0.4.1.
+This manual is for Transient version 0.4.2.
 
 #+texinfo: @insertcopying
 :END:
