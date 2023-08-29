@@ -17,6 +17,7 @@ texi:
 	@printf "Generating $(PKG).texi\n"
 	@$(EMACS) $(ORG_ARGS) $(PKG).org $(ORG_EVAL)
 	@printf "\n" >> $(PKG).texi
+	@sed -i -e 's/“/``/' -e "s/”/''/" $(PKG).texi
 	@rm -f $(PKG).texi~
 
 %.info: %.texi
