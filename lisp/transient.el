@@ -2176,9 +2176,9 @@ value.  Otherwise return CHILDREN as is."
                   (lambda (spec)
                     (let ((abort t))
                       (unwind-protect
-	                  (prog1 (advice-eval-interactive-spec spec)
-	                    (setq abort nil))
-	                (when abort
+                          (prog1 (advice-eval-interactive-spec spec)
+                            (setq abort nil))
+                        (when abort
                           (when-let ((unwind (oref prefix unwind-suffix)))
                             (transient--debug 'unwind-interactive)
                             (funcall unwind suffix))
@@ -2201,9 +2201,9 @@ value.  Otherwise return CHILDREN as is."
           (lambda (spec)
             (let ((abort t))
               (unwind-protect
-	          (prog1 (advice-eval-interactive-spec spec)
-	            (setq abort nil))
-	        (when abort
+                  (prog1 (advice-eval-interactive-spec spec)
+                    (setq abort nil))
+                (when abort
                   (when-let ((unwind (oref prefix unwind-suffix)))
                     (transient--debug 'unwind-interactive)
                     (funcall unwind suffix))
