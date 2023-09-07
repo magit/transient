@@ -1088,7 +1088,10 @@ example, sets a variable, use `transient-define-infix' instead.
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
                          (put ',sym 'command-modes (list 'not-a-mode))
-                         (defalias ',sym ,(macroexp-quote cmd)))))))
+                         (defalias ',sym
+                           ,(if (eq (car-safe cmd) 'lambda)
+                                cmd
+                              (macroexp-quote cmd))))))))
        ((or (stringp car)
             (and car (listp car)))
         (let ((arg pop)
