@@ -2583,8 +2583,7 @@ transient is active."
 (defun transient-update ()
   "Redraw the transient's state in the popup buffer."
   (interactive)
-  (when (equal this-original-command 'negative-argument)
-    (setq prefix-arg current-prefix-arg)))
+  (setq prefix-arg current-prefix-arg))
 
 (defun transient-show ()
   "Show the transient's state in the popup buffer."
