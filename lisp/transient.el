@@ -2476,6 +2476,8 @@ If there is no parent prefix, then just call the command."
          (setq transient--editp nil)
          (transient-setup)
          transient--stay)
+        (prefix-arg
+         transient--stay)
         (t transient--exit)))
 
 (defun transient--do-quit-all ()
