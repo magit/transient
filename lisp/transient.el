@@ -1625,9 +1625,9 @@ of the corresponding object."
   "<transient-show>"              #'transient--do-stay
   "<transient-update>"            #'transient--do-stay
   "<transient-toggle-common>"     #'transient--do-stay
-  "<transient-set>"               #'transient--do-stay
-  "<transient-save>"              #'transient--do-stay
-  "<transient-reset>"             #'transient--do-stay
+  "<transient-set>"               #'transient--do-call
+  "<transient-save>"              #'transient--do-call
+  "<transient-reset>"             #'transient--do-call
   "<describe-key-briefly>"        #'transient--do-stay
   "<describe-key>"                #'transient--do-stay
   "<transient-scroll-up>"         #'transient--do-stay
