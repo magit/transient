@@ -1626,7 +1626,9 @@ of the corresponding object."
   "<transient-update>"            #'transient--do-stay
   "<transient-toggle-common>"     #'transient--do-stay
   "<transient-set>"               #'transient--do-call
+  "<transient-set-and-exit>"      #'transient--do-exit
   "<transient-save>"              #'transient--do-call
+  "<transient-save-and-exit>"     #'transient--do-exit
   "<transient-reset>"             #'transient--do-call
   "<describe-key-briefly>"        #'transient--do-stay
   "<describe-key>"                #'transient--do-stay
@@ -2655,14 +2657,20 @@ transient is active."
     (transient-undefined))))
 
 (defun transient-set ()
-  "Save the value of the active transient for this Emacs session."
+  "Set active transient's value for this Emacs session."
   (interactive)
   (transient-set-value (or transient--prefix transient-current-prefix)))
 
+(defalias 'transient-set-and-exit 'transient-set
+  "Set active transient's value for this Emacs session and exit.")
+
 (defun transient-save ()
-  "Save the value of the active transient persistenly across Emacs sessions."
+  "Save active transient's value for this and future Emacs sessions."
   (interactive)
   (transient-save-value (or transient--prefix transient-current-prefix)))
+
+(defalias 'transient-save-and-exit 'transient-save
+  "Save active transient's value for this and future Emacs sessions and exit.")
 
 (defun transient-reset ()
   "Clear the set and saved values of the active transient."
