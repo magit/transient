@@ -1477,12 +1477,12 @@ probably use this instead:
                            (listify-key-sequence (this-command-keys))))
                   suffixes))
             (car suffixes)))
-    (when-let* ((obj (get (or command this-command) 'transient--suffix))
-                (obj (clone obj)))
-      ;; Cannot use and-let* because of debbugs#31840.
-      (transient-init-scope obj)
-      (transient-init-value obj)
-      obj)))
+    (and-let* ((obj (get (or command this-command) 'transient--suffix))
+               (obj (clone obj)))
+      (progn ; work around debbugs#31840
+        (transient-init-scope obj)
+        (transient-init-value obj)
+        obj))))
 
 ;;; Keymaps
 
@@ -1865,14 +1865,14 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--init-group (levels spec)
   (pcase-let ((`(,level ,class ,args ,children) (append spec nil)))
-    (when-let* ((- (transient--use-level-p level))
-                (obj (apply class :level level args))
-                (- (transient--use-suffix-p obj))
-                (suffixes (cl-mapcan (lambda (c) (transient--init-child levels c))
-                                     (transient-setup-children obj children))))
-      ;; Cannot use and-let* because of debbugs#31840.
-      (oset obj suffixes suffixes)
-      (list obj))))
+    (and-let* ((- (transient--use-level-p level))
+               (obj (apply class :level level args))
+               (- (transient--use-suffix-p obj))
+               (suffixes (cl-mapcan (lambda (c) (transient--init-child levels c))
+                                    (transient-setup-children obj children))))
+      (progn ; work around debbugs#31840
+        (oset obj suffixes suffixes)
+        (list obj)))))
 
 (defun transient--init-suffix (levels spec)
   (pcase-let* ((`(,level ,class ,args) spec)
