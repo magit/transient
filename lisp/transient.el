@@ -4137,8 +4137,7 @@ we stop there."
                 (regexp-opt (list "transient-define-prefix"
                                   "transient-define-infix"
                                   "transient-define-argument"
-                                  "transient-define-suffix"
-                                  "transient-define-groups")
+                                  "transient-define-suffix")
                             t)
                 "\\_>[ \t'(]*"
                 "\\(\\(?:\\sw\\|\\s_\\)+\\)?")
