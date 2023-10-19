@@ -634,6 +634,7 @@ If `transient-save-history' is nil, then do nothing."
    (man-page    :initarg :man-page    :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
+   (refresh-suffixes     :initarg :refresh-suffixes     :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
    (variable-pitch       :initarg :variable-pitch       :initform nil)
@@ -1811,10 +1812,8 @@ EDIT may be non-nil."
       ;; Returning from help to edit.
       (setq transient--editp t)))
     (transient--init-objects name layout params)
+    (transient--init-keymaps)
     (transient--history-init transient--prefix)
-    (setq transient--predicate-map (transient--make-predicate-map))
-    (setq transient--transient-map (transient--make-transient-map))
-    (setq transient--redisplay-map (transient--make-redisplay-map))
     (setq transient--original-window (selected-window))
     (setq transient--original-buffer (current-buffer))
     (setq transient--minibuffer-depth (minibuffer-depth))
@@ -1831,8 +1830,15 @@ value.  Otherwise return CHILDREN as is."
       (funcall (oref group setup-children) children)
     children))
 
-(defun transient--init-objects (name layout params)
-  (setq transient--prefix (transient--init-prefix name params))
+(defun transient--init-keymaps ()
+  (setq transient--predicate-map (transient--make-predicate-map))
+  (setq transient--transient-map (transient--make-transient-map))
+  (setq transient--redisplay-map (transient--make-redisplay-map)))
+
+(defun transient--init-objects (&optional name layout params)
+  (if name
+      (setq transient--prefix (transient--init-prefix name params))
+    (setq name (oref transient--prefix command)))
   (setq transient--layout (or layout (transient--init-suffixes name)))
   (setq transient--suffixes (transient--flatten-suffixes transient--layout)))
 
@@ -2013,6 +2019,17 @@ value.  Otherwise return CHILDREN as is."
     ;; Prevent `transient--post-command' from removing the hooks
     ;; that we just added.
     (setq transient--exitp 'replace)))
+
+(defun transient--refresh-transient ()
+  (transient--debug 'refresh-transient)
+  (transient--pop-keymap 'transient--predicate-map)
+  (transient--pop-keymap 'transient--transient-map)
+  (transient--pop-keymap 'transient--redisplay-map)
+  (transient--init-objects)
+  (transient--init-keymaps)
+  (transient--push-keymap 'transient--transient-map)
+  (transient--push-keymap 'transient--redisplay-map)
+  (transient--redisplay))
 
 (defun transient--pre-command ()
   (transient--debug 'pre-command)
@@ -2273,6 +2290,8 @@ value.  Otherwise return CHILDREN as is."
                   ;; would have to be used to record that a universal
                   ;; argument is in effect.
                   (not prefix-arg)))
+            ((oref transient--prefix refresh-suffixes)
+             (transient--refresh-transient))
             ((let ((old transient--redisplay-map)
                    (new (transient--make-redisplay-map)))
                (unless (equal old new)

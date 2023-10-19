@@ -1991,6 +1991,14 @@ remains active/transient when a suffix or arbitrary non-suffix
 command is invoked.  See @ref{Transient State}.
 
 @item
+@code{refresh-suffixes} Normally suffix objects and keymaps are only setup
+once, when the prefix is invoked.  Setting this to @code{t}, causes them to
+be recreated after every command.  This is useful when using @code{:if...}
+predicates, and those need to be rerun for some reason.  Doing this
+is somewhat costly, and there is a risk of losing state, so this is
+disabled by default and still considered experimental.
+
+@item
 @code{incompatible} A list of lists.  Each sub-list specifies a set of
 mutually exclusive arguments.  Enabling one of these arguments
 causes the others to be disabled.  An argument may appear in
@@ -2211,6 +2219,10 @@ what happens if you use more than one.
 @item
 @code{if-not-derived} Enable if major-mode does not derive from value.
 @end itemize
+
+By default these predicates run when the prefix command is invoked,
+but this can be changes, using the @code{refresh-suffixes} prefix slot.
+See @ref{Prefix Slots}.
 
 One more slot is shared between group and suffix classes, @code{level}.  Like
 the slots documented above, it is a predicate, but it is used for a
