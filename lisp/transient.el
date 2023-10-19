@@ -1380,7 +1380,7 @@ variable instead.")
 (defconst transient--exit nil "Do exit the transient.")
 
 (defvar transient--exitp nil "Whether to exit the transient.")
-(defvar transient--showp nil "Whether the transient is show in a popup buffer.")
+(defvar transient--showp nil "Whether to show the transient popup buffer.")
 (defvar transient--helpp nil "Whether help-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
 
@@ -1415,7 +1415,8 @@ drawing in the transient buffer.")
   "The suffix that is currently being processed.
 This is bound while the suffix predicate is being evaluated.")
 
-(defvar transient--debug nil "Whether put debug information into *Messages*.")
+(defvar transient--debug nil
+  "Whether to put debug information into *Messages*.")
 
 (defvar transient--history nil)
 
