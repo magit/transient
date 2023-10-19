@@ -1395,7 +1395,7 @@ variable instead.")
   "Name of the transient buffer.")
 
 (defvar transient--window nil
-  "The window used to display the transient popup.")
+  "The window used to display the transient popup buffer.")
 
 (defvar transient--original-window nil
   "The window that was selected before the transient was invoked.
