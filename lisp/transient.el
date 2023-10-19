@@ -2257,7 +2257,7 @@ value.  Otherwise return CHILDREN as is."
                   ;; too late (in `command-execute'), and if it were set
                   ;; earlier, then we likely still would not be able to
                   ;; rely on it and `prefix-command-preserve-state-hook'
-                  ;; would have to be used record that a universal
+                  ;; would have to be used to record that a universal
                   ;; argument is in effect.
                   (not prefix-arg)))
             ((let ((old transient--redisplay-map)
