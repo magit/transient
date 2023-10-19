@@ -932,11 +932,11 @@ explicitly.
 
 The function definitions is always:
 
-   (lambda ()
-     (interactive)
-     (let ((obj (transient-suffix-object)))
-       (transient-infix-set obj (transient-infix-read obj)))
-     (transient--show))
+  (lambda ()
+    (interactive)
+    (let ((obj (transient-suffix-object)))
+      (transient-infix-set obj (transient-infix-read obj)))
+    (transient--show))
 
 `transient-infix-read' and `transient-infix-set' are generic
 functions.  Different infix commands behave differently because
@@ -1428,11 +1428,11 @@ This function is intended to be called by infix commands, which
 are usually aliases of `transient--default-infix-command', which
 is defined like this:
 
-   (defun transient--default-infix-command ()
-     (interactive)
-     (let ((obj (transient-suffix-object)))
-       (transient-infix-set obj (transient-infix-read obj)))
-     (transient--show))
+  (defun transient--default-infix-command ()
+    (interactive)
+    (let ((obj (transient-suffix-object)))
+      (transient-infix-set obj (transient-infix-read obj)))
+    (transient--show))
 
 \(User input is read outside of `interactive' to prevent the
 command from being added to `command-history'.  See #23.)
