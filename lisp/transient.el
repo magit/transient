@@ -1405,6 +1405,11 @@ Usually it remains selected while the transient is active.")
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
 
+(defvar transient--current-buffer nil
+  "The buffer that is temporarily shadowed by the transient buffer.
+This is bound while the suffix predicate is being evaluated and while
+drawing in the transient buffer.")
+
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
 (defvar transient--history nil)
@@ -1927,28 +1932,30 @@ value.  Otherwise return CHILDREN as is."
            (<= level (oref transient--prefix level)))))
 
 (defun transient--use-suffix-p (obj)
-  (transient--do-suffix-p
-   (oref obj if)
-   (oref obj if-not)
-   (oref obj if-nil)
-   (oref obj if-non-nil)
-   (oref obj if-mode)
-   (oref obj if-not-mode)
-   (oref obj if-derived)
-   (oref obj if-not-derived)
-   t))
+  (let ((transient--current-buffer (current-buffer)))
+    (transient--do-suffix-p
+     (oref obj if)
+     (oref obj if-not)
+     (oref obj if-nil)
+     (oref obj if-non-nil)
+     (oref obj if-mode)
+     (oref obj if-not-mode)
+     (oref obj if-derived)
+     (oref obj if-not-derived)
+     t)))
 
 (defun transient--inapt-suffix-p (obj)
-  (transient--do-suffix-p
-   (oref obj inapt-if)
-   (oref obj inapt-if-not)
-   (oref obj inapt-if-nil)
-   (oref obj inapt-if-non-nil)
-   (oref obj inapt-if-mode)
-   (oref obj inapt-if-not-mode)
-   (oref obj inapt-if-derived)
-   (oref obj inapt-if-not-derived)
-   nil))
+  (let ((transient--current-buffer (current-buffer)))
+    (transient--do-suffix-p
+     (oref obj inapt-if)
+     (oref obj inapt-if-not)
+     (oref obj inapt-if-nil)
+     (oref obj inapt-if-non-nil)
+     (oref obj inapt-if-mode)
+     (oref obj inapt-if-not-mode)
+     (oref obj inapt-if-derived)
+     (oref obj inapt-if-not-derived)
+     nil)))
 
 (defun transient--do-suffix-p
     (if if-not if-nil if-non-nil if-mode if-not-mode if-derived if-not-derived
@@ -3270,7 +3277,8 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((buf (get-buffer-create transient--buffer-name))
+  (let ((transient--current-buffer (current-buffer))
+        (buf (get-buffer-create transient--buffer-name))
         (focus nil))
     (with-current-buffer buf
       (when transient-enable-popup-navigation
