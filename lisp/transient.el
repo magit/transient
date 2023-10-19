@@ -3416,15 +3416,6 @@ have a history of their own.")
             (when (= c (1- cs))
               (insert ?\n))))))))
 
-(defun transient--pixel-width (string)
-  (save-window-excursion
-    (with-temp-buffer
-      (insert string)
-      (set-window-dedicated-p nil nil)
-      (set-window-buffer nil (current-buffer))
-      (car (window-text-pixel-size
-            nil (line-beginning-position) (point))))))
-
 (cl-defmethod transient--insert-group ((group transient-subgroups))
   (let* ((subgroups (oref group suffixes))
          (n (length subgroups)))
@@ -3673,6 +3664,15 @@ If the OBJ's `key' is currently unreachable, then apply the face
       (dolist (suffix (oref group suffixes))
         (oset suffix key
               (truncate-string-to-width (oref suffix key) width nil ?\s))))))
+
+(defun transient--pixel-width (string)
+  (save-window-excursion
+    (with-temp-buffer
+      (insert string)
+      (set-window-dedicated-p nil nil)
+      (set-window-buffer nil (current-buffer))
+      (car (window-text-pixel-size
+            nil (line-beginning-position) (point))))))
 
 (defun transient-command-summary-or-name (obj)
   "Return the summary or name of the command represented by OBJ.
