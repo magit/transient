@@ -1410,6 +1410,10 @@ Usually it remains current while the transient is active.")
 This is bound while the suffix predicate is being evaluated and while
 drawing in the transient buffer.")
 
+(defvar transient--pending-suffix nil
+  "The suffix that is currently being processed.
+This is bound while the suffix predicate is being evaluated.")
+
 (defvar transient--debug nil "Whether put debug information into *Messages*.")
 
 (defvar transient--history nil)
@@ -1932,7 +1936,8 @@ value.  Otherwise return CHILDREN as is."
            (<= level (oref transient--prefix level)))))
 
 (defun transient--use-suffix-p (obj)
-  (let ((transient--current-buffer (current-buffer)))
+  (let ((transient--current-buffer (current-buffer))
+        (transient--pending-suffix obj))
     (transient--do-suffix-p
      (oref obj if)
      (oref obj if-not)
@@ -1945,7 +1950,8 @@ value.  Otherwise return CHILDREN as is."
      t)))
 
 (defun transient--inapt-suffix-p (obj)
-  (let ((transient--current-buffer (current-buffer)))
+  (let ((transient--current-buffer (current-buffer))
+        (transient--pending-suffix obj))
     (transient--do-suffix-p
      (oref obj inapt-if)
      (oref obj inapt-if-not)
