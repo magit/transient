@@ -2121,8 +2121,9 @@ value.  Otherwise return CHILDREN as is."
            (and (minibuffer-selected-window)
                 (selected-window)))
           (buf (window-buffer transient--window)))
-      ;; Only delete the window if it never showed another buffer.
-      (unless (eq (car (window-parameter transient--window 'quit-restore)) 'other)
+      ;; Only delete the window if it has never shown another buffer.
+      (unless (eq (car (window-parameter transient--window 'quit-restore))
+                  'other)
         (with-demoted-errors "Error while exiting transient: %S"
           (delete-window transient--window)))
       (kill-buffer buf)
