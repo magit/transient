@@ -3550,6 +3550,8 @@ Optional support for popup buttons is also implemented here."
   "Format OBJ's `key' for display and return the result."
   (let ((key (oref obj key))
         (cmd (oref obj command)))
+    (when-let ((width (oref transient--pending-group pad-keys)))
+      (setq key (truncate-string-to-width key width nil ?\s)))
     (if transient--redisplay-key
         (let ((len (length transient--redisplay-key))
               (seq (cl-coerce (edmacro-parse-keys key t) 'list)))
@@ -3706,16 +3708,13 @@ If the OBJ's `key' is currently unreachable, then apply the face
 (defun transient--maybe-pad-keys (group &optional parent)
   (when-let ((pad (or (oref group pad-keys)
                       (and parent (oref parent pad-keys)))))
-    (let ((width (apply #'max
-                        (cons (if (integerp pad) pad 0)
-                              (seq-keep (lambda (suffix)
-                                          (and (not (stringp suffix))
-                                               (length (oref suffix key))))
-                                        (oref group suffixes))))))
-      (dolist (suffix (oref group suffixes))
-        (unless (stringp suffix)
-          (oset suffix key
-                (truncate-string-to-width (oref suffix key) width nil ?\s)))))))
+    (oset group pad-keys
+          (apply #'max (cons (if (integerp pad) pad 0)
+                             (seq-keep (lambda (suffix)
+                                         (and (eieio-object-p suffix)
+                                              (slot-boundp suffix 'key)
+                                              (length (oref suffix key))))
+                                       (oref group suffixes)))))))
 
 (defun transient--pixel-width (string)
   (save-window-excursion
