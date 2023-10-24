@@ -1868,9 +1868,9 @@ value.  Otherwise return CHILDREN as is."
                 (cond
                  ((stringp def) nil)
                  ((listp def) (cl-mapcan #'s def))
-                 ((transient-group--eieio-childp def)
+                 ((cl-typep def 'transient-group)
                   (cl-mapcan #'s (oref def suffixes)))
-                 ((transient-suffix--eieio-childp def)
+                 ((cl-typep def 'transient-suffix)
                   (list def)))))
     (cl-mapcan #'s layout)))
 
