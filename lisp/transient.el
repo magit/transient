@@ -737,6 +737,11 @@ slot is non-nil."
     :documentation "Inapt if major-mode does not derive from value."))
   "Superclass for suffix command.")
 
+(defclass transient-information (transient-suffix)
+  ((format :initform " %k %d"))
+  "Display-only information.
+A suffix object with no associated command.")
+
 (defclass transient-infix (transient-suffix)
   ((transient                         :initform t)
    (argument    :initarg :argument)
@@ -1071,8 +1076,9 @@ example, sets a variable, use `transient-define-infix' instead.
              (commandp (cadr spec)))
         (setq args (plist-put args :description (macroexp-quote pop)))))
       (cond
+       ((eq car :info))
        ((keywordp car)
-        (error "Need command, got `%s'" car))
+        (error "Need command or `:info', got `%s'" car))
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
        ((and (commandp car)
@@ -1128,6 +1134,9 @@ example, sets a variable, use `transient-define-infix' instead.
               (val pop))
           (cond ((eq key :class) (setq class val))
                 ((eq key :level) (setq level val))
+                ((eq key :info)
+                 (setq class 'transient-information)
+                 (setq args (plist-put args :description val)))
                 ((eq (car-safe val) '\,)
                  (setq args (plist-put args key (cadr val))))
                 ((or (symbolp val)
@@ -1871,6 +1880,7 @@ value.  Otherwise return CHILDREN as is."
   (cl-labels ((s (def)
                 (cond
                  ((stringp def) nil)
+                 ((cl-typep def 'transient-information) nil)
                  ((listp def) (cl-mapcan #'s def))
                  ((cl-typep def 'transient-group)
                   (cl-mapcan #'s (oref def suffixes)))
@@ -1908,12 +1918,15 @@ value.  Otherwise return CHILDREN as is."
         (transient--debug "   autoload %s" cmd)
         (autoload-do-load fn)))
     (when (transient--use-level-p level)
-      (unless (and cmd (symbolp cmd))
-        (error "BUG: Non-symbolic suffix command: %s" cmd))
-      (let ((obj (if-let ((proto (get cmd 'transient--suffix)))
-                     (apply #'clone proto :level level args)
-                   (apply class :command cmd :level level args))))
-        (cond ((commandp cmd))
+      (let ((obj (if (child-of-class-p class 'transient-information)
+                     (apply class :level level args)
+                   (unless (and cmd (symbolp cmd))
+                     (error "BUG: Non-symbolic suffix command: %s" cmd))
+                   (if-let ((proto (and cmd (get cmd 'transient--suffix))))
+                       (apply #'clone proto :level level args)
+                     (apply class :command cmd :level level args)))))
+        (cond ((not cmd))
+              ((commandp cmd))
               ((or (cl-typep obj 'transient-switch)
                    (cl-typep obj 'transient-option))
                ;; As a temporary special case, if the package was compiled
@@ -1922,7 +1935,8 @@ value.  Otherwise return CHILDREN as is."
                (defalias cmd #'transient--default-infix-command))
               ((transient--use-suffix-p obj)
                (error "Suffix command %s is not defined or autoloaded" cmd)))
-        (transient--init-suffix-key obj)
+        (unless (cl-typep obj 'transient-information)
+          (transient--init-suffix-key obj))
         (when (transient--use-suffix-p obj)
           (if (transient--inapt-suffix-p obj)
               (oset obj inapt t)
@@ -3548,8 +3562,8 @@ Optional support for popup buttons is also implemented here."
 
 (cl-defmethod transient-format-key ((obj transient-suffix))
   "Format OBJ's `key' for display and return the result."
-  (let ((key (oref obj key))
-        (cmd (oref obj command)))
+  (let ((key (if (slot-boundp obj 'key) (oref obj key) ""))
+        (cmd (and (slot-boundp obj 'command) (oref obj command))))
     (when-let ((width (oref transient--pending-group pad-keys)))
       (setq key (truncate-string-to-width key width nil ?\s)))
     (if transient--redisplay-key
@@ -3642,7 +3656,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
                        (funcall (oref transient--prefix suffix-description)
                                 obj))
                   (propertize "(BUG: no description)" 'face 'error))))
-    (cond ((transient--key-unreachable-p obj)
+    (cond ((and (slot-boundp obj 'key)
+                (transient--key-unreachable-p obj))
            (propertize desc 'face 'transient-unreachable))
           ((and transient-highlight-higher-levels
                 (> (max (oref obj level) transient--max-group-level)

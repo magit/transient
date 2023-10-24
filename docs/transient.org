@@ -1612,6 +1612,23 @@ object should not affect later invocations.
 - Classes used for infix commands that represent variables should
   derived from the abstract ~transient-variable~ class.
 
+- The ~transient-information~ class is special in that suffixes that use
+  this class are not associated with a command and thus also not with
+  any key binding.  Such suffixes are only used to display arbitrary
+  information, and that anywhere a suffix can appear.  Display-only
+  suffix specifications take this form:
+
+  #+begin_src emacs-lisp
+    ([LEVEL] :info DESCRIPTION [KEYWORD VALUE]...)
+  #+end_src
+
+  The ~:info~ keyword argument replaces the ~:description~ keyword used for
+  other suffix classes.  Other keyword arguments that you might want to
+  set, include ~:face~, predicate keywords (such as ~:if~), and ~:format~.
+  By default the value of ~:format~ includes ~%k~, which for this class is
+  replaced with the empty string or spaces, if keys are being padded in
+  the containing group.
+
 Magit defines additional classes, which can serve as examples for the
 fancy things you can do without modifying Transient.  Some of these
 classes will likely get generalized and added to Transient.  For now
