@@ -3706,12 +3706,14 @@ If the OBJ's `key' is currently unreachable, then apply the face
                          (oref parent pad-keys)))))
     (let ((width (apply #'max
                         (cons (if (integerp pad) pad 0)
-                              (mapcar (lambda (suffix)
-                                        (length (oref suffix key)))
-                                      (oref group suffixes))))))
+                              (seq-keep (lambda (suffix)
+                                          (and (not (stringp suffix))
+                                               (length (oref suffix key))))
+                                        (oref group suffixes))))))
       (dolist (suffix (oref group suffixes))
-        (oset suffix key
-              (truncate-string-to-width (oref suffix key) width nil ?\s))))))
+        (unless (stringp suffix)
+          (oset suffix key
+                (truncate-string-to-width (oref suffix key) width nil ?\s)))))))
 
 (defun transient--pixel-width (string)
   (save-window-excursion
