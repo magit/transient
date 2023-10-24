@@ -2082,6 +2082,11 @@ It must contain the following %-placeholders:
 called with no argument and returns a string.
 
 @item
+@code{face} Face used for the description.  In simple cases it is easier
+to use this instead of using a function as @code{description} and adding
+the styling there.  @code{face} is appended using @code{add-face-text-property}.
+
+@item
 @code{show-help} A function used to display help for the suffix.  If
 unspecified, the prefix controls how help is displayed for its
 suffixes.

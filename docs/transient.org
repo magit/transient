@@ -1819,6 +1819,10 @@ Also see [[*Suffix Classes]].
 - ~description~ The description, either a string or a function that is
   called with no argument and returns a string.
 
+- ~face~ Face used for the description.  In simple cases it is easier
+  to use this instead of using a function as ~description~ and adding
+  the styling there.  ~face~ is appended using ~add-face-text-property~.
+
 - ~show-help~ A function used to display help for the suffix.  If
   unspecified, the prefix controls how help is displayed for its
   suffixes.

@@ -700,6 +700,7 @@ slot is non-nil."
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
    (description :initarg :description :initform nil)
+   (face        :initarg :face        :initform nil)
    (show-help   :initarg :show-help   :initform nil)
    (inapt                             :initform nil)
    (inapt-if
@@ -3605,10 +3606,14 @@ Optional support for popup buttons is also implemented here."
   "The `description' slot may be a function, in which case that is
 called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
-  (and-let* ((desc (oref obj description)))
-    (if (functionp desc)
-        (with-current-buffer transient--original-buffer
-          (funcall desc))
+  (and-let* ((desc (oref obj description))
+             (desc (if (functionp desc)
+                       (with-current-buffer transient--original-buffer
+                         (funcall desc))
+                     desc)))
+    (progn ; work around debbugs#31840
+      (when-let ((face (and (slot-exists-p obj 'face) (oref obj face))))
+        (add-face-text-property 0 (length desc) face t desc))
       desc)))
 
 (cl-defmethod transient-format-description ((obj transient-group))
