@@ -1416,6 +1416,10 @@ drawing in the transient buffer.")
   "The suffix that is currently being processed.
 This is bound while the suffix predicate is being evaluated.")
 
+(defvar transient--pending-group nil
+  "The group that is currently being processed.
+This is bound while the suffixes are drawn in the transient buffer.")
+
 (defvar transient--debug nil
   "Whether to put debug information into *Messages*.")
 
@@ -3394,7 +3398,8 @@ have a history of their own.")
   (when-let ((desc (transient-format-description group)))
     (insert desc ?\n))
   (let ((transient--max-group-level
-         (max (oref group level) transient--max-group-level)))
+         (max (oref group level) transient--max-group-level))
+        (transient--pending-group group))
     (cl-call-next-method group)))
 
 (cl-defmethod transient--insert-group ((group transient-row))
