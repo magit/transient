@@ -7,7 +7,7 @@
 ;; Keywords: extensions
 
 ;; Package-Version: 0.4.3
-;; Package-Requires: ((emacs "25.1") (compat "29.1.4.1"))
+;; Package-Requires: ((emacs "25.1") (compat "29.1.4.1") (seq "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -57,6 +57,11 @@
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
+
+(eval-and-compile
+  (when (and (featurep' seq)
+             (not (fboundp 'seq-keep)))
+    (unload-feature 'seq 'force)))
 (require 'seq)
 
 (eval-when-compile (require 'subr-x))
