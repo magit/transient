@@ -791,8 +791,8 @@ They become the value of this argument.")
   ((suffixes       :initarg :suffixes       :initform nil)
    (hide           :initarg :hide           :initform nil)
    (description    :initarg :description    :initform nil)
-   (setup-children :initarg :setup-children)
-   (pad-keys       :initarg :pad-keys))
+   (pad-keys       :initarg :pad-keys       :initform nil)
+   (setup-children :initarg :setup-children))
   "Abstract superclass of all group classes."
   :abstract t)
 
@@ -3704,11 +3704,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
     (and val (not (integerp val)) val)))
 
 (defun transient--maybe-pad-keys (group &optional parent)
-  (when-let ((pad (if (slot-boundp group 'pad-keys)
-                      (oref group pad-keys)
-                    (and parent
-                         (slot-boundp parent 'pad-keys)
-                         (oref parent pad-keys)))))
+  (when-let ((pad (or (oref group pad-keys)
+                      (and parent (oref parent pad-keys)))))
     (let ((width (apply #'max
                         (cons (if (integerp pad) pad 0)
                               (seq-keep (lambda (suffix)
