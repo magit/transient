@@ -511,7 +511,7 @@ This includes the parentheses around values and the pipe
 character used to separate possible values from each other."
   :group 'transient-faces)
 
-(defface transient-separator
+(defface transient-separator-line
   `((((class color) (background light))
      ,@(and (>= emacs-major-version 27) '(:extend t))
      :background "grey80")
@@ -522,6 +522,9 @@ character used to separate possible values from each other."
 This is only used if `transient-mode-line-format' is `line'.
 Only the background color is significant."
   :group 'transient-faces)
+
+(define-obsolete-face-alias 'transient-separator 'transient-separator-line
+                            "transient 0.4.4")
 
 (defgroup transient-color-faces
   '((transient-semantic-coloring custom-variable))
@@ -3377,7 +3380,7 @@ have a history of their own.")
                                 (transient--prefix-color transient--prefix))))
                    `(,@(and (>= emacs-major-version 27) '(:extend t))
                      :background ,(face-foreground f))
-                 'transient-separator)))
+                 'transient-separator-line)))
           (insert (propertize "__" 'face face 'display '(space :height (1))))
           (insert (propertize "\n" 'face face 'line-height t))))
       (when transient-force-fixed-pitch
