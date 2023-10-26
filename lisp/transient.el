@@ -2816,6 +2816,22 @@ around `scroll-down-command' (which see)."
         (t
          (message "No suspended transient command"))))
 
+(transient-define-suffix transient-echo-arguments (arguments)
+  "Show the transient's active ARGUMENTS in the echo area.
+Intended for use in prefixes used for demonstration purposes,
+such as when suggesting a new feature or reporting an issue."
+  :transient t
+  :description "Echo arguments"
+  :key "x"
+  (interactive (list (transient-args transient-current-command)))
+  (message "Arguments: %s"
+           (mapconcat (lambda (arg)
+                        (propertize (if (string-match-p " " arg)
+                                        (format "%S" arg)
+                                      arg)
+                                    'face 'transient-argument))
+                      arguments " ")))
+
 ;;; Value
 ;;;; Init
 
