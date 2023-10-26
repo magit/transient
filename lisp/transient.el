@@ -505,6 +505,12 @@ See info node `(transient)Enabling and Disabling Suffixes'."
 Also see option `transient-highlight-higher-levels'."
   :group 'transient-faces)
 
+(defface transient-delimiter '((t :inherit shadow))
+  "Face used for delimiters and separators.
+This includes the parentheses around values and the pipe
+character used to separate possible values from each other."
+  :group 'transient-faces)
+
 (defface transient-separator
   `((((class color) (background light))
      ,@(and (>= emacs-major-version 27) '(:extend t))
@@ -3332,7 +3338,7 @@ have a history of their own.")
                    (list (propertize (oref suffix key) 'face 'transient-key)))))
           transient--suffixes)
          #'string<)
-        (propertize "|" 'face 'transient-unreachable-key))))))
+        (propertize "|" 'face 'transient-delimiter))))))
 
 (defun transient--show ()
   (transient--timer-cancel)
@@ -3705,7 +3711,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                                   'transient-value
                                 'transient-inactive-value))
             (format
-             (propertize "[%s]" 'face 'transient-inactive-value)
+             (propertize "[%s]" 'face 'transient-delimiter)
              (mapconcat
               (lambda (choice)
                 (propertize choice 'face
@@ -3713,7 +3719,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                                 'transient-value
                               'transient-inactive-value)))
               choices
-              (propertize "|" 'face 'transient-inactive-value))))))
+              (propertize "|" 'face 'transient-delimiter))))))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
