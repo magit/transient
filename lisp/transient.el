@@ -3704,8 +3704,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
                         'face (if value
                                   'transient-value
                                 'transient-inactive-value))
-            (concat
-             (propertize "[" 'face 'transient-inactive-value)
+            (format
+             (propertize "[%s]" 'face 'transient-inactive-value)
              (mapconcat
               (lambda (choice)
                 (propertize choice 'face
@@ -3713,8 +3713,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                                 'transient-value
                               'transient-inactive-value)))
               choices
-              (propertize "|" 'face 'transient-inactive-value))
-             (propertize "]" 'face 'transient-inactive-value)))))
+              (propertize "|" 'face 'transient-inactive-value))))))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
