@@ -1910,8 +1910,10 @@ They are defined here anyway to allow sharing certain methods.
   function that takes the object as the only argument and which
   returns a prompt string.
 
-- ~choices~ A list of valid values.  How exactly that is used depends on
-  the class of the object.
+- ~choices~ A list of valid values, or a function that returns such a
+  list.  The latter is not implemented for ~transient-switches~, because
+  I couldn't think of a use-case.  How exactly the choices are used
+  varies depending on the class of the suffix.
 
 *** Slots of ~transient-variable~
 :PROPERTIES:

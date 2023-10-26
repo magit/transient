@@ -2961,6 +2961,7 @@ it\", in which case it is pointless to preserve history.)"
         (oset obj value nil)
       (let* ((enable-recursive-minibuffers t)
              (reader (oref obj reader))
+             (choices (if (functionp choices) (funcall choices) choices))
              (prompt (transient-prompt obj))
              (value (if multi-value (mapconcat #'identity value ",") value))
              (history-key (or (oref obj history-key)
