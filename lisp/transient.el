@@ -3636,7 +3636,9 @@ and its value is returned to the caller."
   (and-let* ((desc (oref obj description))
              (desc (if (functionp desc)
                        (with-current-buffer transient--original-buffer
-                         (funcall desc))
+                         (if (= (car (func-arity desc)) 1)
+                             (funcall desc obj)
+                           (funcall desc)))
                      desc)))
     (progn ; work around debbugs#31840
       (when-let ((face (and (slot-exists-p obj 'face) (oref obj face))))

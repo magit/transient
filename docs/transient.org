@@ -1043,10 +1043,10 @@ the object's values just for the binding inside this transient.
 - {{{var(KEY)}}} is the key binding, either a vector or key description string.
 
 - {{{var(DESCRIPTION)}}} is the description, either a string or a function that
-  returns a string.  The function should be a lambda expression to
-  avoid ambiguity.  In some cases a symbol that is bound as a function
-  would also work but to be safe you should use ~:description~ in that
-  case.
+  takes zero or one arguments (the suffix object) and returns a string.
+  The function should be a lambda expression to avoid ambiguity.  In
+  some cases a symbol that is bound as a function would also work but
+  to be safe you should use ~:description~ in that case.
 
 The next element is either a command or an argument.  This is the only
 argument that is mandatory in all cases.
@@ -1833,8 +1833,9 @@ Also see [[*Suffix Classes]].
   - ~%d~ For the description.
   - ~%v~ For the infix value.  Non-infix suffixes don't have a value.
 
-- ~description~ The description, either a string or a function that is
-  called with no argument and returns a string.
+- ~description~ The description, either a string or a function, which is
+  called with zero or one argument (the suffix object), and returns a
+  string.
 
 - ~face~ Face used for the description.  In simple cases it is easier
   to use this instead of using a function as ~description~ and adding
