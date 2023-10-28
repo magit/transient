@@ -2496,7 +2496,8 @@ If there is no parent prefix, then behave like `transient--do-exit'."
 
 (defun transient--do-leave ()
   "Call the command without exporting variables and exit the transient."
-  transient--stay)
+  (transient--stack-zap)
+  transient--exit)
 
 (defun transient--do-push-button ()
   "Call the command represented by the activated button.
