@@ -2629,9 +2629,7 @@ prefix argument and pivot to `transient-update'."
     (other-window 1)
     (display-warning 'transient "Inconsistent transient state detected.
 This should never happen.
-Please open an issue and post the shown command log.
-This is a heisenbug, so any additional details might help.
-Thanks!" :error)))
+Please open an issue and post the shown command log." :error)))
 
 (defun transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
