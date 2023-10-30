@@ -1409,6 +1409,9 @@ variable instead.")
 (defvar transient--helpp nil "Whether help-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
 
+(defvar transient--refreshp nil
+  "Whether to refresh the transient completely.")
+
 (defvar transient--active-infix nil "The active infix awaiting user input.")
 
 (defvar transient--timer nil)
@@ -1869,6 +1872,7 @@ value.  Otherwise return CHILDREN as is."
   (if name
       (setq transient--prefix (transient--init-prefix name params))
     (setq name (oref transient--prefix command)))
+  (setq transient--refreshp (oref transient--prefix refresh-suffixes))
   (setq transient--layout (or layout (transient--init-suffixes name)))
   (setq transient--suffixes (transient--flatten-suffixes transient--layout)))
 
@@ -2329,7 +2333,7 @@ value.  Otherwise return CHILDREN as is."
                   ;; would have to be used to record that a universal
                   ;; argument is in effect.
                   (not prefix-arg)))
-            ((oref transient--prefix refresh-suffixes)
+            (transient--refreshp
              (transient--refresh-transient))
             ((let ((old transient--redisplay-map)
                    (new (transient--make-redisplay-map)))
