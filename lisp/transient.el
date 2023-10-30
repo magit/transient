@@ -362,8 +362,8 @@ text and might otherwise have to scroll in two dimensions."
   :group 'transient
   :type 'boolean)
 
+(defconst transient--max-level 7)
 (defconst transient--default-child-level 1)
-
 (defconst transient--default-prefix-level 4)
 
 (defcustom transient-default-level transient--default-prefix-level
@@ -1412,6 +1412,9 @@ variable instead.")
 (defvar transient--refreshp nil
   "Whether to refresh the transient completely.")
 
+(defvar transient--all-levels-p nil
+  "Whether temporary display of suffixes on all levels is active.")
+
 (defvar transient--active-infix nil "The active infix awaiting user input.")
 
 (defvar transient--timer nil)
@@ -1616,7 +1619,8 @@ to `transient-predicate-map'.  Also see `transient-base-map'."
                        (if transient-show-common-commands
                            "Hide common commands"
                          "Show common permanently")))
-               (list "C-x l" "Show/hide suffixes" #'transient-set-level))))))))
+               (list "C-x l" "Show/hide suffixes" #'transient-set-level)
+               (list "C-x a" #'transient-toggle-level-limit))))))))
 
 (defvar-keymap transient-popup-navigation-map
   :doc "One of the keymaps used when popup navigation is enabled.
@@ -1979,7 +1983,8 @@ value.  Otherwise return CHILDREN as is."
         (error "No key for %s" (oref obj command))))))
 
 (defun transient--use-level-p (level &optional edit)
-  (or (and transient--editp (not edit))
+  (or transient--all-levels-p
+      (and transient--editp (not edit))
       (and (>= level 1)
            (<= level (oref transient--prefix level)))))
 
@@ -2374,6 +2379,7 @@ value.  Otherwise return CHILDREN as is."
     (setq transient--exitp nil)
     (setq transient--helpp nil)
     (setq transient--editp nil)
+    (setq transient--all-levels-p nil)
     (setq transient--minibuffer-depth 0)
     (run-hooks 'transient-exit-hook)
     (when resume
@@ -2734,6 +2740,25 @@ transient is active."
     (transient--show))
    (t
     (transient-undefined))))
+
+(transient-define-suffix transient-toggle-level-limit ()
+  "Toggle whether to temporarily displayed suffixes on all levels."
+  :description
+  (lambda ()
+    (cond
+     ((= transient-default-level transient--max-level)
+      "Always displaying all levels")
+     (transient--all-levels-p
+      (format "Hide suffix %s"
+              (propertize
+               (format "levels > %s" (oref transient--prefix level))
+               'face 'transient-higher-level)))
+     ("Show all suffix levels")))
+  :inapt-if (lambda () (= transient-default-level transient--max-level))
+  :transient t
+  (interactive)
+  (setq transient--all-levels-p (not transient--all-levels-p))
+  (setq transient--refreshp t))
 
 (defun transient-set ()
   "Set active transient's value for this Emacs session."
@@ -3696,9 +3721,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
     (cond ((and (slot-boundp obj 'key)
                 (transient--key-unreachable-p obj))
            (propertize desc 'face 'transient-unreachable))
-          ((and transient-highlight-higher-levels
-                (> (max (oref obj level) transient--max-group-level)
-                   transient--default-prefix-level))
+          ((if transient--all-levels-p
+               (> (oref obj level) transient--default-prefix-level)
+             (and transient-highlight-higher-levels
+                  (> (max (oref obj level) transient--max-group-level)
+                     transient--default-prefix-level)))
            (add-face-text-property
             0 (length desc) 'transient-higher-level nil desc)
            desc)

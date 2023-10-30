@@ -480,6 +480,12 @@ available even if the user lowers the transient level.
   Therefore, to control which suffixes are available given a certain
   state, you have to make sure that that state is currently active.
 
+- Key: C-x a (transient-toggle-level-limit) ::
+
+  This command toggle whether suffixes that are on levels lower than
+  the level specified by ~transient-default-level~ are temporarily
+  available anyway.
+
 ** Other Commands
 
 When invoking a transient in a small frame, the transient window may

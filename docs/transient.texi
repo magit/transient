@@ -619,6 +619,13 @@ not.  The predicates also apply in edit mode.
 
 Therefore, to control which suffixes are available given a certain
 state, you have to make sure that that state is currently active.
+
+@item @kbd{C-x a} (@code{transient-toggle-level-limit})
+@kindex C-x a
+@findex transient-toggle-level-limit
+This command toggle whether suffixes that are on levels lower than
+the level specified by @code{transient-default-level} are temporarily
+available anyway.
 @end table
 
 @node Other Commands
