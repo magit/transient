@@ -2033,11 +2033,16 @@ disabled by default and still considered experimental.
 @code{incompatible} A list of lists.  Each sub-list specifies a set of
 mutually exclusive arguments.  Enabling one of these arguments
 causes the others to be disabled.  An argument may appear in
-multiple sub-lists.
+multiple sub-lists.  Arguments must me given in the same form as
+used in the @code{argument} or @code{argument-format} slot of the respective
+suffix objects, usually something like @code{--switch} or @code{--option=%s}.  For
+options and @code{transient-switches} suffixes it is also possible to match
+against a specific value, as returned by @code{transient-infix-value},
+for example, @code{--option=one}.
 
 @item
 @code{scope} For some transients it might be necessary to have a sort of
-secondary value, called a ``scope''.  See @code{transient-define-prefix}.
+secondary value, called a “scope”.  See @code{transient-define-prefix}.
 @end itemize
 
 @anchor{Internal Prefix Slots}

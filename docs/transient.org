@@ -1792,7 +1792,12 @@ functions use ~describe-function~.
 - ~incompatible~ A list of lists.  Each sub-list specifies a set of
   mutually exclusive arguments.  Enabling one of these arguments
   causes the others to be disabled.  An argument may appear in
-  multiple sub-lists.
+  multiple sub-lists.  Arguments must me given in the same form as
+  used in the ~argument~ or ~argument-format~ slot of the respective
+  suffix objects, usually something like ~--switch~ or ~--option=%s~.  For
+  options and ~transient-switches~ suffixes it is also possible to match
+  against a specific value, as returned by ~transient-infix-value~,
+  for example, ~--option=one~.
 
 - ~scope~ For some transients it might be necessary to have a sort of
   secondary value, called a “scope”.  See ~transient-define-prefix~.
