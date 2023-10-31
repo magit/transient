@@ -2853,7 +2853,8 @@ such as when suggesting a new feature or reporting an issue."
   :description "Echo arguments"
   :key "x"
   (interactive (list (transient-args transient-current-command)))
-  (message "Arguments: %s"
+  (message "%s: %s"
+           (key-description (this-command-keys))
            (mapconcat (lambda (arg)
                         (propertize (if (string-match-p " " arg)
                                         (format "%S" arg)
