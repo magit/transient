@@ -2547,9 +2547,10 @@ If there is no parent prefix, then just call the command."
   (when transient--stack
     (let ((command (oref prefix-obj command)))
       (when-let ((suffix-obj (transient-suffix-object command)))
-        (when (and (slot-boundp suffix-obj 'transient)
-                   (memq (oref suffix-obj transient)
-                         (list t #'transient--do-recurse)))
+        (when (memq (if (slot-boundp suffix-obj 'transient)
+                        (oref suffix-obj transient)
+                      (oref transient-current-prefix transient-suffix))
+                    (list t #'transient--do-recurse))
           (oset prefix-obj transient-suffix t))))))
 
 (defun transient--do-replace ()
