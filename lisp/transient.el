@@ -3197,7 +3197,7 @@ prompt."
                                         (remove arg rule)))
                                  spec)))
     (dolist (obj transient--suffixes)
-      (when (and (slot-exists-p obj 'argument)
+      (when (and (cl-typep obj 'transient-argument)
                  (slot-boundp obj 'argument)
                  (member (oref obj argument) incomp))
         (transient-infix-set obj nil)))))
