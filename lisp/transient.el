@@ -1760,7 +1760,7 @@ of the corresponding object."
     (set-keymap-parent map transient-predicate-map)
     (when (memq (oref transient--prefix transient-non-suffix)
                 '(nil transient--do-warn transient--do-noop))
-      (keymap-set map "<handle-switch-frame>" #'transient--do-suspend))
+      (define-key map [handle-switch-frame] #'transient--do-suspend))
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
              (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix) t)))
