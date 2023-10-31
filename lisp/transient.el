@@ -1364,7 +1364,7 @@ See info node `(transient)Modifying Existing Transients'."
          (plist-get plist :command)))))
 
 (defun transient--command-key (cmd)
-  (and-let* ((obj (get cmd 'transient--suffix)))
+  (and-let* ((obj (transient--suffix-prototype cmd)))
     (cond ((slot-boundp obj 'key)
            (oref obj key))
           ((slot-exists-p obj 'shortarg)
@@ -1523,12 +1523,17 @@ probably use this instead:
                            (listify-key-sequence (this-command-keys))))
                   suffixes))
             (car suffixes)))
-    (and-let* ((obj (get (or command this-command) 'transient--suffix))
+    (and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn ; work around debbugs#31840
         (transient-init-scope obj)
         (transient-init-value obj)
         obj))))
+
+(defun transient--suffix-prototype (command)
+  (or (get command 'transient--suffix)
+      (seq-some (lambda (cmd) (get cmd 'transient--suffix))
+                (function-alias-p command))))
 
 ;;; Keymaps
 
@@ -1945,7 +1950,7 @@ value.  Otherwise return CHILDREN as is."
                      (apply class :level level args)
                    (unless (and cmd (symbolp cmd))
                      (error "BUG: Non-symbolic suffix command: %s" cmd))
-                   (if-let ((proto (and cmd (get cmd 'transient--suffix))))
+                   (if-let ((proto (and cmd (transient--suffix-prototype cmd))))
                        (apply #'clone proto :level level args)
                      (apply class :command cmd :level level args)))))
         (cond ((not cmd))
@@ -3071,7 +3076,7 @@ The last value is \"don't use any of these switches\"."
 Use this if you want to share an infix's history with a regular
 stand-alone command."
   (cl-letf (((symbol-function #'transient--show) #'ignore))
-    (transient-infix-read (get command 'transient--suffix))))
+    (transient-infix-read (transient--suffix-prototype command))))
 
 ;;;; Readers
 
