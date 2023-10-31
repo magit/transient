@@ -3196,13 +3196,10 @@ prompt."
                                    (and (member arg rule)
                                         (remove arg rule)))
                                  spec)))
-    (dolist (arg incomp)
-      (when-let ((obj (cl-find-if
-                       (lambda (obj)
-                         (and (slot-exists-p obj 'argument)
-                              (slot-boundp obj 'argument)
-                              (equal (oref obj argument) arg)))
-                       transient--suffixes)))
+    (dolist (obj transient--suffixes)
+      (when (and (slot-exists-p obj 'argument)
+                 (slot-boundp obj 'argument)
+                 (member (oref obj argument) incomp))
         (transient-infix-set obj nil)))))
 
 (cl-defgeneric transient-set-value (obj)
