@@ -3185,28 +3185,25 @@ prompt."
   "Set the value of infix object OBJ to value."
   (oset obj value value))
 
-(cl-defmethod transient-infix-set :around ((obj transient-argument) value)
+(cl-defmethod transient-infix-set :after ((obj transient-argument) value)
   "Unset incompatible infix arguments."
   (let ((arg (if (slot-boundp obj 'argument)
                  (oref obj argument)
                (oref obj argument-regexp))))
-    (if-let ((sic (and value arg))
-             (spec (oref transient--prefix incompatible))
-             (incomp (cl-mapcan (lambda (rule)
-                                  (and (member arg rule)
-                                       (remove arg rule)))
-                                spec)))
-        (progn
-          (cl-call-next-method obj value)
-          (dolist (arg incomp)
-            (when-let ((obj (cl-find-if
-                             (lambda (obj)
-                               (and (slot-exists-p obj 'argument)
-                                    (slot-boundp obj 'argument)
-                                    (equal (oref obj argument) arg)))
-                             transient--suffixes)))
-              (transient-infix-set obj nil))))
-      (cl-call-next-method obj value))))
+    (when-let ((sic (and value arg))
+               (spec (oref transient--prefix incompatible))
+               (incomp (cl-mapcan (lambda (rule)
+                                    (and (member arg rule)
+                                         (remove arg rule)))
+                                  spec)))
+      (dolist (arg incomp)
+        (when-let ((obj (cl-find-if
+                         (lambda (obj)
+                           (and (slot-exists-p obj 'argument)
+                                (slot-boundp obj 'argument)
+                                (equal (oref obj argument) arg)))
+                         transient--suffixes)))
+          (transient-infix-set obj nil))))))
 
 (cl-defgeneric transient-set-value (obj)
   "Set the value of the transient prefix OBJ.")
