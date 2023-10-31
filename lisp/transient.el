@@ -3178,8 +3178,6 @@ prompt."
 
 ;;;; Set
 
-(defvar transient--unset-incompatible t)
-
 (cl-defgeneric transient-infix-set (obj value)
   "Set the value of infix object OBJ to value.")
 
@@ -3192,7 +3190,7 @@ prompt."
   (let ((arg (if (slot-boundp obj 'argument)
                  (oref obj argument)
                (oref obj argument-regexp))))
-    (if-let ((sic (and value arg transient--unset-incompatible))
+    (if-let ((sic (and value arg))
              (spec (oref transient--prefix incompatible))
              (incomp (cl-mapcan (lambda (rule)
                                   (and (member arg rule)
@@ -3207,8 +3205,7 @@ prompt."
                                     (slot-boundp obj 'argument)
                                     (equal (oref obj argument) arg)))
                              transient--suffixes)))
-              (let ((transient--unset-incompatible nil))
-                (transient-infix-set obj nil)))))
+              (transient-infix-set obj nil))))
       (cl-call-next-method obj value))))
 
 (cl-defgeneric transient-set-value (obj)
