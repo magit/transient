@@ -1447,63 +1447,53 @@ transient keymap is disallowed and trying to do so results in a
 warning.  This does not ``deactivate'' the transient.
 @end itemize
 
-But these are just the defaults.  Whether a certain command
-deactivates or ``exits'' the transient is configurable.  There is more
-than one way in which a command can be ``transient'' or “non-transient”;
-the exact behavior is implemented by calling a so-called ``pre-command''
-function.  Whether non-suffix commands are allowed to be called is
-configurable per transient.
+The behavior can be changed for all suffixes of a particular prefix
+and/or for individual suffixes.  The values should nearly always be
+booleans, but certain functions, called “pre-commands”, can also be
+used.
+
+A boolean is interpreted as answering the question "does the
+transient stay active, when this command is invoked?"  @code{t} means that
+the transient stays active, while @code{nil} means that invoking the command
+exits the transient.
+
+Note that when the suffix is a “sub-prefix”, invoking that command
+always activates that sub-prefix, causing the outer prefix to no
+longer be active and displayed.  Here @code{t} means that when you exit the
+inner prefix, then the outer prefix becomes active again, while @code{nil}
+means that all outer prefixes are exited at once.
 
 @itemize
 @item
-The transient-ness of suffix commands (including infix commands) is
-controlled by the value of their @code{transient} slot, which can be set
-either when defining the command or when adding a binding to a
-transient while defining the respective transient prefix command.
+The behavior for non-suffixes can be set for a particular prefix, by
+the prefix's @code{transient-non-suffix} slot to a boolean, or a suitable
+pre-command function.  See @ref{Pre-commands for Non-Suffixes}.
 
-Valid values are booleans and the pre-commands described below.
+@item
+The common behavior for the suffixes of a particular prefix can be
+set using the prefix's @code{transient-suffixes} slot.
 
-@itemize
+The value specified in this slot does @strong{not} affect infixes.  Because
+it affects both regular suffixes as well as sub-prefixes, which
+have different needs, it is best to avoid explicitly specifying a
+function.
+
 @item
-@code{t} is equivalent to @code{transient--do-stay}.
-@item
-@code{nil} is equivalent to @code{transient--do-exit}.
-@item
-If @code{transient} is unbound (and that is actually the default for
-non-infix suffixes) then the value of the prefix's
-@code{transient-suffix} slot is used instead.  The default value of that
-slot is @code{nil}, so the suffix's @code{transient} slot being unbound is
-essentially equivalent to it being @code{nil}.
+The behavior of an individual suffix can be changed using its
+@code{transient} slot.  While it is usually best to use a boolean, for this
+slot it can occasionally make sense to specify a function explicitly.
+
+Note that this slot can be set when defining a suffix command using
+@code{transient-define-suffix} and/or in the definition of the prefix.  If
+set in both places, then the latter takes precedence, as usual.
 @end itemize
 
-@item
-A suffix command can be a prefix command itself, i.e., a
-``sub-prefix''.  While a sub-prefix is active we nearly always want
-@kbd{C-g} to take the user back to the ``super-prefix''.  However in rare
-cases this may not be desirable, and that makes the following
-complication necessary:
-
-For @code{transient-suffix} objects the @code{transient} slot is unbound.  We can
-ignore that for the most part because, as stated above, @code{nil} and the
-slot being unbound are equivalent, and mean ``do exit''.  That isn't
-actually true for suffixes that are sub-prefixes though.  For such
-suffixes unbound means ``do exit but allow going back'', which is the
-default, while @code{nil} means ``do exit permanently'', which requires that
-slot to be explicitly set to that value.
-
-@item
-The transient-ness of certain built-in suffix commands is specified
-using @code{transient-predicate-map}.  This is a special keymap, which
-binds commands to pre-commands (as opposed to keys to commands) and
-takes precedence over the @code{transient} slot.
-@end itemize
-
-The available pre-command functions are documented below.  They are
-called by @code{transient--pre-command}, a function on @code{pre-command-hook} and
-the value that they return determines whether the transient is exited.
-To do so the value of one of the constants @code{transient--exit} or
-@code{transient--stay} is used (that way we don't have to remember if @code{t} means
-``exit'' or “stay”).
+The available pre-command functions are documented in the following
+sub-sections.  They are called by @code{transient--pre-command}, a function
+on @code{pre-command-hook}, and the value that they return determines whether
+the transient is exited.  To do so the value of one of the constants
+@code{transient--exit} or @code{transient--stay} is used (that way we don't have to
+remember if @code{t} means “exit” or “stay”).
 
 Additionally, these functions may change the value of @code{this-command}
 (which explains why they have to be called using @code{pre-command-hook}),
@@ -1511,11 +1501,39 @@ call @code{transient-export}, @code{transient--stack-zap} or @code{transient--st
 and set the values of @code{transient--exitp}, @code{transient--helpp} or
 @code{transient--editp}.
 
+For completeness sake, some notes about complications:
+
+@itemize
+@item
+The transient-ness of certain built-in suffix commands is specified
+using @code{transient-predicate-map}.  This is a special keymap, which
+binds commands to pre-commands (as opposed to keys to commands) and
+takes precedence over the prefix's @code{transient-suffix} slot, but not
+the suffix's @code{transient} slot.
+
+@item
+While a sub-prefix is active we nearly always want @kbd{C-g} to take the
+user back to the “super-prefix”, even when the other suffixes don't
+do that.  However, in rare cases this may not be desirable, and that
+makes the following complication necessary:
+
+For @code{transient-suffix} objects the @code{transient} slot is unbound.  We can
+ignore that for the most part because @code{nil} and the slot being unbound
+are treated as equivalent, and mean “do exit”.  That isn't actually
+true for suffixes that are sub-prefixes though.  For such suffixes
+unbound means “do exit but allow going back”, which is the default,
+while @code{nil} means “do exit permanently”, which requires that slot to
+be explicitly set to that value.
+@end itemize
+
 @anchor{Pre-commands for Infixes}
 @subheading Pre-commands for Infixes
 
 The default for infixes is @code{transient--do-stay}.  This is also the only
-function that makes sense for infixes.
+function that makes sense for infixes, which is why this predicate is
+used even if the value of the prefix's @code{transient-suffix} slot is @code{t}.  In
+extremely rare cases, one might want to use something else, which can
+be done by setting the infix's @code{transient} slot directly.
 
 @defun transient--do-stay
 Call the command without exporting variables and stay transient.
@@ -1526,16 +1544,9 @@ Call the command without exporting variables and stay transient.
 
 By default, invoking a suffix causes the transient to be exited.
 
-If you want a different default behavior for a certain transient
-prefix command, then set its @code{:transient-suffix} slot.  The value can be
-a boolean, answering the question "does the transient stay active,
-when a suffix command is invoked?"  @code{t} means that the transient stays
-active, while @code{nil} means that invoking a suffix exits the transient.
-In either case, the exact behavior depends on whether the suffix is
-itself a prefix (i.e., a sub-prefix), an infix or a regular suffix.
-
 The behavior for an individual suffix command can be changed by
-setting its @code{transient} slot to one of the following pre-commands.
+setting its @code{transient} slot to a boolean (which is highly recommended),
+or to one of the following pre-commands.
 
 @defun transient--do-exit
 Call the command after exporting variables and exit the transient.
@@ -1550,9 +1561,10 @@ prefix.  If there is no parent prefix, then call @code{transient--do-exit}.
 Call the command after exporting variables and stay transient.
 @end defun
 
-The following pre-commands are suitable for sub-prefixes.  Only the
-first should ever explicitly be set as the value of the @code{transient}
-slot.
+The following pre-commands are only suitable for sub-prefixes.  It is
+not necessary to explicitly use these predicates because the correct
+predicate is automatically picked based on the value of the @code{transient}
+slot for the sub-prefix itself.
 
 @defun transient--do-recurse
 Call the transient prefix command, preparing for return to active
@@ -1561,7 +1573,7 @@ transient.
 Whether we actually return to the parent transient is ultimately
 under the control of each invoked suffix.  The difference between
 this pre-command and @code{transient--do-replace} is that it changes the
-value of the @code{transient-suffix} slot to @code{transient--do-return}.
+value of the @code{transient-suffix} slot to @code{t}.
 
 If there is no parent transient, then only call this command and
 skip the second step.
@@ -1590,8 +1602,8 @@ By default, non-suffixes (commands that are bound in other keymaps
 beside the transient keymap) cannot be invoked.  Trying to invoke
 such a command results in a warning and the transient stays active.
 
-If you want a different behavior, then set the @code{:transient-non-suffix}
-slot of the transient prefix command.  The value can be a boolean,
+If you want a different behavior, then set the @code{transient-non-suffix}
+slot of the transient prefix command.  The value should be a boolean,
 answering the question, "is it allowed to invoke non-suffix commands?"
 
 If the value is @code{t} or @code{transient--do-stay}, then non-suffixes can be
