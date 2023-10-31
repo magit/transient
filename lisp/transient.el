@@ -1763,7 +1763,7 @@ of the corresponding object."
       (define-key map [handle-switch-frame] #'transient--do-suspend))
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
-             (sub-prefix (and (symbolp cmd) (get cmd 'transient--prefix) t)))
+             (sub-prefix (and (get cmd 'transient--prefix) t)))
         (cond
          ((oref obj inapt)
           (define-key map (vector cmd) #'transient--do-warn-inapt))
