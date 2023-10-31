@@ -2404,6 +2404,7 @@ value.  Otherwise return CHILDREN as is."
   (push (list (oref transient--prefix command)
               transient--layout
               transient--editp
+              :transient-suffix (oref transient--prefix transient-suffix)
               :scope (oref transient--prefix scope))
         transient--stack))
 
