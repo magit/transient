@@ -3377,12 +3377,6 @@ have a history of their own.")
 
 ;;; Draw
 
-(defmacro transient-with-shadowed-buffer (&rest body)
-  "While in the transient buffer, temporarly make the shadowed buffer current."
-  (declare (indent 0) (debug t))
-  `(with-current-buffer (or transient--shadowed-buffer (current-buffer))
-     ,@body))
-
 (defun transient--show-brief ()
   (let ((message-log-max nil))
     (if (and transient-show-popup (<= transient-show-popup 0))
@@ -3474,6 +3468,12 @@ have a history of their own.")
         ;; another buffer and is going to display that again.
         (fit-window-to-buffer window nil (window-height window))
       (fit-window-to-buffer window nil 1))))
+
+(defmacro transient-with-shadowed-buffer (&rest body)
+  "While in the transient buffer, temporarly make the shadowed buffer current."
+  (declare (indent 0) (debug t))
+  `(with-current-buffer (or transient--shadowed-buffer (current-buffer))
+     ,@body))
 
 (defun transient--insert-groups ()
   (let ((groups (cl-mapcan (lambda (group)
