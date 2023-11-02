@@ -1437,6 +1437,8 @@ Usually it remains selected while the transient is active.")
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
 
+(define-obsolete-variable-alias 'transient--current-buffer
+  'transient--shadowed-buffer "0.4.4") ; TODO Remove before that release.
 (defvar transient--shadowed-buffer nil
   "The buffer that is temporarily shadowed by the transient buffer.
 This is bound while the suffix predicate is being evaluated and while
@@ -1460,9 +1462,6 @@ This is bound while the suffixes are drawn in the transient buffer.")
     transient-scroll-down
     mwheel-scroll
     scroll-bar-toolkit-scroll))
-
-(define-obsolete-variable-alias 'transient--current-buffer
-  'transient--shadowed-buffer "0.4.5") ; TODO Remove before that release.
 
 ;;; Identities
 
