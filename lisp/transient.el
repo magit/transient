@@ -1437,7 +1437,7 @@ Usually it remains selected while the transient is active.")
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
 
-(defvar transient--current-buffer nil
+(defvar transient--shadowed-buffer nil
   "The buffer that is temporarily shadowed by the transient buffer.
 This is bound while the suffix predicate is being evaluated and while
 drawing in the transient buffer.")
@@ -1460,6 +1460,9 @@ This is bound while the suffixes are drawn in the transient buffer.")
     transient-scroll-down
     mwheel-scroll
     scroll-bar-toolkit-scroll))
+
+(define-obsolete-variable-alias 'transient--current-buffer
+  'transient--shadowed-buffer "0.4.5") ; TODO Remove before that release.
 
 ;;; Identities
 
@@ -2003,7 +2006,7 @@ value.  Otherwise return CHILDREN as is."
            (<= level (oref transient--prefix level)))))
 
 (defun transient--use-suffix-p (obj)
-  (let ((transient--current-buffer (current-buffer))
+  (let ((transient--shadowed-buffer (current-buffer))
         (transient--pending-suffix obj))
     (transient--do-suffix-p
      (oref obj if)
@@ -2017,7 +2020,7 @@ value.  Otherwise return CHILDREN as is."
      t)))
 
 (defun transient--inapt-suffix-p (obj)
-  (let ((transient--current-buffer (current-buffer))
+  (let ((transient--shadowed-buffer (current-buffer))
         (transient--pending-suffix obj))
     (transient--do-suffix-p
      (oref obj inapt-if)
@@ -3409,7 +3412,7 @@ have a history of their own.")
 (defun transient--show ()
   (transient--timer-cancel)
   (setq transient--showp t)
-  (let ((transient--current-buffer (current-buffer))
+  (let ((transient--shadowed-buffer (current-buffer))
         (buf (get-buffer-create transient--buffer-name))
         (focus nil))
     (with-current-buffer buf
