@@ -3741,17 +3741,8 @@ have a history of their own.")
         (insert ?\n)))))
 
 (cl-defmethod transient--insert-group ((group transient-columns))
-  (let* ((columns
-          (mapcar
-           (lambda (column)
-             (transient--maybe-pad-keys column group)
-             (transient-with-shadowed-buffer
-               (let* ((transient--pending-group column)
-                      (rows (mapcar #'transient-format (oref column suffixes))))
-                 (when-let ((desc (transient-format-description column)))
-                   (push desc rows))
-                 (flatten-tree rows))))
-           (oref group suffixes)))
+  (let* ((columns (mapcar #'transient--column-max-width
+                          (oref group suffixes)))
          (vp (or (oref transient--prefix variable-pitch)
                  transient-align-variable-pitch))
          (rs (apply #'max (mapcar #'length columns)))
@@ -3794,6 +3785,15 @@ have a history of their own.")
               (insert cell))
             (when (= c (1- cs))
               (insert ?\n))))))))
+
+(defun transient--column-max-width (column &optional parent)
+  (transient--maybe-pad-keys column group)
+  (transient-with-shadowed-buffer
+    (let* ((transient--pending-group column)
+           (rows (mapcar #'transient-format (oref column suffixes))))
+      (when-let ((desc (transient-format-description column)))
+        (push desc rows))
+      (flatten-tree rows))))
 
 (cl-defmethod transient--insert-group ((group transient-subgroups))
   (let* ((subgroups (oref group suffixes))
