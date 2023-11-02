@@ -3378,6 +3378,12 @@ have a history of their own.")
 
 ;;; Draw
 
+(defmacro transient-with-shadowed-buffer (&rest body)
+  "While in the transient buffer, temporarly make the shadowed buffer current."
+  (declare (indent 0) (debug t))
+  `(with-current-buffer (or transient--shadowed-buffer (current-buffer))
+     ,@body))
+
 (defun transient--show-brief ()
   (let ((message-log-max nil))
     (if (and transient-show-popup (<= transient-show-popup 0))
@@ -3710,7 +3716,7 @@ called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
   (and-let* ((desc (oref obj description))
              (desc (if (functionp desc)
-                       (with-current-buffer transient--shadowed-buffer
+                       (transient-with-shadowed-buffer
                          (if (= (car (func-arity desc)) 1)
                              (funcall desc obj)
                            (funcall desc)))
