@@ -716,6 +716,7 @@ slot is non-nil."
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
    (show-help   :initarg :show-help   :initform nil)
+   (inapt-face  :initarg :inapt-face  :initform 'transient-inapt-suffix)
    (inapt                             :initform nil)
    (inapt-if
     :initarg :inapt-if
@@ -3617,8 +3618,6 @@ Optional support for popup buttons is also implemented here."
                                            'transient-enabled-suffix
                                          'transient-disabled-suffix))))
               (cl-call-next-method obj))))
-    (when (oref obj inapt)
-      (add-face-text-property 0 (length str) 'transient-inapt-suffix nil str))
     (if transient-enable-popup-navigation
         (make-text-button str nil
                           'type 'transient
@@ -3645,6 +3644,12 @@ Optional support for popup buttons is also implemented here."
 
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
+
+(cl-defmethod transient-format-key :around ((obj transient-suffix))
+  (let ((str (cl-call-next-method)))
+    (when (oref obj inapt)
+      (add-face-text-property 0 (length str) 'transient-inapt-suffix nil str))
+    str))
 
 (cl-defmethod transient-format-key ((obj transient-suffix))
   "Format OBJ's `key' for display and return the result."
@@ -3744,7 +3749,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
                        (funcall (oref transient--prefix suffix-description)
                                 obj))
                   (propertize "(BUG: no description)" 'face 'error))))
-    (cond ((and (slot-boundp obj 'key)
+    (cond ((oref obj inapt)
+           (when-let ((face (oref obj inapt-face)))
+             (add-face-text-property 0 (length desc) face nil desc))
+           desc)
+          ((and (slot-boundp obj 'key)
                 (transient--key-unreachable-p obj))
            (propertize desc 'face 'transient-unreachable))
           ((if transient--all-levels-p
