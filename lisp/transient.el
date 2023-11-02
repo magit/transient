@@ -753,7 +753,8 @@ slot is non-nil."
   "Superclass for suffix command.")
 
 (defclass transient-information (transient-suffix)
-  ((format :initform " %k %d"))
+  ((format :initform " %k %d")
+   (key    :initform " "))
   "Display-only information.
 A suffix object with no associated command.")
 
