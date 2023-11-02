@@ -3710,7 +3710,7 @@ called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
   (and-let* ((desc (oref obj description))
              (desc (if (functionp desc)
-                       (with-current-buffer transient--original-buffer
+                       (with-current-buffer transient--shadowed-buffer
                          (if (= (car (func-arity desc)) 1)
                              (funcall desc obj)
                            (funcall desc)))
