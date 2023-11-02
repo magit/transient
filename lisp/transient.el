@@ -3726,7 +3726,8 @@ and its value is returned to the caller."
                            (funcall desc)))
                      desc)))
     (progn ; work around debbugs#31840
-      (when-let ((face (and (slot-exists-p obj 'face) (oref obj face))))
+      (when-let* ((face (and (slot-exists-p obj 'face) (oref obj face)))
+                  (face (if (functionp face) (funcall face) face)))
         (add-face-text-property 0 (length desc) face t desc))
       desc)))
 
