@@ -3288,6 +3288,8 @@ stand-alone command."
   "Read an existing directory."
   (file-local-name (expand-file-name (read-directory-name prompt nil nil t))))
 
+;; MAYBE rename to -natnum, -natnum+ and -integer
+
 (defun transient-read-number-N0 (prompt initial-input history)
   "Read a natural number (including zero) and return it as a string."
   (transient--read-number-N prompt initial-input history t))
