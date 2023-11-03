@@ -3619,7 +3619,8 @@ Optional support for popup buttons is also implemented here."
                                            'transient-enabled-suffix
                                          'transient-disabled-suffix))))
               (cl-call-next-method obj))))
-    (if transient-enable-popup-navigation
+    (if (and transient-enable-popup-navigation
+             (slot-boundp obj 'command))
         (make-text-button str nil
                           'type 'transient
                           'command (oref obj command))
