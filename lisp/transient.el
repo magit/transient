@@ -3606,13 +3606,10 @@ making `transient--original-buffer' current.")
 (cl-defmethod transient-format :around ((obj transient-infix))
   "When reading user input for this infix, then highlight it."
   (let ((str (cl-call-next-method obj)))
-    (when (eq (oref obj command) this-original-command)
-      (setq str (concat str "\n"))
-      (add-face-text-property
-       (if (eq this-command 'transient-set-level) 3 0)
-       (length str)
-       'transient-active-infix nil str))
-    str))
+    (if (eq (oref obj command) this-original-command)
+        (transient--add-face (concat str "\n") 'transient-active-infix nil
+                             (if (eq this-command 'transient-set-level) 3 0))
+      str)))
 
 (cl-defmethod transient-format :around ((obj transient-suffix))
   "When edit-mode is enabled, then prepend the level information.
@@ -3655,9 +3652,9 @@ Optional support for popup buttons is also implemented here."
 
 (cl-defmethod transient-format-key :around ((obj transient-suffix))
   (let ((str (cl-call-next-method)))
-    (when (oref obj inapt)
-      (add-face-text-property 0 (length str) 'transient-inapt-suffix nil str))
-    str))
+    (if (oref obj inapt)
+        (transient--add-face str 'transient-inapt-suffix)
+      str)))
 
 (cl-defmethod transient-format-key ((obj transient-suffix))
   "Format OBJ's `key' for display and return the result."
@@ -3709,15 +3706,15 @@ Optional support for popup buttons is also implemented here."
                   'transient-key)))
 
 (cl-defmethod transient-format-key :around ((obj transient-argument))
+  "Handle `transient-highlight-mismatched-keys'."
   (let ((key (cl-call-next-method obj)))
-    (cond ((not transient-highlight-mismatched-keys))
-          ((not (slot-boundp obj 'shortarg))
-           (add-face-text-property
-            0 (length key) 'transient-nonstandard-key nil key))
-          ((not (string-equal key (oref obj shortarg)))
-           (add-face-text-property
-            0 (length key) 'transient-mismatched-key nil key)))
-    key))
+    (cond
+     ((not transient-highlight-mismatched-keys) key)
+     ((not (slot-boundp obj 'shortarg))
+      (transient--add-face key 'transient-nonstandard-key))
+     ((not (string-equal key (oref obj shortarg)))
+      (transient--add-face key 'transient-mismatched-key))
+     (key))))
 
 (cl-defgeneric transient-format-description (obj)
   "Format OBJ's `description' for display and return the result.")
@@ -3733,10 +3730,9 @@ and its value is returned to the caller."
                              (funcall desc obj)
                            (funcall desc)))
                      desc)))
-    (progn ; work around debbugs#31840
-      (when-let* ((face (and (slot-exists-p obj 'face) (oref obj face)))
-                  (face (if (functionp face) (funcall face) face)))
-        (add-face-text-property 0 (length desc) face t desc))
+    (if-let* ((face (and (slot-exists-p obj 'face) (oref obj face)))
+              (face (if (functionp face) (funcall face) face)))
+        (transient--add-face desc face t)
       desc)))
 
 (cl-defmethod transient-format-description ((obj transient-group))
@@ -3758,23 +3754,21 @@ If the OBJ's `key' is currently unreachable, then apply the face
                        (funcall (oref transient--prefix suffix-description)
                                 obj))
                   (propertize "(BUG: no description)" 'face 'error))))
-    (cond ((oref obj inapt)
-           (when-let ((face (oref obj inapt-face)))
-             (add-face-text-property 0 (length desc) face nil desc))
-           desc)
-          ((and (slot-boundp obj 'key)
-                (transient--key-unreachable-p obj))
-           (propertize desc 'face 'transient-unreachable))
-          ((if transient--all-levels-p
-               (> (oref obj level) transient--default-prefix-level)
-             (and transient-highlight-higher-levels
-                  (> (max (oref obj level) transient--max-group-level)
-                     transient--default-prefix-level)))
-           (add-face-text-property
-            0 (length desc) 'transient-higher-level nil desc)
-           desc)
-          (t
-           desc))))
+    (cond
+     ((oref obj inapt)
+      (if-let ((face (oref obj inapt-face)))
+          (transient--add-face desc face)
+        desc))
+     ((and (slot-boundp obj 'key)
+           (transient--key-unreachable-p obj))
+      (propertize desc 'face 'transient-unreachable))
+     ((if transient--all-levels-p
+          (> (oref obj level) transient--default-prefix-level)
+        (and transient-highlight-higher-levels
+             (> (max (oref obj level) transient--max-group-level)
+                transient--default-prefix-level)))
+      (transient--add-face desc 'transient-higher-level))
+     (desc))))
 
 (cl-defgeneric transient-format-value (obj)
   "Format OBJ's value for display and return the result.")
@@ -3814,6 +3808,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
                               'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
+
+(defun transient--add-face (string face &optional append beg end)
+  (let ((str (copy-sequence string)))
+    (add-face-text-property (or beg 0) (or end (length str)) face append str)
+    str))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
