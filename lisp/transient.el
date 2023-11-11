@@ -1779,7 +1779,7 @@ of the corresponding object."
           (define-key map (vector cmd)
             (pcase (list kind (oref obj transient) return)
               (`(prefix   t ,_) #'transient--do-recurse)
-              (`(prefix nil ,_) #'transient--do-replace)
+              (`(prefix nil ,_) #'transient--do-stack)
               (`(infix    t ,_) #'transient--do-stay)
               (`(suffix   t ,_) #'transient--do-call)
               ('(suffix nil  t) #'transient--do-return)
@@ -1791,7 +1791,7 @@ of the corresponding object."
               (`(prefix ,(or 'transient--do-stay 'transient--do-call) ,_)
                #'transient--do-recurse)
               (`(prefix   t ,_) #'transient--do-recurse)
-              (`(prefix  ,_ ,_) #'transient--do-replace)
+              (`(prefix  ,_ ,_) #'transient--do-stack)
               (`(infix   ,_ ,_) #'transient--do-stay)
               (`(suffix   t ,_) #'transient--do-call)
               ('(suffix nil  t) #'transient--do-return)
@@ -1856,7 +1856,7 @@ EDIT may be non-nil."
       (setq params (list :scope (oref transient--prefix scope))))
      (transient--prefix
       ;; Invoked as a ":transient-non-suffix 'transient--do-{stay,call}"
-      ;; of an outer prefix.  Unlike the usual `transient--do-replace',
+      ;; of an outer prefix.  Unlike the usual `transient--do-stack',
       ;; these predicates fail to clean up after the outer prefix.
       (transient--pop-keymap 'transient--transient-map)
       (transient--pop-keymap 'transient--redisplay-map))
@@ -2546,7 +2546,7 @@ Use that command's pre-command to determine transient behavior."
 (defun transient--do-recurse ()
   "Call the transient prefix command, preparing for return to active transient.
 If there is no parent prefix, then just call the command."
-  (transient--do-replace))
+  (transient--do-stack))
 
 (defun transient--setup-recursion (prefix-obj)
   (when transient--stack
@@ -2558,10 +2558,18 @@ If there is no parent prefix, then just call the command."
                     (list t #'transient--do-recurse))
           (oset prefix-obj transient-suffix t))))))
 
-(defun transient--do-replace ()
-  "Call the transient prefix command, replacing the active transient."
+(defun transient--do-stack ()
+  "Call the transient prefix command, stacking the active transient.
+Push the active transient to the transient stack."
   (transient--export)
   (transient--stack-push)
+  (setq transient--exitp 'replace)
+  transient--exit)
+
+(defun transient--do-replace ()
+  "Call the transient prefix command, replacing the active transient.
+Do not push the active transient to the transient stack."
+  (transient--export)
   (setq transient--exitp 'replace)
   transient--exit)
 
@@ -2614,6 +2622,7 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-exit       'transient-color 'transient-blue)
 (put 'transient--do-recurse    'transient-color 'transient-red)
 (put 'transient--do-replace    'transient-color 'transient-blue)
+(put 'transient--do-stack      'transient-color 'transient-red)
 (put 'transient--do-suspend    'transient-color 'transient-blue)
 (put 'transient--do-quit-one   'transient-color 'transient-blue)
 (put 'transient--do-quit-all   'transient-color 'transient-blue)

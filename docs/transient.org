@@ -1380,15 +1380,25 @@ slot for the sub-prefix itself.
 
   Whether we actually return to the parent transient is ultimately
   under the control of each invoked suffix.  The difference between
-  this pre-command and ~transient--do-replace~ is that it changes the
+  this pre-command and ~transient--do-stack~ is that it changes the
   value of the ~transient-suffix~ slot to ~t~.
 
   If there is no parent transient, then only call this command and
   skip the second step.
 
+- Function: transient--do-stack ::
+
+  Call the transient prefix command, stacking the active transient.
+  Push the active transient to the transient stack.
+
+  Unless ~transient--do-recurse~ is explicitly used, this pre-command
+  is automatically used for suffixes that are prefixes themselves,
+  i.e., for sub-prefixes.
+
 - Function: transient--do-replace ::
 
   Call the transient prefix command, replacing the active transient.
+  Do not push the active transient to the transient stack.
 
   Unless ~transient--do-recurse~ is explicitly used, this pre-command
   is automatically used for suffixes that are prefixes themselves,
