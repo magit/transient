@@ -1417,8 +1417,6 @@ variable instead.")
 (defvar transient--all-levels-p nil
   "Whether temporary display of suffixes on all levels is active.")
 
-(defvar transient--active-infix nil "The active infix awaiting user input.")
-
 (defvar transient--timer nil)
 
 (defvar transient--stack nil)
@@ -2749,10 +2747,9 @@ transient is active."
           (list command
                 (let ((keys (this-single-command-raw-keys)))
                   (and (lookup-key transient--transient-map keys)
-                       (string-to-number
-                        (let ((transient--active-infix
-                               (transient-suffix-object command)))
-                          (transient--show)
+                       (progn
+                         (transient--show)
+                         (string-to-number
                           (transient--read-number-N
                            (format "Set level for `%s': " command)
                            nil nil (not (eq command prefix)))))))))))
@@ -3010,23 +3007,13 @@ infix command determines what the new value should be, based
 on the previous value.")
 
 (cl-defmethod transient-infix-read :around ((obj transient-infix))
-  "Highlight the infix in the popup buffer.
+  "Refresh the transient buffer buffer calling the next method.
 
-This also wraps the call to `cl-call-next-method' with two
-macros.
-
-`transient--with-suspended-override' is necessary to allow
-reading user input using the minibuffer.
-
-`transient--with-emergency-exit' arranges for the transient to
-be exited in case of an error because otherwise Emacs would get
-stuck in an inconsistent state, which might make it necessary to
-kill it from the outside.
-
-If you replace this method, then you must make sure to always use
-the latter macro and most likely also the former."
-  (let ((transient--active-infix obj))
-    (transient--show))
+Also wrap `cl-call-next-method' with two macros:
+- `transient--with-suspended-override' allows use of minibuffer.
+- `transient--with-emergency-exit' arranges for the transient to
+  be exited in case of an error."
+  (transient--show)
   (transient--with-emergency-exit
     (transient--with-suspended-override
      (cl-call-next-method obj))))
@@ -3619,7 +3606,7 @@ making `transient--original-buffer' current.")
 (cl-defmethod transient-format :around ((obj transient-infix))
   "When reading user input for this infix, then highlight it."
   (let ((str (cl-call-next-method obj)))
-    (when (eq obj transient--active-infix)
+    (when (eq (oref obj command) this-original-command)
       (setq str (concat str "\n"))
       (add-face-text-property
        (if (eq this-command 'transient-set-level) 3 0)
