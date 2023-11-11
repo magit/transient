@@ -1262,7 +1262,8 @@ The default behavior while a transient is active is as follows:
 The behavior can be changed for all suffixes of a particular prefix
 and/or for individual suffixes.  The values should nearly always be
 booleans, but certain functions, called “pre-commands”, can also be
-used.
+used.  These functions are named ~transient--do-VERB~, and the symbol
+~VERB~ can be used as a shorthand.
 
 A boolean is interpreted as answering the question "does the
 transient stay active, when this command is invoked?"  ~t~ means that

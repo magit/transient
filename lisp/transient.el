@@ -1760,7 +1760,8 @@ of the corresponding object."
     map))
 
 (defun transient--make-predicate-map ()
-  (let* ((default (oref transient--prefix transient-suffix))
+  (let* ((default (transient--resolve-pre-command
+                   (oref transient--prefix transient-suffix)))
          (return (eq default t))
          (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
@@ -1777,7 +1778,9 @@ of the corresponding object."
           (define-key map (vector cmd) #'transient--do-warn-inapt))
          ((slot-boundp obj 'transient)
           (define-key map (vector cmd)
-            (pcase (list kind (oref obj transient) return)
+            (pcase (list kind
+                         (transient--resolve-pre-command (oref obj transient))
+                         return)
               (`(prefix   t ,_) #'transient--do-recurse)
               (`(prefix nil ,_) #'transient--do-stack)
               (`(infix    t ,_) #'transient--do-stay)
@@ -2151,11 +2154,18 @@ value.  Otherwise return CHILDREN as is."
   (or (ignore-errors
         (lookup-key transient--predicate-map (vector cmd)))
       (and (not suffix-only)
-           (let ((pred (oref transient--prefix transient-non-suffix)))
+           (let ((pred (transient--resolve-pre-command
+                        (oref transient--prefix transient-non-suffix))))
              (pcase pred
                ('t   #'transient--do-stay)
                ('nil #'transient--do-warn)
                (_    pred))))))
+
+(defun transient--resolve-pre-command (pre)
+  (cond ((booleanp pre) pre)
+        ((string-match-p "--do-" (symbol-name pre)) pre)
+        ((let ((sym (intern (format "transient--do-%s" pre))))
+           (if (functionp sym) sym pre)))))
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)

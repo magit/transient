@@ -1450,7 +1450,8 @@ warning.  This does not ``deactivate'' the transient.
 The behavior can be changed for all suffixes of a particular prefix
 and/or for individual suffixes.  The values should nearly always be
 booleans, but certain functions, called “pre-commands”, can also be
-used.
+used.  These functions are named @code{transient--do-VERB}, and the symbol
+@code{VERB} can be used as a shorthand.
 
 A boolean is interpreted as answering the question "does the
 transient stay active, when this command is invoked?"  @code{t} means that
