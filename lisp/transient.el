@@ -3730,8 +3730,7 @@ and its value is returned to the caller."
                              (funcall desc obj)
                            (funcall desc)))
                      desc)))
-    (if-let* ((face (and (slot-exists-p obj 'face) (oref obj face)))
-              (face (if (functionp face) (funcall face) face)))
+    (if-let* ((face (transient--get-face obj 'face)))
         (transient--add-face desc face t)
       desc)))
 
@@ -3808,6 +3807,14 @@ If the OBJ's `key' is currently unreachable, then apply the face
                               'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
+
+(defun transient--get-face (obj slot)
+  (and-let* ((! (slot-exists-p obj slot))
+             (! (slot-boundp   obj slot))
+             (face (slot-value obj slot)))
+    (if (functionp face)
+        (funcall face)
+      face)))
 
 (defun transient--add-face (string face &optional append beg end)
   (let ((str (copy-sequence string)))
