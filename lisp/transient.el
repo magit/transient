@@ -3812,7 +3812,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
   (and-let* ((! (slot-exists-p obj slot))
              (! (slot-boundp   obj slot))
              (face (slot-value obj slot)))
-    (if (functionp face)
+    (if (and (not (facep face))
+             (functionp face))
         (funcall face)
       face)))
 
