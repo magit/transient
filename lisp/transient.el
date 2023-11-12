@@ -3755,7 +3755,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
                   (propertize "(BUG: no description)" 'face 'error))))
     (cond
      ((oref obj inapt)
-      (if-let ((face (oref obj inapt-face)))
+      (if-let ((face (transient--get-face obj 'inapt-face)))
           (transient--add-face desc face)
         desc))
      ((and (slot-boundp obj 'key)
