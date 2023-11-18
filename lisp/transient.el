@@ -648,6 +648,7 @@ If `transient-save-history' is nil, then do nothing."
    (man-page    :initarg :man-page    :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
+   (transient-switch-frame :initarg :transient-switch-frame)
    (refresh-suffixes     :initarg :refresh-suffixes     :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
@@ -1763,9 +1764,12 @@ of the corresponding object."
          (return (eq default t))
          (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
-    (when (memq (transient--resolve-pre-command
-                 (oref transient--prefix transient-non-suffix))
-                '(nil transient--do-warn transient--do-noop))
+    (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
+                   (transient--resolve-pre-command
+                    (not (oref transient--prefix transient-switch-frame))))
+              (memq (transient--resolve-pre-command
+                     (oref transient--prefix transient-non-suffix))
+                    '(nil transient--do-warn transient--do-noop)))
       (define-key map [handle-switch-frame] #'transient--do-suspend))
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
