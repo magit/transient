@@ -1763,7 +1763,8 @@ of the corresponding object."
          (return (eq default t))
          (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
-    (when (memq (oref transient--prefix transient-non-suffix)
+    (when (memq (transient--resolve-pre-command
+                 (oref transient--prefix transient-non-suffix))
                 '(nil transient--do-warn transient--do-noop))
       (define-key map [handle-switch-frame] #'transient--do-suspend))
     (dolist (obj transient--suffixes)
