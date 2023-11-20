@@ -3622,20 +3622,20 @@ making `transient--original-buffer' current.")
 (cl-defmethod transient-format :around ((obj transient-suffix))
   "When edit-mode is enabled, then prepend the level information.
 Optional support for popup buttons is also implemented here."
-  (let ((str (concat
-              (and transient--editp
-                   (let ((level (oref obj level)))
-                     (propertize (format " %s " level)
-                                 'face (if (transient--use-level-p level t)
-                                           'transient-enabled-suffix
-                                         'transient-disabled-suffix))))
-              (cl-call-next-method obj))))
-    (if (and transient-enable-popup-navigation
-             (slot-boundp obj 'command))
-        (make-text-button str nil
-                          'type 'transient
-                          'command (oref obj command))
-      str)))
+  (let ((str (cl-call-next-method obj)))
+    (when transient--editp
+      (setq str (concat (let ((level (oref obj level)))
+                          (propertize (format " %s " level)
+                                      'face (if (transient--use-level-p level t)
+                                                'transient-enabled-suffix
+                                              'transient-disabled-suffix)))
+                        str)))
+    (when (and transient-enable-popup-navigation
+               (slot-boundp obj 'command))
+      (setq str (make-text-button str nil
+                                  'type 'transient
+                                  'command (oref obj command))))
+    str))
 
 (cl-defmethod transient-format ((obj transient-infix))
   "Return a string generated using OBJ's `format'.
