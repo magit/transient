@@ -3611,18 +3611,17 @@ making `transient--original-buffer' current.")
   "Return a string containing just the ARG character."
   (char-to-string arg))
 
-(cl-defmethod transient-format :around ((obj transient-infix))
-  "When reading user input for this infix, then highlight it."
-  (let ((str (cl-call-next-method obj)))
-    (if (eq (oref obj command) this-original-command)
-        (transient--add-face (concat str "\n") 'transient-active-infix nil
-                             (if (eq this-command 'transient-set-level) 3 0))
-      str)))
-
 (cl-defmethod transient-format :around ((obj transient-suffix))
-  "When edit-mode is enabled, then prepend the level information.
-Optional support for popup buttons is also implemented here."
+  "Add additional formatting if appropriate.
+When reading user input for this infix, then highlight it.
+When edit-mode is enabled, then prepend the level information.
+When `transient-enable-popup-navigation' is non-nil then format
+  as a button."
   (let ((str (cl-call-next-method obj)))
+    (when (and (cl-typep obj 'transient-infix)
+               (eq (oref obj command) this-original-command))
+      (setq str (transient--add-face (concat str "\n")
+                                     'transient-active-infix)))
     (when transient--editp
       (setq str (concat (let ((level (oref obj level)))
                           (propertize (format " %s " level)
