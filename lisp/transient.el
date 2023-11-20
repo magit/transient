@@ -524,7 +524,7 @@ Only the background color is significant."
   :group 'transient-faces)
 
 (define-obsolete-face-alias 'transient-separator 'transient-separator-line
-                            "transient 0.4.4")
+                            "Transient 0.5.0")
 
 (defgroup transient-color-faces
   '((transient-semantic-coloring custom-variable))
@@ -1439,7 +1439,7 @@ Usually it remains selected while the transient is active.")
 Usually it remains current while the transient is active.")
 
 (define-obsolete-variable-alias 'transient--current-buffer
-  'transient--shadowed-buffer "0.4.4")
+  'transient--shadowed-buffer "Transient 0.5.0")
 (defvar transient--shadowed-buffer nil
   "The buffer that is temporarily shadowed by the transient buffer.
 This is bound while the suffix predicate is being evaluated and while
