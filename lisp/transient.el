@@ -1439,7 +1439,7 @@ Usually it remains selected while the transient is active.")
 Usually it remains current while the transient is active.")
 
 (define-obsolete-variable-alias 'transient--current-buffer
-  'transient--shadowed-buffer "0.4.4") ; TODO Remove before that release.
+  'transient--shadowed-buffer "0.4.4")
 (defvar transient--shadowed-buffer nil
   "The buffer that is temporarily shadowed by the transient buffer.
 This is bound while the suffix predicate is being evaluated and while
