@@ -1438,6 +1438,9 @@ Usually it remains selected while the transient is active.")
   "The buffer that was current before the transient was invoked.
 Usually it remains current while the transient is active.")
 
+(defvar transient--restore-winconf nil
+  "Window configuration to restore after exiting help.")
+
 (define-obsolete-variable-alias 'transient--current-buffer
   'transient--shadowed-buffer "Transient 0.5.0")
 (defvar transient--shadowed-buffer nil
@@ -2716,8 +2719,6 @@ transient is active."
   (interactive)
   (setq transient--showp t))
 
-(defvar-local transient--restore-winconf nil)
-
 (defvar transient-resume-mode)
 
 (defun transient-help (&optional interactive)
@@ -2735,7 +2736,7 @@ transient is active."
                transient--prefix
              (or (transient-suffix-object)
                  this-original-command)))
-          (setq transient--restore-winconf winconf))
+          (setq-local transient--restore-winconf winconf))
         (fit-window-to-buffer nil (frame-height) (window-height))
         (transient-resume-mode)
         (message (substitute-command-keys
