@@ -2618,7 +2618,7 @@ Do not push the active transient to the transient stack."
 In that case behave like `transient--do-stay', otherwise similar
 to `transient--do-warn'."
   (unless transient-enable-popup-navigation
-    (setq this-command 'transient-popup-navigation-help))
+    (setq this-command 'transient-inhibit-move))
   transient--stay)
 
 (defun transient--do-minus ()
@@ -2686,10 +2686,11 @@ prefix argument and pivot to `transient-update'."
 This should never happen.
 Please open an issue and post the shown command log." :error)))
 
-(defun transient-popup-navigation-help ()
-  "Inform the user how to enable popup navigation commands."
+(defun transient-inhibit-move ()
+  "Warn the user that popup navigation is disabled."
   (interactive)
-  (message "This command is only available if `%s' is non-nil"
+  (message "To enable use of `%s', please customize `%s'"
+           this-original-command
            'transient-enable-popup-navigation))
 
 (defun transient-toggle-common ()
