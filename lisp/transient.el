@@ -2693,11 +2693,6 @@ Please open an issue and post the shown command log." :error)))
            this-original-command
            'transient-enable-popup-navigation))
 
-(defun transient-toggle-common ()
-  "Toggle whether common commands are permanently shown."
-  (interactive)
-  (setq transient-show-common-commands (not transient-show-common-commands)))
-
 (defun transient-suspend ()
   "Suspend the current transient.
 It can later be resumed using `transient-resume', while no other
@@ -2878,6 +2873,11 @@ transient is active."
          (quit-window))
         (t
          (message "No suspended transient command"))))
+
+(defun transient-toggle-common ()
+  "Toggle whether common commands are permanently shown."
+  (interactive)
+  (setq transient-show-common-commands (not transient-show-common-commands)))
 
 (transient-define-suffix transient-echo-arguments (arguments)
   "Show the transient's active ARGUMENTS in the echo area.
