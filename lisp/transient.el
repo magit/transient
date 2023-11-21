@@ -1441,8 +1441,6 @@ Usually it remains current while the transient is active.")
 (defvar transient--restore-winconf nil
   "Window configuration to restore after exiting help.")
 
-(define-obsolete-variable-alias 'transient--current-buffer
-  'transient--shadowed-buffer "Transient 0.5.0")
 (defvar transient--shadowed-buffer nil
   "The buffer that is temporarily shadowed by the transient buffer.
 This is bound while the suffix predicate is being evaluated and while
