@@ -1649,6 +1649,16 @@ See `transient-enable-popup-navigation'."
   "<mouse-1>" #'transient-push-button
   "<mouse-2>" #'transient-push-button)
 
+(defvar-keymap transient-resume-mode-map
+  :doc "Keymap for `transient-resume-mode'.
+
+This keymap remaps every command that would usually just quit the
+documentation buffer to `transient-resume', which additionally
+resumes the suspended transient."
+  "<remap> <Man-quit>"    #'transient-resume
+  "<remap> <Info-exit>"   #'transient-resume
+  "<remap> <quit-window>" #'transient-resume)
+
 (defvar-keymap transient-predicate-map
   :doc "Base keymap used to map common commands to their transient behavior.
 
@@ -4031,16 +4041,6 @@ Suffixes on levels %s and %s are unavailable.\n"
                            'face 'transient-disabled-suffix)
                (propertize (format ">=%s" (1+ level))
                            'face 'transient-disabled-suffix))))))
-
-(defvar-keymap transient-resume-mode-map
-  :doc "Keymap for `transient-resume-mode'.
-
-This keymap remaps every command that would usually just quit the
-documentation buffer to `transient-resume', which additionally
-resumes the suspended transient."
-  "<remap> <Man-quit>"    #'transient-resume
-  "<remap> <Info-exit>"   #'transient-resume
-  "<remap> <quit-window>" #'transient-resume)
 
 (define-minor-mode transient-resume-mode
   "Auxiliary minor-mode used to resume a transient after viewing help.")
