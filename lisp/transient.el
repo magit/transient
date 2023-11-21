@@ -2738,7 +2738,8 @@ transient is active."
           (setq transient--restore-winconf winconf))
         (fit-window-to-buffer nil (frame-height) (window-height))
         (transient-resume-mode)
-        (message "Type \"q\" to resume transient command.")
+        (message (substitute-command-keys
+                  "Type \\`q' to resume transient command."))
         t))))
 
 (defun transient-set-level (&optional command level)
