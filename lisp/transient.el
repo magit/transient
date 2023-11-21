@@ -2686,6 +2686,12 @@ prefix argument and pivot to `transient-update'."
 This should never happen.
 Please open an issue and post the shown command log." :error)))
 
+(defun transient-popup-navigation-help ()
+  "Inform the user how to enable popup navigation commands."
+  (interactive)
+  (message "This command is only available if `%s' is non-nil"
+           'transient-enable-popup-navigation))
+
 (defun transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
   (interactive)
@@ -4046,12 +4052,6 @@ resumes the suspended transient."
            (if transient--debug "enabled" "disabled")))
 
 ;;; Popup Navigation
-
-(defun transient-popup-navigation-help ()
-  "Inform the user how to enable popup navigation commands."
-  (interactive)
-  (message "This command is only available if `%s' is non-nil"
-           'transient-enable-popup-navigation))
 
 (defun transient-scroll-up (&optional arg)
   "Scroll text of transient popup window upward ARG lines.
