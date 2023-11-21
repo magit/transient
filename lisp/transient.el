@@ -2656,6 +2656,7 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-minus      'transient-color 'transient-red)
 
 ;;; Commands
+;;;; Noop
 
 (defun transient-noop ()
   "Do nothing at all."
@@ -2703,11 +2704,7 @@ Please open an issue and post the shown command log." :error)))
            this-original-command
            'transient-enable-popup-navigation))
 
-(defun transient-suspend ()
-  "Suspend the current transient.
-It can later be resumed using `transient-resume', while no other
-transient is active."
-  (interactive))
+;;;; Core
 
 (defun transient-quit-all ()
   "Exit all transients without saving the transient stack."
@@ -2731,7 +2728,41 @@ transient is active."
   (interactive)
   (setq transient--showp t))
 
-(defvar transient-resume-mode)
+(defun transient-push-button ()
+  "Invoke the suffix command represented by this button."
+  (interactive))
+
+;;;; Suspend
+
+(defun transient-suspend ()
+  "Suspend the current transient.
+It can later be resumed using `transient-resume', while no other
+transient is active."
+  (interactive))
+
+(define-minor-mode transient-resume-mode
+  "Auxiliary minor-mode used to resume a transient after viewing help.")
+
+(defun transient-resume ()
+  "Resume a previously suspended stack of transients."
+  (interactive)
+  (cond (transient--stack
+         (let ((winconf transient--restore-winconf))
+           (kill-local-variable 'transient--restore-winconf)
+           (when transient-resume-mode
+             (transient-resume-mode -1)
+             (quit-window))
+           (when winconf
+             (set-window-configuration winconf)))
+         (transient--stack-pop))
+        (transient-resume-mode
+         (kill-local-variable 'transient--restore-winconf)
+         (transient-resume-mode -1)
+         (quit-window))
+        (t
+         (message "No suspended transient command"))))
+
+;;;; Help
 
 (defun transient-help (&optional interactive)
   "Show help for the active transient or one of its suffixes.\n\n(fn)"
@@ -2754,6 +2785,8 @@ transient is active."
         (message (substitute-command-keys
                   "Type \\`q' to resume transient command."))
         t))))
+
+;;;; Level
 
 (defun transient-set-level (&optional command level)
   "Set the level of the transient or one of its suffix commands."
@@ -2815,6 +2848,8 @@ transient is active."
   (setq transient--all-levels-p (not transient--all-levels-p))
   (setq transient--refreshp t))
 
+;;;; Value
+
 (defun transient-set ()
   "Set active transient's value for this Emacs session."
   (interactive)
@@ -2861,33 +2896,19 @@ transient is active."
       (oset obj value (nth pos hst))
       (mapc #'transient-init-value transient--suffixes))))
 
-(defun transient-push-button ()
-  "Invoke the suffix command represented by this button."
-  (interactive))
-
-(defun transient-resume ()
-  "Resume a previously suspended stack of transients."
-  (interactive)
-  (cond (transient--stack
-         (let ((winconf transient--restore-winconf))
-           (kill-local-variable 'transient--restore-winconf)
-           (when transient-resume-mode
-             (transient-resume-mode -1)
-             (quit-window))
-           (when winconf
-             (set-window-configuration winconf)))
-         (transient--stack-pop))
-        (transient-resume-mode
-         (kill-local-variable 'transient--restore-winconf)
-         (transient-resume-mode -1)
-         (quit-window))
-        (t
-         (message "No suspended transient command"))))
+;;;; Auxiliary
 
 (defun transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
   (interactive)
   (setq transient-show-common-commands (not transient-show-common-commands)))
+
+(defun transient-toggle-debug ()
+  "Toggle debugging statements for transient commands."
+  (interactive)
+  (setq transient--debug (not transient--debug))
+  (message "Debugging transient %s"
+           (if transient--debug "enabled" "disabled")))
 
 (transient-define-suffix transient-echo-arguments (arguments)
   "Show the transient's active ARGUMENTS in the echo area.
@@ -4041,16 +4062,6 @@ Suffixes on levels %s and %s are unavailable.\n"
                            'face 'transient-disabled-suffix)
                (propertize (format ">=%s" (1+ level))
                            'face 'transient-disabled-suffix))))))
-
-(define-minor-mode transient-resume-mode
-  "Auxiliary minor-mode used to resume a transient after viewing help.")
-
-(defun transient-toggle-debug ()
-  "Toggle debugging statements for transient commands."
-  (interactive)
-  (setq transient--debug (not transient--debug))
-  (message "Debugging transient %s"
-           (if transient--debug "enabled" "disabled")))
 
 ;;; Popup Navigation
 
