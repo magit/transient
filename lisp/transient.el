@@ -4068,10 +4068,6 @@ resumes the suspended transient."
   (message "This command is only available if `%s' is non-nil"
            'transient-enable-popup-navigation))
 
-(define-button-type 'transient
-  'face nil
-  'keymap transient-button-map)
-
 (defun transient-backward-button (n)
   "Move to the previous button in the transient popup buffer.
 See `backward-button' for information about N."
@@ -4085,6 +4081,10 @@ See `forward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
     (forward-button n t)))
+
+(define-button-type 'transient
+  'face nil
+  'keymap transient-button-map)
 
 (defun transient--goto-button (command)
   (cond
