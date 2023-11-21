@@ -2849,22 +2849,6 @@ transient is active."
       (oset obj value (nth pos hst))
       (mapc #'transient-init-value transient--suffixes))))
 
-(defun transient-scroll-up (&optional arg)
-  "Scroll text of transient popup window upward ARG lines.
-If ARG is nil scroll near full screen.  This is a wrapper
-around `scroll-up-command' (which see)."
-  (interactive "^P")
-  (with-selected-window transient--window
-    (scroll-up-command arg)))
-
-(defun transient-scroll-down (&optional arg)
-  "Scroll text of transient popup window down ARG lines.
-If ARG is nil scroll near full screen.  This is a wrapper
-around `scroll-down-command' (which see)."
-  (interactive "^P")
-  (with-selected-window transient--window
-    (scroll-down-command arg)))
-
 (defun transient-push-button ()
   "Invoke the suffix command represented by this button."
   (interactive))
@@ -4068,6 +4052,22 @@ resumes the suspended transient."
   (interactive)
   (message "This command is only available if `%s' is non-nil"
            'transient-enable-popup-navigation))
+
+(defun transient-scroll-up (&optional arg)
+  "Scroll text of transient popup window upward ARG lines.
+If ARG is nil scroll near full screen.  This is a wrapper
+around `scroll-up-command' (which see)."
+  (interactive "^P")
+  (with-selected-window transient--window
+    (scroll-up-command arg)))
+
+(defun transient-scroll-down (&optional arg)
+  "Scroll text of transient popup window down ARG lines.
+If ARG is nil scroll near full screen.  This is a wrapper
+around `scroll-down-command' (which see)."
+  (interactive "^P")
+  (with-selected-window transient--window
+    (scroll-down-command arg)))
 
 (defun transient-backward-button (n)
   "Move to the previous button in the transient popup buffer.
