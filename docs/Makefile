@@ -16,8 +16,7 @@ ORG_EVAL += --funcall org-texinfo-export-to-texinfo
 texi:
 	@printf "Generating $(PKG).texi\n"
 	@$(EMACS) $(ORG_ARGS) $(PKG).org $(ORG_EVAL)
-	@printf "\n" >> $(PKG).texi
-	@sed -i -e 's/“/``/' -e "s/”/''/" $(PKG).texi
+	@sed -i -e 's/“/``/' -e "s/”/''/" -e '$$a\' $(PKG).texi
 	@rm -f $(PKG).texi~
 
 %.info: %.texi
