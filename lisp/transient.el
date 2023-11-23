@@ -1467,6 +1467,31 @@ This is bound while the suffixes are drawn in the transient buffer.")
 
 ;;; Identities
 
+(defun transient-prefix-object ()
+  "Return the current prefix as an object.
+
+While a transient is being setup or refreshed (which involves
+preparing its suffixes) the variable `transient--prefix' can be
+used to access the prefix object.  Thus this is what has to be
+used in suffix methods such as `transient-format-description',
+and in object-specific functions that are stored in suffix slots
+such as `description'.
+
+When a suffix command is invoked (i.e., in its `interactive' form
+and function body) then the variable `transient-current-prefix'
+has to be used instead.
+
+Two distinct variables are needed, because any prefix may itself
+be used as a suffix of another prefix, and such sub-prefixes have
+to be able to tell themselves apart from the prefix they were
+invoked from.
+
+Regular suffix commands, which are not prefixes, do not have to
+concern themselves with this distinction, so they can use this
+function instead.  In the context of a plain suffix, it always
+returns the value of the appropiate variable."
+  (or transient--prefix transient-current-prefix))
+
 (defun transient-suffix-object (&optional command)
   "Return the object associated with the current suffix command.
 
