@@ -2171,7 +2171,7 @@ value.  Otherwise return CHILDREN as is."
       (transient--wrap-command))
      (t
       (setq transient--exitp nil)
-      (let ((exitp (eq (transient--do-pre-command) transient--exit)))
+      (let ((exitp (eq (transient--call-pre-command) transient--exit)))
         (transient--wrap-command)
         (when exitp
           (transient--pre-exit)))))))
@@ -2504,7 +2504,7 @@ nil) then do nothing."
 
 ;;; Pre-Commands
 
-(defun transient--do-pre-command ()
+(defun transient--call-pre-command ()
   (if-let ((fn (transient--get-predicate-for this-command)))
       (let ((action (funcall fn)))
         (when (eq action transient--exit)
@@ -2590,7 +2590,7 @@ Use that command's pre-command to determine transient behavior."
                                    (posn-point (event-start last-command-event))
                                  (point))
                                'command)))
-    (transient--do-pre-command)))
+    (transient--call-pre-command)))
 
 (defun transient--do-recurse ()
   "Call the transient prefix command, preparing for return to active transient.
