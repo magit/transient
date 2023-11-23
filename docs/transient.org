@@ -238,7 +238,7 @@ the latter, then you can later resume the stack of transients using
 
 Transient's predecessor bound {{{kbd(q)}}} instead of {{{kbd(C-g)}}} to the quit command.
 To learn how to get that binding back see ~transient-bind-q-to-quit~'s
-doc string.
+documentation string.
 
 - Key: C-q (transient-quit-all) ::
 
@@ -408,8 +408,8 @@ What sort of documentation is shown depends on how the transient was
 defined.  For infix commands that represent command-line arguments
 this ideally shows the appropriate manpage.  ~transient-help~ then tries
 to jump to the correct location within that.  Info manuals are also
-supported.  The fallback is to show the command's doc string, for
-non-infix suffixes this is usually appropriate.
+supported.  The fallback is to show the command's documentation
+string, for non-infix suffixes this is usually appropriate.
 
 ** Enabling and Disabling Suffixes
 #+cindex: enabling suffixes
@@ -1770,12 +1770,13 @@ functions use ~describe-function~.
 
   For prefixes, show the info manual, if that is specified using the
   ~info-manual~ slot.  Otherwise, show the manpage if that is specified
-  using the ~man-page~ slot.  Otherwise, show the command's doc string.
+  using the ~man-page~ slot.  Otherwise, show the command's
+  documentation string.
 
-  For suffixes, show the command's doc string.
+  For suffixes, show the command's documentation string.
 
   For infixes, show the manpage if that is specified.  Otherwise show
-  the command's doc string.
+  the command's documentation string.
 
 ** Prefix Slots
 
@@ -2104,7 +2105,7 @@ for {{{kbd(q)}}}.
 If you want to get {{{kbd(q)}}}'s old binding back then you can do so.  Doing
 that is a bit more complicated than changing a single key binding, so
 I have implemented a function, ~transient-bind-q-to-quit~ that makes the
-necessary changes.  See its doc string for more information.
+necessary changes.  See its documentation string for more information.
 
 * Keystroke Index
 :PROPERTIES:
