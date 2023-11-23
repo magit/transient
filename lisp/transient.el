@@ -2146,8 +2146,8 @@ value.  Otherwise return CHILDREN as is."
     ;; lead to a suffix being remapped to a non-suffix.  We have to undo
     ;; the remapping in that case.  However, remapping a non-suffix to
     ;; another should remain possible.
-    (when (and (transient--get-predicate-for this-original-command 'suffix)
-               (not (transient--get-predicate-for this-command 'suffix)))
+    (when (and (transient--get-pre-command this-original-command 'suffix)
+               (not (transient--get-pre-command this-command 'suffix)))
       (setq this-command this-original-command))
     (cond
      ((memq this-command '(transient-update transient-quit-seq))
@@ -2505,7 +2505,7 @@ nil) then do nothing."
 ;;; Pre-Commands
 
 (defun transient--call-pre-command ()
-  (if-let ((fn (transient--get-predicate-for this-command)))
+  (if-let ((fn (transient--get-pre-command this-command)))
       (let ((action (funcall fn)))
         (when (eq action transient--exit)
           (setq transient--exitp (or transient--exitp t)))
@@ -2517,7 +2517,7 @@ nil) then do nothing."
         (setq this-command 'transient-undefined)))
     transient--stay))
 
-(defun transient--get-predicate-for (cmd &optional suffix-only)
+(defun transient--get-pre-command (cmd &optional suffix-only)
   (or (ignore-errors
         (lookup-key transient--predicate-map (vector cmd)))
       (and (not suffix-only)
@@ -4208,7 +4208,7 @@ search instead."
 
 (defun transient--suffix-color (command)
   (or (get command 'transient-color)
-      (get (transient--get-predicate-for command) 'transient-color)))
+      (get (transient--get-pre-command command) 'transient-color)))
 
 (defun transient--prefix-color (command)
   (let* ((nonsuf (or (oref command transient-non-suffix)
