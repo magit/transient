@@ -1449,7 +1449,7 @@ warning.  This does not ``deactivate'' the transient.
 
 The behavior can be changed for all suffixes of a particular prefix
 and/or for individual suffixes.  The values should nearly always be
-booleans, but certain functions, called “pre-commands”, can also be
+booleans, but certain functions, called ``pre-commands'', can also be
 used.  These functions are named @code{transient--do-VERB}, and the symbol
 @code{VERB} can be used as a shorthand.
 
@@ -1458,7 +1458,7 @@ transient stay active, when this command is invoked?"  @code{t} means that
 the transient stays active, while @code{nil} means that invoking the command
 exits the transient.
 
-Note that when the suffix is a “sub-prefix”, invoking that command
+Note that when the suffix is a ``sub-prefix'', invoking that command
 always activates that sub-prefix, causing the outer prefix to no
 longer be active and displayed.  Here @code{t} means that when you exit the
 inner prefix, then the outer prefix becomes active again, while @code{nil}
@@ -1494,7 +1494,7 @@ sub-sections.  They are called by @code{transient--pre-command}, a function
 on @code{pre-command-hook}, and the value that they return determines whether
 the transient is exited.  To do so the value of one of the constants
 @code{transient--exit} or @code{transient--stay} is used (that way we don't have to
-remember if @code{t} means “exit” or “stay”).
+remember if @code{t} means ``exit'' or “stay”).
 
 Additionally, these functions may change the value of @code{this-command}
 (which explains why they have to be called using @code{pre-command-hook}),
@@ -1514,16 +1514,16 @@ the suffix's @code{transient} slot.
 
 @item
 While a sub-prefix is active we nearly always want @kbd{C-g} to take the
-user back to the “super-prefix”, even when the other suffixes don't
+user back to the ``super-prefix'', even when the other suffixes don't
 do that.  However, in rare cases this may not be desirable, and that
 makes the following complication necessary:
 
 For @code{transient-suffix} objects the @code{transient} slot is unbound.  We can
 ignore that for the most part because @code{nil} and the slot being unbound
-are treated as equivalent, and mean “do exit”.  That isn't actually
+are treated as equivalent, and mean ``do exit''.  That isn't actually
 true for suffixes that are sub-prefixes though.  For such suffixes
-unbound means “do exit but allow going back”, which is the default,
-while @code{nil} means “do exit permanently”, which requires that slot to
+unbound means ``do exit but allow going back'', which is the default,
+while @code{nil} means ``do exit permanently'', which requires that slot to
 be explicitly set to that value.
 @end itemize
 
@@ -2053,7 +2053,7 @@ for example, @code{--option=one}.
 
 @item
 @code{scope} For some transients it might be necessary to have a sort of
-secondary value, called a “scope”.  See @code{transient-define-prefix}.
+secondary value, called a ``scope''.  See @code{transient-define-prefix}.
 @end itemize
 
 @anchor{Internal Prefix Slots}
