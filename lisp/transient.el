@@ -2176,36 +2176,6 @@ value.  Otherwise return CHILDREN as is."
         (when exitp
           (transient--pre-exit)))))))
 
-(defun transient--do-pre-command ()
-  (if-let ((fn (transient--get-predicate-for this-command)))
-      (let ((action (funcall fn)))
-        (when (eq action transient--exit)
-          (setq transient--exitp (or transient--exitp t)))
-        action)
-    (if (let ((keys (this-command-keys-vector)))
-          (eq (aref keys (1- (length keys))) ?\C-g))
-        (setq this-command 'transient-noop)
-      (unless (transient--edebug-command-p)
-        (setq this-command 'transient-undefined)))
-    transient--stay))
-
-(defun transient--get-predicate-for (cmd &optional suffix-only)
-  (or (ignore-errors
-        (lookup-key transient--predicate-map (vector cmd)))
-      (and (not suffix-only)
-           (let ((pred (transient--resolve-pre-command
-                        (oref transient--prefix transient-non-suffix))))
-             (pcase pred
-               ('t   #'transient--do-stay)
-               ('nil #'transient--do-warn)
-               (_    pred))))))
-
-(defun transient--resolve-pre-command (pre)
-  (cond ((booleanp pre) pre)
-        ((string-match-p "--do-" (symbol-name pre)) pre)
-        ((let ((sym (intern (format "transient--do-%s" pre))))
-           (if (functionp sym) sym pre)))))
-
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
   (transient--delete-window)
@@ -2533,6 +2503,36 @@ nil) then do nothing."
     (transient--post-exit)))
 
 ;;; Pre-Commands
+
+(defun transient--do-pre-command ()
+  (if-let ((fn (transient--get-predicate-for this-command)))
+      (let ((action (funcall fn)))
+        (when (eq action transient--exit)
+          (setq transient--exitp (or transient--exitp t)))
+        action)
+    (if (let ((keys (this-command-keys-vector)))
+          (eq (aref keys (1- (length keys))) ?\C-g))
+        (setq this-command 'transient-noop)
+      (unless (transient--edebug-command-p)
+        (setq this-command 'transient-undefined)))
+    transient--stay))
+
+(defun transient--get-predicate-for (cmd &optional suffix-only)
+  (or (ignore-errors
+        (lookup-key transient--predicate-map (vector cmd)))
+      (and (not suffix-only)
+           (let ((pred (transient--resolve-pre-command
+                        (oref transient--prefix transient-non-suffix))))
+             (pcase pred
+               ('t   #'transient--do-stay)
+               ('nil #'transient--do-warn)
+               (_    pred))))))
+
+(defun transient--resolve-pre-command (pre)
+  (cond ((booleanp pre) pre)
+        ((string-match-p "--do-" (symbol-name pre)) pre)
+        ((let ((sym (intern (format "transient--do-%s" pre))))
+           (if (functionp sym) sym pre)))))
 
 (defun transient--do-stay ()
   "Call the command without exporting variables and stay transient."
