@@ -114,18 +114,18 @@ looks a bit like this:
 This is a simplified version of ~magit-tag~.  Info manuals do not
 support images or colored text, so the above “screenshot” lacks some
 information; in practice you would be able to tell whether the
-arguments ~--force~ and ~--annotate~ are enabled or not based on their
+arguments ~--force~ and ~--annotate~ are enabled or not, based on their
 color.
 #+end_quote
 
 #+cindex: command dispatchers
 Transient can be used to implement simple “command dispatchers”.  The
 main benefit then is that the user can see all the available commands
-in a popup buffer.  That is useful by itself because it frees the user
-from having to remember all the keys that are valid after a certain
-prefix key or command.  Magit's ~magit-dispatch~ (on {{{kbd(C-x M-g)}}}) command is
-an example of using Transient to merely implement a command
-dispatcher.
+in a popup buffer, which can be thought of as a “menus”.  That is
+useful by itself because it frees the user from having to remember all
+the keys that are valid after a certain prefix key or command.
+Magit's ~magit-dispatch~ (on {{{kbd(C-x M-g)}}}) command is an example of using
+Transient to merely implement a command dispatcher.
 
 In addition to that, Transient also allows users to interactively pass
 arguments to commands.  These arguments can be much more complex than
@@ -2013,10 +2013,10 @@ Yes, see ~transient-display-buffer-action~ in [[*Configuration]].
 :UNNUMBERED: notoc
 :END:
 
-To be able to mark text in any transient popup buffer using the mouse,
-you have to add the following binding.  Note that the region won't be
-visualized, while doing so.  After you have quit the transient popup,
-you will be able to yank it another buffer.
+To be able to mark text in Transient's popup buffer using the mouse,
+you have to add the below binding.  Note that for technical reasons,
+the region won't be visualized, while doing so.  After you have quit
+the transient popup, you will be able to yank it in another buffer.
 
 #+begin_src emacs-lisp
   (keymap-set transient-predicate-map
