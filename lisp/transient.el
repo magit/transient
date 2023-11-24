@@ -2521,15 +2521,15 @@ nil) then do nothing."
   (or (ignore-errors
         (lookup-key transient--predicate-map (vector cmd)))
       (and (not suffix-only)
-           (let ((pred (transient--resolve-pre-command
-                        (oref transient--prefix transient-non-suffix))))
-             (pcase pred
-               ('t   #'transient--do-stay)
-               ('nil #'transient--do-warn)
-               (_    pred))))))
+           (transient--resolve-pre-command
+            (oref transient--prefix transient-non-suffix)
+            t))))
 
-(defun transient--resolve-pre-command (pre)
-  (cond ((booleanp pre) pre)
+(defun transient--resolve-pre-command (pre &optional resolve-boolean)
+  (cond ((booleanp pre)
+         (if resolve-boolean
+             (if pre #'transient--do-stay #'transient--do-warn)
+           pre))
         ((string-match-p "--do-" (symbol-name pre)) pre)
         ((let ((sym (intern (format "transient--do-%s" pre))))
            (if (functionp sym) sym pre)))))
