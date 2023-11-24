@@ -442,20 +442,16 @@ give you as many additional suffixes as you hoped.)"
   "Face used for headings."
   :group 'transient-faces)
 
-(defface transient-key '((t :inherit font-lock-builtin-face))
-  "Face used for keys."
-  :group 'transient-faces)
-
 (defface transient-argument '((t :inherit font-lock-warning-face))
   "Face used for enabled arguments."
   :group 'transient-faces)
 
-(defface transient-value '((t :inherit font-lock-string-face))
-  "Face used for values."
-  :group 'transient-faces)
-
 (defface transient-inactive-argument '((t :inherit shadow))
   "Face used for inactive arguments."
+  :group 'transient-faces)
+
+(defface transient-value '((t :inherit font-lock-string-face))
+  "Face used for values."
   :group 'transient-faces)
 
 (defface transient-inactive-value '((t :inherit shadow))
@@ -466,26 +462,12 @@ give you as many additional suffixes as you hoped.)"
   "Face used for suffixes unreachable from the current prefix sequence."
   :group 'transient-faces)
 
-(defface transient-active-infix '((t :inherit secondary-selection))
-  "Face used for the infix for which the value is being read."
-  :group 'transient-faces)
-
-(defface transient-unreachable-key '((t :inherit (transient-key shadow)))
-  "Face used for keys unreachable from the current prefix sequence."
-  :group 'transient-faces)
-
-(defface transient-nonstandard-key '((t :underline t))
-  "Face optionally used to highlight keys conflicting with short-argument.
-Also see option `transient-highlight-mismatched-keys'."
-  :group 'transient-faces)
-
-(defface transient-mismatched-key '((t :underline t))
-  "Face optionally used to highlight keys without a short-argument.
-Also see option `transient-highlight-mismatched-keys'."
-  :group 'transient-faces)
-
 (defface transient-inapt-suffix '((t :inherit shadow :italic t))
   "Face used for suffixes that are inapt at this time."
+  :group 'transient-faces)
+
+(defface transient-active-infix '((t :inherit secondary-selection))
+  "Face used for the infix for which the value is being read."
   :group 'transient-faces)
 
 (defface transient-enabled-suffix
@@ -509,6 +491,24 @@ Also see option `transient-highlight-higher-levels'."
   "Face used for delimiters and separators.
 This includes the parentheses around values and the pipe
 character used to separate possible values from each other."
+  :group 'transient-faces)
+
+(defface transient-key '((t :inherit font-lock-builtin-face))
+  "Face used for keys."
+  :group 'transient-faces)
+
+(defface transient-unreachable-key '((t :inherit (transient-key shadow)))
+  "Face used for keys unreachable from the current prefix sequence."
+  :group 'transient-faces)
+
+(defface transient-nonstandard-key '((t :underline t))
+  "Face optionally used to highlight keys conflicting with short-argument.
+Also see option `transient-highlight-mismatched-keys'."
+  :group 'transient-faces)
+
+(defface transient-mismatched-key '((t :underline t))
+  "Face optionally used to highlight keys without a short-argument.
+Also see option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
 (defface transient-separator-line
