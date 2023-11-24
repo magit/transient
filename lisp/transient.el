@@ -3742,22 +3742,16 @@ When `transient-enable-popup-navigation' is non-nil then format
                 (setq suf (string-replace " " "" suf)))
               (concat (propertize pre 'face 'transient-unreachable-key)
                       (and (string-prefix-p (concat pre " ") key) " ")
-                      (transient--colorize-key suf cmd)
+                      (propertize suf 'face (transient--key-face cmd))
                       (save-excursion
                         (and (string-match " +\\'" key)
                              (propertize (match-string 0 key)
                                          'face 'fixed-pitch))))))
            ((transient--lookup-key transient-sticky-map (kbd key))
-            (transient--colorize-key key cmd))
+            (propertize key 'face (transient--key-face cmd)))
            (t
             (propertize key 'face 'transient-unreachable-key))))
-      (transient--colorize-key key cmd))))
-
-(defun transient--colorize-key (key command)
-  (propertize key 'face
-              (or (and (transient--semantic-coloring-p)
-                       (transient--suffix-color command))
-                  'transient-key)))
+      (propertize key 'face (transient--key-face cmd)))))
 
 (cl-defmethod transient-format-key :around ((obj transient-argument))
   "Handle `transient-highlight-mismatched-keys'."
@@ -3874,6 +3868,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
              (functionp face))
         (funcall face)
       face)))
+
+(defun transient--key-face (&optional cmd)
+  (or (and (transient--semantic-coloring-p)
+           (transient--suffix-color cmd))
+      'transient-key))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
