@@ -442,7 +442,7 @@ give you as many additional suffixes as you hoped.)"
   "Face used for headings."
   :group 'transient-faces)
 
-(defface transient-argument '((t :inherit font-lock-warning-face))
+(defface transient-argument '((t :inherit font-lock-string-face :weight bold))
   "Face used for enabled arguments."
   :group 'transient-faces)
 
@@ -450,7 +450,7 @@ give you as many additional suffixes as you hoped.)"
   "Face used for inactive arguments."
   :group 'transient-faces)
 
-(defface transient-value '((t :inherit font-lock-string-face))
+(defface transient-value '((t :inherit font-lock-string-face :weight bold))
   "Face used for values."
   :group 'transient-faces)
 
@@ -466,7 +466,7 @@ give you as many additional suffixes as you hoped.)"
   "Face used for suffixes that are inapt at this time."
   :group 'transient-faces)
 
-(defface transient-active-infix '((t :inherit secondary-selection))
+(defface transient-active-infix '((t :inherit highlight))
   "Face used for the infix for which the value is being read."
   :group 'transient-faces)
 
@@ -497,7 +497,7 @@ character used to separate possible values from each other."
   "Face used for keys."
   :group 'transient-faces)
 
-(defface transient-unreachable-key '((t :inherit (transient-key shadow)))
+(defface transient-unreachable-key '((t :inherit (shadow transient-key)))
   "Face used for keys unreachable from the current prefix sequence."
   :group 'transient-faces)
 
