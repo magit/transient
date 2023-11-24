@@ -3861,6 +3861,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
               choices
               (propertize "|" 'face 'transient-delimiter))))))
 
+(defun transient--add-face (string face &optional append beg end)
+  (let ((str (copy-sequence string)))
+    (add-face-text-property (or beg 0) (or end (length str)) face append str)
+    str))
+
 (defun transient--get-face (obj slot)
   (and-let* ((! (slot-exists-p obj slot))
              (! (slot-boundp   obj slot))
@@ -3869,11 +3874,6 @@ If the OBJ's `key' is currently unreachable, then apply the face
              (functionp face))
         (funcall face)
       face)))
-
-(defun transient--add-face (string face &optional append beg end)
-  (let ((str (copy-sequence string)))
-    (add-face-text-property (or beg 0) (or end (length str)) face append str)
-    str))
 
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
