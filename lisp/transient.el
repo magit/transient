@@ -2676,7 +2676,7 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-replace    'transient-color 'transient-blue)
 (put 'transient--do-suspend    'transient-color 'transient-blue)
 
-(put 'transient--do-quit-one   'transient-color 'transient-blue)
+(put 'transient--do-quit-one   'transient-color 'transient-purple)
 (put 'transient--do-quit-all   'transient-color 'transient-blue)
 (put 'transient--do-move       'transient-color 'transient-red)
 (put 'transient--do-minus      'transient-color 'transient-red)
