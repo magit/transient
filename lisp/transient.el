@@ -3498,16 +3498,8 @@ have a history of their own.")
       (transient--insert-groups)
       (when (or transient--helpp transient--editp)
         (transient--insert-help))
-      (when (and (eq transient-mode-line-format 'line)
-                 window-system)
-        (let ((face
-               (if-let ((f (and (transient--semantic-coloring-p)
-                                (transient--prefix-color transient--prefix))))
-                   `(,@(and (>= emacs-major-version 27) '(:extend t))
-                     :background ,(face-foreground f))
-                 'transient-separator-line)))
-          (insert (propertize "__" 'face face 'display '(space :height (1))))
-          (insert (propertize "\n" 'face face 'line-height t))))
+      (when-let ((line (transient--separator-line)))
+        (insert line))
       (when transient-force-fixed-pitch
         (transient--force-fixed-pitch)))
     (unless (window-live-p transient--window)
@@ -3528,6 +3520,18 @@ have a history of their own.")
         ;; another buffer and is going to display that again.
         (fit-window-to-buffer window nil (window-height window))
       (fit-window-to-buffer window nil 1))))
+
+(defun transient--separator-line ()
+  (and (eq transient-mode-line-format 'line)
+       window-system
+       (let ((face
+              (if-let ((f (and (transient--semantic-coloring-p)
+                               (transient--prefix-color transient--prefix))))
+                  `(,@(and (>= emacs-major-version 27) '(:extend t))
+                    :background ,(face-foreground f))
+                'transient-separator-line)))
+         (concat (propertize "__" 'face face 'display '(space :height (1)))
+                 (propertize "\n" 'face face 'line-height t)))))
 
 (defmacro transient-with-shadowed-buffer (&rest body)
   "While in the transient buffer, temporarly make the shadowed buffer current."
