@@ -623,27 +623,29 @@ Also see [[* Common Suffix Commands]].
   displayed right above the echo area, then this probably is not a
   good value.
 
-  If ~line~ (the default), then the buffer also has no mode-line, but a
-  thin line is drawn instead, using the background color of the face
-  ~transient-separator~.  Text-mode frames cannot display thin lines,
-  and therefore fall back to treating ~line~ like ~nil~.
+  If ~line~ (the default), then the buffer also has no mode-line,
+  but a thin line is drawn instead.  On termcap frames that is is
+  not possible, so there ~line~ is treated as a synonym for ~nil~.
+
+  The color of the line is used to indicate if non-suffixes are
+  allowed and whether they exit the transient.  The foreground
+  color of ~transient-key-noop~ (if non-suffix are disallowed),
+  ~transient-key-stay~ (if allowed and transient stays active), or
+  ~transient-key-exit~ (if allowed and they exit the transient) is
+  used to draw the line.
 
   Otherwise this can be any mode-line format.  See [[info:elisp#Mode
   Line Format]], for details.
 
 - User Option: transient-semantic-coloring ::
 
-  This option controls whether prefixes and suffixes are colored in
-  a Hydra-like fashion.
+  This option controls whether colors are used to indicate the
+  transient behavior of commands.
 
   If non-~nil~, then the key binding of each suffix is colorized to
   indicate whether it exits the transient state or not.  The color of
   the prefix is indicated using the line that is drawn when the value
   of ~transient-mode-line-format~ is ~line~.
-
-  For more information about how Hydra uses colors see
-  https://github.com/abo-abo/hydra#color and
-  https://oremacs.com/2015/02/19/hydra-colors-reloaded.
 
 - User Option: transient-highlight-mismatched-keys ::
 
