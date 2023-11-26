@@ -3816,22 +3816,30 @@ If the OBJ's `key' is currently unreachable, then apply the face
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((argument (oref obj argument)))
     (if-let ((value (oref obj value)))
-        (propertize
-         (cl-ecase (oref obj multi-value)
-           ((nil)    (concat argument value))
-           ((t rest) (concat argument
-                             (and (not (string-suffix-p " " argument)) " ")
-                             (mapconcat #'prin1-to-string value " ")))
-           (repeat   (mapconcat (lambda (v) (concat argument v)) value " ")))
-         'face 'transient-value)
-      (propertize argument 'face 'transient-inactive-value))))
+        (cl-ecase (oref obj multi-value)
+          ((nil)
+           (concat (propertize argument 'face 'transient-argument)
+                   (propertize value    'face 'transient-value)))
+          ((t rest)
+           (concat (propertize (if (string-suffix-p " " argument)
+                                   argument
+                                 (concat argument " "))
+                               'face 'transient-argument)
+                   (propertize (mapconcat #'prin1-to-string value " ")
+                               'face 'transient-value)))
+          (repeat
+           (mapconcat (lambda (value)
+                        (concat (propertize argument 'face 'transient-argument)
+                                (propertize value    'face 'transient-value)))
+                      value " ")))
+      (propertize argument 'face 'transient-inactive-argument))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
   (with-slots (value argument-format choices) obj
     (format (propertize argument-format
                         'face (if value
-                                  'transient-value
-                                'transient-inactive-value))
+                                  'transient-argument
+                                'transient-inactive-argument))
             (format
              (propertize "[%s]" 'face 'transient-delimiter)
              (mapconcat
