@@ -483,7 +483,9 @@ See info node `(transient)Enabling and Disabling Suffixes'."
 See info node `(transient)Enabling and Disabling Suffixes'."
   :group 'transient-faces)
 
-(defface transient-higher-level '((t :underline t))
+(defface transient-higher-level
+  `((t (:box ( :line-width -1
+               :color ,(face-attribute 'shadow :foreground nil t)))))
   "Face optionally used to highlight suffixes on higher levels.
 Also see option `transient-highlight-higher-levels'."
   :group 'transient-faces)
@@ -543,12 +545,14 @@ character used to separate possible values from each other."
   "Face used for keys unreachable from the current prefix sequence."
   :group 'transient-faces)
 
-(defface transient-nonstandard-key '((t :underline t))
+(defface transient-nonstandard-key
+  '((t (:box (:line-width -1 :color "cyan"))))
   "Face optionally used to highlight keys conflicting with short-argument.
 Also see option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
-(defface transient-mismatched-key '((t :underline t))
+(defface transient-mismatched-key
+  '((t (:box (:line-width -1 :color "magenta"))))
   "Face optionally used to highlight keys without a short-argument.
 Also see option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
