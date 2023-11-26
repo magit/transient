@@ -1209,11 +1209,11 @@ Intended for use in a group's `:setup-children' function."
                         (equal (transient--suffix-predicate suf)
                                (transient--suffix-predicate conflict)))))
         (transient-remove-suffix prefix key))
-      (cl-ecase action
-        (insert  (setcdr mem (cons elt (cdr mem)))
-                 (setcar mem suf))
-        (append  (setcdr mem (cons suf (cdr mem))))
-        (replace (setcar mem suf)))))))
+      (pcase-exhaustive action
+        ('insert  (setcdr mem (cons elt (cdr mem)))
+                  (setcar mem suf))
+        ('append  (setcdr mem (cons suf (cdr mem))))
+        ('replace (setcar mem suf)))))))
 
 ;;;###autoload
 (defun transient-insert-suffix (prefix loc suffix &optional keep-other)
@@ -1829,18 +1829,18 @@ of the corresponding object."
 
 (defun transient--make-redisplay-map ()
   (setq transient--redisplay-key
-        (cl-case this-command
-          (transient-update
+        (pcase this-command
+          ('transient-update
            (setq transient--showp t)
            (setq unread-command-events
                  (listify-key-sequence (this-single-command-raw-keys))))
-          (transient-quit-seq
+          ('transient-quit-seq
            (setq unread-command-events
                  (butlast (listify-key-sequence
                            (this-single-command-raw-keys))
                           2))
            (butlast transient--redisplay-key))
-          (t nil)))
+          (_ nil)))
   (let ((topmap (make-sparse-keymap))
         (submap (make-sparse-keymap)))
     (when transient--redisplay-key
@@ -3324,11 +3324,11 @@ the set, saved or default value for PREFIX."
 
 (defun transient--get-wrapped-value (obj)
   (and-let* ((value (transient-infix-value obj)))
-    (cl-ecase (and (slot-exists-p obj 'multi-value)
-                   (oref obj multi-value))
-      ((nil)    (list value))
-      ((t rest) (list value))
-      (repeat   value))))
+    (pcase-exhaustive (and (slot-exists-p obj 'multi-value)
+                           (oref obj multi-value))
+      ('nil          (list value))
+      ((or 't 'rest) (list value))
+      ('repeat       value))))
 
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
@@ -3363,10 +3363,10 @@ does nothing." nil)
   "Return ARGUMENT and VALUE as a unit or nil if the latter is nil."
   (and-let* ((value (oref obj value)))
     (let ((arg (oref obj argument)))
-      (cl-ecase (oref obj multi-value)
-        ((nil)    (concat arg value))
-        ((t rest) (cons arg value))
-        (repeat   (mapcar (lambda (v) (concat arg v)) value))))))
+      (pcase-exhaustive (oref obj multi-value)
+        ('nil          (concat arg value))
+        ((or 't 'rest) (cons arg value))
+        ('repeat       (mapcar (lambda (v) (concat arg v)) value))))))
 
 (cl-defmethod transient-infix-value ((_   transient-variable))
   "Return nil, which means \"no value\".
@@ -3816,18 +3816,18 @@ If the OBJ's `key' is currently unreachable, then apply the face
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((argument (oref obj argument)))
     (if-let ((value (oref obj value)))
-        (cl-ecase (oref obj multi-value)
-          ((nil)
+        (pcase-exhaustive (oref obj multi-value)
+          ('nil
            (concat (propertize argument 'face 'transient-argument)
                    (propertize value    'face 'transient-value)))
-          ((t rest)
+          ((or 't 'rest)
            (concat (propertize (if (string-suffix-p " " argument)
                                    argument
                                  (concat argument " "))
                                'face 'transient-argument)
                    (propertize (mapconcat #'prin1-to-string value " ")
                                'face 'transient-value)))
-          (repeat
+          ('repeat
            (mapconcat (lambda (value)
                         (concat (propertize argument 'face 'transient-argument)
                                 (propertize value    'face 'transient-value)))
