@@ -3790,21 +3790,19 @@ If the OBJ's `key' is currently unreachable, then apply the face
                        (funcall (oref transient--prefix suffix-description)
                                 obj))
                   (propertize "(BUG: no description)" 'face 'error))))
-    (cond
-     ((oref obj inapt)
-      (if-let ((face (transient--get-face obj 'inapt-face)))
-          (transient--add-face desc face)
-        desc))
-     ((and (slot-boundp obj 'key)
-           (transient--key-unreachable-p obj))
-      (propertize desc 'face 'transient-unreachable))
-     ((if transient--all-levels-p
-          (> (oref obj level) transient--default-prefix-level)
-        (and transient-highlight-higher-levels
-             (> (max (oref obj level) transient--max-group-level)
-                transient--default-prefix-level)))
-      (transient--add-face desc 'transient-higher-level))
-     (desc))))
+    (when (if transient--all-levels-p
+              (> (oref obj level) transient--default-prefix-level)
+            (and transient-highlight-higher-levels
+                 (> (max (oref obj level) transient--max-group-level)
+                    transient--default-prefix-level)))
+      (setq desc (transient--add-face desc 'transient-higher-level)))
+    (when-let ((inapt-face (and (oref obj inapt)
+                                (transient--get-face obj 'inapt-face))))
+      (setq desc (transient--add-face desc inapt-face)))
+    (when (and (slot-boundp obj 'key)
+               (transient--key-unreachable-p obj))
+      (setq desc (transient--add-face desc 'transient-unreachable)))
+    desc))
 
 (cl-defgeneric transient-format-value (obj)
   "Format OBJ's value for display and return the result.")
