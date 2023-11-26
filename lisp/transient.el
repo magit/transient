@@ -3658,8 +3658,7 @@ as a button."
   (let ((str (cl-call-next-method obj)))
     (when (and (cl-typep obj 'transient-infix)
                (eq (oref obj command) this-original-command))
-      (setq str (transient--add-face (concat str "\n")
-                                     'transient-active-infix)))
+      (setq str (transient--add-face str 'transient-active-infix)))
     (when transient--editp
       (setq str (concat (let ((level (oref obj level)))
                           (propertize (format " %s " level)
