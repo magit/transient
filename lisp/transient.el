@@ -3654,7 +3654,7 @@ making `transient--original-buffer' current.")
 When reading user input for this infix, then highlight it.
 When edit-mode is enabled, then prepend the level information.
 When `transient-enable-popup-navigation' is non-nil then format
-  as a button."
+as a button."
   (let ((str (cl-call-next-method obj)))
     (when (and (cl-typep obj 'transient-infix)
                (eq (oref obj command) this-original-command))
