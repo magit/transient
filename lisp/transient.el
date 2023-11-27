@@ -1348,7 +1348,7 @@ See info node `(transient)Modifying Existing Transients'."
                (delq (car (transient--group-member loc layout))
                      (aref layout 3)))
          nil)
-        (t (transient--group-member loc layout))))
+        ((transient--group-member loc layout))))
 
 (defun transient--group-member (loc group)
   (cl-member-if (lambda (suffix)
@@ -2106,7 +2106,7 @@ value.  Otherwise return CHILDREN as is."
    (if-not-derived (not (if (atom if-not-derived)
                             (derived-mode-p if-not-derived)
                           (apply #'derived-mode-p if-not-derived))))
-   (t default)))
+   (default)))
 
 (defun transient--suffix-predicate (spec)
   (let ((plist (nth 2 spec)))
@@ -2497,7 +2497,7 @@ value.  Otherwise return CHILDREN as is."
                           (concat ", " (apply #'format args)))
                          (args
                           (concat ", " (apply (car args) (cdr args))))
-                         (t "")))
+                         ("")))
         (apply #'message arg args)))))
 
 (defun transient--emergency-exit ()
@@ -2648,7 +2648,7 @@ Do not push the active transient to the transient stack."
          transient--stay)
         (prefix-arg
          transient--stay)
-        (t transient--exit)))
+        (transient--exit)))
 
 (defun transient--do-quit-all ()
   "Exit all transients without saving the transient stack."
@@ -3129,7 +3129,7 @@ it\", in which case it is pointless to preserve history.)"
                                           initial-input history))
                (choices
                 (completing-read prompt choices nil t initial-input history))
-               (t (read-string prompt initial-input history)))))
+               ((read-string prompt initial-input history)))))
         (cond ((and (equal value "") (not allow-empty))
                (setq value nil))
               ((and (equal value "\"\"") allow-empty)
@@ -3956,7 +3956,7 @@ if non-nil, else show the `man-page' if non-nil, else use
     (cond (show-help (funcall show-help obj))
           (info-manual (transient--show-manual info-manual))
           (man-page (transient--show-manpage man-page))
-          (t (transient--describe-function command)))))
+          ((transient--describe-function command)))))
 
 (cl-defmethod transient-show-help ((obj transient-suffix))
   "Call `show-help' if non-nil, else use `describe-function'.
@@ -3970,9 +3970,9 @@ prefix method."
                        'transient--prefix)))
       (and prefix (not (eq (oref transient--prefix command) this-command))
            (prog1 t (transient-show-help prefix)))))
-   (t (if-let ((show-help (oref obj show-help)))
-          (funcall show-help obj)
-        (transient--describe-function this-command)))))
+   ((if-let ((show-help (oref obj show-help)))
+        (funcall show-help obj)
+      (transient--describe-function this-command)))))
 
 (cl-defmethod transient-show-help ((obj transient-infix))
   "Call `show-help' if non-nil, else show the `man-page'
@@ -4268,7 +4268,7 @@ we stop there."
   (let ((key (oref obj key)))
     (cond ((string-equal key "q") "Q")
           ((string-equal key "Q") "M-q")
-          (t key))))
+          (key))))
 
 (defun transient--force-fixed-pitch ()
   (require 'face-remap)
