@@ -2527,8 +2527,7 @@ nil) then do nothing."
     transient--stay))
 
 (defun transient--get-pre-command (cmd &optional suffix-only)
-  (or (ignore-errors
-        (lookup-key transient--predicate-map (vector cmd)))
+  (or (lookup-key transient--predicate-map (vector cmd))
       (and (not suffix-only)
            (transient--resolve-pre-command
             (oref transient--prefix transient-non-suffix)
