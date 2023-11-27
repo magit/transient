@@ -2526,9 +2526,10 @@ nil) then do nothing."
         (setq this-command 'transient-undefined)))
     transient--stay))
 
-(defun transient--get-pre-command (cmd &optional suffix-only)
-  (or (lookup-key transient--predicate-map (vector cmd))
-      (and (not suffix-only)
+(defun transient--get-pre-command (&optional cmd enforce-type)
+  (or (and (not (eq enforce-type 'non-suffix))
+           (lookup-key transient--predicate-map (vector cmd)))
+      (and (not (eq enforce-type 'suffix))
            (transient--resolve-pre-command
             (oref transient--prefix transient-non-suffix)
             t))))
@@ -3535,10 +3536,11 @@ have a history of their own.")
 (defun transient--separator-line ()
   (and (eq transient-mode-line-format 'line)
        window-system
-       (let ((face
-              `(,@(and (>= emacs-major-version 27) '(:extend t))
-                :background ,(or (face-foreground (transient--key-face) nil t)
-                                 "#gray60"))))
+       (let ((face `(,@(and (>= emacs-major-version 27) '(:extend t))
+                     :background
+                     ,(or (face-foreground (transient--key-face nil 'non-suffix)
+                                           nil t)
+                          "#gray60"))))
          (concat (propertize "__" 'face face 'display '(space :height (1)))
                  (propertize "\n" 'face face 'line-height t)))))
 
@@ -3889,12 +3891,13 @@ If the OBJ's `key' is currently unreachable, then apply the face
         (funcall face)
       face)))
 
-(defun transient--key-face (&optional cmd)
+(defun transient--key-face (&optional cmd enforce-type)
   (or (and transient-semantic-coloring
            (not transient--helpp)
            (not transient--editp)
            (or (and cmd (get cmd 'transient-face))
-               (get (transient--get-pre-command cmd) 'transient-face)))
+               (get (transient--get-pre-command cmd enforce-type)
+                    'transient-face)))
       (if cmd 'transient-key 'transient-key-noop)))
 
 (defun transient--key-unreachable-p (obj)
