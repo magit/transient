@@ -998,7 +998,16 @@ example, sets a variable, use `transient-define-infix' instead.
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)")
 
 (defun transient--default-infix-command ()
-  "Most transient infix commands are but an alias for this command."
+  ;; Most infix commands are but an alias for this command.
+  "Cannot show any documentation for this anonymous infix command.
+
+This infix command was defined anonymously, i.e., it was define
+inside a call to `transient-define-prefix'.
+
+When you request help for such an infix command, then we usually
+show the respective man-page and jump to the location where the
+respective argument is being described.  This isn't possible in
+this case, because the `man-page' slot was not set in this case."
   (interactive)
   (let ((obj (transient-suffix-object)))
     (transient-infix-set obj (transient-infix-read obj)))
@@ -3983,7 +3992,7 @@ manpage, then try to jump to the correct location."
   (transient--describe-function cmd))
 
 (defun transient--describe-function (fn)
-  (describe-function (if (symbolp fn) fn 'transient--anonymous-infix-argument))
+  (describe-function fn)
   (unless (derived-mode-p 'help-mode)
     (when-let* ((buf (get-buffer "*Help*"))
                 (win (or (and buf (get-buffer-window buf))
@@ -3992,21 +4001,6 @@ manpage, then try to jump to the correct location."
                                          (derived-mode-p 'help-mode)))
                                      (window-list)))))
       (select-window win))))
-
-(defun transient--anonymous-infix-argument ()
-  "Cannot show any documentation for this anonymous infix command.
-
-The infix command in question was defined anonymously, i.e.,
-it was define when the prefix command that it belongs to was
-defined, which means that it gets no docstring and also that
-no symbol is bound to it.
-
-When you request help for an infix command, then we usually
-show the respective man-page and jump to the location where
-the respective argument is being described.
-
-Because the containing prefix command does not specify any
-man-page, we cannot do that in this case.  Sorry about that.")
 
 (defun transient--show-manual (manual)
   (info manual))
