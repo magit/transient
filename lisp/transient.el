@@ -3662,7 +3662,7 @@ as a button."
   (let ((str (cl-call-next-method obj)))
     (when (and (cl-typep obj 'transient-infix)
                (eq (oref obj command) this-original-command)
-               current-minibuffer-command)
+               (active-minibuffer-window))
       (setq str (transient--add-face str 'transient-active-infix)))
     (when transient--editp
       (setq str (concat (let ((level (oref obj level)))
