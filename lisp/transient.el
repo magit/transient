@@ -75,6 +75,17 @@
 (defvar Man-notify-method)
 (defvar pp-default-function) ; since Emacs 29.1
 
+(defmacro static-if (condition then-form &rest else-forms)
+  "A conditional compilation macro.
+Evaluate CONDITION at macro-expansion time.  If it is non-nil,
+expand the macro to THEN-FORM.  Otherwise expand it to ELSE-FORMS
+enclosed in a `progn' form.  ELSE-FORMS may be empty."
+  (declare (indent 2)
+           (debug (sexp sexp &rest sexp)))
+  (if (eval condition lexical-binding)
+      then-form
+    (cons 'progn else-forms)))
+
 (defmacro transient--with-emergency-exit (&rest body)
   (declare (indent defun))
   `(condition-case err
@@ -2272,66 +2283,65 @@ value.  Otherwise return CHILDREN as is."
              (remove-hook 'minibuffer-exit-hook ,exit)))
        ,@body)))
 
-(defun transient--wrap-command ()
-  (if (>= emacs-major-version 30)
-      (transient--wrap-command-30)
-    (transient--wrap-command-29)))
+(static-if (>= emacs-major-version 30)
+    (defun transient--wrap-command ()
+      (cl-assert
+       (>= emacs-major-version 30) nil
+       "Emacs was downgraded, making it necessary to recompile Transient")
+      (letrec
+          ((prefix transient--prefix)
+           (suffix this-command)
+           (advice (lambda (fn &rest args)
+                     (interactive
+                      (lambda (spec)
+                        (let ((abort t))
+                          (unwind-protect
+                              (prog1 (advice-eval-interactive-spec spec)
+                                (setq abort nil))
+                            (when abort
+                              (when-let ((unwind (oref prefix unwind-suffix)))
+                                (transient--debug 'unwind-interactive)
+                                (funcall unwind suffix))
+                              (advice-remove suffix advice)
+                              (oset prefix unwind-suffix nil))))))
+                     (unwind-protect
+                         (apply fn args)
+                       (when-let ((unwind (oref prefix unwind-suffix)))
+                         (transient--debug 'unwind-command)
+                         (funcall unwind suffix))
+                       (advice-remove suffix advice)
+                       (oset prefix unwind-suffix nil)))))
+        (advice-add suffix :around advice '((depth . -99)))))
 
-(defun transient--wrap-command-30 ()
-  (letrec
-      ((prefix transient--prefix)
-       (suffix this-command)
-       (advice (lambda (fn &rest args)
-                 (interactive
-                  (lambda (spec)
-                    (let ((abort t))
-                      (unwind-protect
-                          (prog1 (advice-eval-interactive-spec spec)
-                            (setq abort nil))
-                        (when abort
-                          (when-let ((unwind (oref prefix unwind-suffix)))
-                            (transient--debug 'unwind-interactive)
-                            (funcall unwind suffix))
-                          (advice-remove suffix advice)
-                          (oset prefix unwind-suffix nil))))))
-                 (unwind-protect
-                     (apply fn args)
-                   (when-let ((unwind (oref prefix unwind-suffix)))
-                     (transient--debug 'unwind-command)
-                     (funcall unwind suffix))
-                   (advice-remove suffix advice)
-                   (oset prefix unwind-suffix nil)))))
-    (advice-add suffix :around advice '((depth . -99)))))
-
-(defun transient--wrap-command-29 ()
-  (let* ((prefix transient--prefix)
-         (suffix this-command)
-         (advice nil)
-         (advice-interactive
-          (lambda (spec)
-            (let ((abort t))
+  (defun transient--wrap-command ()
+    (let* ((prefix transient--prefix)
+           (suffix this-command)
+           (advice nil)
+           (advice-interactive
+            (lambda (spec)
+              (let ((abort t))
+                (unwind-protect
+                    (prog1 (advice-eval-interactive-spec spec)
+                      (setq abort nil))
+                  (when abort
+                    (when-let ((unwind (oref prefix unwind-suffix)))
+                      (transient--debug 'unwind-interactive)
+                      (funcall unwind suffix))
+                    (advice-remove suffix advice)
+                    (oset prefix unwind-suffix nil))))))
+           (advice-body
+            (lambda (fn &rest args)
               (unwind-protect
-                  (prog1 (advice-eval-interactive-spec spec)
-                    (setq abort nil))
-                (when abort
-                  (when-let ((unwind (oref prefix unwind-suffix)))
-                    (transient--debug 'unwind-interactive)
-                    (funcall unwind suffix))
-                  (advice-remove suffix advice)
-                  (oset prefix unwind-suffix nil))))))
-         (advice-body
-          (lambda (fn &rest args)
-            (unwind-protect
-                (apply fn args)
-              (when-let ((unwind (oref prefix unwind-suffix)))
-                (transient--debug 'unwind-command)
-                (funcall unwind suffix))
-              (advice-remove suffix advice)
-              (oset prefix unwind-suffix nil)))))
-    (setq advice `(lambda (fn &rest args)
-                    (interactive ,advice-interactive)
-                    (apply ',advice-body fn args)))
-    (advice-add suffix :around advice '((depth . -99)))))
+                  (apply fn args)
+                (when-let ((unwind (oref prefix unwind-suffix)))
+                  (transient--debug 'unwind-command)
+                  (funcall unwind suffix))
+                (advice-remove suffix advice)
+                (oset prefix unwind-suffix nil)))))
+      (setq advice `(lambda (fn &rest args)
+                      (interactive ,advice-interactive)
+                      (apply ',advice-body fn args)))
+      (advice-add suffix :around advice '((depth . -99))))))
 
 (defun transient--premature-post-command ()
   (and (equal (this-command-keys-vector) [])
