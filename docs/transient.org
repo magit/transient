@@ -623,9 +623,11 @@ Also see [[* Common Suffix Commands]].
   displayed right above the echo area, then this probably is not a
   good value.
 
-  If ~line~ (the default), then the buffer also has no mode-line,
-  but a thin line is drawn instead.  On termcap frames that is is
-  not possible, so there ~line~ is treated as a synonym for ~nil~.
+  If ~line~ (the default) or a natural number, then the buffer
+  has no mode-line, but a line is drawn is drawn in its place.
+  If a number is used, that specifies the thickness of the line.
+  On termcap frames we cannot draw lines, so there ~line~ and
+  numbers are synonyms for ~nil~.
 
   The color of the line is used to indicate if non-suffixes are
   allowed and whether they exit the transient.  The foreground

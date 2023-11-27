@@ -215,9 +215,11 @@ If nil, then the buffer has no mode-line.  If the buffer is not
 displayed right above the echo area, then this probably is not
 a good value.
 
-If `line' (the default), then the buffer also has no mode-line,
-but a thin line is drawn instead.  On termcap frames that is is
-not possible, so there `line' is treated as a synonym for nil.
+If `line' (the default) or a natural number, then the buffer
+has no mode-line, but a line is drawn is drawn in its place.
+If a number is used, that specifies the thickness of the line.
+On termcap frames we cannot draw lines, so there `line' and
+numbers are synonyms for nil.
 
 The color of the line is used to indicate if non-suffixes are
 allowed and whether they exit the transient.  The foreground
@@ -230,12 +232,13 @@ Otherwise this can be any mode-line format.
 See `mode-line-format' for details."
   :package-version '(transient . "0.2.0")
   :group 'transient
-  :type '(choice (const :tag "hide mode-line" nil)
-                 (const :tag "substitute thin line" line)
-                 (const :tag "name of prefix command"
-                        ("%e" mode-line-front-space
-                         mode-line-buffer-identification))
-                 (sexp  :tag "custom mode-line format")))
+  :type '(choice (const  :tag "hide mode-line" nil)
+                 (const  :tag "substitute thin line" line)
+                 (number :tag "substitute line with thickness")
+                 (const  :tag "name of prefix command"
+                         ("%e" mode-line-front-space
+                          mode-line-buffer-identification))
+                 (sexp   :tag "custom mode-line format")))
 
 (defcustom transient-show-common-commands nil
   "Whether to show common transient suffixes in the popup buffer.
@@ -3497,9 +3500,11 @@ have a history of their own.")
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
       (setq header-line-format nil)
-      (setq mode-line-format (if (eq transient-mode-line-format 'line)
-                                 nil
-                               transient-mode-line-format))
+      (setq mode-line-format
+            (if (or (natnump transient-mode-line-format)
+                    (eq transient-mode-line-format 'line))
+                nil
+              transient-mode-line-format))
       (setq mode-line-buffer-identification
             (symbol-name (oref transient--prefix command)))
       (if transient-enable-popup-navigation
@@ -3534,15 +3539,17 @@ have a history of their own.")
       (fit-window-to-buffer window nil 1))))
 
 (defun transient--separator-line ()
-  (and (eq transient-mode-line-format 'line)
-       window-system
-       (let ((face `(,@(and (>= emacs-major-version 27) '(:extend t))
+  (and-let* ((height (cond ((not window-system) nil)
+                           ((natnump transient-mode-line-format)
+                            transient-mode-line-format)
+                           ((eq transient-mode-line-format 'line) 1)))
+             (face `(,@(and (>= emacs-major-version 27) '(:extend t))
                      :background
                      ,(or (face-foreground (transient--key-face nil 'non-suffix)
                                            nil t)
                           "#gray60"))))
-         (concat (propertize "__" 'face face 'display '(space :height (1)))
-                 (propertize "\n" 'face face 'line-height t)))))
+    (concat (propertize "__" 'face face 'display `(space :height (,height)))
+            (propertize "\n" 'face face 'line-height t))))
 
 (defmacro transient-with-shadowed-buffer (&rest body)
   "While in the transient buffer, temporarly make the shadowed buffer current."
