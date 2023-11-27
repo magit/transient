@@ -3710,6 +3710,7 @@ as a button."
   "Format OBJ's `key' for display and return the result.")
 
 (cl-defmethod transient-format-key :around ((obj transient-suffix))
+  "Add `transient-inapt-suffix' face if suffix is inapt."
   (let ((str (cl-call-next-method)))
     (if (oref obj inapt)
         (transient--add-face str 'transient-inapt-suffix)
