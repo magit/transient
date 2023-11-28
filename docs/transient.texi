@@ -770,9 +770,11 @@ If @code{nil}, then the buffer has no mode-line.  If the buffer is not
 displayed right above the echo area, then this probably is not a
 good value.
 
-If @code{line} (the default), then the buffer also has no mode-line,
-but a thin line is drawn instead.  On termcap frames that is is
-not possible, so there @code{line} is treated as a synonym for @code{nil}.
+If @code{line} (the default) or a natural number, then the buffer
+has no mode-line, but a line is drawn is drawn in its place.
+If a number is used, that specifies the thickness of the line.
+On termcap frames we cannot draw lines, so there @code{line} and
+numbers are synonyms for @code{nil}.
 
 The color of the line is used to indicate if non-suffixes are
 allowed and whether they exit the transient.  The foreground
@@ -1468,9 +1470,10 @@ means that all outer prefixes are exited at once.
 
 @itemize
 @item
-The behavior for non-suffixes can be set for a particular prefix, by
-the prefix's @code{transient-non-suffix} slot to a boolean, or a suitable
-pre-command function.  See @ref{Pre-commands for Non-Suffixes}.
+The behavior for non-suffixes can be set for a particular prefix,
+by the prefix's @code{transient-non-suffix} slot to a boolean, a suitable
+pre-command function, or a shorthand for such a function.  See
+@ref{Pre-commands for Non-Suffixes}.
 
 @item
 The common behavior for the suffixes of a particular prefix can be
@@ -1556,7 +1559,7 @@ Call the command after exporting variables and exit the transient.
 @end defun
 
 @defun transient--do-return
-Call the command after exporting variables and return to parent
+Call the command after exporting variables and return to the parent
 prefix.  If there is no parent prefix, then call @code{transient--do-exit}.
 @end defun
 
@@ -1617,15 +1620,15 @@ such a command results in a warning and the transient stays active.
 
 If you want a different behavior, then set the @code{transient-non-suffix}
 slot of the transient prefix command.  The value should be a boolean,
-answering the question, "is it allowed to invoke non-suffix commands?"
+answering the question, "is it allowed to invoke non-suffix commands?,
+a pre-command function, or a shorthand for such a function.
 
-If the value is @code{t} or @code{transient--do-stay}, then non-suffixes can be
-invoked, when it is @code{nil} or @code{transient--do-warn} (the default) then they
-cannot be invoked.
+If the value is @code{t}, then non-suffixes can be invoked, when it is @code{nil}
+(the default) then they cannot be invoked.
 
-The only other recommended value is @code{transient--do-leave}.  If that is
-used, then non-suffixes can be invoked, but if one is invoked, then
-that exits the transient.
+The only other recommended value is @code{leave}.  If that is used, then
+non-suffixes can be invoked, but if one is invoked, then that exits
+the transient.
 
 @defun transient--do-warn
 Call @code{transient-undefined} and stay transient.

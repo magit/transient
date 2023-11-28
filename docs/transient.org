@@ -1280,9 +1280,10 @@ longer be active and displayed.  Here ~t~ means that when you exit the
 inner prefix, then the outer prefix becomes active again, while ~nil~
 means that all outer prefixes are exited at once.
 
-- The behavior for non-suffixes can be set for a particular prefix, by
-  the prefix's ~transient-non-suffix~ slot to a boolean, or a suitable
-  pre-command function.  See [[*Pre-commands for Non-Suffixes]].
+- The behavior for non-suffixes can be set for a particular prefix,
+  by the prefix's ~transient-non-suffix~ slot to a boolean, a suitable
+  pre-command function, or a shorthand for such a function.  See
+  [[*Pre-commands for Non-Suffixes]].
 
 - The common behavior for the suffixes of a particular prefix can be
   set using the prefix's ~transient-suffixes~ slot.
@@ -1366,7 +1367,7 @@ or to one of the following pre-commands.
 
 - Function: transient--do-return ::
 
-  Call the command after exporting variables and return to parent
+  Call the command after exporting variables and return to the parent
   prefix.  If there is no parent prefix, then call ~transient--do-exit~.
 
 - Function: transient--do-call ::
@@ -1428,15 +1429,15 @@ such a command results in a warning and the transient stays active.
 
 If you want a different behavior, then set the ~transient-non-suffix~
 slot of the transient prefix command.  The value should be a boolean,
-answering the question, "is it allowed to invoke non-suffix commands?"
+answering the question, "is it allowed to invoke non-suffix commands?,
+a pre-command function, or a shorthand for such a function.
 
-If the value is ~t~ or ~transient--do-stay~, then non-suffixes can be
-invoked, when it is ~nil~ or ~transient--do-warn~ (the default) then they
-cannot be invoked.
+If the value is ~t~, then non-suffixes can be invoked, when it is ~nil~
+(the default) then they cannot be invoked.
 
-The only other recommended value is ~transient--do-leave~.  If that is
-used, then non-suffixes can be invoked, but if one is invoked, then
-that exits the transient.
+The only other recommended value is ~leave~.  If that is used, then
+non-suffixes can be invoked, but if one is invoked, then that exits
+the transient.
 
 - Function: transient--do-warn ::
 
