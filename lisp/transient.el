@@ -2891,7 +2891,7 @@ transient is active."
 (defun transient-set ()
   "Set active transient's value for this Emacs session."
   (interactive)
-  (transient-set-value (or transient--prefix transient-current-prefix)))
+  (transient-set-value (transient-prefix-object)))
 
 (defalias 'transient-set-and-exit 'transient-set
   "Set active transient's value for this Emacs session and exit.")
@@ -2899,7 +2899,7 @@ transient is active."
 (defun transient-save ()
   "Save active transient's value for this and future Emacs sessions."
   (interactive)
-  (transient-save-value (or transient--prefix transient-current-prefix)))
+  (transient-save-value (transient-prefix-object)))
 
 (defalias 'transient-save-and-exit 'transient-save
   "Save active transient's value for this and future Emacs sessions and exit.")
@@ -2907,7 +2907,7 @@ transient is active."
 (defun transient-reset ()
   "Clear the set and saved values of the active transient."
   (interactive)
-  (transient-reset-value (or transient--prefix transient-current-prefix)))
+  (transient-reset-value (transient-prefix-object)))
 
 (defun transient-history-next ()
   "Switch to the next value used for the active transient."
