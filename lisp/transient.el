@@ -2877,7 +2877,7 @@ transient is active."
      (transient--all-levels-p
       (format "Hide suffix %s"
               (propertize
-               (format "levels > %s" (oref transient--prefix level))
+               (format "levels > %s" (oref (transient-prefix-object) level))
                'face 'transient-higher-level)))
      ("Show all suffix levels")))
   :inapt-if (lambda () (= transient-default-level transient--max-level))
