@@ -71,7 +71,6 @@
 (declare-function Man-next-section "man" (n))
 (declare-function Man-getpage-in-background "man" (topic))
 
-(defvar display-line-numbers) ; since Emacs 26.1
 (defvar Man-notify-method)
 (defvar pp-default-function) ; since Emacs 29.1
 
