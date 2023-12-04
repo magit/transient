@@ -1,4 +1,17 @@
 # -*- mode: org -*-
+* v0.5.1    UNRELEASED
+
+Bug fixes:
+
+- Faces that use a box are now defined more defensively to protect
+  against unexpected values and provide reasonable fallback colors.
+  413310cd, b8aefce3
+
+- Only prepare to return to the parent transient if there actually is
+  a parent.  The only negative effect of failing to do this was that
+  the suffix was colored wrong, since ~transient--do-return~ falls back
+  to behave like ~transient--do-exit~.  5f2cfc9f
+
 * v0.5.0    2023-11-28
 
 - Some suffix commands exit the transient from which they were
