@@ -63,6 +63,35 @@
              (not (fboundp 'seq-keep)))
     (unload-feature 'seq 'force)))
 (require 'seq)
+(unless (fboundp 'seq-keep)
+  (display-warning 'transient (substitute-command-keys "\
+Transient requires `seq' >= 2.24,
+but due to bad defaults, Emacs' package manager, refuses to
+upgrade this and other built-in packages to higher releases
+from GNU Elpa, when a package specifies that this is needed.
+
+To fix this, you have to add this to your init file:
+
+  (setq package-install-upgrade-built-in t)
+
+Then evaluate that expression by placing the cursor after it
+and typing \\[eval-last-sexp].
+
+Once you have done that, you have to explicitly upgrade `seq':
+
+  \\[package-upgrade] seq \\`RET'
+
+Then you also must make sure the updated version is loaded,
+by evaluating this form:
+
+  (progn (unload-feature 'seq t) (require 'seq))
+
+Until you do this, you will get random errors about `seq-keep'
+being undefined while using Transient.
+
+If you don't use the `package' package manager but still get
+this warning, then your chosen package manager likely has a
+similar defect.") :emergency))
 
 (eval-when-compile (require 'subr-x))
 
