@@ -850,7 +850,7 @@ The following functions share a few arguments:
 @var{SUFFIX} is a transient infix or suffix specification in the same form
 as expected by @code{transient-define-prefix}.  Note that an infix is a
 special kind of suffix.  Depending on context ``suffixes'' means
-``suffixes (including infixes)'' or “non-infix suffixes”.  Here it
+``suffixes (including infixes)'' or ``non-infix suffixes''.  Here it
 means the former.  See @ref{Suffix Specifications}.
 
 @var{SUFFIX} may also be a group in the same form as expected by
@@ -1221,7 +1221,7 @@ The same form is also used when later binding additional commands
 using functions such as @code{transient-insert-suffix}, see @ref{Modifying Existing Transients}.
 
 Note that an infix is a special kind of suffix. Depending on context
-``suffixes'' means “suffixes (including infixes)” or “non-infix
+``suffixes'' means ``suffixes (including infixes)'' or ``non-infix
 suffixes''.  Here it means the former.
 
 Suffix specifications have this form:
@@ -1314,7 +1314,7 @@ argument supported by the constructor of that class.  See @ref{Suffix Slots}.
 @cindex defining infix commands
 
 Note that an infix is a special kind of suffix. Depending on context
-``suffixes'' means “suffixes (including infixes)” or “non-infix
+``suffixes'' means ``suffixes (including infixes)'' or ``non-infix
 suffixes''.
 
 @defmac transient-define-suffix name arglist [docstring] [keyword value]... body...
@@ -1518,7 +1518,7 @@ sub-sections.  They are called by @code{transient--pre-command}, a function
 on @code{pre-command-hook}, and the value that they return determines whether
 the transient is exited.  To do so the value of one of the constants
 @code{transient--exit} or @code{transient--stay} is used (that way we don't have to
-remember if @code{t} means ``exit'' or “stay”).
+remember if @code{t} means ``exit'' or ``stay'').
 
 Additionally, these functions may change the value of @code{this-command}
 (which explains why they have to be called using @code{pre-command-hook}),
