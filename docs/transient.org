@@ -34,6 +34,72 @@ This manual can be bit hard to digest when getting started.  A useful
 resource to get over that hurdle is Psionic K's interactive tutorial,
 available at https://github.com/positron-solutions/transient-showcase.
 
+** Some things that Transient can do
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+- Display current state of arguments
+- Display and manage lifecycle of modal bindings
+- Contextual user interface
+- Flow control for wizard-like composition of interactive forms
+- History & persistence
+- Rendering arguments for controlling CLI programs
+
+** Complexity in CLI programs
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+Complexity tends to grow with time.  How do you manage the complexity
+of commands?  Consider the humble shell command =ls=.  It now has over
+/fifty/ command line options.  Some of these are boolean flags (=ls -l=).
+Some take arguments (=ls --sort=s=).  Some have no effect unless paired
+with other flags (=ls -lh=).  Some are mutually exclusive.  Some shell
+commands even have so many options that they introduce /subcommands/
+(=git branch=, =git commit=), each with their own rich set of options
+(=git branch -f=).
+
+** Using Transient for composing interactive commands
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+What about Emacs commands used interactively? How do these handle
+options?  One solution is to make many versions of the same command,
+so you don't need to! Consider: =delete-other-windows= vs.
+=delete-other-windows-vertically= (among many similar examples).
+
+Some Emacs commands will simply prompt you for the next "argument"
+(=M-x switch-to-buffer=).  Another common solution is to use prefix
+arguments which usually start with =C-u=.  Sometimes these are sensibly
+numerical in nature (=C-u 4 M-x forward-paragraph= to move forward 4
+paragraphs).  But sometimes they function instead as boolean
+"switches" (=C-u C-SPACE= to jump to the last mark instead of just
+setting it, =C-u C-u C-SPACE= to unconditionally set the mark).  Since
+there aren't many standards for the use of prefix options, you have to
+read the command's documentation to find out what the possibilities
+are.
+
+But when an Emacs command grows to have a truly large set of options
+and arguments, with dependencies between them, lots of option values,
+etc., these simple approaches just don't scale.  Transient is designed
+to solve this issue.  Think of it as the humble prefix argument =C-u=,
+/raised to the power of 10/.  Like =C-u=, it is key driven.  Like the
+shell, it supports boolean "flag" options, options that take
+arguments, and even "sub-commands", with their own options.  But
+instead of searching through a man page or command documentation,
+well-designed transients /guide/ their users to the relevant set of
+options (and even their possible values!) directly, taking into
+account any important pre-existing Emacs settings.  And while for
+shell commands like =ls=, there is only one way to "execute" (hit
+=Return=!), transients can "execute" using multiple different keys tied
+to one of many self-documenting /actions/ (imagine having 5 different
+colored return keys on your keyboard!).  Transients make navigating
+and setting large, complex groups of command options and arguments
+easy.  Fun even.  Once you've tried it, it's hard to go back to the
+=C-u what can I do here again?= way.
+
 * Usage
 ** Invoking Transients
 #+cindex: invoking transients

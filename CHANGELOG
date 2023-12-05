@@ -1,6 +1,8 @@
 # -*- mode: org -*-
 * v0.5.1    UNRELEASED
 
+- Added a new introduction by JD Smith (@jdtsmith).
+
 Bug fixes:
 
 - Faces that use a box are now defined more defensively to protect
