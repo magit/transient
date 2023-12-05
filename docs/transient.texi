@@ -1088,7 +1088,7 @@ This defines the actual transient prefix command (see @ref{Defining Transients})
 described below.
 
 Users and third-party packages can add additional bindings using
-functions such as @code{transient-insert-suffix} (See @ref{Modifying Existing Transients}).  These functions take a ``suffix specification'' as one of
+functions such as @code{transient-insert-suffix} (see @ref{Modifying Existing Transients}).  These functions take a ``suffix specification'' as one of
 their arguments, which has the same form as the specifications used in
 @code{transient-define-prefix}.
 

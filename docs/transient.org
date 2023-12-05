@@ -931,7 +931,7 @@ Transients]]) and adds the transient's infix and suffix bindings, as
 described below.
 
 Users and third-party packages can add additional bindings using
-functions such as ~transient-insert-suffix~ (See [[*Modifying Existing
+functions such as ~transient-insert-suffix~ (see [[*Modifying Existing
 Transients]]).  These functions take a “suffix specification” as one of
 their arguments, which has the same form as the specifications used in
 ~transient-define-prefix~.
