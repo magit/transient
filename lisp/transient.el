@@ -1553,7 +1553,10 @@ and while functions that return faces are being evaluated.")
 This is bound while the suffixes are drawn in the transient buffer.")
 
 (defvar transient--debug nil
-  "Whether to put debug information into *Messages*.")
+  "Whether to put flow-control debug information into *Messages*.")
+
+(defvar transient--debug-setup nil
+  "Whether to put setup debug information into *Messages*.")
 
 (defvar transient--history nil)
 
@@ -1945,7 +1948,11 @@ of the corresponding object."
               (`(suffix   t ,_) #'transient--do-call)
               ('(suffix nil  t) #'transient--do-return)
               (`(suffix nil ,_) #'transient--do-exit)
-              (`(suffix ,do ,_) do)))))))
+              (`(suffix ,do ,_) do)))))
+        (when transient--debug-setup
+          (message "%-30s %-30s %s" cmd
+                   (lookup-key map (vector cmd))
+                   (transient--key-face cmd)))))
     map))
 
 (defun transient--make-redisplay-map ()
