@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v0.5.3    2023-12-16
+
+- Fixed regression when setting ~:pad-keys~ for a ~transient-columns~
+  group.  #269
+
 * v0.5.2    2023-12-05
 
 - Fixed formatting issues in the manual.
