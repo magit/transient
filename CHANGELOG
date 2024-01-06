@@ -105,7 +105,7 @@ in your favorite transient-using packages in the coming months.
   can now be a function that returns such a list.  #212
 
 - Per-suffix functions that format its description (specified using the
-  ~descripton~ slot) can now optionally take one instead of zero argument,
+  ~description~ slot) can now optionally take one instead of zero argument,
   the respective suffix object.  09be367b
 
 - Added a new command ~transient-echo-arguments~ intended for use in
