@@ -3179,8 +3179,10 @@ The last value is \"don't use any of these switches\"."
   "Elsewhere use the reader of the infix command COMMAND.
 Use this if you want to share an infix's history with a regular
 stand-alone command."
-  (cl-letf (((symbol-function #'transient--show) #'ignore))
-    (transient-infix-read (transient--suffix-prototype command))))
+  (if-let ((obj (transient--suffix-prototype command)))
+      (cl-letf (((symbol-function #'transient--show) #'ignore))
+        (transient-infix-read obj))
+    (error "Not a suffix command: `%s'" command)))
 
 ;;;; Readers
 
