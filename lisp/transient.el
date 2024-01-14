@@ -1558,33 +1558,35 @@ probably use this instead:
   (get COMMAND \\='transient--suffix)"
   (when command
     (cl-check-type command command))
-  (if (or transient--prefix
-          transient-current-prefix)
-      (let ((suffixes
-             (cl-remove-if-not
-              (lambda (obj)
-                (eq (oref obj command)
-                    (or command
-                        (if (eq this-command 'transient-set-level)
-                            ;; This is how it can look up for which
-                            ;; command it is setting the level.
-                            this-original-command
-                          this-command))))
-              (or transient--suffixes
-                  transient-current-suffixes))))
-        (or (and (cdr suffixes)
-                 (cl-find-if
-                  (lambda (obj)
-                    (equal (listify-key-sequence (transient--kbd (oref obj key)))
-                           (listify-key-sequence (this-command-keys))))
-                  suffixes))
-            (car suffixes)))
-    (and-let* ((obj (transient--suffix-prototype (or command this-command)))
+  (cond
+   (transient--pending-suffix)
+   ((or transient--prefix
+        transient-current-prefix)
+    (let ((suffixes
+           (cl-remove-if-not
+            (lambda (obj)
+              (eq (oref obj command)
+                  (or command
+                      (if (eq this-command 'transient-set-level)
+                          ;; This is how it can look up for which
+                          ;; command it is setting the level.
+                          this-original-command
+                        this-command))))
+            (or transient--suffixes
+                transient-current-suffixes))))
+      (or (and (cdr suffixes)
+               (cl-find-if
+                (lambda (obj)
+                  (equal (listify-key-sequence (transient--kbd (oref obj key)))
+                         (listify-key-sequence (this-command-keys))))
+                suffixes))
+          (car suffixes))))
+   ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn ; work around debbugs#31840
         (transient-init-scope obj)
         (transient-init-value obj)
-        obj))))
+        obj)))))
 
 (defun transient--suffix-prototype (command)
   (or (get command 'transient--suffix)
