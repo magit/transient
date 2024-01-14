@@ -728,7 +728,8 @@ slot is non-nil."
   :abstract t)
 
 (defclass transient-suffix (transient-child)
-  ((key         :initarg :key)
+  ((definition  :allocation :class    :initform nil)
+   (key         :initarg :key)
    (command     :initarg :command)
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
@@ -949,7 +950,10 @@ ARGLIST.  The infix arguments are usually accessed by using
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
                (transient--expand-define-args args arglist)))
     `(progn
-       (defalias ',name (lambda ,arglist ,@body))
+       (defalias ',name
+         ,(if (and (not body) class (oref-default class definition))
+              `(oref-default ',class definition)
+            `(lambda ,arglist ,@body)))
        (put ',name 'interactive-only t)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
