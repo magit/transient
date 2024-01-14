@@ -1479,7 +1479,8 @@ drawing in the transient buffer.")
 
 (defvar transient--pending-suffix nil
   "The suffix that is currently being processed.
-This is bound while the suffix predicate is being evaluated.")
+This is bound while the suffix predicate is being evaluated,
+and while functions that return faces are being evaluated.")
 
 (defvar transient--pending-group nil
   "The group that is currently being processed.
@@ -3920,7 +3921,10 @@ If the OBJ's `key' is currently unreachable, then apply the face
              (face (slot-value obj slot)))
     (if (and (not (facep face))
              (functionp face))
-        (funcall face)
+        (let ((transient--pending-suffix obj))
+          (if (= (car (func-arity face)) 1)
+              (funcall face obj)
+            (funcall face)))
       face)))
 
 (defun transient--key-face (&optional cmd enforce-type)
