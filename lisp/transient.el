@@ -1831,7 +1831,7 @@ of the corresponding object."
 (defun transient--make-predicate-map ()
   (let* ((default (transient--resolve-pre-command
                    (oref transient--prefix transient-suffix)))
-         (return (and transient-current-prefix (eq default t)))
+         (return (and transient--stack (eq default t)))
          (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
     (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
