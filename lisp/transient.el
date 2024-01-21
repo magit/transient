@@ -1140,7 +1140,8 @@ this case, because the `man-page' slot was not set in this case."
                     (format "transient:%s:%s"
                             prefix
                             (let ((desc (plist-get args :description)))
-                              (if (and desc (or (stringp desc) (symbolp desc)))
+                              (if (and (stringp desc)
+                                       (length< desc 16))
                                   desc
                                 (plist-get args :key)))))))
           (setq args (plist-put
