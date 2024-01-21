@@ -1007,7 +1007,7 @@ keyword.
     `(progn
        (defalias ',name #'transient--default-infix-command)
        (put ',name 'interactive-only t)
-       (put ',name 'command-modes (list 'not-a-mode))
+       (put ',name 'completion-predicate #'ignore)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
@@ -1037,7 +1037,7 @@ this case, because the `man-page' slot was not set in this case."
     (transient-infix-set obj (transient-infix-read obj)))
   (transient--show))
 (put 'transient--default-infix-command 'interactive-only t)
-(put 'transient--default-infix-command 'command-modes (list 'not-a-mode))
+(put 'transient--default-infix-command 'command-predicate #'ignore)
 
 (eval-and-compile
   (defun transient--expand-define-args (args &optional arglist)
@@ -1148,7 +1148,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-modes (list 'not-a-mode))
+                         (put ',sym 'command-predicate #'ignore)
                          (defalias ',sym
                            ,(if (eq (car-safe cmd) 'lambda)
                                 cmd
@@ -1171,7 +1171,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-modes (list 'not-a-mode))
+                         (put ',sym 'command-predicate #'ignore)
                          (defalias ',sym #'transient--default-infix-command))))
           (cond ((and car (not (keywordp car)))
                  (setq class 'transient-option)
