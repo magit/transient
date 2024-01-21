@@ -1133,7 +1133,7 @@ this case, because the `man-page' slot was not set in this case."
        ((and (commandp car)
              (not (stringp car)))
         (let ((cmd pop)
-              (sym (intern
+              (sym (make-symbol
                     (format "transient:%s:%s"
                             prefix
                             (let ((desc (plist-get args :description)))
@@ -1162,7 +1162,7 @@ this case, because the `man-page' slot was not set in this case."
              (when-let ((shortarg (transient--derive-shortarg arg)))
                (setq args (plist-put args :shortarg shortarg)))
              (setq args (plist-put args :argument arg))))
-          (setq sym (intern (format "transient:%s:%s" prefix arg)))
+          (setq sym (make-symbol (format "transient:%s:%s" prefix arg)))
           (setq args (plist-put
                       args :command
                       `(prog1 ',sym
