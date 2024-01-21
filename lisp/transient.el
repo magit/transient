@@ -2336,7 +2336,8 @@ value.  Otherwise return CHILDREN as is."
                (lambda (spec)
                  (let ((abort t))
                    (unwind-protect
-                       (prog1 (advice-eval-interactive-spec spec)
+                       (prog1 (let ((debugger #'transient--exit-and-debug))
+                                (advice-eval-interactive-spec spec))
                          (setq abort nil))
                      (when abort
                        (when-let ((unwind (oref prefix unwind-suffix)))
@@ -2345,7 +2346,8 @@ value.  Otherwise return CHILDREN as is."
                        (advice-remove suffix advice)
                        (oset prefix unwind-suffix nil))))))
               (unwind-protect
-                  (apply fn args)
+                  (let ((debugger #'transient--exit-and-debug))
+                    (apply fn args))
                 (when-let ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind suffix))
@@ -2361,7 +2363,8 @@ value.  Otherwise return CHILDREN as is."
             (lambda (spec)
               (let ((abort t))
                 (unwind-protect
-                    (prog1 (advice-eval-interactive-spec spec)
+                    (prog1 (let ((debugger #'transient--exit-and-debug))
+                             (advice-eval-interactive-spec spec))
                       (setq abort nil))
                   (when abort
                     (when-let ((unwind (oref prefix unwind-suffix)))
@@ -2372,7 +2375,8 @@ value.  Otherwise return CHILDREN as is."
            (advice-body
             (lambda (fn &rest args)
               (unwind-protect
-                  (apply fn args)
+                  (let ((debugger #'transient--exit-and-debug))
+                    (apply fn args))
                 (when-let ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind suffix))
