@@ -96,17 +96,20 @@ enclosed in a `progn' form.  ELSE-FORMS may be empty."
       then-form
     (cons 'progn else-forms)))
 
-(defmacro transient--with-emergency-exit (&rest body)
+(defmacro transient--with-emergency-exit (id &rest body)
   (declare (indent defun))
+  (unless (keywordp id)
+    (setq body (cons id body))
+    (setq id nil))
   `(condition-case err
        (let ((debugger #'transient--exit-and-debug))
          ,(macroexp-progn body))
      ((debug error)
-      (transient--emergency-exit)
+      (transient--emergency-exit ,id)
       (signal (car err) (cdr err)))))
 
 (defun transient--exit-and-debug (&rest args)
-  (transient--emergency-exit)
+  (transient--emergency-exit :debugger)
   (apply #'debug args))
 
 ;;; Options
@@ -1922,7 +1925,7 @@ the \"scope\" of the transient (see `transient-define-prefix').
 This function is also called internally in which case LAYOUT and
 EDIT may be non-nil."
   (transient--debug 'setup)
-  (transient--with-emergency-exit
+  (transient--with-emergency-exit :setup
     (cond
      ((not name)
       ;; Switching between regular and edit mode.
@@ -2176,7 +2179,7 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--pre-command ()
   (transient--debug 'pre-command)
-  (transient--with-emergency-exit
+  (transient--with-emergency-exit :pre-command
     ;; The use of `overriding-terminal-local-map' does not prevent the
     ;; lookup of command remappings in the overridden maps, which can
     ;; lead to a suffix being remapped to a non-suffix.  We have to undo
@@ -2395,7 +2398,7 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--post-command ()
   (unless (transient--premature-post-command)
     (transient--debug 'post-command)
-    (transient--with-emergency-exit
+    (transient--with-emergency-exit :post-command
       (cond (transient--exitp (transient--post-exit))
             ;; If `this-command' is the current transient prefix, then we
             ;; have already taken care of updating the transient buffer...
@@ -2519,18 +2522,22 @@ value.  Otherwise return CHILDREN as is."
                          this-command))
                    (key-description (this-command-keys-vector))
                    transient--exitp
-                   (cond ((stringp (car args))
+                   (cond ((keywordp (car args))
+                          (format ", from: %s"
+                                  (substring (symbol-name (car args)) 1)))
+                         ((stringp (car args))
                           (concat ", " (apply #'format args)))
-                         (args
+                         ((functionp (car args))
                           (concat ", " (apply (car args) (cdr args))))
                          ("")))
         (apply #'message arg args)))))
 
-(defun transient--emergency-exit ()
+(defun transient--emergency-exit (&optional id)
   "Exit the current transient command after an error occurred.
 When no transient is active (i.e., when `transient--prefix' is
-nil) then do nothing."
-  (transient--debug 'emergency-exit)
+nil) then do nothing.  Optional ID is a keyword identifying the
+exit."
+  (transient--debug 'emergency-exit id)
   (when transient--prefix
     (setq transient--stack nil)
     (setq transient--exitp t)
@@ -3104,7 +3111,7 @@ Also wrap `cl-call-next-method' with two macros:
 - `transient--with-emergency-exit' arranges for the transient to
   be exited in case of an error."
   (transient--show)
-  (transient--with-emergency-exit
+  (transient--with-emergency-exit :infix-read
     (transient--with-suspended-override
      (cl-call-next-method obj))))
 
@@ -3366,7 +3373,7 @@ the set, saved or default value for PREFIX."
        (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
-  (transient--with-emergency-exit
+  (transient--with-emergency-exit :get-value
     (cl-mapcan (lambda (obj)
                  (and (or (not (slot-exists-p obj 'unsavable))
                           (not (oref obj unsavable)))
