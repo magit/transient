@@ -1007,7 +1007,7 @@ keyword.
     `(progn
        (defalias ',name #'transient--default-infix-command)
        (put ',name 'interactive-only t)
-       (put ',name 'completion-predicate #'ignore)
+       (put ',name 'completion-predicate #'transient--suffix-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
@@ -1037,7 +1037,8 @@ this case, because the `man-page' slot was not set in this case."
     (transient-infix-set obj (transient-infix-read obj)))
   (transient--show))
 (put 'transient--default-infix-command 'interactive-only t)
-(put 'transient--default-infix-command 'command-predicate #'ignore)
+(put 'transient--default-infix-command 'command-predicate
+     #'transient--suffix-only)
 
 (eval-and-compile
   (defun transient--expand-define-args (args &optional arglist)
@@ -1148,7 +1149,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-predicate #'ignore)
+                         (put ',sym 'command-predicate #'transient--suffix-only)
                          (defalias ',sym
                            ,(if (eq (car-safe cmd) 'lambda)
                                 cmd
@@ -1171,7 +1172,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-predicate #'ignore)
+                         (put ',sym 'command-predicate #'transient--suffix-only)
                          (defalias ',sym #'transient--default-infix-command))))
           (cond ((and car (not (keywordp car)))
                  (setq class 'transient-option)
@@ -1209,16 +1210,25 @@ this case, because the `man-page' slot was not set in this case."
     (and (string-match "\\`\\(-[a-zA-Z]\\)\\(\\'\\|=\\)" arg)
          (match-string 1 arg))))
 
-(defun transient-command-completion-not-ignored-p (symbol _buffer)
+(defun transient-command-completion-not-suffix-only-p (symbol _buffer)
   "Say whether SYMBOL should be offered as a completion.
 If the value of SYMBOL's `completion-predicate' property is
-`ignore', then return nil, otherwise return t."
-  (not (eq (get symbol 'completion-predicate) 'ignore)))
+`transient--suffix-only', then return nil, otherwise return t.
+This is the case when a command should only ever be used as a
+suffix of a transient prefix command (as opposed to bindings
+in regular keymaps or by using `execute-extended-command')."
+  (not (eq (get symbol 'completion-predicate) 'transient--suffix-only)))
+
+(defalias 'transient--suffix-only #'ignore
+  "Ignore ARGUMENTS, do nothing, and return nil.
+Also see `transient-command-completion-not-suffix-only-p'.
+Only use this alias as the value of the `command-predicate'
+symbol property.")
 
 (static-if (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
                 (not read-extended-command-predicate))
     (setq read-extended-command-predicate
-          'transient-command-completion-not-ignored-p))
+          'transient-command-completion-not-suffix-only-p))
 
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
