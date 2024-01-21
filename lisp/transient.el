@@ -1209,6 +1209,17 @@ this case, because the `man-page' slot was not set in this case."
     (and (string-match "\\`\\(-[a-zA-Z]\\)\\(\\'\\|=\\)" arg)
          (match-string 1 arg))))
 
+(defun transient-command-completion-not-ignored-p (symbol _buffer)
+  "Say whether SYMBOL should be offered as a completion.
+If the value of SYMBOL's `completion-predicate' property is
+`ignore', then return nil, otherwise return t."
+  (not (eq (get symbol 'completion-predicate) 'ignore)))
+
+(static-if (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
+                (not read-extended-command-predicate))
+    (setq read-extended-command-predicate
+          'transient-command-completion-not-ignored-p))
+
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
 PREFIX is a prefix command, a symbol.
