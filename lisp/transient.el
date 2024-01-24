@@ -1021,6 +1021,8 @@ example, sets a variable, use `transient-define-infix' instead.
 
 \(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)")
 
+(oclosure-define transient--anonymous-infix (obj :mutable t))
+
 (defun transient--default-infix-command ()
   ;; Most infix commands are but an alias for this command.
   "Cannot show any documentation for this anonymous infix command.
@@ -1156,8 +1158,7 @@ this case, because the `man-page' slot was not set in this case."
                               (macroexp-quote cmd))))))))
        ((or (stringp car)
             (and car (listp car)))
-        (let ((arg pop)
-              (sym nil))
+        (let ((arg pop))
           (cl-typecase arg
             (list
              (setq args (plist-put args :shortarg (car  arg)))
@@ -1167,13 +1168,12 @@ this case, because the `man-page' slot was not set in this case."
              (when-let ((shortarg (transient--derive-shortarg arg)))
                (setq args (plist-put args :shortarg shortarg)))
              (setq args (plist-put args :argument arg))))
-          (setq sym (intern (format "transient:%s:%s" prefix arg)))
           (setq args (plist-put
                       args :command
-                      `(prog1 ',sym
-                         (put ',sym 'interactive-only t)
-                         (put ',sym 'command-predicate #'transient--suffix-only)
-                         (defalias ',sym #'transient--default-infix-command))))
+                      '(oclosure-lambda (transient--anonymous-infix) ()
+                         (interactive)
+                         (transient-infix-set obj (transient-infix-read obj))
+                         (transient--show))))
           (cond ((and car (not (keywordp car)))
                  (setq class 'transient-option)
                  (setq args (plist-put args :reader (macroexp-quote pop))))
@@ -1592,25 +1592,27 @@ probably use this instead:
    (transient--pending-suffix)
    ((or transient--prefix
         transient-current-prefix)
-    (let ((suffixes
-           (cl-remove-if-not
-            (lambda (obj)
-              (eq (oref obj command)
-                  (or command
-                      (if (eq this-command 'transient-set-level)
-                          ;; This is how it can look up for which
-                          ;; command it is setting the level.
-                          this-original-command
-                        this-command))))
-            (or transient--suffixes
-                transient-current-suffixes))))
-      (or (and (cdr suffixes)
-               (cl-find-if
-                (lambda (obj)
-                  (equal (listify-key-sequence (transient--kbd (oref obj key)))
-                         (listify-key-sequence (this-command-keys))))
-                suffixes))
-          (car suffixes))))
+    (if (transient--anonymous-infix--internal-p command)
+        (transient--anonymous-infix--obj command)
+      (let ((suffixes
+             (cl-remove-if-not
+              (lambda (obj)
+                (eq (oref obj command)
+                    (or command
+                        (if (eq this-command 'transient-set-level)
+                            ;; This is how it can look up for which
+                            ;; command it is setting the level.
+                            this-original-command
+                          this-command))))
+              (or transient--suffixes
+                  transient-current-suffixes))))
+        (or (and (cdr suffixes)
+                 (cl-find-if
+                  (lambda (obj)
+                    (equal (listify-key-sequence (transient--kbd (oref obj key)))
+                           (listify-key-sequence (this-command-keys))))
+                  suffixes))
+            (car suffixes)))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn ; work around debbugs#31840
@@ -1619,9 +1621,10 @@ probably use this instead:
         obj)))))
 
 (defun transient--suffix-prototype (command)
-  (or (get command 'transient--suffix)
-      (seq-some (lambda (cmd) (get cmd 'transient--suffix))
-                (function-alias-p command))))
+  (and (symbolp command)
+       (or (get command 'transient--suffix)
+           (seq-some (lambda (cmd) (get cmd 'transient--suffix))
+                     (function-alias-p command)))))
 
 ;;; Keymaps
 
@@ -1857,25 +1860,34 @@ of the corresponding object."
   (let* ((default (transient--resolve-pre-command
                    (oref transient--prefix transient-suffix)))
          (return (and transient--stack (eq default t)))
-         (map (make-sparse-keymap)))
-    (set-keymap-parent map transient-predicate-map)
+         (map nil))
+    ;; We cannot use a keymap mapping commands to pre-command anymore
+    ;; because a vector containing a closure cannot be used as a "key".
+    ;; The "parent keymap" has to continue to be a keymap, but users
+    ;; may have modify it.
+    (map-keymap (lambda (k b)
+                  (push (cons k b) map))
+                transient-predicate-map)
     (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
                    (transient--resolve-pre-command
                     (not (oref transient--prefix transient-switch-frame))))
               (memq (transient--resolve-pre-command
                      (oref transient--prefix transient-non-suffix))
                     '(nil transient--do-warn transient--do-noop)))
-      (define-key map [handle-switch-frame] #'transient--do-suspend))
+      (push (cons 'handle-switch-frame #'transient--do-suspend) map))
     (dolist (obj transient--suffixes)
       (let* ((cmd (oref obj command))
-             (kind (cond ((get cmd 'transient--prefix)    'prefix)
+             (kind (cond ((transient--anonymous-infix--internal-p cmd) 'infix)
+                         ((get cmd 'transient--prefix)    'prefix)
                          ((cl-typep obj 'transient-infix) 'infix)
                          (t                               'suffix))))
         (cond
          ((oref obj inapt)
-          (define-key map (vector cmd) #'transient--do-warn-inapt))
+          (push (cons cmd #'transient--do-warn-inapt) map))
          ((slot-boundp obj 'transient)
-          (define-key map (vector cmd)
+          (push
+           (cons
+            cmd
             (pcase (list kind
                          (transient--resolve-pre-command (oref obj transient))
                          return)
@@ -1885,9 +1897,12 @@ of the corresponding object."
               (`(suffix   t ,_) #'transient--do-call)
               ('(suffix nil  t) #'transient--do-return)
               (`(,_     nil ,_) #'transient--do-exit)
-              (`(,_     ,do ,_) do))))
+              (`(,_     ,do ,_) do)))
+           map))
          ((not (lookup-key transient-predicate-map (vector cmd)))
-          (define-key map (vector cmd)
+          (push
+           (cons
+            cmd
             (pcase (list kind default return)
               (`(prefix ,(or 'transient--do-stay 'transient--do-call) ,_)
                #'transient--do-recurse)
@@ -1897,7 +1912,8 @@ of the corresponding object."
               (`(suffix   t ,_) #'transient--do-call)
               ('(suffix nil  t) #'transient--do-return)
               (`(suffix nil ,_) #'transient--do-exit)
-              (`(suffix ,do ,_) do)))))))
+              (`(suffix ,do ,_) do)))
+           map)))))
     map))
 
 (defun transient--make-redisplay-map ()
@@ -2062,12 +2078,17 @@ value.  Otherwise return CHILDREN as is."
     (when (transient--use-level-p level)
       (let ((obj (if (child-of-class-p class 'transient-information)
                      (apply class :level level args)
-                   (unless (and cmd (symbolp cmd))
-                     (error "BUG: Non-symbolic suffix command: %s" cmd))
+                   (unless (and cmd
+                                (or (symbolp cmd)
+                                    (transient--anonymous-infix--internal-p cmd)))
+                     (error "BUG: Invalid suffix command: %s" cmd))
                    (if-let ((proto (and cmd (transient--suffix-prototype cmd))))
                        (apply #'clone proto :level level args)
                      (apply class :command cmd :level level args)))))
         (cond ((not cmd))
+              ;; NOTE Couldn't find a non-internal predicate.
+              ((transient--anonymous-infix--internal-p cmd)
+               (setf (transient--anonymous-infix--obj cmd) obj))
               ((commandp cmd))
               ((or (cl-typep obj 'transient-switch)
                    (cl-typep obj 'transient-option))
@@ -2190,7 +2211,7 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--refresh-transient ()
   (transient--debug 'refresh-transient)
-  (transient--pop-keymap 'transient--predicate-map)
+  (setq transient--predicate-map nil)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (transient--init-objects)
@@ -2374,7 +2395,8 @@ value.  Otherwise return CHILDREN as is."
                   (funcall unwind suffix))
                 (advice-remove suffix advice)
                 (oset prefix unwind-suffix nil)))))
-        (advice-add suffix :around advice '((depth . -99)))))
+        (when (symbolp suffix)
+          (advice-add suffix :around advice '((depth . -99))))))
 
   (defun transient--wrap-command ()
     (let* ((prefix transient--prefix)
@@ -2406,7 +2428,8 @@ value.  Otherwise return CHILDREN as is."
       (setq advice `(lambda (fn &rest args)
                       (interactive ,advice-interactive)
                       (apply ',advice-body fn args)))
-      (advice-add suffix :around advice '((depth . -99))))))
+      (when (symbolp suffix)
+        (advice-add suffix :around advice '((depth . -99)))))))
 
 (defun transient--premature-post-command ()
   (and (equal (this-command-keys-vector) [])
@@ -2588,7 +2611,7 @@ exit."
 
 (defun transient--get-pre-command (&optional cmd enforce-type)
   (or (and (not (eq enforce-type 'non-suffix))
-           (lookup-key transient--predicate-map (vector cmd)))
+           (cdr (assq cmd transient--predicate-map)))
       (and (not (eq enforce-type 'suffix))
            (transient--resolve-pre-command
             (oref transient--prefix transient-non-suffix)
@@ -3965,9 +3988,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
   (or (and transient-semantic-coloring
            (not transient--helpp)
            (not transient--editp)
-           (or (and cmd (get cmd 'transient-face))
-               (get (transient--get-pre-command cmd enforce-type)
-                    'transient-face)))
+           ;; FIXME
+           ;; (or (and cmd (get cmd 'transient-face))
+           ;;     (get (transient--get-pre-command cmd enforce-type)
+           ;;          'transient-face))
+           nil)
       (if cmd 'transient-key 'transient-key-noop)))
 
 (defun transient--key-unreachable-p (obj)
