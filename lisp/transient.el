@@ -3131,7 +3131,7 @@ infix command determines what the new value should be, based
 on the previous value.")
 
 (cl-defmethod transient-infix-read :around ((obj transient-infix))
-  "Refresh the transient buffer buffer calling the next method.
+  "Refresh the transient buffer and call the next method.
 
 Also wrap `cl-call-next-method' with two macros:
 - `transient--with-suspended-override' allows use of minibuffer.
