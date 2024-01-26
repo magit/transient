@@ -2288,7 +2288,10 @@ value.  Otherwise return CHILDREN as is."
         ((and transient--prefix transient--redisplay-key)
          (setq transient--redisplay-key nil)
          (when transient--showp
-           (transient--show))))
+           (if-let ((win (minibuffer-selected-window)))
+               (with-selected-window win
+                 (transient--show))
+             (transient--show)))))
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook  #'transient--pre-command)
