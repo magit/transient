@@ -1225,10 +1225,10 @@ Also see `transient-command-completion-not-suffix-only-p'.
 Only use this alias as the value of the `command-predicate'
 symbol property.")
 
-(static-if (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
-                (not read-extended-command-predicate))
-    (setq read-extended-command-predicate
-          'transient-command-completion-not-suffix-only-p))
+(when (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
+           (not read-extended-command-predicate))
+  (setq read-extended-command-predicate
+        'transient-command-completion-not-suffix-only-p))
 
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
