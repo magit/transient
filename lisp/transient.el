@@ -1037,7 +1037,7 @@ this case, because the `man-page' slot was not set in this case."
     (transient-infix-set obj (transient-infix-read obj)))
   (transient--show))
 (put 'transient--default-infix-command 'interactive-only t)
-(put 'transient--default-infix-command 'command-predicate
+(put 'transient--default-infix-command 'completion-predicate
      #'transient--suffix-only)
 
 (eval-and-compile
@@ -1149,7 +1149,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-predicate #'transient--suffix-only)
+                         (put ',sym 'completion-predicate #'transient--suffix-only)
                          (defalias ',sym
                            ,(if (eq (car-safe cmd) 'lambda)
                                 cmd
@@ -1172,7 +1172,7 @@ this case, because the `man-page' slot was not set in this case."
                       args :command
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
-                         (put ',sym 'command-predicate #'transient--suffix-only)
+                         (put ',sym 'completion-predicate #'transient--suffix-only)
                          (defalias ',sym #'transient--default-infix-command))))
           (cond ((and car (not (keywordp car)))
                  (setq class 'transient-option)
@@ -1222,7 +1222,7 @@ in regular keymaps or by using `execute-extended-command')."
 (defalias 'transient--suffix-only #'ignore
   "Ignore ARGUMENTS, do nothing, and return nil.
 Also see `transient-command-completion-not-suffix-only-p'.
-Only use this alias as the value of the `command-predicate'
+Only use this alias as the value of the `completion-predicate'
 symbol property.")
 
 (when (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
