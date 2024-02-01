@@ -2379,7 +2379,8 @@ value.  Otherwise return CHILDREN as is."
                   (funcall unwind suffix))
                 (advice-remove suffix advice)
                 (oset prefix unwind-suffix nil)))))
-        (advice-add suffix :around advice '((depth . -99)))))
+        (when (symbolp this-command)
+          (advice-add suffix :around advice '((depth . -99))))))
 
   (defun transient--wrap-command ()
     (let* ((prefix transient--prefix)
@@ -2411,7 +2412,8 @@ value.  Otherwise return CHILDREN as is."
       (setq advice `(lambda (fn &rest args)
                       (interactive ,advice-interactive)
                       (apply ',advice-body fn args)))
-      (advice-add suffix :around advice '((depth . -99))))))
+      (when (symbolp this-command)
+        (advice-add suffix :around advice '((depth . -99)))))))
 
 (defun transient--premature-post-command ()
   (and (equal (this-command-keys-vector) [])
@@ -2593,6 +2595,7 @@ exit."
 
 (defun transient--get-pre-command (&optional cmd enforce-type)
   (or (and (not (eq enforce-type 'non-suffix))
+           (symbolp cmd)
            (lookup-key transient--predicate-map (vector cmd)))
       (and (not (eq enforce-type 'suffix))
            (transient--resolve-pre-command
