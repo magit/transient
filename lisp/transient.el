@@ -1799,7 +1799,10 @@ of the corresponding object."
   ;; an unbound key, then Emacs calls the `undefined' command
   ;; but does not set `this-command', `this-original-command'
   ;; or `real-this-command' accordingly.  Instead they are nil.
-  "<nil>"                         #'transient--do-warn)
+  "<nil>"                         #'transient--do-warn
+  ;; Bound to the `mouse-movement' event, this command is similar
+  ;; to `ignore'.
+  "<ignore-preserving-kill-region>" #'transient--do-noop)
 
 (defvar transient--transient-map nil)
 (defvar transient--predicate-map nil)
