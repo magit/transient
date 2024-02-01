@@ -1099,10 +1099,11 @@ this case, because the `man-page' slot was not set in this case."
                 ((setq args (plist-put args key val))))))
       (list 'vector
             (or level transient--default-child-level)
-            (or class
-                (if (vectorp car)
-                    (quote 'transient-columns)
-                  (quote 'transient-column)))
+            (cond (class)
+                  ((or (vectorp car)
+                       (symbolp car))
+                   (quote 'transient-columns))
+                  ((quote 'transient-column)))
             (and args (cons 'list args))
             (cons 'list
                   (cl-mapcan (lambda (s) (transient--parse-child prefix s))
