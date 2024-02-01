@@ -2348,7 +2348,7 @@ value.  Otherwise return CHILDREN as is."
              (remove-hook 'minibuffer-exit-hook ,exit)))
        ,@body)))
 
-(static-if (>= emacs-major-version 30)
+(static-if (>= emacs-major-version 30) ;transient--wrap-command
     (defun transient--wrap-command ()
       (cl-assert
        (>= emacs-major-version 30) nil
