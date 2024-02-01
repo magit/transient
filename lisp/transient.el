@@ -674,6 +674,7 @@ If `transient-save-history' is nil, then do nothing."
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
    (variable-pitch       :initarg :variable-pitch       :initform nil)
+   (column-widths        :initarg :column-widths        :initform nil)
    (unwind-suffix        :documentation "Internal use." :initform nil))
   "Transient prefix command.
 
@@ -3680,10 +3681,15 @@ have a history of their own.")
                  transient-align-variable-pitch))
          (rs (apply #'max (mapcar #'length columns)))
          (cs (length columns))
-         (cw (mapcar (lambda (col)
-                       (apply #'max
-                              (mapcar (if vp #'transient--pixel-width #'length)
-                                      col)))
+         (cw (mapcar (let ((widths (oref transient--prefix column-widths)))
+                       (lambda (col)
+                         (apply
+                          #'max
+                          (if-let ((min (pop widths)))
+                              (if vp (* min (transient--pixel-width " ")) min)
+                            0)
+                          (mapcar (if vp #'transient--pixel-width #'length)
+                                  col))))
                      columns))
          (cc (transient--seq-reductions-from
               (apply-partially #'+ (* 3 (if vp (transient--pixel-width " ") 1)))
