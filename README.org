@@ -66,6 +66,6 @@ easy.  Fun even.  Once you've tried it, it's hard to go back to the
 #+html: <br><br>
 #+html: <a href="https://github.com/magit/transient/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/magit/transient/actions/workflows/compile.yml/badge.svg"/></a>
 #+html: <a href="https://github.com/magit/transient/actions/workflows/manual.yml"><img alt="Manual" src="https://github.com/magit/transient/actions/workflows/manual.yml/badge.svg"/></a>
-#+html: <a href="https://elpa.gnu.org/packages/transient.html"><img alt="GNU ELPA" src="https://elpa.gnu.org/packages/transient.svg"/></a>
+#+html: <a href="https://elpa.gnu.org/packages/transient.html"><img alt="GNU ELPA" src="https://emacsair.me/assets/badges/gnu-elpa.svg"/></a>
 #+html: <a href="https://stable.melpa.org/#/transient"><img alt="MELPA Stable" src="https://stable.melpa.org/packages/transient-badge.svg"/></a>
 #+html: <a href="https://melpa.org/#/transient"><img alt="MELPA" src="https://melpa.org/packages/transient-badge.svg"/></a>
