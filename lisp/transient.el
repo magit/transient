@@ -1762,7 +1762,7 @@ to `transient-predicate-map'.  Also see `transient-base-map'."
 (defvar-keymap transient-popup-navigation-map
   :doc "One of the keymaps used when popup navigation is enabled.
 See `transient-enable-popup-navigation'."
-  "<down-mouse-1>" #'transient-noop
+  ;; "<down-mouse-1>" #'transient-noop ; mouse-drag-region
   "<up>"   #'transient-backward-button
   "<down>" #'transient-forward-button
   "C-r"    #'transient-isearch-backward
@@ -1844,7 +1844,8 @@ of the corresponding object."
   "<nil>"                         #'transient--do-warn
   ;; Bound to the `mouse-movement' event, this command is similar
   ;; to `ignore'.
-  "<ignore-preserving-kill-region>" #'transient--do-noop)
+  "<ignore-preserving-kill-region>" #'transient--do-noop
+  )
 
 (defvar transient--transient-map nil)
 (defvar transient--predicate-map nil)
@@ -2488,6 +2489,23 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--post-command ()
   (unless (transient--premature-post-command)
     (transient--debug 'post-command)
+    ;; (message "-- (and %s %s) %s %s"
+    ;;          (eq (selected-window) transient--window)
+    ;;          (not (or (eq this-command 'mouse-drag-region)
+    ;;                   (eq (car-safe (aref (this-command-keys-vector) 0))
+    ;;                       'mouse-movement)))
+    ;;          this-command
+    ;;          (car-safe (aref (this-command-keys-vector) 0)))
+    (when (and (eq (selected-window) transient--window)
+               ;; Don't add `mouse-set-region' itself as that would get
+               ;; the region stuck in the transient buffer or the original
+               ;; buffer.  The region still gets added to the kill ring.
+               (not (or (eq this-command 'mouse-drag-region)
+                        (eq (car-safe (aref (this-command-keys-vector) 0))
+                            'mouse-movement))))
+      (deactivate-mark)
+      ;; (setq mark-active nil)
+      (select-window transient--original-window))
     (transient--with-emergency-exit :post-command
       (cond (transient--exitp (transient--post-exit))
             ;; If `this-command' is the current transient prefix, then we
