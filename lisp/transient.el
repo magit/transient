@@ -1024,15 +1024,21 @@ example, sets a variable, use `transient-define-infix' instead.
 
 (defun transient--default-infix-command ()
   ;; Most infix commands are but an alias for this command.
-  "Cannot show any documentation for this anonymous infix command.
+  "Cannot show any documentation for this transient infix command.
 
-This infix command was defined anonymously, i.e., it was define
-inside a call to `transient-define-prefix'.
+When you request help for an infix command using `transient-help', that
+usually shows the respective man-page and tries to jump to the location
+where the respective argument is being described.
 
-When you request help for such an infix command, then we usually
-show the respective man-page and jump to the location where the
-respective argument is being described.  This isn't possible in
-this case, because the `man-page' slot was not set in this case."
+If no man-page is specified for the containing transient menu, then the
+docstring is displayed instead, if any.
+
+If the infix command doesn't have a docstring, as is the case here, then
+this docstring is displayed instead, because technically infix commands
+are aliases for `transient--default-infix-command'.
+
+`describe-function' also shows the docstring of the infix command,
+falling back to that of the same aliased command."
   (interactive)
   (let ((obj (transient-suffix-object)))
     (transient-infix-set obj (transient-infix-read obj)))
