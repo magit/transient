@@ -401,7 +401,7 @@ available even if the user lowers the transient level.
 
 - Key: C-x a (transient-toggle-level-limit) ::
 
-  This command toggle whether suffixes that are on levels lower than
+  This command toggle whether suffixes that are on levels higher than
   the level specified by ~transient-default-level~ are temporarily
   available anyway.
 
