@@ -1041,6 +1041,17 @@ this case, because the `man-page' slot was not set in this case."
 (put 'transient--default-infix-command 'completion-predicate
      #'transient--suffix-only)
 
+(defun transient--find-function-advised-original (fn func)
+  "Return nil instead of `transient--default-infix-command'.
+When using `find-function' to jump to the definition of a transient
+infix command/argument, then we want to actually jump to that, not to
+the definition of `transient--default-infix-command', which all infix
+commands are aliases for."
+  (let ((val (funcall fn func)))
+    (and val (not (eq val 'transient--default-infix-command)) val)))
+(advice-add 'find-function-advised-original :around
+            #'transient--find-function-advised-original)
+
 (eval-and-compile
   (defun transient--expand-define-args (args &optional arglist)
     (unless (listp arglist)
