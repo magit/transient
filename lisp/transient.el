@@ -1117,11 +1117,14 @@ commands are aliases for."
                      (and (listp val) (not (eq (car val) 'lambda))))
                  (setq args (plist-put args key (macroexp-quote val))))
                 ((setq args (plist-put args key val))))))
+      (unless (or spec class (not (plist-get args :setup-children)))
+        (message "WARNING: %s: When %s is used, %s must also be specified"
+                 'transient-define-prefix :setup-children :class))
       (list 'vector
             (or level transient--default-child-level)
             (cond (class)
                   ((or (vectorp car)
-                       (symbolp car))
+                       (and car (symbolp car)))
                    (quote 'transient-columns))
                   ((quote 'transient-column)))
             (and args (cons 'list args))
