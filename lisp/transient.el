@@ -1085,7 +1085,7 @@ commands are aliases for."
             args))))
 
 (defun transient--parse-child (prefix spec)
-  (cl-etypecase spec
+  (cl-typecase spec
     (symbol  (let ((value (symbol-value spec)))
                (if (and (listp value)
                         (or (listp (car value))
@@ -1094,7 +1094,8 @@ commands are aliases for."
                  (transient--parse-child prefix value))))
     (vector  (and-let* ((c (transient--parse-group  prefix spec))) (list c)))
     (list    (and-let* ((c (transient--parse-suffix prefix spec))) (list c)))
-    (string  (list spec))))
+    (string  (list spec))
+    (t       (error "Invalid transient--parse-child spec: %s" spec))))
 
 (defun transient--parse-group (prefix spec)
   (setq spec (append spec nil))
