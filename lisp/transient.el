@@ -1257,6 +1257,7 @@ PREFIX is a prefix command, a symbol.
 SUFFIX is a suffix command or a group specification (of
   the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
+  (cl-assert (and prefix (symbolp prefix)))
   (eval (car (transient--parse-child prefix suffix))))
 
 (defun transient-parse-suffixes (prefix suffixes)
@@ -1265,6 +1266,7 @@ PREFIX is a prefix command, a symbol.
 SUFFIXES is a list of suffix command or a group specification
   (of the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
+  (cl-assert (and prefix (symbolp prefix)))
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
 ;;; Edit
