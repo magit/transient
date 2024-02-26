@@ -1086,6 +1086,7 @@ commands are aliases for."
 
 (defun transient--parse-child (prefix spec)
   (cl-typecase spec
+    (null    (error "Invalid transient--parse-child spec: %s" spec))
     (symbol  (let ((value (symbol-value spec)))
                (if (and (listp value)
                         (or (listp (car value))
