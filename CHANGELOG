@@ -1,4 +1,85 @@
 # -*- mode: org -*-
+* v0.6.0    2024-03-21
+
+- On Emacs 28.1 and later, all infix commands and suffix commands
+  that are defined inline (i.e., using a lambda when defining a prefix
+  command), are now hidden from ~execute-extended-command~ (aka ~M-x~) /by
+  default/.  It was already possible to hide these commands, but users
+  had to opt-in explicitly.  After refactoring how these commands are
+  declared to be unsuitable for ~M-x~, it is now possible to hide them
+  /without/ also hiding other, unrelated kinds of unsuitable commands.
+
+  I recommend that you instruct to hide /all/ unsuitable command.
+  This requires that you customizing ~read-extended-command-predicate~,
+  because the Emacs authors have decided that this should be an opt-in
+  feature.
+
+  Note that this has no effect on Emacs releases before 28.1.
+
+- Added documentation stating that ~:class~ has to be specified when
+  using ~:setup-children~.  beecdc85
+
+- Added a new prefix slot ~column-widths~, which can be used to specify
+  the minimal width of each column in all ~transient-columns~ groups of
+  that prefix.  92e8952e
+
+- When assigning a name to a suffix that is defined inline, we no
+  longer use the suffix description, iff that would result in an
+  overly long name.  81a108ba
+
+- Functions used as the value of face slots can now take one
+  argument, the suffix object.  Functions that take zero arguments
+  are still supported.  Additionally, ~transient--pending-suffix~ is
+  bound around calls to these functions, but it is better to pass
+  the object as an argument.  f582a9bc
+
+- The new ~definition~ suffix slot can be used to specify a default
+  function definition that is used if no function body is provided
+  using ~transient-define-suffix~.  5b334a51
+
+- Taught ~transient-suffix-object~ about ~transient--pending-suffix~.
+  20a3770d
+
+Bug fixes:
+
+- If ~transient-parse-suffix~ and ~transient-parse-suffixes~ are called
+  with an invalid value for their ~prefix~ argument, they failed to
+  detect that.  03e752d9
+
+- If ~nil~ is encountered inside a group specification, that was
+  silently ignored.  Now an error is signaled.  8c01a1eb
+
+- ~find-function~ wasn't able to locate the definitions of infix
+  commands anymore.  a30df67b
+
+- There was no binding for ~ignore-preserving-kill-region~ in
+  ~transient-predicate-map~.  0fc87002
+
+- Invoking a non-symbolic non-suffix command, caused an error.
+  bd2a5ea0
+
+- When a group begins with an included subgroup, that affected what
+  group class was assumed, in the absence of an explicit specification.
+  df36bc87
+
+- ~transient--suspend-override~ failed to move out of the minibuffer
+  before refreshing the transient buffer.  833143ba
+
+- When a suffix command signaled an error during a trivial phase
+  (which does not involve, e.g., the minibuffer), then the transient
+  window was not deleted when the debugger was entered.  9d8f361f
+
+- When a prefix was refreshed, the wrong color was used for suffix
+  commands that exit the prefix, indicating that would cause a return
+  to the outer prefix, even though there is none.  f51c144a
+
+- Calling ~transient-infix-read~ with an invalid value, resulted in
+  a confusing error.  Now an appropriate error is used.  3ebb6acf
+
+- When third-party code or user customization managed to display
+  another buffer in our dedicated window, then that buffer got
+  killed when we tried to kill the transient buffer.  #271
+
 * v0.5.3    2023-12-16
 
 - Fixed regression when setting ~:pad-keys~ for a ~transient-columns~
