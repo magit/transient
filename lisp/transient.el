@@ -3990,8 +3990,8 @@ If the OBJ's `key' is currently unreachable, then apply the face
     str))
 
 (defun transient--get-face (obj slot)
-  (and-let* ((! (slot-exists-p obj slot))
-             (! (slot-boundp   obj slot))
+  (and-let* (((slot-exists-p obj slot))
+             ((slot-boundp obj slot))
              (face (slot-value obj slot)))
     (if (and (not (facep face))
              (functionp face))
