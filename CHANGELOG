@@ -9,7 +9,7 @@
   declared to be unsuitable for ~M-x~, it is now possible to hide them
   /without/ also hiding other, unrelated kinds of unsuitable commands.
 
-  I recommend that you instruct to hide /all/ unsuitable command.
+  I recommend that you instruct ~M-x~ to hide /all/ unsuitable command.
   This requires that you customizing ~read-extended-command-predicate~,
   because the Emacs authors have decided that this should be an opt-in
   feature.
