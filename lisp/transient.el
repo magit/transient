@@ -3516,6 +3516,10 @@ the option does not appear in ARGS."
           (or (match-string 1 match) "")))
     (and (member arg args) t)))
 
+(defun transient-scope ()
+  "Return the value of the `scope' slot of the current prefix."
+  (oref (transient-prefix-object) scope))
+
 ;;; History
 
 (cl-defgeneric transient--history-key (obj)
