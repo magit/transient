@@ -1482,6 +1482,10 @@ variable instead.")
 (defvar transient-exit-hook nil
   "Hook run after exiting a transient.")
 
+(defvar transient-setup-buffer-hook nil
+  "Hook run when setting up the transient buffer.
+That buffer is current and empty when this hook runs.")
+
 (defvar transient--prefix nil)
 (defvar transient--layout nil)
 (defvar transient--suffixes nil)
@@ -3594,6 +3598,7 @@ have a history of their own.")
                              (button-get (1- (point)) 'command))
                         (transient--heading-at-point))))
       (erase-buffer)
+      (run-hooks 'transient-setup-buffer-hook)
       (setq window-size-fixed t)
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
