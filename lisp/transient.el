@@ -1865,15 +1865,19 @@ of the corresponding object."
           (setq key (save-match-data
                       (funcall transient-substitute-key-function obj)))
           (oset obj key key))
-        (let ((kbd (kbd key))
-              (cmd (oref obj command)))
-          (when-let ((conflict (and transient-detect-key-conflicts
-                                    (transient--lookup-key map kbd))))
-            (unless (eq cmd conflict)
-              (error "Cannot bind %S to %s and also %s"
-                     (string-trim key)
-                     cmd conflict)))
-          (define-key map kbd cmd))))
+        (let* ((kbd (kbd key))
+               (cmd (oref obj command))
+               (alt (transient--lookup-key map kbd)))
+          (cond ((not alt)
+                 (define-key map kbd cmd))
+                ((eq alt cmd))
+                ((transient--inapt-suffix-p obj))
+                ((transient--inapt-suffix-p (transient-suffix-object alt))
+                 (define-key map kbd cmd))
+                (transient-detect-key-conflicts
+                 (error "Cannot bind %S to %s and also %s"
+                        (string-trim key) cmd alt))
+                ((define-key map kbd cmd))))))
     (when-let ((b (keymap-lookup map "-"))) (keymap-set map "<kp-subtract>" b))
     (when-let ((b (keymap-lookup map "="))) (keymap-set map "<kp-equal>" b))
     (when-let ((b (keymap-lookup map "+"))) (keymap-set map "<kp-add>" b))
