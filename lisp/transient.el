@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2024 Free Software Foundation, Inc.
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/magit/transient
 ;; Keywords: extensions
 

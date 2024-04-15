@@ -1,7 +1,7 @@
 #+title: Transient User and Developer Manual
 :PREAMBLE:
 #+author: Jonas Bernoulli
-#+email: jonas@bernoul.li
+#+email: emacs.transient@jonas.bernoulli.dev
 #+date: 2018-{{{year}}}
 
 #+texinfo_dir_category: Emacs misc features
