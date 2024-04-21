@@ -1171,16 +1171,12 @@ suffixes”.
   reserved for future use.  {{{var(DOCSTRING)}}} is the documentation string and
   is optional.
 
-  The keyword-value pairs are mandatory.  All transient infix commands
-  are ~equal~ to each other (but not ~eq~), so it is meaningless to define
-  an infix command without also setting at least ~:class~ and one other
-  keyword (which it is depends on the used class, usually ~:argument~ or
-  ~:variable~).
-
-  Each keyword has to be a keyword symbol, either ~:class~ or a keyword
-  argument supported by the constructor of that class.  The
-  ~transient-switch~ class is used if the class is not specified
-  explicitly.
+  At least one key-value pair is required.  All transient infix
+  commands are ~equal~ to each other (but not ~eq~).  It is meaningless
+  to define an infix command, without providing at least one keyword
+  argument (usually ~:argument~ or ~:variable~, depending on the class).
+  The suffix class defaults to ~transient-switch~ and can be set using
+  the ~:class~ keyword.
 
   The function definition is always:
 

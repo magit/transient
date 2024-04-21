@@ -1372,16 +1372,12 @@ This macro defines @var{NAME} as a transient infix command.
 reserved for future use.  @var{DOCSTRING} is the documentation string and
 is optional.
 
-The keyword-value pairs are mandatory.  All transient infix commands
-are @code{equal} to each other (but not @code{eq}), so it is meaningless to define
-an infix command without also setting at least @code{:class} and one other
-keyword (which it is depends on the used class, usually @code{:argument} or
-@code{:variable}).
-
-Each keyword has to be a keyword symbol, either @code{:class} or a keyword
-argument supported by the constructor of that class.  The
-@code{transient-switch} class is used if the class is not specified
-explicitly.
+At least one key-value pair is required.  All transient infix
+commands are @code{equal} to each other (but not @code{eq}).  It is meaningless
+to define an infix command, without providing at least one keyword
+argument (usually @code{:argument} or @code{:variable}, depending on the class).
+The suffix class defaults to @code{transient-switch} and can be set using
+the @code{:class} keyword.
 
 The function definition is always:
 

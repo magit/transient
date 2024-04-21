@@ -974,16 +974,12 @@ ARGLIST.  The infix arguments are usually accessed by using
 ARGLIST is always ignored and reserved for future use.
 DOCSTRING is the documentation string and is optional.
 
-The key-value pairs are mandatory.  All transient infix commands
-are equal to each other (but not eq), so it is meaningless to
-define an infix command without also setting at least `:class'
-and one other keyword (which it is depends on the used class,
-usually `:argument' or `:variable').
-
-Each key has to be a keyword symbol, either `:class' or a keyword
-argument supported by the constructor of that class.  The
-`transient-switch' class is used if the class is not specified
-explicitly.
+At least one key-value pair is required.  All transient infix
+commands are equal to each other (but not eq).  It is meaning-
+less to define an infix command, without providing at least one
+keyword argument (usually `:argument' or `:variable', depending
+on the class).  The suffix class defaults to `transient-switch'
+and can be set using the `:class' keyword.
 
 The function definitions is always:
 
@@ -1002,9 +998,10 @@ that case you have to use `transient-define-suffix' to define
 the infix command and use t as the value of the `:transient'
 keyword.
 
-\(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]...)"
+\(fn NAME ARGLIST [DOCSTRING] KEYWORD VALUE [KEYWORD VALUE]...)"
   (declare (debug ( &define name lambda-list
                     [&optional lambda-doc]
+                    keywordp sexp
                     [&rest keywordp sexp]))
            (indent defun)
            (doc-string 3))
