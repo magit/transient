@@ -1010,7 +1010,7 @@ keyword.
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,_ ,interactive-only)
-               (transient--expand-define-args args arglist)))
+               (transient--expand-define-args args arglist t)))
     `(progn
        (defalias ',name #'transient--default-infix-command)
        (put ',name 'interactive-only ,interactive-only)
@@ -1065,7 +1065,7 @@ commands are aliases for."
             #'transient--find-function-advised-original)
 
 (eval-and-compile
-  (defun transient--expand-define-args (args &optional arglist)
+  (defun transient--expand-define-args (args &optional arglist nobody)
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
     (let (class keys suffixes docstr declare (interactive-only t))
@@ -1090,6 +1090,12 @@ commands are aliases for."
           (delq int declare))
         (unless (cdr declare)
           (setq declare nil)))
+      (cond
+       ((not args))
+       (nobody
+        (error "transient-define-infix: No function body allowed"))
+       ((not (eq (car-safe (nth (if declare 1 0) args)) 'interactive))
+        (error "transient-define-*: Interactive form missing")))
       (list (if (eq (car-safe class) 'quote)
                 (cadr class)
               class)
