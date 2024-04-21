@@ -4401,25 +4401,11 @@ we stop there."
   (face-remap-reset-base 'default)
   (face-remap-add-relative 'default 'fixed-pitch))
 
-;;;; Missing from Emacs
-
 (defun transient--seq-reductions-from (function sequence initial-value)
   (let ((acc (list initial-value)))
     (seq-doseq (elt sequence)
       (push (funcall function (car acc) elt) acc))
     (nreverse acc)))
-
-(defun transient-plist-to-alist (plist)
-  (let (alist)
-    (while plist
-      (push (cons (let* ((symbol (pop plist))
-                         (name (symbol-name symbol)))
-                    (if (eq (aref name 0) ?:)
-                        (intern (substring name 1))
-                      symbol))
-                  (pop plist))
-            alist))
-    (nreverse alist)))
 
 ;;; Font-Lock
 
