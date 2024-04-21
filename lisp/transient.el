@@ -779,8 +779,13 @@ slot is non-nil."
 (defclass transient-information (transient-suffix)
   ((format :initform " %k %d")
    (key    :initform " "))
-  "Display-only information.
-A suffix object with no associated command.")
+  "Display-only information, aligned with suffix keys.
+Technically a suffix object with no associated command.")
+
+(defclass transient-information* (transient-information)
+  ((format :initform " %d"))
+  "Display-only information, aligned with suffix descriptions.
+Technically a suffix object with no associated command.")
 
 (defclass transient-infix (transient-suffix)
   ((transient                         :initform t)
@@ -837,6 +842,7 @@ They become the value of this argument.")
    (hide           :initarg :hide           :initform nil)
    (description    :initarg :description    :initform nil)
    (pad-keys       :initarg :pad-keys       :initform nil)
+   (info-format    :initarg :info-format    :initform nil)
    (setup-children :initarg :setup-children))
   "Abstract superclass of all group classes."
   :abstract t)
@@ -1153,9 +1159,9 @@ commands are aliases for."
              (commandp (cadr spec)))
         (setq args (plist-put args :description (macroexp-quote pop)))))
       (cond
-       ((eq car :info))
+       ((memq car '(:info :info*)))
        ((keywordp car)
-        (error "Need command or `:info', got `%s'" car))
+        (error "Need command, `:info' or `:info*', got `%s'" car))
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
        ((and (commandp car)
@@ -1214,6 +1220,9 @@ commands are aliases for."
                 ((eq key :level) (setq level val))
                 ((eq key :info)
                  (setq class 'transient-information)
+                 (setq args (plist-put args :description val)))
+                ((eq key :info*)
+                 (setq class 'transient-information*)
                  (setq args (plist-put args :description val)))
                 ((eq (car-safe val) '\,)
                  (setq args (plist-put args key (cadr val))))
