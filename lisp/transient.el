@@ -3910,7 +3910,7 @@ called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
   (and-let* ((desc (oref obj description))
              (desc (if (functionp desc)
-                       (if (= (car (func-arity desc)) 1)
+                       (if (= (car (transient--func-arity desc)) 1)
                            (funcall desc obj)
                          (funcall desc))
                      desc)))
@@ -4010,7 +4010,7 @@ If the OBJ's `key' is currently unreachable, then apply the face
     (if (and (not (facep face))
              (functionp face))
         (let ((transient--pending-suffix obj))
-          (if (= (car (func-arity face)) 1)
+          (if (= (car (transient--func-arity face)) 1)
               (funcall face obj)
             (funcall face)))
       face)))
@@ -4400,6 +4400,9 @@ we stop there."
   (require 'face-remap)
   (face-remap-reset-base 'default)
   (face-remap-add-relative 'default 'fixed-pitch))
+
+(defun transient--func-arity (fn)
+  (func-arity (advice--cd*r (if (symbolp fn) (symbol-function fn) fn))))
 
 (defun transient--seq-reductions-from (function sequence initial-value)
   (let ((acc (list initial-value)))
