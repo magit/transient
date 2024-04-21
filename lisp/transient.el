@@ -916,7 +916,7 @@ to the setup function:
                     [&optional ("interactive" interactive) def-body]))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body)
+  (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body ,interactive-only)
                (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name
@@ -925,7 +925,7 @@ to the setup function:
             `(lambda ()
                (interactive)
                (transient-setup ',name))))
-       (put ',name 'interactive-only t)
+       (put ',name 'interactive-only ,interactive-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--prefix
             (,(or class 'transient-prefix) :command ',name ,@slots))
@@ -957,14 +957,14 @@ ARGLIST.  The infix arguments are usually accessed by using
                     def-body))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,_ ,docstr ,body)
+  (pcase-let ((`(,class ,slots ,_ ,docstr ,body ,interactive-only)
                (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name
          ,(if (and (not body) class (oref-default class definition))
               `(oref-default ',class definition)
             `(lambda ,arglist ,@body)))
-       (put ',name 'interactive-only t)
+       (put ',name 'interactive-only ,interactive-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
@@ -1009,11 +1009,11 @@ keyword.
                     [&rest keywordp sexp]))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,_ ,docstr ,_)
+  (pcase-let ((`(,class ,slots ,_ ,docstr ,_ ,interactive-only)
                (transient--expand-define-args args arglist)))
     `(progn
        (defalias ',name #'transient--default-infix-command)
-       (put ',name 'interactive-only t)
+       (put ',name 'interactive-only ,interactive-only)
        (put ',name 'completion-predicate #'transient--suffix-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
@@ -1068,7 +1068,7 @@ commands are aliases for."
   (defun transient--expand-define-args (args &optional arglist)
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
-    (let (class keys suffixes docstr)
+    (let (class keys suffixes docstr declare (interactive-only t))
       (when (stringp (car args))
         (setq docstr (pop args)))
       (while (keywordp (car args))
@@ -1082,13 +1082,22 @@ commands are aliases for."
                (or (vectorp arg)
                    (and arg (symbolp arg))))
         (push (pop args) suffixes))
+      (when (eq (car-safe (car args)) 'declare)
+        (setq declare (car args))
+        (setq args (cdr args))
+        (when-let ((int (assq 'interactive-only declare)))
+          (setq interactive-only (cadr int))
+          (delq int declare))
+        (unless (cdr declare)
+          (setq declare nil)))
       (list (if (eq (car-safe class) 'quote)
                 (cadr class)
               class)
             (nreverse keys)
             (nreverse suffixes)
             docstr
-            args))))
+            (if declare (cons declare args) args)
+            interactive-only))))
 
 (defun transient--parse-child (prefix spec)
   (cl-typecase spec
