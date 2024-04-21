@@ -949,12 +949,11 @@ The BODY must begin with an `interactive' form that matches
 ARGLIST.  The infix arguments are usually accessed by using
 `transient-args' inside `interactive'.
 
-\(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]... BODY...)"
+\(fn NAME ARGLIST [DOCSTRING] [KEYWORD VALUE]... [BODY...])"
   (declare (debug ( &define name lambda-list
                     [&optional lambda-doc]
                     [&rest keywordp sexp]
-                    ("interactive" interactive)
-                    def-body))
+                    [&optional ("interactive" interactive) def-body]))
            (indent defun)
            (doc-string 3))
   (pcase-let ((`(,class ,slots ,_ ,docstr ,body ,interactive-only)
