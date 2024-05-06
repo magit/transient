@@ -3692,9 +3692,8 @@ have a history of their own.")
                                               (transient-with-shadowed-buffer
                                                 (funcall hide))))
                                     (list group))))
-                           transient--layout))
-        group)
-    (while (setq group (pop groups))
+                           transient--layout)))
+    (while-let ((group (pop groups)))
       (transient--insert-group group)
       (when groups
         (insert ?\n)))))
