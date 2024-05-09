@@ -1281,7 +1281,7 @@ SUFFIX is a suffix command or a group specification (of
   the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
   (cl-assert (and prefix (symbolp prefix)))
-  (eval (car (transient--parse-child prefix suffix))))
+  (eval (car (transient--parse-child prefix suffix)) t))
 
 (defun transient-parse-suffixes (prefix suffixes)
   "Parse SUFFIXES, to be added to PREFIX.
@@ -1301,7 +1301,7 @@ Intended for use in a group's `:setup-children' function."
                 (string suffix)))
          (mem (transient--layout-member loc prefix))
          (elt (car mem)))
-    (setq suf (eval suf))
+    (setq suf (eval suf t))
     (cond
      ((not mem)
       (message "Cannot insert %S into %s; %s not found"
@@ -1763,7 +1763,8 @@ to `transient-predicate-map'.  Also see `transient-base-map'."
                            "Hide common commands"
                          "Show common permanently")))
                (list "C-x l" "Show/hide suffixes" #'transient-set-level)
-               (list "C-x a" #'transient-toggle-level-limit))))))))
+               (list "C-x a" #'transient-toggle-level-limit)))))
+       t)))
 
 (defvar-keymap transient-popup-navigation-map
   :doc "One of the keymaps used when popup navigation is enabled.
