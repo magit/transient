@@ -2608,9 +2608,11 @@ value.  Otherwise return CHILDREN as is."
           (message "-- %-22s (cmd: %s, event: %S, exit: %s%s)"
                    arg
                    (or (and (symbolp this-command) this-command)
-                       (if (byte-code-function-p this-command)
-                           "#[...]"
-                         this-command))
+                       (if (fboundp 'help-fns-function-name)
+                           (help-fns-function-name this-command)
+                         (if (byte-code-function-p this-command)
+                             "#[...]"
+                           this-command)))
                    (key-description (this-command-keys-vector))
                    transient--exitp
                    (cond ((keywordp (car args))
