@@ -1272,7 +1272,7 @@ symbol property.")
 (when (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
            (not read-extended-command-predicate))
   (setq read-extended-command-predicate
-        'transient-command-completion-not-suffix-only-p))
+        #'transient-command-completion-not-suffix-only-p))
 
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
@@ -3014,7 +3014,7 @@ transient is active."
   (interactive)
   (transient-set-value (transient-prefix-object)))
 
-(defalias 'transient-set-and-exit 'transient-set
+(defalias 'transient-set-and-exit #'transient-set
   "Set active transient's value for this Emacs session and exit.")
 
 (defun transient-save ()
@@ -3022,7 +3022,7 @@ transient is active."
   (interactive)
   (transient-save-value (transient-prefix-object)))
 
-(defalias 'transient-save-and-exit 'transient-save
+(defalias 'transient-save-and-exit #'transient-save
   "Save active transient's value for this and future Emacs sessions and exit.")
 
 (defun transient-reset ()
