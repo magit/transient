@@ -3800,14 +3800,12 @@ have a history of their own.")
               (insert ?\n))))))))
 
 (cl-defmethod transient--insert-group ((group transient-subgroups))
-  (let* ((subgroups (oref group suffixes))
-         (n (length subgroups)))
-    (dotimes (s n)
-      (let ((subgroup (nth s subgroups)))
-        (transient--maybe-pad-keys subgroup group)
-        (transient--insert-group subgroup)
-        (when (< s (1- n))
-          (insert ?\n))))))
+  (let ((subgroups (oref group suffixes)))
+    (while-let ((subgroup (pop subgroups)))
+      (transient--maybe-pad-keys subgroup group)
+      (transient--insert-group subgroup)
+      (when subgroups
+        (insert ?\n)))))
 
 (cl-defgeneric transient-format (obj)
   "Format and return OBJ for display.
