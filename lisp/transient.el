@@ -3937,16 +3937,11 @@ as a button."
 (cl-defgeneric transient-format-description (obj)
   "Format OBJ's `description' for display and return the result.")
 
-(cl-defmethod transient-format-description ((obj transient-child))
+(cl-defmethod transient-format-description ((obj transient-suffix))
   "The `description' slot may be a function, in which case that is
 called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
-  (and-let* ((desc (oref obj description))
-             (desc (if (functionp desc)
-                       (if (= (car (transient--func-arity desc)) 1)
-                           (funcall desc obj)
-                         (funcall desc))
-                     desc)))
+  (and-let* ((desc (transient--get-description obj)))
     (if-let* ((face (transient--get-face obj 'face)))
         (transient--add-face desc face t)
       desc)))
@@ -3955,7 +3950,7 @@ and its value is returned to the caller."
   "Format the description by calling the next method.  If the result
 doesn't use the `face' property at all, then apply the face
 `transient-heading' to the complete string."
-  (and-let* ((desc (cl-call-next-method obj)))
+  (and-let* ((desc (transient--get-description obj)))
     (cond ((oref obj inapt)
            (propertize desc 'face 'transient-inapt-suffix))
           ((text-property-not-all 0 (length desc) 'face nil desc)
@@ -4033,9 +4028,16 @@ If the OBJ's `key' is currently unreachable, then apply the face
               choices
               (propertize "|" 'face 'transient-delimiter))))))
 
-(defun transient--get-face (obj slot)
-  (and-let* (((slot-exists-p obj slot))
-             ((slot-boundp obj slot))
+(cl-defmethod transient--get-description ((obj transient-child))
+  (and-let* ((desc (oref obj description)))
+    (if (functionp desc)
+        (if (= (car (transient--func-arity desc)) 1)
+            (funcall desc obj)
+          (funcall desc))
+      desc)))
+
+(cl-defmethod transient--get-face ((obj transient-suffix) slot)
+  (and-let* (((slot-boundp obj slot))
              (face (slot-value obj slot)))
     (if (and (not (facep face))
              (functionp face))
