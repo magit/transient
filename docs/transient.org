@@ -2054,6 +2054,19 @@ the transient popup, you will be able to yank it in another buffer.
               #'transient--do-stay)
 #+end_src
 
+** How can I autoload prefix and suffix commands?
+
+If your package only supports Emacs 30, just prefix the definition
+with ~;;;###autoload~.  If your package supports released versions of
+Emacs, you unfortunately have to use a long form autoload comment
+as described in [[info:elisp#Autoload]].
+
+#+begin_src emacs-lisp
+  ;;;###autoload (autoload 'magit-dispatch "magit" nil t)
+  (transient-define-prefix magit-dispatch ()
+    ...)
+#+end_src
+
 ** How does Transient compare to prefix keys and universal arguments?
 :PROPERTIES:
 :UNNUMBERED: notoc
