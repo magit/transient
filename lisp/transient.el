@@ -4077,12 +4077,13 @@ If the OBJ's `key' is currently unreachable, then apply the face
   (when-let ((pad (or (oref group pad-keys)
                       (and parent (oref parent pad-keys)))))
     (oset group pad-keys
-          (apply #'max (cons (if (integerp pad) pad 0)
-                             (seq-keep (lambda (suffix)
-                                         (and (eieio-object-p suffix)
-                                              (slot-boundp suffix 'key)
-                                              (length (oref suffix key))))
-                                       (oref group suffixes)))))))
+          (apply #'max
+                 (if (integerp pad) pad 0)
+                 (seq-keep (lambda (suffix)
+                             (and (eieio-object-p suffix)
+                                  (slot-boundp suffix 'key)
+                                  (length (oref suffix key))))
+                           (oref group suffixes))))))
 
 (defun transient--pixel-width (string)
   (save-window-excursion
