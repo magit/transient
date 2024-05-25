@@ -1536,6 +1536,9 @@ That buffer is current and empty when this hook runs.")
 (defvar transient--buffer-name " *transient*"
   "Name of the transient buffer.")
 
+(defvar transient--buffer nil
+  "The transient menu buffer.")
+
 (defvar transient--window nil
   "The window used to display the transient popup buffer.")
 
@@ -2337,8 +2340,9 @@ value.  Otherwise return CHILDREN as is."
                   'other)
         (with-demoted-errors "Error while exiting transient: %S"
           (delete-window transient--window)))
-      (when-let ((buffer (get-buffer transient--buffer-name)))
-        (kill-buffer buffer))
+      (when (buffer-live-p transient--buffer)
+        (kill-buffer transient--buffer))
+      (setq transient--buffer nil)
       (when remain-in-minibuffer-window
         (select-window remain-in-minibuffer-window)))))
 
@@ -2587,8 +2591,7 @@ value.  Otherwise return CHILDREN as is."
                                             mouse-set-region))
                        (equal (key-description (this-command-keys-vector))
                               "<mouse-movement>"))
-                   (and (eq (current-buffer)
-                            (get-buffer transient--buffer-name)))))
+                   (and (eq (current-buffer) transient--buffer))))
         (transient--show))
     (when (and (numberp transient-show-popup)
                (not (zerop transient-show-popup))
@@ -3626,9 +3629,9 @@ have a history of their own.")
   (transient--timer-cancel)
   (setq transient--showp t)
   (let ((transient--shadowed-buffer (current-buffer))
-        (buf (get-buffer-create transient--buffer-name))
         (focus nil))
-    (with-current-buffer buf
+    (setq transient--buffer (get-buffer-create transient--buffer-name))
+    (with-current-buffer transient--buffer
       (when transient-enable-popup-navigation
         (setq focus (or (button-get (point) 'command)
                         (and (not (bobp))
@@ -3661,7 +3664,8 @@ have a history of their own.")
         (insert line)))
     (unless (window-live-p transient--window)
       (setq transient--window
-            (display-buffer buf transient-display-buffer-action)))
+            (display-buffer transient--buffer
+                            transient-display-buffer-action)))
     (when (window-live-p transient--window)
       (with-selected-window transient--window
         (goto-char (point-min))
