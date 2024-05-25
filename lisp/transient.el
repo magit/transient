@@ -3941,10 +3941,7 @@ as a button."
   "The `description' slot may be a function, in which case that is
 called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
-  (and-let* ((desc (transient--get-description obj)))
-    (if-let* ((face (transient--get-face obj 'face)))
-        (transient--add-face desc face t)
-      desc)))
+  (transient--get-description obj))
 
 (cl-defmethod transient-format-description ((obj transient-group))
   "Format the description by calling the next method.  If the result
@@ -3965,8 +3962,11 @@ If the OBJ's `key' is currently unreachable, then apply the face
   (let ((desc (or (cl-call-next-method obj)
                   (and (slot-boundp transient--prefix 'suffix-description)
                        (funcall (oref transient--prefix suffix-description)
-                                obj))
-                  (propertize "(BUG: no description)" 'face 'error))))
+                                obj)))))
+    (if desc
+        (when-let ((face (transient--get-face obj 'face)))
+          (setq desc (transient--add-face desc face t)))
+      (setq desc (propertize "(BUG: no description)" 'face 'error)))
     (when (if transient--all-levels-p
               (> (oref obj level) transient--default-prefix-level)
             (and transient-highlight-higher-levels
