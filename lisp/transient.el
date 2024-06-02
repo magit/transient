@@ -3771,7 +3771,7 @@ have a history of their own.")
                                   col))))
                      columns))
          (cc (transient--seq-reductions-from
-              (apply-partially #'+ (* 3 (if vp (transient--pixel-width " ") 1)))
+              (apply-partially #'+ (* 2 (if vp (transient--pixel-width " ") 1)))
               cw 0)))
     (if transient-force-single-column
         (dotimes (c cs)
