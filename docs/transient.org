@@ -2055,6 +2055,9 @@ the transient popup, you will be able to yank it in another buffer.
 #+end_src
 
 ** How can I autoload prefix and suffix commands?
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
 
 If your package only supports Emacs 30, just prefix the definition
 with ~;;;###autoload~.  If your package supports released versions of
