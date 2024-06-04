@@ -1063,7 +1063,7 @@ commands are aliases for."
 (advice-add 'find-function-advised-original :around
             #'transient--find-function-advised-original)
 
-(eval-and-compile
+(eval-and-compile ;transient--expand-define-args
   (defun transient--expand-define-args (args &optional arglist nobody)
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
