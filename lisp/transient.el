@@ -919,8 +919,9 @@ to the setup function:
                     [&optional ("interactive" interactive) def-body]))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,suffixes ,docstr ,body ,interactive-only)
-               (transient--expand-define-args args arglist)))
+  (pcase-let
+      ((`(,class ,slots ,suffixes ,docstr ,body ,interactive-only)
+        (transient--expand-define-args args arglist 'transient-define-prefix)))
     `(progn
        (defalias ',name
          ,(if body
@@ -959,8 +960,9 @@ ARGLIST.  The infix arguments are usually accessed by using
                     [&optional ("interactive" interactive) def-body]))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,_ ,docstr ,body ,interactive-only)
-               (transient--expand-define-args args arglist)))
+  (pcase-let
+      ((`(,class ,slots ,_ ,docstr ,body ,interactive-only)
+        (transient--expand-define-args args arglist 'transient-define-suffix)))
     `(progn
        (defalias ',name
          ,(if (and (not body) class (oref-default class definition))
@@ -1008,8 +1010,9 @@ keyword.
                     [&rest keywordp sexp]))
            (indent defun)
            (doc-string 3))
-  (pcase-let ((`(,class ,slots ,_ ,docstr ,_ ,interactive-only)
-               (transient--expand-define-args args arglist t)))
+  (pcase-let
+      ((`(,class ,slots ,_ ,docstr ,_ ,interactive-only)
+        (transient--expand-define-args args arglist 'transient-define-infix t)))
     `(progn
        (defalias ',name #'transient--default-infix-command)
        (put ',name 'interactive-only ,interactive-only)
@@ -1064,7 +1067,7 @@ commands are aliases for."
             #'transient--find-function-advised-original)
 
 (eval-and-compile ;transient--expand-define-args
-  (defun transient--expand-define-args (args &optional arglist nobody)
+  (defun transient--expand-define-args (args arglist form &optional nobody)
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
     (let (class keys suffixes docstr declare (interactive-only t))
@@ -1092,9 +1095,9 @@ commands are aliases for."
       (cond
        ((not args))
        (nobody
-        (error "transient-define-infix: No function body allowed"))
+        (error "%s: No function body allowed" form))
        ((not (eq (car-safe (nth (if declare 1 0) args)) 'interactive))
-        (error "transient-define-*: Interactive form missing")))
+        (error "%s: Interactive form missing" form)))
       (list (if (eq (car-safe class) 'quote)
                 (cadr class)
               class)
