@@ -973,6 +973,18 @@ ARGLIST.  The infix arguments are usually accessed by using
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
 
+(defmacro transient-augment-suffix (name &rest args)
+  "Augment existing command NAME with a new transient suffix object.
+Similar to `transient-define-suffix' but define a suffix object only.
+\n\(fn NAME [KEYWORD VALUE]...)"
+  (declare (debug (&define name [&rest keywordp sexp]))
+           (indent defun))
+  (pcase-let
+      ((`(,class ,slots)
+        (transient--expand-define-args args nil 'transient-augment-suffix t)))
+    `(put ',name 'transient--suffix
+          (,(or class 'transient-suffix) :command ',name ,@slots))))
+
 (defmacro transient-define-infix (name arglist &rest args)
   "Define NAME as a transient infix command.
 
