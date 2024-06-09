@@ -41,7 +41,7 @@
 (require 'format-spec)
 
 (eval-and-compile
-  (when (and (featurep' seq)
+  (when (and (featurep 'seq)
              (not (fboundp 'seq-keep)))
     (unload-feature 'seq 'force)))
 (require 'seq)
