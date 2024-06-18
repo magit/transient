@@ -1015,7 +1015,7 @@ constructor of that class.
   transform them from the convenient to the expected form.
 
   If you explicitly specify children and then transform them using
-  ~:setup-chilren~, then the class of the group is determined as usual,
+  ~:setup-children~, then the class of the group is determined as usual,
   based on explicitly specified children.
 
   If you do not explicitly specify children and thus rely solely on
