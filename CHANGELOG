@@ -1,4 +1,46 @@
 # -*- mode: org -*-
+* v0.7.0    UNRELEASED
+
+- Added new macro ~transient-augment-suffix~, which can be used to
+  specify the suffix behavior of a command that was previously defined
+  as a prefix, using ~transient-define-prefix~.  2fd3ea14
+
+- Added new function ~transient-scope~, which is just a convenient way
+  to get the value of the ~scope~ slot of the ~transient-prefix-object~.
+  7f6c39c5
+
+- Added new hook ~transient-setup-buffer-hook~, which is run early when
+  setting the transient menu buffer.  #283
+
+- Added new class ~transient-information*~, a variant of recently added
+  ~transient-information~ class.  8a80e952
+
+- By default our macros that define commands, mark those as for
+  interactive use only.  ~(declare (interactive-only nil))~ can now be
+  used to overwrite that.  fcc60e27
+
+- Groups now also accept ~:inapt*~ predicates.  3d395d64
+
+- Spaces between columns is reduced from three to two.  dd93001e
+
+- Removed unused ~transient-plist-to-alist~ function.  1251faf0
+
+Bug fixes:
+
+- ~transient--force-fixed-pitch~ was run to late to always succeed.  #283
+
+- Key binding conflict detection was too strict, taking hypothetical
+  bindings for inapt commands into account.  c356d1bc
+
+- Key binding conflict detection did not consider bindings in regular
+  keymaps, such as ~transient-base-map~.  2698d62d
+
+- ~func-arity~ gets confused when a function is advised, so we had to
+  add a wrapper function ~transient--func-arity~.  91dd7bb3
+
+- Some mistakes, that can be expected to occur when defining suffix and
+  prefix commands, were not detected.  7e827c31
+
 * v0.6.0    2024-03-21
 
 - On Emacs 28.1 and later, all infix commands and suffix commands
