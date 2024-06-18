@@ -178,9 +178,9 @@ in your favorite transient-using packages in the coming months.
 
 - Sometimes it is useful to display some information in the transient
   buffer, which is not associated with a suffix command.  The new
-  class ~transient-info~ can be used for that purpose.  Children that
-  use this class are very similar to regular suffixes, the lack of a
-  command binding being nearly the only difference.  #226
+  class ~transient-information~ can be used for that purpose.  Children
+  that use this class are very similar to regular suffixes, the lack
+  of a command binding being nearly the only difference.  #226
 
 - Instead of a list of choices, the value of a suffix's ~choices~ slot
   can now be a function that returns such a list.  #212
