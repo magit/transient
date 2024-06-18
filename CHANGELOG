@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.7.0    UNRELEASED
+* v0.7.0    2024-06-18
 
 - Added new macro ~transient-augment-suffix~, which can be used to
   specify the suffix behavior of a command that was previously defined
