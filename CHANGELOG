@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v0.7.1    UNRELEASED
+
+- Added a workaround for ~emoji.el~ from Emacs 29.1 calling an internal
+  function using an outdated number of arguments.  #288
+
 * v0.7.0    2024-06-18
 
 - Added new macro ~transient-augment-suffix~, which can be used to

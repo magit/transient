@@ -1078,7 +1078,10 @@ commands are aliases for."
     (and val (not (eq val 'transient--default-infix-command)) val)))
 
 (eval-and-compile ;transient--expand-define-args
-  (defun transient--expand-define-args (args arglist form &optional nobody)
+  (defun transient--expand-define-args (args &optional arglist form nobody)
+    ;; ARGLIST and FORM are only optional for backward compatibility.
+    ;; This is necessary because "emoji.el" from Emacs 29 calls this
+    ;; function directly, with just one argument.
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
     (let (class keys suffixes docstr declare (interactive-only t))
