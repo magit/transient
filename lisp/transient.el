@@ -838,6 +838,11 @@ Technically a suffix object with no associated command.")
 All remaining arguments are treated as files.
 They become the value of this argument.")
 
+(defclass transient-value-preset (transient-suffix)
+  ((transient :initform t)
+   (set :initarg := :initform nil))
+  "Class used by the `transient-preset' suffix command.")
+
 ;;;; Group
 
 (defclass transient-group (transient-child)
@@ -3093,6 +3098,12 @@ transient is active."
       (oset obj value (nth pos hst))
       (mapc #'transient-init-value transient--suffixes))))
 
+(transient-define-suffix transient-preset ()
+  "Put this preset into action."
+  :class transient-value-preset
+  (interactive)
+  (transient-prefix-set (oref (transient-suffix-object) set)))
+
 ;;;; Auxiliary
 
 (defun transient-toggle-common ()
@@ -3973,6 +3984,24 @@ as a button."
 called inside the correct buffer (see `transient--insert-group')
 and its value is returned to the caller."
   (transient--get-description obj))
+
+(cl-defmethod transient-format-description ((obj transient-value-preset))
+  (pcase-let* (((eieio description key set) obj)
+               ((eieio value) transient--prefix)
+               (active (seq-set-equal-p set value)))
+    (format
+     "%s %s"
+     (propertize (or description (format "Preset %s" key))
+                 'face (and active 'transient-argument))
+     (format (propertize "(%s)" 'face 'transient-delimiter)
+             (mapconcat (lambda (arg)
+                          (propertize
+                           arg 'face (cond (active 'transient-argument)
+                                           ((member arg value)
+                                            '((:weight demibold)
+                                              transient-inactive-argument))
+                                           ('transient-inactive-argument))))
+                        set " ")))))
 
 (cl-defmethod transient-format-description ((obj transient-group))
   "Format the description by calling the next method.  If the result
