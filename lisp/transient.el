@@ -3411,10 +3411,10 @@ prompt."
 ;;;; Set
 
 (cl-defgeneric transient-infix-set (obj value)
-  "Set the value of infix object OBJ to value.")
+  "Set the value of infix object OBJ to VALUE.")
 
 (cl-defmethod transient-infix-set ((obj transient-infix) value)
-  "Set the value of infix object OBJ to value."
+  "Set the value of infix object OBJ to VALUE."
   (oset obj value value))
 
 (cl-defmethod transient-infix-set :after ((obj transient-argument) value)
