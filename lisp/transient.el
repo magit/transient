@@ -3281,7 +3281,7 @@ it\", in which case it is pointless to preserve history.)"
              (reader (oref obj reader))
              (choices (if (functionp choices) (funcall choices) choices))
              (prompt (transient-prompt obj))
-             (value (if multi-value (mapconcat #'identity value ",") value))
+             (value (if multi-value (string-join value ",") value))
              (history-key (or (oref obj history-key)
                               (oref obj command)))
              (transient--history (alist-get history-key transient-history))
