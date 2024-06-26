@@ -2553,7 +2553,11 @@ value.  Otherwise return CHILDREN as is."
                  (transient--pop-keymap 'transient--redisplay-map)
                  (setq transient--redisplay-map new)
                  (transient--push-keymap 'transient--redisplay-map))
-               (transient--redisplay)))))))
+               (transient--redisplay))))))
+  (transient--debug 'clear-current)
+  (setq transient-current-prefix nil)
+  (setq transient-current-command nil)
+  (setq transient-current-suffixes nil))
 
 (defun transient--post-exit (&optional command)
   (transient--debug 'post-exit)
@@ -2576,9 +2580,6 @@ value.  Otherwise return CHILDREN as is."
     (remove-hook 'pre-command-hook  #'transient--pre-command)
     (remove-hook 'post-command-hook #'transient--post-command)
     (advice-remove 'recursive-edit #'transient--recursive-edit))
-  (setq transient-current-prefix nil)
-  (setq transient-current-command nil)
-  (setq transient-current-suffixes nil)
   (let ((resume (and transient--stack
                      (not (memq transient--exitp '(replace suspend))))))
     (unless (or resume (eq transient--exitp 'replace))
