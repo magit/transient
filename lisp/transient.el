@@ -3822,21 +3822,15 @@ have a history of their own.")
                 cw 0)))
       (dotimes (r rs)
         (dotimes (c cs)
-          (if vp
-              (progn
-                (when-let ((cell (nth r (nth c columns))))
-                  (insert cell))
-                (if (= c (1- cs))
-                    (insert ?\n)
-                  (insert (propertize " " 'display
-                                      `(space :align-to (,(nth (1+ c) cc)))))))
-            (when (> c 0)
-              (insert (make-string (max 1 (- (nth c cc) (current-column)))
-                                   ?\s)))
-            (when-let ((cell (nth r (nth c columns))))
-              (insert cell))
-            (when (= c (1- cs))
-              (insert ?\n))))))))
+          (when (> c 0)
+            (insert
+             (if vp
+                 (propertize " " 'display `(space :align-to (,(nth c cc))))
+               (make-string (max 1 (- (nth c cc) (current-column))) ?\s))))
+          (when-let ((cell (nth r (nth c columns))))
+            (insert cell))
+          (when (= c (1- cs))
+            (insert ?\n)))))))
 
 (cl-defmethod transient--insert-group ((group transient-subgroups))
   (let ((subgroups (oref group suffixes)))
