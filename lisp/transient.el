@@ -3806,19 +3806,7 @@ have a history of their own.")
                    transient-align-variable-pitch))
            (rs (apply #'max (mapcar #'length columns)))
            (cs (length columns))
-           (cw (mapcar (let ((widths (oref transient--prefix column-widths)))
-                         (lambda (col)
-                           (apply
-                            #'max
-                            (if-let ((min (pop widths)))
-                                (if vp (* min (transient--pixel-width " ")) min)
-                              0)
-                            (mapcar (if vp #'transient--pixel-width #'length)
-                                    col))))
-                       columns))
-           (cc (transient--seq-reductions-from
-                (apply-partially #'+ (* 2 (if vp (transient--pixel-width " ") 1)))
-                cw 0)))
+           (cc (transient--column-stops columns)))
       (dotimes (r rs)
         (dotimes (c cs)
           (when (> c 0)
@@ -4143,6 +4131,21 @@ If the OBJ's `key' is currently unreachable, then apply the face
       (set-window-buffer nil (current-buffer))
       (car (window-text-pixel-size
             nil (line-beginning-position) (point))))))
+
+(defun transient--column-stops (columns)
+  (let* ((var-pitch (or transient-align-variable-pitch
+                        (oref transient--prefix variable-pitch)))
+         (char-width (and var-pitch (transient--pixel-width " "))))
+    (transient--seq-reductions-from
+     (apply-partially #'+ (* 2 (if var-pitch char-width 1)))
+     (transient--mapn
+      (lambda (cells min)
+        (apply #'max
+               (if min (if var-pitch (* min char-width) min) 0)
+               (mapcar (if var-pitch #'transient--pixel-width #'length) cells)))
+      columns
+      (oref transient--prefix column-widths))
+     0)))
 
 (defun transient-command-summary-or-name (obj)
   "Return the summary or name of the command represented by OBJ.
