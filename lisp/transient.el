@@ -3778,51 +3778,48 @@ have a history of their own.")
     (insert "   "))
   (insert ?\n))
 
-(cl-defmethod transient--insert-group ((group transient-column))
+(cl-defmethod transient--insert-group ((group transient-column)
+                                       &optional skip-empty)
   (transient--maybe-pad-keys group)
   (dolist (suffix (oref group suffixes))
     (let ((str (transient-with-shadowed-buffer (transient-format suffix))))
-      (insert str)
-      (unless (string-match-p ".\n\\'" str)
-        (insert ?\n)))))
+      (unless (and (not skip-empty) (equal str ""))
+        (insert str)
+        (unless (string-match-p ".\n\\'" str)
+          (insert ?\n))))))
 
 (cl-defmethod transient--insert-group ((group transient-columns))
-  (let* ((columns
-          (mapcar
-           (lambda (column)
-             (transient--maybe-pad-keys column group)
-             (transient-with-shadowed-buffer
-               (let* ((transient--pending-group column)
-                      (rows (mapcar #'transient-format (oref column suffixes))))
-                 (if-let ((desc (transient-format-description column)))
-                     (cons desc rows)
-                   rows))))
-           (oref group suffixes)))
-         (vp (or (oref transient--prefix variable-pitch)
-                 transient-align-variable-pitch))
-         (rs (apply #'max (mapcar #'length columns)))
-         (cs (length columns))
-         (cw (mapcar (let ((widths (oref transient--prefix column-widths)))
-                       (lambda (col)
-                         (apply
-                          #'max
-                          (if-let ((min (pop widths)))
-                              (if vp (* min (transient--pixel-width " ")) min)
-                            0)
-                          (mapcar (if vp #'transient--pixel-width #'length)
-                                  col))))
-                     columns))
-         (cc (transient--seq-reductions-from
-              (apply-partially #'+ (* 2 (if vp (transient--pixel-width " ") 1)))
-              cw 0)))
-    (if transient-force-single-column
-        (dotimes (c cs)
-          (dotimes (r rs)
-            (when-let ((cell (nth r (nth c columns))))
-              (unless (equal cell "")
-                (insert cell ?\n))))
-          (unless (= c (1- cs))
-            (insert ?\n)))
+  (if transient-force-single-column
+      (dolist (group (oref group suffixes))
+        (transient--insert-group group t))
+    (let* ((columns
+            (mapcar
+             (lambda (column)
+               (transient--maybe-pad-keys column group)
+               (transient-with-shadowed-buffer
+                 (let* ((transient--pending-group column)
+                        (rows (mapcar #'transient-format (oref column suffixes))))
+                   (if-let ((desc (transient-format-description column)))
+                       (cons desc rows)
+                     rows))))
+             (oref group suffixes)))
+           (vp (or (oref transient--prefix variable-pitch)
+                   transient-align-variable-pitch))
+           (rs (apply #'max (mapcar #'length columns)))
+           (cs (length columns))
+           (cw (mapcar (let ((widths (oref transient--prefix column-widths)))
+                         (lambda (col)
+                           (apply
+                            #'max
+                            (if-let ((min (pop widths)))
+                                (if vp (* min (transient--pixel-width " ")) min)
+                              0)
+                            (mapcar (if vp #'transient--pixel-width #'length)
+                                    col))))
+                       columns))
+           (cc (transient--seq-reductions-from
+                (apply-partially #'+ (* 2 (if vp (transient--pixel-width " ") 1)))
+                cw 0)))
       (dotimes (r rs)
         (dotimes (c cs)
           (if vp
