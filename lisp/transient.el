@@ -3802,17 +3802,13 @@ have a history of their own.")
                    ,@(let ((transient--pending-group column))
                        (mapcar #'transient-format (oref column suffixes))))))
              (oref group suffixes)))
-           (vp (or (oref transient--prefix variable-pitch)
-                   transient-align-variable-pitch))
            (stops (transient--column-stops columns)))
       (dolist (row (apply #'transient--mapn #'list columns))
         (let ((stops stops))
           (dolist (cell row)
             (let ((stop (pop stops)))
               (when cell
-                (insert (if vp
-                            (propertize " " 'display `(space :align-to (,stop)))
-                          (make-string (max 0 (- stop (current-column))) ?\s)))
+                (transient--align-to stop)
                 (insert cell)))))
         (insert ?\n)))))
 
@@ -4143,6 +4139,13 @@ If the OBJ's `key' is currently unreachable, then apply the face
       columns
       (oref transient--prefix column-widths))
      0)))
+
+(defun transient--align-to (stop)
+  (unless (zerop stop)
+    (insert (if (or transient-align-variable-pitch
+                    (oref transient--prefix variable-pitch))
+                (propertize " " 'display `(space :align-to (,stop)))
+              (make-string (max 0 (- stop (current-column))) ?\s)))))
 
 (defun transient-command-summary-or-name (obj)
   "Return the summary or name of the command represented by OBJ.
