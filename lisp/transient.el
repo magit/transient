@@ -4501,6 +4501,17 @@ we stop there."
       (push (funcall function (car acc) elt) acc))
     (nreverse acc)))
 
+(defun transient--mapn (function &rest lists)
+  "Apply FUNCTION to elements of LISTS.
+Like `cl-mapcar' but while that stops when the shortest list
+is exhausted, continue until the longest list is, using nil
+as stand-in for elements of exhausted lists."
+  (let (result)
+    (while (catch 'more (mapc (lambda (l) (and l (throw 'more t))) lists) nil)
+      (push (apply function (mapcar #'car-safe lists)) result)
+      (setq lists (mapcar #'cdr lists)))
+    (nreverse result)))
+
 ;;; Font-Lock
 
 (defconst transient-font-lock-keywords
