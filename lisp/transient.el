@@ -171,11 +171,11 @@ if no transient were active."
   :type 'boolean)
 
 (defcustom transient-display-buffer-action
-  '(display-buffer-in-side-window
+  `(display-buffer-in-side-window
     (side . bottom)
     (dedicated . t)
     (inhibit-same-window . t)
-    (window-parameters (no-other-window . t)))
+    (window-parameters (no-other-window . ,pop-up-windows)))
   "The action used to display the transient popup buffer.
 
 The transient popup buffer is displayed in a window using
@@ -194,7 +194,7 @@ The default is:
     (side . bottom)
     (dedicated . t)
     (inhibit-same-window . t)
-    (window-parameters (no-other-window . t)))
+    (window-parameters (no-other-window . pop-up-windows)))
 
 This displays the window at the bottom of the selected frame.
 Another useful FUNCTION is `display-buffer-below-selected', which
