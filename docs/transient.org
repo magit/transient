@@ -1285,16 +1285,32 @@ function, which for infix arguments serves about the same purpose as
   values.  In complex cases it might be necessary to use this variable
   instead, i.e., if you need access to information beside the value.
 
+- Variable: transient-current-command ::
+
+  The transient from which this suffix command was invoked.  The
+  returned value is a symbol, the transient prefix command.
+
 - Variable: transient-current-prefix ::
 
   The transient from which this suffix command was invoked.  The
   returned value is a ~transient-prefix~ object, which holds information
   associated with the transient prefix command.
 
-- Variable: transient-current-command ::
+- Variable: transient-active-prefix ::
 
-  The transient from which this suffix command was invoked.  The
-  returned value is a symbol, the transient prefix command.
+  This function returns the active transient object.  Return ~nil~ if
+  there is no active transient, if the transient buffer isn't shown,
+  and while the active transient is suspended (e.g., while the
+  minibuffer is in use).
+
+  Unlike ~transient-current-prefix~, which is only ever non-~nil~ in code
+  that is run directly by a command that is invoked while a transient
+  is current, this function is also suitable for use in asynchronous
+  code, such as timers and callbacks (this function's main use-case).
+
+  If optional PREFIXES is non-~nil~, it must be a list of prefix command
+  symbols, in which case the active transient object is only returned
+  if it matches one of the PREFIXES."
 
 ** Transient State
 #+cindex: transient state

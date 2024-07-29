@@ -1591,6 +1591,31 @@ This is bound while the suffixes are drawn in the transient buffer.")
 
 ;;; Identities
 
+(defun transient-active-prefix (&optional prefixes)
+  "Return the active transient object.
+
+Return nil if there is no active transient, if the transient buffer
+isn't shown, and while the active transient is suspended (e.g., while
+the minibuffer is in use).
+
+Unlike `transient-current-prefix', which is only ever non-nil in code
+that is run directly by a command that is invoked while a transient
+is current, this function is also suitable for use in asynchronous
+code, such as timers and callbacks (this function's main use-case).
+
+If optional PREFIXES is non-nil, it must be a list of prefix command
+symbols, in which case the active transient object is only returned
+if it matches one of the PREFIXES."
+  (and transient--showp
+       transient--prefix
+       (or (not prefixes)
+           (memq (oref transient--prefix command) prefixes))
+       (or (memq 'transient--pre-command pre-command-hook)
+           (and (memq t pre-command-hook)
+                (memq 'transient--pre-command
+                      (default-value 'pre-command-hook))))
+       transient--prefix))
+
 (defun transient-prefix-object ()
   "Return the current prefix as an object.
 

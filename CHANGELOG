@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v0.7.4    UNRELEASED
+
+- Added new function ~transient-active-prefix~.
+
 * v0.7.3    2024-07-13
 
 - Refactored code responsible for inserting columns.
