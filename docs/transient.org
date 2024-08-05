@@ -65,9 +65,9 @@ commands even have so many options that they introduce /subcommands/
 :UNNUMBERED: notoc
 :END:
 
-What about Emacs commands used interactively? How do these handle
+What about Emacs commands used interactively?  How do these handle
 options?  One solution is to make many versions of the same command,
-so you don't need to! Consider: =delete-other-windows= vs.
+so you don't need to!  Consider: =delete-other-windows= vs.
 =delete-other-windows-vertically= (among many similar examples).
 
 Some Emacs commands will simply prompt you for the next "argument"
@@ -840,7 +840,7 @@ independently.  See [[*Using History]].
 After a transient prefix command is invoked, {{{kbdvar(C-h <KEY>)}}} can be used to
 show the documentation for the infix or suffix command that {{{kbdvar(<KEY>)}}} is
 bound to (see [[*Getting Help for Suffix Commands]]), and infixes and
-suffixes can be removed from the transient using {{{kbdvar(C-x l <KEY>)}}}. Infixes
+suffixes can be removed from the transient using {{{kbdvar(C-x l <KEY>)}}}.  Infixes
 and suffixes that are disabled by default can be enabled the same way.
 See [[*Enabling and Disabling Suffixes]].
 
@@ -1088,7 +1088,7 @@ The same form is also used when later binding additional commands
 using functions such as ~transient-insert-suffix~, see [[*Modifying
 Existing Transients]].
 
-Note that an infix is a special kind of suffix. Depending on context
+Note that an infix is a special kind of suffix.  Depending on context
 “suffixes” means “suffixes (including infixes)” or “non-infix
 suffixes”.  Here it means the former.
 
@@ -1171,7 +1171,7 @@ Slots]].
 #+cindex: defining suffix commands
 #+cindex: defining infix commands
 
-Note that an infix is a special kind of suffix. Depending on context
+Note that an infix is a special kind of suffix.  Depending on context
 “suffixes” means “suffixes (including infixes)” or “non-infix
 suffixes”.
 
@@ -1246,7 +1246,7 @@ When returning to the command-loop after calling the suffix command,
 the arguments are reset to ~nil~ (which causes the function to return
 ~nil~ too).
 
-Like for Emacs' prefix arguments, it is advisable, but not mandatory,
+Like for Emacs's prefix arguments, it is advisable, but not mandatory,
 to access the infix arguments inside the command's ~interactive~ form.
 The preferred way of doing that is to call the ~transient-args~
 function, which for infix arguments serves about the same purpose as
