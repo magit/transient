@@ -1593,13 +1593,13 @@ that is run directly by a command that is invoked while a transient
 is current, this function is also suitable for use in asynchronous
 code, such as timers and callbacks (this function's main use-case).
 
-If optional PREFIXES is non-nil, it must be a list of prefix command
-symbols, in which case the active transient object is only returned
-if it matches one of the PREFIXES."
+If optional PREFIXES is non-nil, it must be a prefix command symbol
+or a list of symbols, in which case the active transient object is
+only returned if it matches one of PREFIXES."
   (and transient--showp
        transient--prefix
        (or (not prefixes)
-           (memq (oref transient--prefix command) prefixes))
+           (memq (oref transient--prefix command) (ensure-list prefixes)))
        (or (memq 'transient--pre-command pre-command-hook)
            (and (memq t pre-command-hook)
                 (memq 'transient--pre-command
