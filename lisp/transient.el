@@ -2460,11 +2460,8 @@ value.  Otherwise return CHILDREN as is."
              (remove-hook 'minibuffer-exit-hook ,exit)))
        ,@body)))
 
-(static-if (>= emacs-major-version 30) ;transient--wrap-command
-    (defun transient--wrap-command ()
-      (cl-assert
-       (>= emacs-major-version 30) nil
-       "Emacs was downgraded, making it necessary to recompile Transient")
+(defun transient--wrap-command ()
+  (static-if (>= emacs-major-version 30)
       (letrec
           ((prefix transient--prefix)
            (suffix this-command)
@@ -2492,9 +2489,11 @@ value.  Otherwise return CHILDREN as is."
                 (advice-remove suffix advice)
                 (oset prefix unwind-suffix nil)))))
         (when (symbolp this-command)
-          (advice-add suffix :around advice '((depth . -99))))))
-
-  (defun transient--wrap-command ()
+          (advice-add suffix :around advice '((depth . -99))))
+        (cl-assert
+         (>= emacs-major-version 30) nil
+         "Emacs was downgraded, making it necessary to recompile Transient"))
+    ;; (< emacs-major-version 30)
     (let* ((prefix transient--prefix)
            (suffix this-command)
            (advice nil)
