@@ -163,8 +163,7 @@ if no transient were active."
   '(display-buffer-in-side-window
     (side . bottom)
     (dedicated . t)
-    (inhibit-same-window . t)
-    (window-parameters (no-other-window . t)))
+    (inhibit-same-window . t))
   "The action used to display the transient popup buffer.
 
 The transient popup buffer is displayed in a window using
@@ -182,8 +181,7 @@ The default is:
   (display-buffer-in-side-window
     (side . bottom)
     (dedicated . t)
-    (inhibit-same-window . t)
-    (window-parameters (no-other-window . t)))
+    (inhibit-same-window . t))
 
 This displays the window at the bottom of the selected frame.
 Another useful FUNCTION is `display-buffer-below-selected', which
@@ -205,7 +203,7 @@ then that unfortunately changes which buffer is current.
 
 If you change the value of this option, then you might also
 want to change the value of `transient-mode-line-format'."
-  :package-version '(transient . "0.3.0")
+  :package-version '(transient . "0.7.5")
   :group 'transient
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
@@ -2374,14 +2372,18 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
-    (let ((remain-in-minibuffer-window
+    (let ((win transient--window)
+          (remain-in-minibuffer-window
            (and (minibuffer-selected-window)
                 (selected-window))))
-      ;; Only delete the window if it has never shown another buffer.
-      (unless (eq (car (window-parameter transient--window 'quit-restore))
-                  'other)
-        (with-demoted-errors "Error while exiting transient: %S"
-          (delete-window transient--window)))
+      (cond
+       ((eq (car (window-parameter win 'quit-restore)) 'other)
+        ;; Window used to display another buffer.
+        (set-window-parameter win 'no-other-window
+                              (window-parameter win 'prev--no-other-window))
+        (set-window-parameter win 'prev--no-other-window nil))
+       ((with-demoted-errors "Error while exiting transient: %S"
+          (delete-window win))))
       (when (buffer-live-p transient--buffer)
         (kill-buffer transient--buffer))
       (setq transient--buffer nil)
@@ -3723,6 +3725,9 @@ have a history of their own.")
                             transient-display-buffer-action)))
     (when (window-live-p transient--window)
       (with-selected-window transient--window
+        (set-window-parameter nil 'prev--no-other-window
+                              (window-parameter nil 'no-other-window))
+        (set-window-parameter nil 'no-other-window t)
         (goto-char (point-min))
         (when transient-enable-popup-navigation
           (transient--goto-button focus))
