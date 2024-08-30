@@ -1,4 +1,19 @@
 # -*- mode: org -*-
+* v0.7.5    UNRELEASED
+
+- Updated tooling.
+
+Bug fixes:
+
+- ~static-if~ is now used correctly.  0e35673e
+
+- When an existing window ends up being used to display the transient
+  buffer, then the previous value of the ~no-other-window~ parameter is
+  now restored, when the transient is exited.  #302
+
+- The names assigned to suffixes, which are defined using lambdas in
+  the prefix definition, are now guaranteed to be unique.  #304
+
 * v0.7.4    2024-08-05
 
 - Added new function ~transient-active-prefix~.
