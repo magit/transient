@@ -1191,9 +1191,10 @@ commands are aliases for."
              (not (stringp car)))
         (let ((cmd pop)
               (sym (intern
-                    (format "transient:%s:%s:%d" prefix
-                            (replace-in-string (plist-get args :key) " " "")
-                            (prog1 gensym-counter (cl-incf gensym-counter))))))
+                    (format
+                     "transient:%s:%s:%d" prefix
+                     (replace-regexp-in-string (plist-get args :key) " " "")
+                     (prog1 gensym-counter (cl-incf gensym-counter))))))
           (setq args (plist-put
                       args :command
                       `(prog1 ',sym
