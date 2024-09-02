@@ -1184,7 +1184,7 @@ commands are aliases for."
       (cond
        ((memq car '(:info :info*)))
        ((keywordp car)
-        (error "Need command, `:info' or `:info*', got `%s'" car))
+        (error "Need command, argument, `:info' or `:info*'; got `%s'" car))
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
        ((and (commandp car)
@@ -1232,7 +1232,7 @@ commands are aliases for."
                 (t
                  (setq class 'transient-option)))))
        (t
-        (error "Needed command or argument, got %S" car)))
+        (error "Need command, argument, `:info' or `:info*'; got %s" car)))
       (while (keywordp car)
         (let ((key pop)
               (val pop))
