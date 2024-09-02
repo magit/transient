@@ -1188,7 +1188,7 @@ commands are aliases for."
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
        ((and (commandp car)
-             (not (stringp car)))
+             (eq (car-safe car) 'lambda))
         (let ((cmd pop)
               (sym (intern
                     (format
@@ -1200,10 +1200,7 @@ commands are aliases for."
                       `(prog1 ',sym
                          (put ',sym 'interactive-only t)
                          (put ',sym 'completion-predicate #'transient--suffix-only)
-                         (defalias ',sym
-                           ,(if (eq (car-safe cmd) 'lambda)
-                                cmd
-                              (macroexp-quote cmd))))))))
+                         (defalias ',sym ,cmd))))))
        ((or (stringp car)
             (and car (listp car)))
         (let ((arg pop)
