@@ -1229,10 +1229,8 @@ commands are aliases for."
                  (setq args (plist-put args :reader (macroexp-quote pop))))
                 ((not (string-suffix-p "=" arg))
                  (setq class 'transient-switch))
-                (t
-                 (setq class 'transient-option)))))
-       (t
-        (error "Need command, argument, `:info' or `:info*'; got %s" car)))
+                ((setq class 'transient-option)))))
+       ((error "Need command, argument, `:info' or `:info*'; got %s" car)))
       (while (keywordp car)
         (let ((key pop)
               (val pop))
