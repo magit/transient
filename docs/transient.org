@@ -1296,7 +1296,7 @@ function, which for infix arguments serves about the same purpose as
   returned value is a ~transient-prefix~ object, which holds information
   associated with the transient prefix command.
 
-- Variable: transient-active-prefix ::
+- Function: transient-active-prefix ::
 
   This function returns the active transient object.  Return ~nil~ if
   there is no active transient, if the transient buffer isn't shown,
@@ -1310,7 +1310,7 @@ function, which for infix arguments serves about the same purpose as
 
   If optional PREFIXES is non-~nil~, it must be a list of prefix command
   symbols, in which case the active transient object is only returned
-  if it matches one of the PREFIXES."
+  if it matches one of the PREFIXES.
 
 ** Transient State
 #+cindex: transient state
