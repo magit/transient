@@ -1737,14 +1737,16 @@ to `transient-predicate-map'."
 If you add a new command here, then you must also add a binding
 to `transient-predicate-map'.  Also see `transient-base-map'."
   :parent transient-base-map
-  "C-u"   #'universal-argument
-  "C--"   #'negative-argument
-  "C-t"   #'transient-show
-  "?"     #'transient-help
-  "C-h"   #'transient-help
+  "C-u"     #'universal-argument
+  "C--"     #'negative-argument
+  "C-x 5 5" #'other-frame-prefix
+  "C-x 4 4" #'other-window-prefix
+  "C-t"     #'transient-show
+  "?"       #'transient-help
+  "C-h"     #'transient-help
   ;; Also bound to "C-x p" and "C-x n" in transient-common-commands.
-  "C-M-p" #'transient-history-prev
-  "C-M-n" #'transient-history-next)
+  "C-M-p"   #'transient-history-prev
+  "C-M-n"   #'transient-history-next)
 
 (defvar-keymap transient-edit-map
   :doc "Keymap that is active while a transient in is in \"edit mode\"."
@@ -1851,6 +1853,8 @@ of the corresponding object."
   "<universal-argument-more>"     #'transient--do-stay
   "<negative-argument>"           #'transient--do-minus
   "<digit-argument>"              #'transient--do-stay
+  "<other-frame-prefix>"          #'transient--do-stay
+  "<other-window-prefix>"         #'transient--do-stay
   "<top-level>"                   #'transient--do-quit-all
   "<transient-quit-all>"          #'transient--do-quit-all
   "<transient-quit-one>"          #'transient--do-quit-one
