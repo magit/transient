@@ -4306,7 +4306,7 @@ Type %s to exit help.\n"
 Type a %s to set level for that suffix command.
 Type %s to set what levels are available for this prefix command.\n"
                            'face 'transient-heading)
-               (propertize "<KEY>"   'face 'transient-key)
+               (propertize "<KEY>" 'face 'transient-key)
                (propertize "C-x l" 'face 'transient-key))))
     (with-slots (level) transient--prefix
       (insert
