@@ -1731,22 +1731,25 @@ to `transient-predicate-map'."
   "<next>"  #'transient-scroll-up
   "<prior>" #'transient-scroll-down)
 
-(defvar-keymap transient-map
-  :doc "Top-level keymap used by all transients.
+(defvar transient-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map transient-base-map)
+    (keymap-set map "C-u"   #'universal-argument)
+    (keymap-set map "C--"   #'negative-argument)
+    (keymap-set map "C-t"   #'transient-show)
+    (keymap-set map "?"     #'transient-help)
+    (keymap-set map "C-h"   #'transient-help)
+    ;; Also bound to "C-x p" and "C-x n" in transient-common-commands.
+    (keymap-set map "C-M-p" #'transient-history-prev)
+    (keymap-set map "C-M-n" #'transient-history-next)
+    (when (fboundp 'other-frame-prefix) ;Emacs >= 28.1
+      (keymap-set map "C-x 5 5" 'other-frame-prefix)
+      (keymap-set map "C-x 4 4" 'other-window-prefix))
+    map)
+  "Top-level keymap used by all transients.
 
 If you add a new command here, then you must also add a binding
-to `transient-predicate-map'.  Also see `transient-base-map'."
-  :parent transient-base-map
-  "C-u"     #'universal-argument
-  "C--"     #'negative-argument
-  "C-x 5 5" #'other-frame-prefix
-  "C-x 4 4" #'other-window-prefix
-  "C-t"     #'transient-show
-  "?"       #'transient-help
-  "C-h"     #'transient-help
-  ;; Also bound to "C-x p" and "C-x n" in transient-common-commands.
-  "C-M-p"   #'transient-history-prev
-  "C-M-n"   #'transient-history-next)
+to `transient-predicate-map'.  Also see `transient-base-map'.")
 
 (defvar-keymap transient-edit-map
   :doc "Keymap that is active while a transient in is in \"edit mode\"."
