@@ -4,6 +4,9 @@
 - ~transient-active-prefix~ now accepts a single prefix symbol, in place
   of a list of such symbols.  #307
 
+- ~other-frame-prefix~ and ~other-window-prefix~ can now be used while a
+  transient prefix is active.  #305
+
 * v0.7.5    2024-09-01
 
 - Updated tooling.
