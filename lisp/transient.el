@@ -1245,7 +1245,7 @@ commands are aliases for."
                      (and (listp val) (not (eq (car val) 'lambda))))
                  (setq args (plist-put args key (macroexp-quote val))))
                 ((setq args (plist-put args key val)))))))
-    (when-let* ((not (plist-get args :key))
+    (when-let* (((not (plist-get args :key)))
                 (shortarg (plist-get args :shortarg)))
       (setq args (plist-put args :key shortarg)))
     (list 'list
@@ -2197,7 +2197,7 @@ value.  Otherwise return CHILDREN as is."
 (cl-defmethod transient--init-suffix-key ((obj transient-argument))
   (if (transient-switches--eieio-childp obj)
       (cl-call-next-method obj)
-    (when-let* ((not (slot-boundp obj 'shortarg))
+    (when-let* (((not (slot-boundp obj 'shortarg)))
                 (shortarg (transient--derive-shortarg (oref obj argument))))
       (oset obj shortarg shortarg))
     (unless (slot-boundp obj 'key)
