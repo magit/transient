@@ -4226,15 +4226,13 @@ manpage, then try to jump to the correct location."
   (transient--describe-function cmd))
 
 (defun transient--describe-function (fn)
-  (describe-function fn)
-  (when-let* (((not (derived-mode-p 'help-mode)))
-              (buf (get-buffer "*Help*"))
-              (win (or (and buf (get-buffer-window buf))
-                       (cl-find-if (lambda (win)
-                                     (with-current-buffer (window-buffer win)
-                                       (derived-mode-p 'help-mode)))
-                                   (window-list)))))
-    (select-window win)))
+  (let* ((buffer nil)
+         (help-window-select t)
+         (temp-buffer-window-setup-hook
+          (cons (lambda () (setq buffer (current-buffer)))
+                temp-buffer-window-setup-hook)))
+    (describe-function fn)
+    (set-buffer buffer)))
 
 (defun transient--show-manual (manual)
   (info manual))
