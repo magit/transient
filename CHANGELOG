@@ -7,6 +7,9 @@
 - ~other-frame-prefix~ and ~other-window-prefix~ can now be used while a
   transient prefix is active.  #305
 
+- Added new macro ~transient-with-help-window~ for use in ~:show-help~
+  functions.  #309
+
 * v0.7.5    2024-09-01
 
 - Updated tooling.

@@ -4225,6 +4225,17 @@ manpage, then try to jump to the correct location."
   "Show the command doc-string."
   (transient--describe-function cmd))
 
+(defmacro transient-with-help-window (&rest body)
+  "Evaluate BODY, send output to *Help* buffer, and display it in a window.
+Select the help window, and make the help buffer current and return it."
+  (declare (indent 0))
+  `(let ((buffer nil)
+         (help-window-select t))
+     (with-help-window (help-buffer)
+       ,@body
+       (setq buffer (current-buffer)))
+     (set-buffer buffer)))
+
 (defun transient--describe-function (fn)
   (let* ((buffer nil)
          (help-window-select t)

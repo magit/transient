@@ -1842,6 +1842,12 @@ functions use ~describe-function~.
   Show help for the prefix, infix or suffix command represented by
   {{{var(OBJ)}}}.
 
+  Regardless of OBJ's type, if its ~show-help~ slot is non-nil, that
+  must be a function, which takes OBJ is its only argument.  It must
+  prepare, display and return a buffer, and select the window used to
+  display it.  The ~transient-show-help-window~ macro is intended for
+  use in such functions.
+
   For prefixes, show the info manual, if that is specified using the
   ~info-manual~ slot.  Otherwise, show the manpage if that is specified
   using the ~man-page~ slot.  Otherwise, show the command's
@@ -1852,11 +1858,17 @@ functions use ~describe-function~.
   For infixes, show the manpage if that is specified.  Otherwise show
   the command's documentation string.
 
+- Macro: transient-with-help-window &rest body ::
+
+  Evaluate BODY, send output to ~*Help*~ buffer, and display it in a
+  window.  Select the help window, and make the help buffer current
+  and return it.
+
 ** Prefix Slots
 
 - ~show-help~, ~man-page~ or ~info-manual~ can be used to specify the
   documentation for the prefix and its suffixes.  The command
-  ~transient-help~ uses the method ~transient-show-help~ (which see) to
+  ~transient-help~ uses the function ~transient-show-help~ (which see) to
   lookup and use these values.
 
 - ~history-key~ If multiple prefix commands should share a single value,
@@ -1953,7 +1965,7 @@ Also see [[*Suffix Classes]].
 
 - ~show-help~ A function used to display help for the suffix.  If
   unspecified, the prefix controls how help is displayed for its
-  suffixes.
+  suffixes.  See also function ~transient-show-help~.
 
 *** Slots of ~transient-infix~
 :PROPERTIES:
