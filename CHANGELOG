@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.7.6    UNRELEASED
+* v0.7.6    2024-10-01
 
 - ~transient-active-prefix~ now accepts a single prefix symbol, in place
   of a list of such symbols.  #307
