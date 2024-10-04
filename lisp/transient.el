@@ -1187,8 +1187,13 @@ commands are aliases for."
         (error "Need command, argument, `:info' or `:info*'; got `%s'" car))
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
+       ;; During macro-expansion this is expected to be a `lambda'
+       ;; expression.  When this is called from a `:setup-children'
+       ;; function, it may also be a byte-code function object or a
+       ;; compiled function.  However, we never treat a string as a
+       ;; command, so we have to check for that explicitly.
        ((and (commandp car)
-             (eq (car-safe car) 'lambda))
+             (not (stringp car)))
         (let ((cmd pop)
               (sym (intern
                     (format

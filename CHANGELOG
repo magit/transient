@@ -1,4 +1,12 @@
 # -*- mode: org -*-
+* v0.7.7    UNRELEASED
+
+Bug fix:
+
+- Fix a regression introduced by the previous commit, which broke
+  dynamic prefixes that use a ~:setup-children~ function to prepare
+  their suffixes.  #313
+
 * v0.7.6    2024-10-01
 
 - ~transient-active-prefix~ now accepts a single prefix symbol, in place
