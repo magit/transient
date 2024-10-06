@@ -1188,10 +1188,10 @@ commands are aliases for."
        ((symbolp car)
         (setq args (plist-put args :command (macroexp-quote pop))))
        ;; During macro-expansion this is expected to be a `lambda'
-       ;; expression.  When this is called from a `:setup-children'
-       ;; function, it may also be a byte-code function object or a
-       ;; compiled function.  However, we never treat a string as a
-       ;; command, so we have to check for that explicitly.
+       ;; expression (i.e., source code).  When this is called from a
+       ;; `:setup-children' function, it may also be a function object
+       ;; (a.k.a a function value).  However, we never treat a string
+       ;; as a command, so we have to check for that explicitly.
        ((and (commandp car)
              (not (stringp car)))
         (let ((cmd pop)
