@@ -1162,87 +1162,85 @@ commands are aliases for."
   (let (level class args)
     (cl-flet ((use (prop value)
                 (setq args (plist-put args prop value))))
-      (when (integerp (car spec))
-        (setq level (pop spec)))
-      (when (or (stringp (car spec))
-                (vectorp (car spec)))
-        (use :key (pop spec)))
-      (cond
-       ((or (stringp (car spec))
-            (and (eq (car-safe (car spec)) 'lambda)
-                 (not (commandp (car spec)))))
-        (use :description (pop spec)))
-       ((and (symbolp (car spec))
-             (not (keywordp (car spec)))
-             (not (commandp (car spec)))
-             (commandp (cadr spec)))
-        (use :description (macroexp-quote (pop spec)))))
-      (cond
-       ((memq (car spec) '(:info :info*)))
-       ((keywordp (car spec))
-        (error "Need command, argument, `:info' or `:info*'; got `%s'" (car spec)))
-       ((symbolp (car spec))
-        (use :command (macroexp-quote (pop spec))))
-       ;; During macro-expansion this is expected to be a `lambda'
-       ;; expression (i.e., source code).  When this is called from a
-       ;; `:setup-children' function, it may also be a function object
-       ;; (a.k.a a function value).  However, we never treat a string
-       ;; as a command, so we have to check for that explicitly.
-       ((and (commandp (car spec))
-             (not (stringp (car spec))))
-        (let ((cmd (pop spec))
-              (sym (intern
-                    (format
-                     "transient:%s:%s:%d" prefix
-                     (replace-regexp-in-string (plist-get args :key) " " "")
-                     (prog1 gensym-counter (cl-incf gensym-counter))))))
-          (use :command
-               `(prog1 ',sym
-                  (put ',sym 'interactive-only t)
-                  (put ',sym 'completion-predicate #'transient--suffix-only)
-                  (defalias ',sym ,cmd)))))
-       ((or (stringp (car spec))
-            (and (car spec) (listp (car spec))))
-        (let ((arg (pop spec)))
-          (cl-typecase arg
-            (list
-             (use :shortarg (car arg))
-             (use :argument (cadr arg))
-             (setq arg (cadr arg)))
-            (string
-             (when-let ((shortarg (transient--derive-shortarg arg)))
-               (use :shortarg shortarg))
-             (use :argument arg)))
-          (use :command
-               (let ((sym (intern (format "transient:%s:%s" prefix arg))))
-                 `(prog1 ',sym
-                    (put ',sym 'interactive-only t)
-                    (put ',sym 'completion-predicate #'transient--suffix-only)
-                    (defalias ',sym #'transient--default-infix-command))))
-          (cond ((and (car spec) (not (keywordp (car spec))))
-                 (setq class 'transient-option)
-                 (use :reader (macroexp-quote (pop spec))))
-                ((not (string-suffix-p "=" arg))
-                 (setq class 'transient-switch))
-                ((setq class 'transient-option)))))
-       ((error "Need command, argument, `:info' or `:info*'; got %s" (car spec))))
+      (pcase (car spec)
+        ((cl-type integer)
+         (setq level (pop spec))))
+      (pcase (car spec)
+        ((cl-type (or string vector))
+         (use :key (pop spec))))
+      (pcase (car spec)
+        ((guard (or (stringp (car spec))
+                    (and (eq (car-safe (car spec)) 'lambda)
+                         (not (commandp (car spec))))))
+         (use :description (pop spec)))
+        ((and (cl-type (and symbol (not keyword) (not command)))
+              (guard (commandp (cadr spec))))
+         (use :description (macroexp-quote (pop spec)))))
+      (pcase (car spec)
+        ((or :info :info*))
+        ((and (cl-type keyword) invalid)
+         (error "Need command, argument, `:info' or `:info*'; got `%s'" invalid))
+        ((cl-type symbol)
+         (use :command (macroexp-quote (pop spec))))
+        ;; During macro-expansion this is expected to be a `lambda'
+        ;; expression (i.e., source code).  When this is called from a
+        ;; `:setup-children' function, it may also be a function object
+        ;; (a.k.a a function value).  However, we never treat a string
+        ;; as a command, so we have to check for that explicitly.
+        ((cl-type (and command (not string)))
+         (let ((cmd (pop spec))
+               (sym (intern
+                     (format
+                      "transient:%s:%s:%d" prefix
+                      (replace-regexp-in-string (plist-get args :key) " " "")
+                      (prog1 gensym-counter (cl-incf gensym-counter))))))
+           (use :command
+                `(prog1 ',sym
+                   (put ',sym 'interactive-only t)
+                   (put ',sym 'completion-predicate #'transient--suffix-only)
+                   (defalias ',sym ,cmd)))))
+        ((cl-type (or string (and list (not null))))
+         (let ((arg (pop spec)))
+           (cl-typecase arg
+             (list
+              (use :shortarg (car arg))
+              (use :argument (cadr arg))
+              (setq arg (cadr arg)))
+             (string
+              (when-let ((shortarg (transient--derive-shortarg arg)))
+                (use :shortarg shortarg))
+              (use :argument arg)))
+           (use :command
+                (let ((sym (intern (format "transient:%s:%s" prefix arg))))
+                  `(prog1 ',sym
+                     (put ',sym 'interactive-only t)
+                     (put ',sym 'completion-predicate #'transient--suffix-only)
+                     (defalias ',sym #'transient--default-infix-command))))
+           (pcase (car spec)
+             ((cl-type (and (not null) (not keyword)))
+              (setq class 'transient-option)
+              (use :reader (macroexp-quote (pop spec))))
+             ((guard (not (string-suffix-p "=" arg)))
+              (setq class 'transient-switch))
+             (_ (setq class 'transient-option)))))
+        (invalid
+         (error "Need command, argument, `:info' or `:info*'; got %s" invalid)))
       (while (keywordp (car spec))
         (let* ((key (pop spec))
                (val (if spec (pop spec) (error "No value for `%s'" key))))
-          (cond ((eq key :class) (setq class val))
-                ((eq key :level) (setq level val))
-                ((eq key :info)
-                 (setq class 'transient-information)
-                 (use :description val))
-                ((eq key :info*)
-                 (setq class 'transient-information*)
-                 (use :description val))
-                ((eq (car-safe val) '\,)
-                 (use key (cadr val)))
-                ((or (symbolp val)
-                     (and (listp val) (not (eq (car val) 'lambda))))
-                 (use key (macroexp-quote val)))
-                ((use key val)))))
+          (pcase key
+            (:class (setq class val))
+            (:level (setq level val))
+            (:info  (setq class 'transient-information)
+                    (use :description val))
+            (:info* (setq class 'transient-information*)
+                    (use :description val))
+            ((guard (eq (car-safe val) '\,))
+             (use key (cadr val)))
+            ((guard (or (symbolp val)
+                        (and (listp val) (not (eq (car val) 'lambda)))))
+             (use key (macroexp-quote val)))
+            (_ (use key val)))))
       (when spec
         (error "Need keyword, got %S" (car spec)))
       (when-let* (((not (plist-get args :key)))
