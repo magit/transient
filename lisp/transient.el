@@ -1138,7 +1138,7 @@ commands are aliases for."
       (let* ((key (pop spec))
              (val (if spec (pop spec) (error "No value for `%s'" key))))
         (cond ((eq key :class)
-               (setq class (macroexp-quote val)))
+               (setq class val))
               ((or (symbolp val)
                    (and (listp val) (not (eq (car val) 'lambda))))
                (setq args (plist-put args key (macroexp-quote val))))
@@ -1148,11 +1148,12 @@ commands are aliases for."
                'transient-define-prefix :setup-children :class))
     (list 'vector
           (or level transient--default-child-level)
-          (cond (class)
-                ((or (vectorp (car spec))
-                     (and (car spec) (symbolp (car spec))))
-                 (quote 'transient-columns))
-                ((quote 'transient-column)))
+          (list 'quote
+                (cond (class)
+                      ((or (vectorp (car spec))
+                           (and (car spec) (symbolp (car spec))))
+                       'transient-columns)
+                      ('transient-column)))
           (and args (cons 'list args))
           (cons 'list
                 (cl-mapcan (lambda (s) (transient--parse-child prefix s))
