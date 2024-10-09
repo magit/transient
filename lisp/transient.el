@@ -1220,9 +1220,9 @@ commands are aliases for."
              ((cl-type (and (not null) (not keyword)))
               (setq class 'transient-option)
               (use :reader (macroexp-quote (pop spec))))
-             ((guard (not (string-suffix-p "=" arg)))
-              (setq class 'transient-switch))
-             (_ (setq class 'transient-option)))))
+             ((guard (string-suffix-p "=" arg))
+              (setq class 'transient-option))
+             (_ (setq class 'transient-switch)))))
         (invalid
          (error "Need command, argument, `:info' or `:info*'; got %s" invalid)))
       (while (keywordp (car spec))
