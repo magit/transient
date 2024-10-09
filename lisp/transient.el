@@ -1160,28 +1160,29 @@ commands are aliases for."
 
 (defun transient--parse-suffix (prefix spec)
   (let (level class args)
-    (progn
+    (cl-flet ((use (prop value)
+                (setq args (plist-put args prop value))))
       (when (integerp (car spec))
         (setq level (pop spec)))
       (when (or (stringp (car spec))
                 (vectorp (car spec)))
-        (setq args (plist-put args :key (pop spec))))
+        (use :key (pop spec)))
       (cond
        ((or (stringp (car spec))
             (and (eq (car-safe (car spec)) 'lambda)
                  (not (commandp (car spec)))))
-        (setq args (plist-put args :description (pop spec))))
+        (use :description (pop spec)))
        ((and (symbolp (car spec))
              (not (keywordp (car spec)))
              (not (commandp (car spec)))
              (commandp (cadr spec)))
-        (setq args (plist-put args :description (macroexp-quote (pop spec))))))
+        (use :description (macroexp-quote (pop spec)))))
       (cond
        ((memq (car spec) '(:info :info*)))
        ((keywordp (car spec))
         (error "Need command, argument, `:info' or `:info*'; got `%s'" (car spec)))
        ((symbolp (car spec))
-        (setq args (plist-put args :command (macroexp-quote (pop spec)))))
+        (use :command (macroexp-quote (pop spec))))
        ;; During macro-expansion this is expected to be a `lambda'
        ;; expression (i.e., source code).  When this is called from a
        ;; `:setup-children' function, it may also be a function object
@@ -1195,35 +1196,32 @@ commands are aliases for."
                      "transient:%s:%s:%d" prefix
                      (replace-regexp-in-string (plist-get args :key) " " "")
                      (prog1 gensym-counter (cl-incf gensym-counter))))))
-          (setq args (plist-put
-                      args :command
-                      `(prog1 ',sym
-                         (put ',sym 'interactive-only t)
-                         (put ',sym 'completion-predicate #'transient--suffix-only)
-                         (defalias ',sym ,cmd))))))
+          (use :command
+               `(prog1 ',sym
+                  (put ',sym 'interactive-only t)
+                  (put ',sym 'completion-predicate #'transient--suffix-only)
+                  (defalias ',sym ,cmd)))))
        ((or (stringp (car spec))
             (and (car spec) (listp (car spec))))
-        (let ((arg (pop spec))
-              (sym nil))
+        (let ((arg (pop spec)))
           (cl-typecase arg
             (list
-             (setq args (plist-put args :shortarg (car  arg)))
-             (setq args (plist-put args :argument (cadr arg)))
-             (setq arg  (cadr arg)))
+             (use :shortarg (car arg))
+             (use :argument (cadr arg))
+             (setq arg (cadr arg)))
             (string
              (when-let ((shortarg (transient--derive-shortarg arg)))
-               (setq args (plist-put args :shortarg shortarg)))
-             (setq args (plist-put args :argument arg))))
-          (setq sym (intern (format "transient:%s:%s" prefix arg)))
-          (setq args (plist-put
-                      args :command
-                      `(prog1 ',sym
-                         (put ',sym 'interactive-only t)
-                         (put ',sym 'completion-predicate #'transient--suffix-only)
-                         (defalias ',sym #'transient--default-infix-command))))
+               (use :shortarg shortarg))
+             (use :argument arg)))
+          (use :command
+               (let ((sym (intern (format "transient:%s:%s" prefix arg))))
+                 `(prog1 ',sym
+                    (put ',sym 'interactive-only t)
+                    (put ',sym 'completion-predicate #'transient--suffix-only)
+                    (defalias ',sym #'transient--default-infix-command))))
           (cond ((and (car spec) (not (keywordp (car spec))))
                  (setq class 'transient-option)
-                 (setq args (plist-put args :reader (macroexp-quote (pop spec)))))
+                 (use :reader (macroexp-quote (pop spec))))
                 ((not (string-suffix-p "=" arg))
                  (setq class 'transient-switch))
                 ((setq class 'transient-option)))))
@@ -1235,21 +1233,21 @@ commands are aliases for."
                 ((eq key :level) (setq level val))
                 ((eq key :info)
                  (setq class 'transient-information)
-                 (setq args (plist-put args :description val)))
+                 (use :description val))
                 ((eq key :info*)
                  (setq class 'transient-information*)
-                 (setq args (plist-put args :description val)))
+                 (use :description val))
                 ((eq (car-safe val) '\,)
-                 (setq args (plist-put args key (cadr val))))
+                 (use key (cadr val)))
                 ((or (symbolp val)
                      (and (listp val) (not (eq (car val) 'lambda))))
-                 (setq args (plist-put args key (macroexp-quote val))))
-                ((setq args (plist-put args key val))))))
+                 (use key (macroexp-quote val)))
+                ((use key val)))))
       (when spec
-        (error "Need keyword, got %S" (car spec))))
-    (when-let* (((not (plist-get args :key)))
-                (shortarg (plist-get args :shortarg)))
-      (setq args (plist-put args :key shortarg)))
+        (error "Need keyword, got %S" (car spec)))
+      (when-let* (((not (plist-get args :key)))
+                  (shortarg (plist-get args :shortarg)))
+        (use :key shortarg)))
     (list 'list
           (or level transient--default-child-level)
           (macroexp-quote (or class 'transient-suffix))
