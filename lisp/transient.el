@@ -39,6 +39,7 @@
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
+(require 'pcase)
 
 (eval-and-compile
   (when (and (featurep 'seq)
@@ -84,6 +85,15 @@ similar defect.") :emergency))
 
 (defvar Man-notify-method)
 (defvar pp-default-function) ; since Emacs 29.1
+
+(eval-and-compile
+  (when (< emacs-major-version 28)
+    (pcase-defmacro cl-type (type)
+      "Pcase pattern that matches objects of TYPE.
+TYPE is a type descriptor as accepted by `cl-typep', which see."
+      (static-if (< emacs-major-version 30)
+          `(pred (pcase--flip cl-typep ',type))
+        `(pred (cl-typep _ ',type))))))
 
 (defmacro transient--with-emergency-exit (id &rest body)
   (declare (indent defun))
