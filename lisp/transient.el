@@ -1160,8 +1160,8 @@ commands are aliases for."
           (or level transient--default-child-level)
           (list 'quote
                 (cond (class)
-                      ((or (vectorp (car spec))
-                           (and (car spec) (symbolp (car spec))))
+                      ((cl-typep (car spec)
+                                 '(or vector (and symbol (not null))))
                        'transient-columns)
                       ('transient-column)))
           (and args (cons 'list args))
