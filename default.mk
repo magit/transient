@@ -7,8 +7,6 @@ ELCS  = $(ELS:.el=.elc)
 
 DEPS  = compat
 DEPS += seq
-# Optional:
-DEPS += which-key
 
 DOMAIN      ?= magit.vc
 CFRONT_DIST ?= E2LUHBKU1FBV02
