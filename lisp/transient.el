@@ -668,6 +668,7 @@ If `transient-save-history' is nil, then do nothing."
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (transient-switch-frame :initarg :transient-switch-frame)
    (refresh-suffixes     :initarg :refresh-suffixes     :initform nil)
+   (environment          :initarg :environment          :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
    (variable-pitch       :initarg :variable-pitch       :initform nil)
@@ -2074,12 +2075,15 @@ EDIT may be non-nil."
      (edit
       ;; Returning from help to edit.
       (setq transient--editp t)))
-    (transient--init-transient name layout params)
-    (transient--history-init transient--prefix)
-    (setq transient--original-window (selected-window))
-    (setq transient--original-buffer (current-buffer))
-    (setq transient--minibuffer-depth (minibuffer-depth))
-    (transient--redisplay)
+    (transient--env-apply
+     (lambda ()
+       (transient--init-transient name layout params)
+       (transient--history-init transient--prefix)
+       (setq transient--original-window (selected-window))
+       (setq transient--original-buffer (current-buffer))
+       (setq transient--minibuffer-depth (minibuffer-depth))
+       (transient--redisplay))
+     (get name 'transient--prefix))
     (transient--setup-transient)
     (transient--suspend-which-key-mode)))
 
@@ -2091,6 +2095,11 @@ value.  Otherwise return CHILDREN as is."
   (if (slot-boundp group 'setup-children)
       (funcall (oref group setup-children) children)
     children))
+
+(defun transient--env-apply (fn &optional prefix)
+  (if-let ((env (oref (or prefix transient--prefix) environment)))
+      (funcall env fn)
+    (funcall fn)))
 
 (defun transient--init-transient (&optional name layout params)
   (unless name
@@ -2573,14 +2582,14 @@ value.  Otherwise return CHILDREN as is."
                   ;; argument is in effect.
                   (not prefix-arg)))
             (transient--refreshp
-             (transient--refresh-transient))
+             (transient--env-apply #'transient--refresh-transient))
             ((let ((old transient--redisplay-map)
                    (new (transient--make-redisplay-map)))
                (unless (equal old new)
                  (transient--pop-keymap 'transient--redisplay-map)
                  (setq transient--redisplay-map new)
                  (transient--push-keymap 'transient--redisplay-map))
-               (transient--redisplay)))))
+               (transient--env-apply #'transient--redisplay)))))
     (setq transient-current-prefix nil)
     (setq transient-current-command nil)
     (setq transient-current-suffixes nil)))
