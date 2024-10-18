@@ -2074,8 +2074,7 @@ EDIT may be non-nil."
      (edit
       ;; Returning from help to edit.
       (setq transient--editp t)))
-    (transient--init-objects name layout params)
-    (transient--init-keymaps)
+    (transient--init-transient name layout params)
     (transient--history-init transient--prefix)
     (setq transient--original-window (selected-window))
     (setq transient--original-buffer (current-buffer))
@@ -2092,6 +2091,18 @@ value.  Otherwise return CHILDREN as is."
   (if (slot-boundp group 'setup-children)
       (funcall (oref group setup-children) children)
     children))
+
+(defun transient--init-transient (&optional name layout params)
+  (unless name
+    ;; Re-init.
+    (if (eq transient--refreshp 'updated-value)
+        ;; Preserve the prefix value this once, because the
+        ;; invoked suffix indicates that it has updated that.
+        (setq transient--refreshp (oref transient--prefix refresh-suffixes))
+      ;; Otherwise update the prefix value from suffix values.
+      (oset transient--prefix value (transient-get-value))))
+  (transient--init-objects name layout params)
+  (transient--init-keymaps))
 
 (defun transient--init-keymaps ()
   (setq transient--predicate-map (transient--make-predicate-map))
@@ -2306,14 +2317,7 @@ value.  Otherwise return CHILDREN as is."
   (transient--pop-keymap 'transient--predicate-map)
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
-  (if (eq transient--refreshp 'updated-value)
-      ;; Preserve the prefix value this once, because the
-      ;; invoked suffix indicates that it has updated that.
-      (setq transient--refreshp (oref transient--prefix refresh-suffixes))
-    ;; Otherwise update the prefix value from suffix values.
-    (oset transient--prefix value (transient-get-value)))
-  (transient--init-objects)
-  (transient--init-keymaps)
+  (transient--init-transient)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (transient--redisplay))
