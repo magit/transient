@@ -2081,7 +2081,7 @@ EDIT may be non-nil."
     (setq transient--original-buffer (current-buffer))
     (setq transient--minibuffer-depth (minibuffer-depth))
     (transient--redisplay)
-    (transient--init-transient)
+    (transient--setup-transient)
     (transient--suspend-which-key-mode)))
 
 (cl-defgeneric transient-setup-children (group children)
@@ -2288,8 +2288,8 @@ value.  Otherwise return CHILDREN as is."
 
 ;;; Flow-Control
 
-(defun transient--init-transient ()
-  (transient--debug 'init-transient)
+(defun transient--setup-transient ()
+  (transient--debug 'setup-transient)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command)
