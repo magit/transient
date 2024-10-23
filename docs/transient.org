@@ -470,9 +470,14 @@ Also see [[* Common Suffix Commands]].
 
   - {{{kbd(UP)}}} moves the cursor to the previous suffix.
   - {{{kbd(DOWN)}}} moves the cursor to the next suffix.
-  - {{{kbd(RET)}}} invokes the suffix the cursor is on.
+  - {{{kbd(M-RET)}}} invokes the suffix the cursor is on.
   - {{{kbd(mouse-1)}}} invokes the clicked on suffix.
   - {{{kbd(C-s)}}} and {{{kbd(C-r)}}} start isearch in the popup buffer.
+
+  By default {{{kbd(M-RET)}}} is bound to ~transient-push-button~, instead of
+  {{{kbd(RET)}}}, because if a transient allows the invocation of non-suffixes,
+  then it is likely, that you would want {{{kbd(RET)}}} to do what it would do
+  if no transient were active."
 
 - User Option: transient-display-buffer-action ::
 

@@ -631,12 +631,17 @@ is non-@code{nil}, then the following features are available:
 @item
 @kbd{@key{DOWN}} moves the cursor to the next suffix.
 @item
-@kbd{@key{RET}} invokes the suffix the cursor is on.
+@kbd{M-@key{RET}} invokes the suffix the cursor is on.
 @item
 @kbd{mouse-1} invokes the clicked on suffix.
 @item
 @kbd{C-s} and @kbd{C-r} start isearch in the popup buffer.
 @end itemize
+
+By default @kbd{M-@key{RET}} is bound to @code{transient-push-button}, instead of
+@kbd{@key{RET}}, because if a transient allows the invocation of non-suffixes,
+then it is likely, that you would want @kbd{@key{RET}} to do what it would do
+if no transient were active."
 @end defopt
 
 @defopt transient-display-buffer-action

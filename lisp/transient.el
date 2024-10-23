@@ -162,8 +162,8 @@ bindings are available:
 All other bindings are in `transient-popup-navigation-map'.
 
 By default \\`M-RET' is bound to `transient-push-button', instead of
-\\`RET', because if a transient allows the invocation of non-suffixes
-then it is likely that you would want \\`RET' to do what it would do
+\\`RET', because if a transient allows the invocation of non-suffixes,
+then it is likely, that you would want \\`RET' to do what it would do
 if no transient were active."
   :package-version '(transient . "0.4.0")
   :group 'transient
