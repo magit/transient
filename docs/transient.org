@@ -461,7 +461,8 @@ Also see [[* Common Suffix Commands]].
 - User Option: transient-enable-popup-navigation ::
 
   This option controls whether navigation commands are enabled in the
-  transient popup buffer.
+  transient popup buffer.  If the value is ~verbose~, additionally show
+  brief documentation about the command under point in the echo area.
 
   While a transient is active the transient popup buffer is not the
   current buffer, making it necessary to use dedicated commands to act
@@ -1869,6 +1870,25 @@ functions use ~describe-function~.
   window.  Select the help window, and make the help buffer current
   and return it.
 
+- Function: transient-show-summary obj &optional return ::
+
+  This generic function shows or, if optional RETURN is non-~nil~,
+  returns a brief summary about the command at point or hovered with
+  the mouse.
+
+  This function is called when the mouse is moved over a command and
+  (if the value of ~transient-enable-popup-navigation~ is ~verbose~) when
+  the user navigates to a command using the keyboard.
+
+  If OBJ's ~summary~ slot is a string, that is used.  If ~summary~ is a
+  function, that is called with OBJ as the only argument and the
+  returned string is used.  If ~summary~ is or returns something other
+  than a string or nil, no summary is shown.  If ~summary~ is or returns
+  ~nil~, the first line of the documentation string is used, if any.
+
+  If RETURN is non-~nil~, this function returns the summary instead of
+  showing it.  This is used when a tooltip is needed.
+
 ** Prefix Slots
 
 - ~show-help~, ~man-page~ or ~info-manual~ can be used to specify the
@@ -1971,6 +1991,11 @@ Also see [[*Suffix Classes]].
 - ~show-help~ A function used to display help for the suffix.  If
   unspecified, the prefix controls how help is displayed for its
   suffixes.  See also function ~transient-show-help~.
+
+- ~summary~ The summary displayed in the echo area, or as a tooltip.
+  If this is ~nil~, which it usually should be, the first line of the
+  documentation string is used instead.  See ~transient-show-summary~
+  for details.
 
 *** Slots of ~transient-infix~
 :PROPERTIES:

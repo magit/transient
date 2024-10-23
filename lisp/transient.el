@@ -140,8 +140,11 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
                  (const  :tag "on demand (no summary)" 0)
                  (number :tag "after delay" 1)))
 
-(defcustom transient-enable-popup-navigation t
+(defcustom transient-enable-popup-navigation 'verbose
   "Whether navigation commands are enabled in the transient popup.
+
+If the value is `verbose', additionally show brief documentation
+about the command under point in the echo area.
 
 While a transient is active the transient popup buffer is not the
 current buffer, making it necessary to use dedicated commands to
@@ -165,9 +168,11 @@ By default \\`M-RET' is bound to `transient-push-button', instead of
 \\`RET', because if a transient allows the invocation of non-suffixes,
 then it is likely, that you would want \\`RET' to do what it would do
 if no transient were active."
-  :package-version '(transient . "0.4.0")
+  :package-version '(transient . "0.7.8")
   :group 'transient
-  :type 'boolean)
+  :type '(choice (const :tag "enable navigation and echo summary" verbose)
+                 (const :tag "enable navigation commands" t)
+                 (const :tag "disable navigation commands" nil)))
 
 (defcustom transient-display-buffer-action
   '(display-buffer-in-side-window
@@ -774,7 +779,8 @@ slot is non-nil."
    (format      :initarg :format      :initform " %k %d")
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
-   (show-help   :initarg :show-help   :initform nil))
+   (show-help   :initarg :show-help   :initform nil)
+   (summary     :initarg :summary     :initform nil))
   "Superclass for suffix command.")
 
 (defclass transient-information (transient-suffix)
@@ -3901,6 +3907,7 @@ as a button."
                (slot-boundp obj 'command))
       (setq str (make-text-button str nil
                                   'type 'transient
+                                  'suffix obj
                                   'command (oref obj command))))
     str))
 
@@ -4359,6 +4366,37 @@ Suffixes on levels %s and %s are unavailable.\n"
                (propertize (format ">=%s" (1+ level))
                            'face 'transient-disabled-suffix))))))
 
+(cl-defgeneric transient-show-summary (obj &optional return)
+  "Show brief summary about the command at point in the echo area.
+
+If OBJ's `summary' slot is a string, use that.  If it is a function,
+call that with OBJ as the only argument and use the returned string.
+If `summary' is or returns something other than a string or nil,
+show no summary.  If `summary' is or returns nil, use the first line
+of the documentation string, if any.
+
+If RETURN is non-nil, return the summary instead of showing it.
+This is used when a tooltip is needed.")
+
+(cl-defmethod transient-show-summary ((obj transient-suffix) &optional return)
+  (with-slots (command summary) obj
+    (when-let*
+        ((doc (cond ((functionp summary)
+                     (funcall summary obj))
+                    (summary)
+                    ((car (split-string (documentation command) "\n")))))
+         ((stringp doc))
+         ((not (equal doc
+                      (car (split-string (documentation
+                                          'transient--default-infix-command)
+                                         "\n"))))))
+      (when (string-suffix-p "." doc)
+        (setq doc (substring doc 0 -1)))
+      (if return
+          doc
+        (let ((message-log-max nil))
+          (message "%s" doc))))))
+
 ;;; Popup Navigation
 
 (defun transient-scroll-up (&optional arg)
@@ -4382,18 +4420,27 @@ around `scroll-down-command' (which see)."
 See `backward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
-    (backward-button n t)))
+    (backward-button n t)
+    (when (eq transient-enable-popup-navigation 'verbose)
+      (transient-show-summary (get-text-property (point) 'suffix)))))
 
 (defun transient-forward-button (n)
   "Move to the next button in the transient popup buffer.
 See `forward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
-    (forward-button n t)))
+    (forward-button n t)
+    (when (eq transient-enable-popup-navigation 'verbose)
+      (transient-show-summary (get-text-property (point) 'suffix)))))
 
 (define-button-type 'transient
   'face nil
-  'keymap transient-button-map)
+  'keymap transient-button-map
+  'help-echo (lambda (win buf pos)
+               (with-selected-window win
+                 (with-current-buffer buf
+                   (transient-show-summary
+                    (get-text-property pos 'suffix) t)))))
 
 (defun transient--goto-button (command)
   (cond
