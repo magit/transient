@@ -1702,13 +1702,14 @@ probably use this instead:
                         this-command))))
             (or transient--suffixes
                 transient-current-suffixes))))
-      (or (and (cdr suffixes)
-               (cl-find-if
-                (lambda (obj)
-                  (equal (listify-key-sequence (transient--kbd (oref obj key)))
-                         (listify-key-sequence (this-command-keys))))
-                suffixes))
-          (car suffixes))))
+      (or (if (cdr suffixes)
+              (cl-find-if
+               (lambda (obj)
+                 (equal (listify-key-sequence (transient--kbd (oref obj key)))
+                        (listify-key-sequence (this-command-keys))))
+               suffixes)
+            (car suffixes))
+          (error "BUG: Cannot determine suffix object"))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn ; work around debbugs#31840
