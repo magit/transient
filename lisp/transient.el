@@ -2019,8 +2019,9 @@ of the corresponding object."
         (pcase this-command
           ('transient-update
            (setq transient--showp t)
-           (setq unread-command-events
-                 (listify-key-sequence (this-single-command-raw-keys))))
+           (let ((keys (listify-key-sequence (this-single-command-raw-keys))))
+             (setq unread-command-events (mapcar (lambda (key) (cons t key)) keys))
+             keys))
           ('transient-quit-seq
            (setq unread-command-events
                  (butlast (listify-key-sequence

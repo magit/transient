@@ -18,6 +18,9 @@ Bug fixes:
   ~transient-current-*~ variables were not immediately reset to
   ~nil~. #323
 
+- Key sequences with three or more events broke
+  ~transient-suffix-object~.  #324
+
 * v0.7.7    2024-10-04
 
 Bug fix:
