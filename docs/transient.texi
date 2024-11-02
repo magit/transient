@@ -1061,7 +1061,7 @@ binds the transient's infix and suffix commands.  In other words, it
 defines the complete transient, not just the transient prefix command
 that is used to invoke that transient.
 
-@defmac transient-define-prefix name arglist [docstring] [keyword value]... group... [body...]
+@defmac transient-define-prefix name arglist [docstring] [keyword value]@dots{} group@dots{} [body@dots{}]
 This macro defines @var{NAME} as a transient prefix command and binds the
 transient's infix and suffix commands.
 
@@ -1383,7 +1383,7 @@ Note that an infix is a special kind of suffix.  Depending on context
 ``suffixes'' means ``suffixes (including infixes)'' or ``non-infix
 suffixes''.
 
-@defmac transient-define-suffix name arglist [docstring] [keyword value]... body...
+@defmac transient-define-suffix name arglist [docstring] [keyword value]@dots{} body@dots{}
 This macro defines @var{NAME} as a transient suffix command.
 
 @var{ARGLIST} are the arguments that the command takes.
@@ -1400,7 +1400,7 @@ The infix arguments are usually accessed by using @code{transient-args}
 inside @code{interactive}.
 @end defmac
 
-@defmac transient-define-infix name arglist [docstring] [keyword value]...
+@defmac transient-define-infix name arglist [docstring] [keyword value]@dots{}
 This macro defines @var{NAME} as a transient infix command.
 
 @var{ARGLIST} is always ignored (but mandatory never-the-less) and
@@ -1433,7 +1433,7 @@ define your own infix command class.  In that case you have to use
 value of the @code{:transient} keyword.
 @end defmac
 
-@defmac transient-define-argument name arglist [docstring] [keyword value]...
+@defmac transient-define-argument name arglist [docstring] [keyword value]@dots{}
 This macro defines @var{NAME} as a transient infix command.
 
 This is an alias for @code{transient-define-infix}.  Only use this alias
