@@ -2457,7 +2457,7 @@ value.  Otherwise return CHILDREN as is."
     (funcall fn) ; Already unwind protected.
     (cond ((memq this-command '(top-level abort-recursive-edit))
            (setq transient--exitp t)
-           (transient--post-exit)
+           (transient--post-exit this-command)
            (transient--delete-window))
           (transient--prefix
            (transient--resume-override)))))
@@ -2631,6 +2631,10 @@ value.  Otherwise return CHILDREN as is."
     (setq transient--all-levels-p nil)
     (setq transient--minibuffer-depth 0)
     (run-hooks 'transient-exit-hook)
+    (when command
+      (setq transient-current-prefix nil)
+      (setq transient-current-command nil)
+      (setq transient-current-suffixes nil))
     (when resume
       (transient--stack-pop))))
 
@@ -2717,7 +2721,7 @@ exit."
     (setq transient--stack nil)
     (setq transient--exitp t)
     (transient--pre-exit)
-    (transient--post-exit)))
+    (transient--post-exit this-command)))
 
 ;;; Pre-Commands
 

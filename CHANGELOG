@@ -12,6 +12,12 @@
   suffix command with the mouse, information about the command is now
   shown in the echo area or using a tooltip.  #282
 
+Bug fixes:
+
+- When the command that exits a transient uses the minibuffer,
+  ~transient-current-*~ variables were not immediately reset to
+  ~nil~. #323
+
 * v0.7.7    2024-10-04
 
 Bug fix:
