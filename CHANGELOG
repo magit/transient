@@ -1,4 +1,17 @@
 # -*- mode: org -*-
+* v0.7.8    UNRELEASED
+
+- Additional potential mistakes in menu definitions are now detected.
+  bbda5bb6, 8873c300
+
+- Added new (and still experimental) ~environment~ prefix slot, which
+  can be used to, for example, implement a cache to be used while
+  refreshing the menu.  05c011b8
+
+- When navigating through the menu using the keyboard or hovering a
+  suffix command with the mouse, information about the command is now
+  shown in the echo area or using a tooltip.  #282
+
 * v0.7.7    2024-10-04
 
 Bug fix:
