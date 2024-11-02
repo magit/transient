@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.7.8    UNRELEASED
+* v0.7.8    2024-11-02
 
 - Additional potential mistakes in menu definitions are now detected.
   bbda5bb6, 8873c300
