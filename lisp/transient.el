@@ -3736,7 +3736,7 @@ have a history of their own.")
       (run-hooks 'transient-setup-buffer-hook)
       (when transient-force-fixed-pitch
         (transient--force-fixed-pitch))
-      (setq window-size-fixed t)
+      (setq window-size-fixed (if (window-full-height-p) 'width t))
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
       (setq header-line-format nil)
