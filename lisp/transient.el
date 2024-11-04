@@ -1709,7 +1709,12 @@ probably use this instead:
                         (listify-key-sequence (this-command-keys))))
                suffixes)
             (car suffixes))
-          (error "BUG: Cannot determine suffix object"))))
+          ;; COMMAND is only provided if `this-command' is meaningless, in
+          ;; which case `this-command-keys' is also meaningless, making it
+          ;; impossible to disambiguate redundant bindings.
+          (if command
+              (car suffixes)
+            (error "BUG: Cannot determine suffix object")))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn ; work around debbugs#31840
