@@ -4459,11 +4459,12 @@ See `forward-button' for information about N."
     (when (re-search-forward (concat "^" (regexp-quote command)) nil t)
       (goto-char (match-beginning 0))))
    (command
-    (while (and (ignore-errors (forward-button 1))
-                (not (eq (button-get (button-at (point)) 'command) command))))
-    (unless (eq (button-get (button-at (point)) 'command) command)
-      (goto-char (point-min))
-      (ignore-errors (forward-button 1))))))
+    (cl-flet ((found () (eq (button-get (button-at (point)) 'command) command)))
+      (while (and (ignore-errors (forward-button 1))
+                  (not (found))))
+      (unless (found)
+        (goto-char (point-min))
+        (ignore-errors (forward-button 1)))))))
 
 (defun transient--heading-at-point ()
   (and (eq (get-text-property (point) 'face) 'transient-heading)
