@@ -4463,7 +4463,7 @@ See `forward-button' for information about N."
                 (not (eq (button-get (button-at (point)) 'command) command))))
     (unless (eq (button-get (button-at (point)) 'command) command)
       (goto-char (point-min))
-      (forward-button 1)))))
+      (ignore-errors (forward-button 1))))))
 
 (defun transient--heading-at-point ()
   (and (eq (get-text-property (point) 'face) 'transient-heading)
