@@ -4464,7 +4464,9 @@ See `forward-button' for information about N."
                   (not (found))))
       (unless (found)
         (goto-char (point-min))
-        (ignore-errors (forward-button 1)))))))
+        (ignore-errors (forward-button 1))
+        (unless (found)
+          (goto-char (point-min))))))))
 
 (defun transient--heading-at-point ()
   (and (eq (get-text-property (point) 'face) 'transient-heading)
