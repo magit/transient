@@ -707,15 +707,14 @@ If @code{nil}, then the buffer has no mode-line.  If the buffer is not
 displayed right above the echo area, then this probably is not a
 good value.
 
-If @code{line} (the default) or a natural number, then the buffer
-has no mode-line, but a line is drawn is drawn in its place.
-If a number is used, that specifies the thickness of the line.
-On termcap frames we cannot draw lines, so there @code{line} and
-numbers are synonyms for @code{nil}.
+If @code{line} (the default) or a natural number, then the buffer has no
+mode-line, but a line is drawn in its place.  If a number is used,
+that specifies the thickness of the line.  On termcap frames we
+cannot draw lines, so there @code{line} and numbers are synonyms for @code{nil}.
 
 The color of the line is used to indicate if non-suffixes are
 allowed and whether they exit the transient.  The foreground
-color of @code{transient-key-noop} (if non-suffix are disallowed),
+color of @code{transient-key-noop} (if non-suffixes are disallowed),
 @code{transient-key-stay} (if allowed and transient stays active), or
 @code{transient-key-exit} (if allowed and they exit the transient) is
 used to draw the line.
