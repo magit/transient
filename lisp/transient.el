@@ -2135,7 +2135,8 @@ value.  Otherwise return CHILDREN as is."
       (setq transient--prefix (transient--init-prefix name params))
     (setq name (oref transient--prefix command)))
   (setq transient--refreshp (oref transient--prefix refresh-suffixes))
-  (setq transient--layout (or layout (transient--init-suffixes name)))
+  (setq transient--layout (or (and (not transient--refreshp) layout)
+                              (transient--init-suffixes name)))
   (setq transient--suffixes (transient--flatten-suffixes transient--layout)))
 
 (defun transient--init-prefix (name &optional params)
