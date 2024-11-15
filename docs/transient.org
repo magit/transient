@@ -981,9 +981,9 @@ constructor of that class.
 
 - Likewise ~:level~ is equivalent to {{{var(LEVEL)}}}.
 
-- Other important keywords include the ~:if...~ keywords.  These
-  keywords control whether the group is available in a certain
-  situation.
+- Other important keywords include the ~:if...~ and ~:inapt-if...~
+  keywords.  These keywords control whether the group is available
+  in a certain situation.
 
   For example, one group of the ~magit-rebase~ transient uses ~:if
   magit-rebase-in-progress-p~, which contains the suffixes that are
@@ -1733,10 +1733,10 @@ object should not affect later invocations.
 
   The ~:info~ keyword argument replaces the ~:description~ keyword used for
   other suffix classes.  Other keyword arguments that you might want to
-  set, include ~:face~, predicate keywords (such as ~:if~), and ~:format~.
-  By default the value of ~:format~ includes ~%k~, which for this class is
-  replaced with the empty string or spaces, if keys are being padded in
-  the containing group.
+  set, include ~:face~, predicate keywords (such as ~:if~ and ~:inapt-if~),
+  and ~:format~.  By default the value of ~:format~ includes ~%k~, which for
+  this class is replaced with the empty string or spaces, if keys are
+  being padded in the containing group.
 
 Magit defines additional classes, which can serve as examples for the
 fancy things you can do without modifying Transient.  Some of these
@@ -2087,10 +2087,14 @@ They are defined here anyway to allow sharing certain methods.
 
 ** Predicate Slots
 
-Suffix and group objects share some predicate slots that control
-whether a group or suffix should be available depending on some state.
-Only one of these slots can be used at the same time.  It is undefined
-what happens if you use more than one.
+Suffix and group objects share two sets of predicate slots that
+control whether a group or suffix should be available depending on
+some state.  Only one slot from each set can be used at the same
+time.  It is undefined which slot is honored if you use more than
+one.
+
+Predicates from the first group control whether the suffix is present
+in the menu at all.
 
 - ~if~ Enable if predicate returns non-~nil~.
 - ~if-not~ Enable if predicate returns ~nil~.
@@ -2100,6 +2104,20 @@ what happens if you use more than one.
 - ~if-not-mode~ Enable if major-mode does not match value.
 - ~if-derived~ Enable if major-mode derives from value.
 - ~if-not-derived~ Enable if major-mode does not derive from value.
+
+Predicates from the second group control whether the suffix can be
+invoked.  The suffix is shown in the menu regardless, but when it
+is considered "inapt", then it is grayed out to indicated that it
+currently cannot be invoked.
+
+- ~inapt-if~ Inapt if predicate returns non-~nil~.
+- ~inapt-if-not~ Inapt if predicate returns ~nil~.
+- ~inapt-if-non-nil~ Inapt if variable's value is non-~nil~.
+- ~inapt-if-nil~ Inapt if variable's value is ~nil~.
+- ~inapt-if-mode~ Inapt if major-mode matches value.
+- ~inapt-if-not-mode~ Inapt if major-mode does not match value.
+- ~inapt-if-derived~ Inapt if major-mode derives from value.
+- ~inapt-if-not-derived~ Inapt if major-mode does not derive from value.
 
 By default these predicates run when the prefix command is invoked,
 but this can be changes, using the ~refresh-suffixes~ prefix slot.

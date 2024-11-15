@@ -1168,9 +1168,9 @@ consistency, or @var{DESCRIPTION} otherwise, because it looks better.
 Likewise @code{:level} is equivalent to @var{LEVEL}.
 
 @item
-Other important keywords include the @code{:if...} keywords.  These
-keywords control whether the group is available in a certain
-situation.
+Other important keywords include the @code{:if...} and @code{:inapt-if...}
+keywords.  These keywords control whether the group is available
+in a certain situation.
 
 For example, one group of the @code{magit-rebase} transient uses @code{:if
   magit-rebase-in-progress-p}, which contains the suffixes that are
@@ -1980,10 +1980,10 @@ suffix specifications take this form:
 
 The @code{:info} keyword argument replaces the @code{:description} keyword used for
 other suffix classes.  Other keyword arguments that you might want to
-set, include @code{:face}, predicate keywords (such as @code{:if}), and @code{:format}.
-By default the value of @code{:format} includes @code{%k}, which for this class is
-replaced with the empty string or spaces, if keys are being padded in
-the containing group.
+set, include @code{:face}, predicate keywords (such as @code{:if} and @code{:inapt-if}),
+and @code{:format}.  By default the value of @code{:format} includes @code{%k}, which for
+this class is replaced with the empty string or spaces, if keys are
+being padded in the containing group.
 @end itemize
 
 Magit defines additional classes, which can serve as examples for the
@@ -2390,10 +2390,14 @@ E.g., @code{\\(--\\(topo\\|author-date\\|date\\)-order\\)}.
 @node Predicate Slots
 @section Predicate Slots
 
-Suffix and group objects share some predicate slots that control
-whether a group or suffix should be available depending on some state.
-Only one of these slots can be used at the same time.  It is undefined
-what happens if you use more than one.
+Suffix and group objects share two sets of predicate slots that
+control whether a group or suffix should be available depending on
+some state.  Only one slot from each set can be used at the same
+time.  It is undefined which slot is honored if you use more than
+one.
+
+Predicates from the first group control whether the suffix is present
+in the menu at all.
 
 @itemize
 @item
@@ -2412,6 +2416,30 @@ what happens if you use more than one.
 @code{if-derived} Enable if major-mode derives from value.
 @item
 @code{if-not-derived} Enable if major-mode does not derive from value.
+@end itemize
+
+Predicates from the second group control whether the suffix can be
+invoked.  The suffix is shown in the menu regardless, but when it
+is considered "inapt", then it is grayed out to indicated that it
+currently cannot be invoked.
+
+@itemize
+@item
+@code{inapt-if} Inapt if predicate returns non-@code{nil}.
+@item
+@code{inapt-if-not} Inapt if predicate returns @code{nil}.
+@item
+@code{inapt-if-non-nil} Inapt if variable's value is non-@code{nil}.
+@item
+@code{inapt-if-nil} Inapt if variable's value is @code{nil}.
+@item
+@code{inapt-if-mode} Inapt if major-mode matches value.
+@item
+@code{inapt-if-not-mode} Inapt if major-mode does not match value.
+@item
+@code{inapt-if-derived} Inapt if major-mode derives from value.
+@item
+@code{inapt-if-not-derived} Inapt if major-mode does not derive from value.
 @end itemize
 
 By default these predicates run when the prefix command is invoked,

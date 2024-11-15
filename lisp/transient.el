@@ -766,8 +766,8 @@ the prototype is stored in the clone's `prototype' slot.")
     :documentation "Inapt if major-mode does not derive from value."))
   "Abstract superclass for group and suffix classes.
 
-It is undefined what happens if more than one `if*' predicate
-slot is non-nil."
+It is undefined which predicates are used if more than one `if*'
+predicate slots or more than one `inapt-if*' slots are non-nil."
   :abstract t)
 
 (defclass transient-suffix (transient-child)
