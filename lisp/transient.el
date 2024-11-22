@@ -3189,22 +3189,6 @@ such as when suggesting a new feature or reporting an issue."
 ;;; Value
 ;;;; Init
 
-(cl-defgeneric transient-init-scope (obj)
-  "Set the scope of the suffix object OBJ.
-
-The scope is actually a property of the transient prefix, not of
-individual suffixes.  However it is possible to invoke a suffix
-command directly instead of from a transient.  In that case, if
-the suffix expects a scope, then it has to determine that itself
-and store it in its `scope' slot.
-
-This function is called for all suffix commands, but unless a
-concrete method is implemented this falls through to the default
-implementation, which is a noop.")
-
-(cl-defmethod transient-init-scope ((_   transient-suffix))
-  "Noop." nil)
-
 (cl-defgeneric transient-init-value (_)
   "Set the initial value of the object OBJ.
 
@@ -3652,6 +3636,27 @@ the option does not appear in ARGS."
                                         args))))
           (or (match-string 1 match) "")))
     (and (member arg args) t)))
+
+;;; Scope
+;;;; Init
+
+(cl-defgeneric transient-init-scope (obj)
+  "Set the scope of the suffix object OBJ.
+
+The scope is actually a property of the transient prefix, not of
+individual suffixes.  However it is possible to invoke a suffix
+command directly instead of from a transient.  In that case, if
+the suffix expects a scope, then it has to determine that itself
+and store it in its `scope' slot.
+
+This function is called for all suffix commands, but unless a
+concrete method is implemented this falls through to the default
+implementation, which is a noop.")
+
+(cl-defmethod transient-init-scope ((_   transient-suffix))
+  "Noop." nil)
+
+;;;; Get
 
 (defun transient-scope ()
   "Return the value of the `scope' slot of the current prefix."
