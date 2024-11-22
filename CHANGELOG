@@ -12,6 +12,9 @@
 - Added new generic function ~transient-prefix-value~, giving finer
   control over how the value returned by ~transient-args~ is determined.
 
+- Added support for implementing ~transient-init-scope~ methods for
+  prefix classes.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.

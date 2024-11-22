@@ -2146,6 +2146,7 @@ value.  Otherwise return CHILDREN as is."
                                  transient-default-level)
                       params))))
     (transient--setup-recursion obj)
+    (transient-init-scope obj)
     (transient-init-value obj)
     obj))
 
@@ -3674,6 +3675,9 @@ and store it in its `scope' slot.
 This function is called for all suffix commands, but unless a
 concrete method is implemented this falls through to the default
 implementation, which is a noop.")
+
+(cl-defmethod transient-init-scope ((_   transient-prefix))
+  "Noop." nil)
 
 (cl-defmethod transient-init-scope ((_   transient-suffix))
   "Noop." nil)
