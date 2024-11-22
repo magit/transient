@@ -3541,10 +3541,16 @@ See also `transient-prefix-set'.")
 
 (defun transient-args (prefix)
   "Return the value of the transient prefix command PREFIX.
-If the current command was invoked from the transient prefix
-command PREFIX, then return the active infix arguments.  If
-the current command was not invoked from PREFIX, then return
-the set, saved or default value for PREFIX."
+
+If the current command was invoked from the transient prefix command
+PREFIX, then return the active infix arguments.  If the current command
+was not invoked from PREFIX, then return the set, saved or default value
+for PREFIX.
+
+PREFIX may also be a list of prefixes.  If no prefix is active, the
+fallback value of the first of these prefixes is used."
+  (when (listp prefix)
+    (setq prefix (car (or (memq transient-current-command prefix) prefix))))
   (mapcan #'transient--get-wrapped-value (transient-suffixes prefix)))
 
 (defun transient-suffixes (prefix)
