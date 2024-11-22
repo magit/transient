@@ -3548,10 +3548,26 @@ was not invoked from PREFIX, then return the set, saved or default value
 for PREFIX.
 
 PREFIX may also be a list of prefixes.  If no prefix is active, the
-fallback value of the first of these prefixes is used."
+fallback value of the first of these prefixes is used.
+
+The generic function `transient-prefix-value' is used to determine the
+returned value."
   (when (listp prefix)
     (setq prefix (car (or (memq transient-current-command prefix) prefix))))
-  (mapcan #'transient--get-wrapped-value (transient-suffixes prefix)))
+  (if-let ((obj (get prefix 'transient--prefix)))
+      (transient-prefix-value obj)
+    (error "Not a transient prefix: %s" prefix)))
+
+(cl-defgeneric transient-prefix-value (obj)
+  "Return the value of the prefix object OBJ.
+This function is used by `transient-args'.")
+
+(cl-defmethod transient-prefix-value ((obj transient-prefix))
+  "Return a list of the values of the suffixes the prefix object OBJ.
+Use `transient-infix-value' to collect the values of individual suffix
+objects."
+  (mapcan #'transient--get-wrapped-value
+          (transient-suffixes (oref obj command))))
 
 (defun transient-suffixes (prefix)
   "Return the suffix objects of the transient prefix command PREFIX."

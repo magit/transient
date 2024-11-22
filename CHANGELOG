@@ -9,6 +9,9 @@
 - ~transient-args~ and ~transient-scope~ now both take a prefix command or
   a list of prefix commands as argument.
 
+- Added new generic function ~transient-prefix-value~, giving finer
+  control over how the value returned by ~transient-args~ is determined.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
