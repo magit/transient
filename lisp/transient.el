@@ -3190,16 +3190,13 @@ such as when suggesting a new feature or reporting an issue."
 ;;; Value
 ;;;; Init
 
-(cl-defgeneric transient-init-value (_)
+(cl-defgeneric transient-init-value (obj)
   "Set the initial value of the object OBJ.
 
 This function is called for all prefix and suffix commands.
 
-For suffix commands (including infix argument commands) the
-default implementation is a noop.  Classes derived from the
-abstract `transient-infix' class must implement this function.
-Non-infix suffix commands usually don't have a value."
-  nil)
+Third-party subclasses of `transient-infix' must implement a primary
+method.")
 
 (cl-defmethod transient-init-value :around ((obj transient-prefix))
   "If bound, then call OBJ's `init-value' function.
@@ -3222,6 +3219,10 @@ Otherwise call the primary method according to object's class."
           (if-let ((saved (assq (oref obj command) transient-values)))
               (cdr saved)
             (transient-default-value obj)))))
+
+(cl-defmethod transient-init-value ((_   transient-suffix))
+  "Non-infix suffixes usually don't have a value, so this is a noop."
+  nil)
 
 (cl-defmethod transient-init-value ((obj transient-argument))
   (oset obj value
