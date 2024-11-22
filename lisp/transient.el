@@ -1715,7 +1715,7 @@ probably use this instead:
             (error "BUG: Cannot determine suffix object")))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
-      (progn ; work around debbugs#31840
+      (progn
         (transient-init-scope obj)
         (transient-init-value obj)
         obj)))))
@@ -2186,7 +2186,7 @@ value.  Otherwise return CHILDREN as is."
                     (oset obj inapt t))))
                (suffixes (mapcan (lambda (c) (transient--init-child levels c obj))
                                  (transient-setup-children obj children))))
-      (progn ; work around debbugs#31840
+      (progn
         (oset obj suffixes suffixes)
         (list obj)))))
 
