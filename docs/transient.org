@@ -2231,7 +2231,7 @@ potential prefix keys can be used for transient-specific commands
 particular is a prefix that I want to (and already do) use for Magit, and
 also using that for a common command would prevent me from doing so.
 
-(Also see the next question.)
+(See also the next question.)
 
 ** Why does {{{kbd(q)}}} not quit popups anymore?
 :PROPERTIES:

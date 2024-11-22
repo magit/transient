@@ -358,7 +358,7 @@ used that breaks that relationship.
 This option is intended for users who use a variable-pitch
 font for the `default' face.
 
-Also see `transient-force-fixed-pitch'."
+See also `transient-force-fixed-pitch'."
   :package-version '(transient . "0.4.0")
   :group 'transient
   :type 'boolean)
@@ -371,7 +371,7 @@ you might still want to use a monospaced font in transient's
 popup buffer.  Setting this option to t causes `default' to
 be remapped to `fixed-pitch' in that buffer.
 
-Also see `transient-align-variable-pitch'."
+See also `transient-align-variable-pitch'."
   :package-version '(transient . "0.2.0")
   :group 'transient
   :type 'boolean)
@@ -517,7 +517,7 @@ See info node `(transient)Enabling and Disabling Suffixes'."
                         (or (and (not (eq color 'unspecified)) color)
                             "grey60")))))
   "Face optionally used to highlight suffixes on higher levels.
-Also see option `transient-highlight-higher-levels'."
+See also option `transient-highlight-higher-levels'."
   :group 'transient-faces)
 
 (defface transient-delimiter '((t :inherit shadow))
@@ -579,14 +579,14 @@ character used to separate possible values from each other."
   `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
               :color "cyan")))
   "Face optionally used to highlight keys conflicting with short-argument.
-Also see option `transient-highlight-mismatched-keys'."
+See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
 (defface transient-mismatched-key
   `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
               :color "magenta")))
   "Face optionally used to highlight keys without a short-argument.
-Also see option `transient-highlight-mismatched-keys'."
+See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
 ;;; Persistence
@@ -1283,7 +1283,7 @@ in regular keymaps or by using `execute-extended-command')."
 
 (defalias 'transient--suffix-only #'ignore
   "Ignore ARGUMENTS, do nothing, and return nil.
-Also see `transient-command-completion-not-suffix-only-p'.
+See also `transient-command-completion-not-suffix-only-p'.
 Only use this alias as the value of the `completion-predicate'
 symbol property.")
 
@@ -1769,7 +1769,7 @@ to `transient-predicate-map'."
   "Top-level keymap used by all transients.
 
 If you add a new command here, then you must also add a binding
-to `transient-predicate-map'.  Also see `transient-base-map'.")
+to `transient-predicate-map'.  See also `transient-base-map'.")
 
 (defvar-keymap transient-edit-map
   :doc "Keymap that is active while a transient in is in \"edit mode\"."
@@ -3521,7 +3521,7 @@ Intended for use by transient suffix commands."
 (cl-defgeneric transient-set-value (obj)
   "Persist the value of the transient prefix OBJ.
 Only intended for use by `transient-set'.
-Also see `transient-prefix-set'.")
+See also `transient-prefix-set'.")
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
   (oset (oref obj prototype) value (transient-get-value))
