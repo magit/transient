@@ -6,6 +6,9 @@
 
 - Added documentation for ~inapt-if*~ slots to manual.  179545a6
 
+- ~transient-args~ and ~transient-scope~ now both take a prefix command or
+  a list of prefix commands as argument.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.

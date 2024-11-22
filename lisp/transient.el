@@ -3664,9 +3664,23 @@ implementation, which is a noop.")
 
 ;;;; Get
 
-(defun transient-scope ()
-  "Return the value of the `scope' slot of the current prefix."
-  (oref (transient-prefix-object) scope))
+(defun transient-scope (&optional prefix)
+  "Return the value of the `scope' slot of the current prefix.
+
+If the current command wasn't invoked from a prefix, return nil.
+
+If PREFIX is non-nil, it must a single prefix or a list of prefixes.
+If the current prefix is one of these prefixes, return its scope,
+otherwise return nil.
+
+If PREFIX is nil (for backward compatibility it may also be omitted)
+then return the scope of the current prefix, whatever that is.  This
+usage is rarely appropriate; it is better to be explicit."
+  (declare (advertised-calling-convention (prefix) "0.8.0"))
+  (and transient-current-command
+       (or (not prefix)
+           (memq transient-current-command (ensure-list prefix)))
+       (oref (transient-prefix-object) scope)))
 
 ;;; History
 
