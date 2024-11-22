@@ -3191,7 +3191,7 @@ such as when suggesting a new feature or reporting an issue."
 ;;;; Init
 
 (cl-defgeneric transient-init-value (obj)
-  "Set the initial value of the object OBJ.
+  "Set the initial value of the prefix or suffix object OBJ.
 
 This function is called for all prefix and suffix commands.
 
@@ -3199,21 +3199,29 @@ Third-party subclasses of `transient-infix' must implement a primary
 method.")
 
 (cl-defmethod transient-init-value :around ((obj transient-prefix))
-  "If bound, then call OBJ's `init-value' function.
-Otherwise call the primary method according to object's class."
+  "If bound, use the value returned by OBJ' `init-value' function.
+If the value of OBJ's `init-value' is non-nil, call that function to
+determine the value.  Otherwise call the primary method according to
+OBJ's class."
   (if (slot-boundp obj 'init-value)
       (funcall (oref obj init-value) obj)
     (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value :around ((obj transient-infix))
-  "If bound, then call OBJ's `init-value' function.
-Otherwise call the primary method according to object's class."
+  "If bound, use the value returned by OBJ's `init-value' function.
+If the value of OBJ's `init-value' is non-nil, call that function to
+determine the value.  Otherwise call the primary method according to
+OBJ's class."
   (if (slot-boundp obj 'init-value)
       (funcall (oref obj init-value) obj)
     (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value ((obj transient-prefix))
+  "Set OBJ's initial value to the set, saved or default value.
+Use `transient-default-value' to determine the default value."
   (if (slot-boundp obj 'value)
+      ;; Already set because the live object is cloned from
+      ;; the prototype, were the set (if any) value is stored.
       (oref obj value)
     (oset obj value
           (if-let ((saved (assq (oref obj command) transient-values)))
@@ -3225,6 +3233,7 @@ Otherwise call the primary method according to object's class."
   nil)
 
 (cl-defmethod transient-init-value ((obj transient-argument))
+  "Extract OBJ's value from the value of the prefix object."
   (oset obj value
         (let ((value (oref transient--prefix value))
               (argument (and (slot-boundp obj 'argument)
@@ -3245,6 +3254,7 @@ Otherwise call the primary method according to object's class."
                 (cl-some match value)))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
+  "Extract OBJ's value from the value of the prefix object."
   (oset obj value
         (car (member (oref obj argument)
                      (oref transient--prefix value)))))
@@ -3256,6 +3266,10 @@ Otherwise call the primary method according to object's class."
   nil)
 
 (cl-defmethod transient-default-value ((obj transient-prefix))
+  "Return the default value as specified by the `default-value' slot.
+If the value of the `default-value' slot is a function, call it to
+determine the value.  If the slot's value isn't a function, return
+that.  If the slot is unbound, return nil."
   (if-let ((default (and (slot-boundp obj 'default-value)
                          (oref obj default-value))))
       (if (functionp default)
@@ -3273,7 +3287,7 @@ is used to actually store the new value in the object.
 
 For most infix classes this is done by reading a value from the
 user using the reader specified by the `reader' slot (using the
-`transient-infix' method described below).
+method for `transient-infix', described below).
 
 For some infix classes the value is changed without reading
 anything in the minibuffer, i.e., the mere act of invoking the
@@ -3572,7 +3586,10 @@ objects."
           (transient-suffixes (oref obj command))))
 
 (defun transient-suffixes (prefix)
-  "Return the suffix objects of the transient prefix command PREFIX."
+  "Return the suffix objects of the transient prefix command PREFIX.
+
+If PREFIX is not the current prefix, initialize the suffixes so that
+they can be returned.  Doing so doesn't have any side-effects."
   (if (eq transient-current-command prefix)
       transient-current-suffixes
     (let ((transient--prefix (transient--init-prefix prefix)))
@@ -3580,6 +3597,12 @@ objects."
        (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
+  "Return the value of the current prefix.
+
+This is mostly intended for internal use, but may also be of use
+in `transient-set-value' and `transient-save-value' methods.  Unlike
+`transient-args', this does not include the values of suffixes whose
+`unsavable' slot is non-nil."
   (transient--with-emergency-exit :get-value
     (mapcan (lambda (obj)
               (and (or (not (slot-exists-p obj 'unsavable))
@@ -3588,6 +3611,13 @@ objects."
             (or transient--suffixes transient-current-suffixes))))
 
 (defun transient--get-wrapped-value (obj)
+  "Return a list of the value(s) of suffix object OBJ.
+
+Internally a suffix only ever has one value, stored in its `value'
+slot, but callers of `transient-args', wish to treat the values of
+certain suffixes as multiple values.  That translation is handled
+here.  The object's `multi-value' slot specifies whether and how
+to interpret the `value' as multiple values."
   (and-let* ((value (transient-infix-value obj)))
     (pcase-exhaustive (and (slot-exists-p obj 'multi-value)
                            (oref obj multi-value))
@@ -3598,9 +3628,9 @@ objects."
 (cl-defgeneric transient-infix-value (obj)
   "Return the value of the suffix object OBJ.
 
-This function is called by `transient-args' (which see), meaning
-this function is how the value of a transient is determined so
-that the invoked suffix command can use it.
+By default this function is involved when determining the prefix's
+overall value, returned by `transient-args' (which see),  so that
+the invoked suffix command can use that.
 
 Currently most values are strings, but that is not set in stone.
 Nil is not a value, it means \"no value\".
@@ -3648,7 +3678,9 @@ not contribute to the value of the transient."
 
 For a switch return a boolean.  For an option return the value as
 a string, using the empty string for the empty value, or nil if
-the option does not appear in ARGS."
+the option does not appear in ARGS.
+
+Append \"=\ to ARG to indicate that it is an option."
   (if (string-suffix-p "=" arg)
       (save-match-data
         (and-let* ((match (let ((case-fold-search nil)
@@ -3665,7 +3697,7 @@ the option does not appear in ARGS."
 ;;;; Init
 
 (cl-defgeneric transient-init-scope (obj)
-  "Set the scope of the suffix object OBJ.
+  "Set the scope of the prefix or suffix object OBJ.
 
 The scope is actually a property of the transient prefix, not of
 individual suffixes.  However it is possible to invoke a suffix
@@ -3673,9 +3705,9 @@ command directly instead of from a transient.  In that case, if
 the suffix expects a scope, then it has to determine that itself
 and store it in its `scope' slot.
 
-This function is called for all suffix commands, but unless a
-concrete method is implemented this falls through to the default
-implementation, which is a noop.")
+This function is called for all prefix and suffix commands, but
+unless a concrete method is implemented, this falls through to
+a default implementation, which is a noop.")
 
 (cl-defmethod transient-init-scope ((_   transient-prefix))
   "Noop." nil)
@@ -3686,17 +3718,19 @@ implementation, which is a noop.")
 ;;;; Get
 
 (defun transient-scope (&optional prefix)
-  "Return the value of the `scope' slot of the current prefix.
+  "Return the scope of the transient prefix command PREFIX, or nil.
 
-If the current command wasn't invoked from a prefix, return nil.
+If the current command wasn't invoked from any prefix, return nil.
 
 If PREFIX is non-nil, it must a single prefix or a list of prefixes.
-If the current prefix is one of these prefixes, return its scope,
-otherwise return nil.
+If, and only if, the current prefix is one of these prefixes, return
+its scope, otherwise return nil.
 
-If PREFIX is nil (for backward compatibility it may also be omitted)
-then return the scope of the current prefix, whatever that is.  This
-usage is rarely appropriate; it is better to be explicit."
+If PREFIX is nil (for backward compatibility it may also be omitted),
+return the scope of the current prefix, regardless of which prefix it
+is.  This usage is rarely appropriate; it is better to be explicit.
+
+Return the value of the corresponding object's `scope' slot."
   (declare (advertised-calling-convention (prefix) "0.8.0"))
   (and transient-current-command
        (or (not prefix)
