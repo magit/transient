@@ -942,8 +942,8 @@ to the setup function:
        (put ',name 'transient--prefix
             (,(or class 'transient-prefix) :command ',name ,@slots))
        (put ',name 'transient--layout
-            (list ,@(cl-mapcan (lambda (s) (transient--parse-child name s))
-                               suffixes))))))
+            (list ,@(mapcan (lambda (s) (transient--parse-child name s))
+                            suffixes))))))
 
 (defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
@@ -1136,7 +1136,7 @@ commands are aliases for."
                (if (and (listp value)
                         (or (listp (car value))
                             (vectorp (car value))))
-                   (cl-mapcan (lambda (s) (transient--parse-child prefix s)) value)
+                   (mapcan (lambda (s) (transient--parse-child prefix s)) value)
                  (transient--parse-child prefix value))))
     (vector  (and-let* ((c (transient--parse-group  prefix spec))) (list c)))
     (list    (and-let* ((c (transient--parse-suffix prefix spec))) (list c)))
@@ -1172,8 +1172,7 @@ commands are aliases for."
                       ('transient-column)))
           (and args (cons 'list args))
           (cons 'list
-                (cl-mapcan (lambda (s) (transient--parse-child prefix s))
-                           spec)))))
+                (mapcan (lambda (s) (transient--parse-child prefix s)) spec)))))
 
 (defun transient--parse-suffix (prefix spec)
   (let (level class args)
@@ -2152,23 +2151,23 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--init-suffixes (name)
   (let ((levels (alist-get name transient-levels)))
-    (cl-mapcan (lambda (c) (transient--init-child levels c nil))
-               (append (get name 'transient--layout)
-                       (and (not transient--editp)
-                            (get 'transient-common-commands
-                                 'transient--layout))))))
+    (mapcan (lambda (c) (transient--init-child levels c nil))
+            (append (get name 'transient--layout)
+                    (and (not transient--editp)
+                         (get 'transient-common-commands
+                              'transient--layout))))))
 
 (defun transient--flatten-suffixes (layout)
   (cl-labels ((s (def)
                 (cond
                  ((stringp def) nil)
                  ((cl-typep def 'transient-information) nil)
-                 ((listp def) (cl-mapcan #'s def))
+                 ((listp def) (mapcan #'s def))
                  ((cl-typep def 'transient-group)
-                  (cl-mapcan #'s (oref def suffixes)))
+                  (mapcan #'s (oref def suffixes)))
                  ((cl-typep def 'transient-suffix)
                   (list def)))))
-    (cl-mapcan #'s layout)))
+    (mapcan #'s layout)))
 
 (defun transient--init-child (levels spec parent)
   (cl-etypecase spec
@@ -2185,9 +2184,8 @@ value.  Otherwise return CHILDREN as is."
                   (when (or (and parent (oref parent inapt))
                             (transient--inapt-suffix-p obj))
                     (oset obj inapt t))))
-               (suffixes (cl-mapcan
-                          (lambda (c) (transient--init-child levels c obj))
-                          (transient-setup-children obj children))))
+               (suffixes (mapcan (lambda (c) (transient--init-child levels c obj))
+                                 (transient-setup-children obj children))))
       (progn ; work around debbugs#31840
         (oset obj suffixes suffixes)
         (list obj)))))
@@ -3499,9 +3497,9 @@ prompt."
                         (and (member x rule)
                              (remove x rule))))
               (incomp (nconc
-                       (cl-mapcan (apply-partially filter arg) spec)
+                       (mapcan (apply-partially filter arg) spec)
                        (and (not (equal val arg))
-                            (cl-mapcan (apply-partially filter val) spec)))))
+                            (mapcan (apply-partially filter val) spec)))))
     (dolist (obj transient--suffixes)
       (when-let* (((cl-typep obj 'transient-argument))
                   (val (transient-infix-value obj))
@@ -3563,7 +3561,7 @@ If the current command was invoked from the transient prefix
 command PREFIX, then return the active infix arguments.  If
 the current command was not invoked from PREFIX, then return
 the set, saved or default value for PREFIX."
-  (cl-mapcan #'transient--get-wrapped-value (transient-suffixes prefix)))
+  (mapcan #'transient--get-wrapped-value (transient-suffixes prefix)))
 
 (defun transient-suffixes (prefix)
   "Return the suffix objects of the transient prefix command PREFIX."
@@ -3575,11 +3573,11 @@ the set, saved or default value for PREFIX."
 
 (defun transient-get-value ()
   (transient--with-emergency-exit :get-value
-    (cl-mapcan (lambda (obj)
-                 (and (or (not (slot-exists-p obj 'unsavable))
-                          (not (oref obj unsavable)))
-                      (transient--get-wrapped-value obj)))
-               (or transient--suffixes transient-current-suffixes))))
+    (mapcan (lambda (obj)
+              (and (or (not (slot-exists-p obj 'unsavable))
+                       (not (oref obj unsavable)))
+                   (transient--get-wrapped-value obj)))
+            (or transient--suffixes transient-current-suffixes))))
 
 (defun transient--get-wrapped-value (obj)
   (and-let* ((value (transient-infix-value obj)))
@@ -3700,7 +3698,7 @@ have a history of their own.")
        (mapconcat
         #'identity
         (sort
-         (cl-mapcan
+         (mapcan
           (lambda (suffix)
             (let ((key (kbd (oref suffix key))))
               ;; Don't list any common commands.
@@ -3800,13 +3798,13 @@ have a history of their own.")
      ,@body))
 
 (defun transient--insert-groups ()
-  (let ((groups (cl-mapcan (lambda (group)
-                             (let ((hide (oref group hide)))
-                               (and (not (and (functionp hide)
-                                              (transient-with-shadowed-buffer
-                                                (funcall hide))))
-                                    (list group))))
-                           transient--layout)))
+  (let ((groups (mapcan (lambda (group)
+                          (let ((hide (oref group hide)))
+                            (and (not (and (functionp hide)
+                                           (transient-with-shadowed-buffer
+                                             (funcall hide))))
+                                 (list group))))
+                        transient--layout)))
     (while-let ((group (pop groups)))
       (transient--insert-group group)
       (when groups
