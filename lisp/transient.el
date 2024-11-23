@@ -211,6 +211,11 @@ buffer became the current buffer, then that would change what is
 at point.  To that effect `inhibit-same-window' ensures that the
 selected window is not used to show the transient buffer.
 
+The use of a horizonal split to display the menu window can lead
+to incompatibilities and is thus discouraged.  Transient tries to
+mitigate such issue but cannot proactively deal with all possible
+configurations and combinations of third-party packages.
+
 It may be possible to display the window in another frame, but
 whether that works in practice depends on the window-manager.
 If the window manager selects the new window (Emacs frame),
@@ -3818,7 +3823,14 @@ have a history of their own.")
       (erase-buffer)
       (when transient-force-fixed-pitch
         (transient--force-fixed-pitch))
-      (setq window-size-fixed (if (window-full-height-p) 'width t))
+      (setq window-size-fixed
+            ;; If necessary, make sure the height of the minibuffer
+            ;; can be increased to display completion candidates.
+            ;; See https://github.com/minad/vertico/issues/532.
+            (if (and (not transient-hide-during-minibuffer-read)
+                     (window-full-height-p))
+                'width
+              t))
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
       (setq header-line-format nil)

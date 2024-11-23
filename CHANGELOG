@@ -22,6 +22,8 @@
   default.  Customize ~transient-hide-during-minibuffer-read~ if you
   prefer the old default.
 
+- Further refinements to when the size of the menu window is fixed.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
