@@ -385,9 +385,14 @@ text and might otherwise have to scroll in two dimensions."
   :group 'transient
   :type 'boolean)
 
-(defcustom transient-hide-during-minibuffer-read nil
-  "Whether to hide the transient buffer while reading in the minibuffer."
-  :package-version '(transient . "0.4.0")
+(defcustom transient-hide-during-minibuffer-read t
+  "Whether to hide the transient buffer while reading in the minibuffer.
+
+This is only relevant to commands that do not close the menu, such
+as commands that set infix arguments.  If a command exits the menu,
+and uses the minibuffer, then the menu is always closed before the
+minibuffer is entered, irrespective of the value of this option."
+  :package-version '(transient . "0.8.0")
   :group 'transient
   :type 'boolean)
 

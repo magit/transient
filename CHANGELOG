@@ -18,6 +18,10 @@
 - ~transient-setup-buffer-hook~ is now run later to allow overriding
   more default settings.
 
+- While the minibuffer is in use, the menu buffer is now hidden by
+  default.  Customize ~transient-hide-during-minibuffer-read~ if you
+  prefer the old default.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
