@@ -3853,6 +3853,9 @@ have a history of their own.")
       (when-let ((line (transient--separator-line)))
         (insert line)))
     (unless (window-live-p transient--window)
+      (when (eq (car transient-display-buffer-action)
+                'display-buffer-full-frame)
+        (user-error "Invalid value for `transient-display-buffer-action'"))
       (setq transient--window
             (display-buffer transient--buffer
                             transient-display-buffer-action)))
