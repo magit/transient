@@ -15,6 +15,9 @@
 - Added support for implementing ~transient-init-scope~ methods for
   prefix classes.
 
+- ~transient-setup-buffer-hook~ is now run later to allow overriding
+  more default settings.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
