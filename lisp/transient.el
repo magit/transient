@@ -3728,24 +3728,27 @@ a default implementation, which is a noop.")
 ;;;; Get
 
 (defun transient-scope (&optional prefix)
-  "Return the scope of the transient prefix command PREFIX, or nil.
+  "Return the scope of the active or current transient prefix command.
 
-If the current command wasn't invoked from any prefix, return nil.
+If optional PREFIX is nil, return the scope of the active prefix; the
+prefix whose menu is active or being setup.  In suffix commands it is
+rarely, if ever, appropriate to call this function like this.
 
-If PREFIX is non-nil, it must a single prefix or a list of prefixes.
-If, and only if, the current prefix is one of these prefixes, return
-its scope, otherwise return nil.
-
-If PREFIX is nil (for backward compatibility it may also be omitted),
-return the scope of the current prefix, regardless of which prefix it
-is.  This usage is rarely appropriate; it is better to be explicit.
+If PREFIX is a prefix command or a list of such commands, then return
+its scope, if, and only if, either the active prefix or the prefix from
+which the current suffix command was invoked, is one of these prefixes.
+Otherwise return nil.
 
 Return the value of the corresponding object's `scope' slot."
-  (declare (advertised-calling-convention (prefix) "0.8.0"))
-  (and transient-current-command
-       (or (not prefix)
-           (memq transient-current-command (ensure-list prefix)))
-       (oref (transient-prefix-object) scope)))
+  (if prefix
+      ;; Prefer the current over the active prefix.  If the opposite is
+      ;; appropriate, one should call this function without an argument.
+      (and-let* ((obj (or transient-current-prefix transient--prefix)))
+        (and (memq (oref obj command)
+                   (ensure-list prefix))
+             (oref obj scope)))
+    (and transient--prefix
+         (oref transient--prefix scope))))
 
 ;;; History
 
