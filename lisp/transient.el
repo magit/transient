@@ -3747,7 +3747,8 @@ Return the value of the corresponding object's `scope' slot."
         (and (memq (oref obj command)
                    (ensure-list prefix))
              (oref obj scope)))
-    (oref (transient-prefix-object) scope)))
+    (and-let* ((obj (transient-prefix-object)))
+      (oref obj scope))))
 
 ;;; History
 
