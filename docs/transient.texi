@@ -684,6 +684,9 @@ then that unfortunately changes which buffer is current.
 
 If you change the value of this option, then you might also
 want to change the value of @code{transient-mode-line-format}.
+
+This user option may be overridden if @code{:display-action} is passed
+when creating a new prefix with @code{transient-define-prefix}.
 @end defopt
 
 @anchor{Accessibility Options}
@@ -2215,6 +2218,10 @@ against a specific value, as returned by @code{transient-infix-value},
 for example, @code{--option=one}.
 
 @item
+@code{display-action} determines how this prefix is displayed, overriding
+@code{transient-display-buffer-action}.  It should have the same type.
+
+@item
 @code{scope} For some transients it might be necessary to have a sort of
 secondary value, called a ``scope''.  See @code{transient-define-prefix}.
 @end itemize
@@ -2489,7 +2496,9 @@ See @ref{Enabling and Disabling Suffixes}.
 @anchor{Can I control how the popup buffer is displayed?}
 @appendixsec Can I control how the popup buffer is displayed?
 
-Yes, see @code{transient-display-buffer-action} in @ref{Configuration}.
+Yes, see @code{transient-display-buffer-action} in @ref{Configuration}.  You can
+also control how the popup buffer is displayed on a case-by-case basis
+by passing @code{:display-action} to @code{transient-define-prefix}.
 
 @anchor{How can I copy text from the popup buffer?}
 @appendixsec How can I copy text from the popup buffer?

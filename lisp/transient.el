@@ -723,6 +723,7 @@ If `transient-save-history' is nil, then do nothing."
    (environment          :initarg :environment          :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
+   (display-action       :initarg :display-action       :initform nil)
    (variable-pitch       :initarg :variable-pitch       :initform nil)
    (column-widths        :initarg :column-widths        :initform nil)
    (unwind-suffix        :documentation "Internal use." :initform nil))
@@ -3913,12 +3914,9 @@ have a history of their own.")
       (when-let ((line (transient--separator-line)))
         (insert line)))
     (unless (window-live-p transient--window)
-      (when (eq (car transient-display-buffer-action)
-                'display-buffer-full-frame)
-        (user-error "Invalid value for `transient-display-buffer-action'"))
       (setq transient--window
             (display-buffer transient--buffer
-                            transient-display-buffer-action)))
+                            (transient--display-action))))
     (when (window-live-p transient--window)
       (with-selected-window transient--window
         (set-window-parameter nil 'prev--no-other-window
@@ -3928,6 +3926,13 @@ have a history of their own.")
         (when transient-enable-popup-navigation
           (transient--goto-button focus))
         (transient--fit-window-to-buffer transient--window)))))
+
+(defun transient--display-action ()
+  (let ((action (or (oref transient--prefix display-action)
+                    transient-display-buffer-action)))
+    (when (eq (car action) 'display-buffer-full-frame)
+      (user-error "Invalid value for `transient-display-buffer-action'"))
+    action))
 
 (defun transient--fit-window-to-buffer (window)
   (let ((window-resize-pixelwise t)

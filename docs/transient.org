@@ -522,6 +522,9 @@ Also see [[* Common Suffix Commands]].
   If you change the value of this option, then you might also
   want to change the value of ~transient-mode-line-format~.
 
+  This user option may be overridden if ~:display-action~ is passed
+  when creating a new prefix with ~transient-define-prefix~.
+
 *** Accessibility Options
 :PROPERTIES:
 :UNNUMBERED: notoc
@@ -1951,6 +1954,9 @@ functions use ~describe-function~.
   against a specific value, as returned by ~transient-infix-value~,
   for example, ~--option=one~.
 
+- ~display-action~ determines how this prefix is displayed, overriding
+  ~transient-display-buffer-action~.  It should have the same type.
+
 - ~scope~ For some transients it might be necessary to have a sort of
   secondary value, called a “scope”.  See ~transient-define-prefix~.
 
@@ -2170,7 +2176,9 @@ See [[*Enabling and Disabling Suffixes]].
 :UNNUMBERED: notoc
 :END:
 
-Yes, see ~transient-display-buffer-action~ in [[*Configuration]].
+Yes, see ~transient-display-buffer-action~ in [[*Configuration]].  You can
+also control how the popup buffer is displayed on a case-by-case basis
+by passing ~:display-action~ to ~transient-define-prefix~.
 
 ** How can I copy text from the popup buffer?
 :PROPERTIES:
