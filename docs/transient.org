@@ -563,6 +563,9 @@ Also see [[* Common Suffix Commands]].
   ~transient-key-exit~ (if allowed and they exit the transient) is
   used to draw the line.
 
+  This user option may be overridden if ~:mode-line-format~ is passed
+  when creating a new prefix with ~transient-define-prefix~.
+
   Otherwise this can be any mode-line format.  See [[info:elisp#Mode
   Line Format]], for details.
 
@@ -1956,6 +1959,9 @@ functions use ~describe-function~.
 
 - ~display-action~ determines how this prefix is displayed, overriding
   ~transient-display-buffer-action~.  It should have the same type.
+
+- ~mode-line-format~ is this prefix's mode line format, overriding
+  ~transient-mode-line-format~.  It should have the same type.
 
 - ~scope~ For some transients it might be necessary to have a sort of
   secondary value, called a “scope”.  See ~transient-define-prefix~.

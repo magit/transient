@@ -722,6 +722,9 @@ color of @code{transient-key-noop} (if non-suffixes are disallowed),
 @code{transient-key-exit} (if allowed and they exit the transient) is
 used to draw the line.
 
+This user option may be overridden if @code{:mode-line-format} is passed
+when creating a new prefix with @code{transient-define-prefix}.
+
 Otherwise this can be any mode-line format.  See @ref{Mode Line Format,,,elisp,}, for details.
 @end defopt
 
@@ -2220,6 +2223,10 @@ for example, @code{--option=one}.
 @item
 @code{display-action} determines how this prefix is displayed, overriding
 @code{transient-display-buffer-action}.  It should have the same type.
+
+@item
+@code{mode-line-format} is this prefix's mode line format, overriding
+@code{transient-mode-line-format}.  It should have the same type.
 
 @item
 @code{scope} For some transients it might be necessary to have a sort of

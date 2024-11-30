@@ -724,6 +724,7 @@ If `transient-save-history' is nil, then do nothing."
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
    (display-action       :initarg :display-action       :initform nil)
+   (mode-line-format     :initarg :mode-line-format)
    (variable-pitch       :initarg :variable-pitch       :initform nil)
    (column-widths        :initarg :column-widths        :initform nil)
    (unwind-suffix        :documentation "Internal use." :initform nil))
@@ -3896,10 +3897,8 @@ have a history of their own.")
         (setq tab-line-format nil))
       (setq header-line-format nil)
       (setq mode-line-format
-            (if (or (natnump transient-mode-line-format)
-                    (eq transient-mode-line-format 'line))
-                nil
-              transient-mode-line-format))
+            (let ((format (transient--mode-line-format)))
+              (if (or (natnump format) (eq format 'line)) nil format)))
       (setq mode-line-buffer-identification
             (symbol-name (oref transient--prefix command)))
       (if transient-enable-popup-navigation
@@ -3947,11 +3946,16 @@ have a history of their own.")
                               (window-body-width window t)
                               (window-body-height window t))))
 
+(defun transient--mode-line-format ()
+  (if (slot-boundp transient--prefix 'mode-line-format)
+      (oref transient--prefix mode-line-format)
+    transient-mode-line-format))
+
 (defun transient--separator-line ()
-  (and-let* ((height (cond ((not window-system) nil)
-                           ((natnump transient-mode-line-format)
-                            transient-mode-line-format)
-                           ((eq transient-mode-line-format 'line) 1)))
+  (and-let* ((format (transient--mode-line-format))
+             (height (cond ((not window-system) nil)
+                           ((natnump format) format)
+                           ((eq format 'line) 1)))
              (face `(,@(and (>= emacs-major-version 27) '(:extend t))
                      :background
                      ,(or (face-foreground (transient--key-face nil 'non-suffix)

@@ -26,6 +26,10 @@
 - ~transient-setup-buffer-hook~ is now run later to allow overriding
   more default settings.
 
+- The new prefix slots ~display-action~ and ~mode-line-format~, can be
+  used to override ~transient-display-buffer-action~ and
+  ~transient-mode-line-format~ for individual prefix menus.  #332
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
