@@ -1,6 +1,12 @@
 # -*- mode: org -*-
 * v0.8.0    UNRELEASED
 
+- While the minibuffer is in use, the menu window is now hidden by
+  default.  The new option ~transient-show-during-minibuffer-read~ not
+  only controls whether the menu stays visible while the minibuffer
+  is in use, but also whether it may be resized if necessary.  This
+  new option replaces ~transient-hide-during-minibuffer-read~.  #330
+
 - When returning to a prefix whose ~refresh-suffixes~ slot is non-nil,
   its suffixes are now re-initialized.  #327
 
@@ -19,12 +25,6 @@
 
 - ~transient-setup-buffer-hook~ is now run later to allow overriding
   more default settings.
-
-- While the minibuffer is in use, the menu buffer is now hidden by
-  default.  Customize ~transient-hide-during-minibuffer-read~ if you
-  prefer the old default.
-
-- Further refinements to when the size of the menu window is fixed.
 
 Bug fixes:
 

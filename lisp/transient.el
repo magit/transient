@@ -95,6 +95,10 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
           `(pred (pcase--flip cl-typep ',type))
         `(pred (cl-typep _ ',type))))))
 
+(make-obsolete-variable 'transient-hide-during-minibuffer-read
+                        "use `transient-show-during-minibuffer-read' instead."
+                        "0.8.0")
+
 (defmacro transient--with-emergency-exit (id &rest body)
   (declare (indent defun))
   (unless (keywordp id)
@@ -269,6 +273,51 @@ of this variable use \"C-x t\" when a transient is active."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-show-during-minibuffer-read nil
+  "Whether to show the transient menu while reading in the minibuffer.
+
+This is only relevant to commands that do not close the menu, such as
+commands that set infix arguments.  If a command exits the menu, and
+uses the minibuffer, then the menu is always closed before the
+minibuffer is entered, irrespective of the value of this option.
+
+When nil (the default), hide the menu while the minibuffer is in use.
+When t, keep showing the menu, but allow for the menu window to be
+resized to ensure that completion candidates can be displayed.
+
+When `fixed', keep showing the menu and prevent it from being resized,
+which may make it impossible to display the completion candidates.  If
+that ever happens for you, consider using t or an integer, as described
+below.
+
+If the value is `fixed' and the menu window uses the full height of its
+frame, then the former is ignored and resizing is allowed anyway.  This
+is necessary because individual menus may use unusal display actions
+different from what `transient-display-buffer-action' specifies (likely
+to display that menu in a side-window).
+
+When using a third-party mode, which automatically resizes windows
+\(e.g., by calling `balance-windows' on `post-command-hook'), then
+`fixed' (or nil) is likely a better choice than t.
+
+The value can also be an integer, in which case the behavior depends on
+whether at least that many lines are left to display windows other than
+the menu window.  If that is the case, display the menu and preserve the
+size of that window.  Otherwise, allow resizing the menu window if the
+number is positive, or hide the menu if it is negative."
+  :package-version '(transient . "0.8.0")
+  :group 'transient
+  :type '(choice
+          (const :tag "Hide menu" nil)
+          (const :tag "Show menu and preserve size" fixed)
+          (const :tag "Show menu and allow resizing" t)
+          (natnum :tag "Show menu, allow resizing if less than N lines left"
+                  :format "\n   %t: %v"
+                  :value 20)
+          (integer :tag "Show menu, except if less than N lines left"
+                   :format "\n   %t: %v"
+                   :value -20)))
+
 (defcustom transient-read-with-initial-input nil
   "Whether to use the last history element as initial minibuffer input."
   :package-version '(transient . "0.2.0")
@@ -387,17 +436,6 @@ See also `transient-align-variable-pitch'."
 This might be useful for users with low vision who use large
 text and might otherwise have to scroll in two dimensions."
   :package-version '(transient . "0.3.6")
-  :group 'transient
-  :type 'boolean)
-
-(defcustom transient-hide-during-minibuffer-read t
-  "Whether to hide the transient buffer while reading in the minibuffer.
-
-This is only relevant to commands that do not close the menu, such
-as commands that set infix arguments.  If a command exits the menu,
-and uses the minibuffer, then the menu is always closed before the
-minibuffer is entered, irrespective of the value of this option."
-  :package-version '(transient . "0.8.0")
   :group 'transient
   :type 'boolean)
 
@@ -2442,15 +2480,27 @@ value.  Otherwise return CHILDREN as is."
 (defun transient--suspend-override (&optional nohide)
   (transient--debug 'suspend-override)
   (transient--timer-cancel)
-  (cond ((and (not nohide) transient-hide-during-minibuffer-read)
-         (transient--delete-window))
-        ((and transient--prefix transient--redisplay-key)
-         (setq transient--redisplay-key nil)
-         (when transient--showp
-           (if-let ((win (minibuffer-selected-window)))
-               (with-selected-window win
-                 (transient--show))
-             (transient--show)))))
+  (let ((show (if nohide 'fixed transient-show-during-minibuffer-read)))
+    (when (and (integerp show)
+               (< (frame-height (window-frame transient--window))
+                  (+ (abs show)
+                     (window-height transient--window))))
+      (setq show (natnump show)))
+    (cond ((not show)
+           (transient--delete-window))
+          ((and transient--prefix transient--redisplay-key)
+           (setq transient--redisplay-key nil)
+           (when transient--showp
+             (if-let ((win (minibuffer-selected-window)))
+                 (with-selected-window win
+                   (transient--show))
+               (transient--show)))))
+    (when (and (window-live-p transient--window)
+               (and show
+                    (not (eq show 'fixed))
+                    (not (window-full-height-p transient--window))))
+      (set-window-parameter transient--window 'window-preserved-size
+                            (list (window-buffer transient--window) nil nil))))
   (transient--pop-keymap 'transient--transient-map)
   (transient--pop-keymap 'transient--redisplay-map)
   (remove-hook 'pre-command-hook  #'transient--pre-command)
@@ -2458,8 +2508,10 @@ value.  Otherwise return CHILDREN as is."
 
 (defun transient--resume-override (&optional _ignore)
   (transient--debug 'resume-override)
-  (when (and transient--showp transient-hide-during-minibuffer-read)
-    (transient--show))
+  (cond ((and transient--showp (not (window-live-p transient--window)))
+         (transient--show))
+        ((window-live-p transient--window)
+         (transient--fit-window-to-buffer transient--window)))
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command)
@@ -3839,14 +3891,6 @@ have a history of their own.")
       (erase-buffer)
       (when transient-force-fixed-pitch
         (transient--force-fixed-pitch))
-      (setq window-size-fixed
-            ;; If necessary, make sure the height of the minibuffer
-            ;; can be increased to display completion candidates.
-            ;; See https://github.com/minad/vertico/issues/532.
-            (if (and (not transient-hide-during-minibuffer-read)
-                     (window-full-height-p))
-                'width
-              t))
       (when (bound-and-true-p tab-line-format)
         (setq tab-line-format nil))
       (setq header-line-format nil)
@@ -3892,7 +3936,11 @@ have a history of their own.")
         ;; Grow but never shrink window that previously displayed
         ;; another buffer and is going to display that again.
         (fit-window-to-buffer window nil (window-height window))
-      (fit-window-to-buffer window nil 1))))
+      (fit-window-to-buffer window nil 1)))
+  (set-window-parameter window 'window-preserved-size
+                        (list (window-buffer window)
+                              (window-body-width window t)
+                              (window-body-height window t))))
 
 (defun transient--separator-line ()
   (and-let* ((height (cond ((not window-system) nil)

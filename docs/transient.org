@@ -623,10 +623,40 @@ Also see [[* Common Suffix Commands]].
   from the user.  If ~nil~, there is no initial input and the first
   element has to be accessed the same way as the older elements.
 
-- User Option: transient-hide-during-minibuffer-read ::
+- User Option: transient-show-during-minibuffer-read ::
 
-  This option controls whether the transient buffer is hidden while
-  user input is being read in the minibuffer.
+  This option controls whether the transient menu continues to be
+  displayed while the minibuffer is used to read user input.
+
+  This is only relevant to commands that do not close the menu, such as
+  commands that set infix arguments.  If a command exits the menu, and
+  uses the minibuffer, then the menu is always closed before the
+  minibuffer is entered, irrespective of the value of this option.
+
+  When ~nil~ (the default), hide the menu while the minibuffer is in use.
+  When ~t~, keep showing the menu, but allow for the menu window to be
+  resized to ensure that completion candidates can be displayed.
+
+  When ~fixed~, keep showing the menu and prevent it from being resized,
+  which may make it impossible to display the completion candidates.  If
+  that ever happens for you, consider using ~t~ or an integer, as described
+  below.
+
+  If the value is ~fixed~ and the menu window uses the full height of its
+  frame, then the former is ignored and resizing is allowed anyway.  This
+  is necessary because individual menus may use unusal display actions
+  different from what ~transient-display-buffer-action~ specifies (likely
+  to display that menu in a side-window).
+
+  When using a third-party mode, which automatically resizes windows
+  (e.g., by calling ~balance-windows~ on ~post-command-hook~), then
+  ~fixed~ (or ~nil~) is likely a better choice than ~t~.
+
+  The value can also be an integer, in which case the behavior depends on
+  whether at least that many lines are left to display windows other than
+  the menu window.  If that is the case, display the menu and preserve the
+  size of that window.  Otherwise, allow resizing the menu window if the
+  number is positive, or hide the menu if it is negative.
 
 - User Option: transient-align-variable-pitch ::
 
