@@ -2497,8 +2497,8 @@ value.  Otherwise return CHILDREN as is."
                (transient--show)))))
     (when (and (window-live-p transient--window)
                (and show
-                    (not (eq show 'fixed))
-                    (not (window-full-height-p transient--window))))
+                    (or (not (eq show 'fixed))
+                        (window-full-height-p transient--window))))
       (set-window-parameter transient--window 'window-preserved-size
                             (list (window-buffer transient--window) nil nil))))
   (transient--pop-keymap 'transient--transient-map)
