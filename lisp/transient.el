@@ -3934,6 +3934,7 @@ have a history of their own.")
     action))
 
 (defun transient--fit-window-to-buffer (window)
+  (set-window-parameter window 'window-preserved-size nil)
   (let ((window-resize-pixelwise t)
         (window-size-fixed nil))
     (if (eq (car (window-parameter window 'quit-restore)) 'other)
