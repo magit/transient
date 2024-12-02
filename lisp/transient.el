@@ -2714,7 +2714,8 @@ value.  Otherwise return CHILDREN as is."
               transient--layout
               transient--editp
               :transient-suffix (oref transient--prefix transient-suffix)
-              :scope (oref transient--prefix scope))
+              :scope (oref transient--prefix scope)
+              :value (transient-get-value))
         transient--stack))
 
 (defun transient--stack-pop ()
