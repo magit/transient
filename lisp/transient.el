@@ -215,7 +215,7 @@ buffer became the current buffer, then that would change what is
 at point.  To that effect `inhibit-same-window' ensures that the
 selected window is not used to show the transient buffer.
 
-The use of a horizonal split to display the menu window can lead
+The use of a horizontal split to display the menu window can lead
 to incompatibilities and is thus discouraged.  Transient tries to
 mitigate such issue but cannot proactively deal with all possible
 configurations and combinations of third-party packages.
@@ -292,7 +292,7 @@ below.
 
 If the value is `fixed' and the menu window uses the full height of its
 frame, then the former is ignored and resizing is allowed anyway.  This
-is necessary because individual menus may use unusal display actions
+is necessary because individual menus may use unusual display actions
 different from what `transient-display-buffer-action' specifies (likely
 to display that menu in a side-window).
 

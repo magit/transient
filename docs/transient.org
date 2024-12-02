@@ -650,7 +650,7 @@ Also see [[* Common Suffix Commands]].
 
   If the value is ~fixed~ and the menu window uses the full height of its
   frame, then the former is ignored and resizing is allowed anyway.  This
-  is necessary because individual menus may use unusal display actions
+  is necessary because individual menus may use unusual display actions
   different from what ~transient-display-buffer-action~ specifies (likely
   to display that menu in a side-window).
 

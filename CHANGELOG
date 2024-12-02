@@ -775,7 +775,7 @@ Also contains various documentation updates and code clean-ups.
   248862c5
 
 - Added support for disabling and dimming suffix commands that are
-  currently not suitable, instead of completely hidding them.  #80
+  currently not suitable, instead of completely hiding them.  #80
 
 - Autoload functions that serve a purpose similar to that of
   ~define-key~. #85
