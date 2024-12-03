@@ -3814,7 +3814,8 @@ If no prefix matches, return nil."
                            (and-let* ((obj transient--prefix))
                              (and (memq (oref obj command) prefixes) obj)))))
             (oref obj scope)
-          (oref (transient--init-prefix (car prefixes)) scope)))
+          (and (get (car prefixes) 'transient--prefix)
+               (oref (transient--init-prefix (car prefixes)) scope))))
     (and-let* ((obj (transient-prefix-object)))
       (oref obj scope))))
 
