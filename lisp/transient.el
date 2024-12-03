@@ -3879,31 +3879,44 @@ a default implementation, which is a noop.")
 If optional PREFIXES is nil, return the scope of the prefix currently
 being setup, making this variant useful, e.g., in `:if*' predicates.
 If no prefix is being setup, but the current command was invoked from
-some prefix, then return the scope of that.
+some prefix, return the scope of that.
 
 When this function is called from the body or `interactive' form of a
 suffix command, PREFIXES should be non-nil.
 
-If PREFIXES is non-nil, it must be a prefix command or a list of such
-commands.  In this case try the following in order:
+If PREFIXES is non-nil, it must be a prefix command or class, or a list
+of such commands and/or classes.  In this case try the following in
+order:
 
 - If the current suffix command was invoked from a prefix, which
-  appears in PREFIXES, then return the scope of that prefix.
+  appears in PREFIXES, return the scope of that prefix.
 
-- If a prefix is being setup and it appears in PREFIXES, then return
-  its scope.
+- If the current suffix command was invoked from a prefix, and its
+  class derives from one of the classes in PREFIXES, return the scope
+  of that prefix.
 
-- Finally try to return the default scope of the first prefix in
-  PREFIXES.  This only works if that slot is set in the respective
-  class definition or using its `transient-init-scope' method.
+- If a prefix is being setup and it appears in PREFIXES, return its
+  scope.
+
+- If a prefix is being setup and its class derives from one of the
+  classes in PREFIXES, return its scope.
+
+- Finally try to return the default scope of the first element of
+  PREFIXES, which must be a command (not a class).  This only works
+  if that slot is set in the respective class definition or using
+  its `transient-init-scope' method.
 
 If no prefix matches, return nil."
   (if prefixes
-      (let ((prefixes (ensure-list prefixes)))
-        (if-let* ((obj (or (and-let* ((obj transient-current-prefix))
-                             (and (memq (oref obj command) prefixes) obj))
-                           (and-let* ((obj transient--prefix))
-                             (and (memq (oref obj command) prefixes) obj)))))
+      (let* ((prefixes (ensure-list prefixes))
+             (classes (seq-filter #'class-p prefixes)))
+        (if-let* ((obj (cl-flet ((match (obj)
+                                   (and obj
+                                        (or (memq (oref obj command) prefixes)
+                                            (cl-typep obj (cons 'or classes)))
+                                        obj)))
+                         (or (match transient-current-prefix)
+                             (match transient--prefix)))))
             (oref obj scope)
           (and (get (car prefixes) 'transient--prefix)
                (oref (transient--init-prefix (car prefixes)) scope))))
