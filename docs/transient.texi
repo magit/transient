@@ -616,6 +616,17 @@ the absolute value).
 @end itemize
 @end defopt
 
+@defopt transient-show-common-commands
+This option controls whether shared suffix commands are shown
+alongside the transient-specific infix and suffix commands.  By
+default, the shared commands are not shown to avoid overwhelming
+the user with too many options.
+
+While a transient is active, pressing @kbd{C-x} always shows the common
+commands.  The value of this option can be changed for the current
+Emacs session by typing @kbd{C-x t} while a transient is active.
+@end defopt
+
 @defopt transient-show-during-minibuffer-read
 This option controls whether the transient menu continues to be
 displayed while the minibuffer is used to read user input.
