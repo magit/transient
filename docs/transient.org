@@ -294,6 +294,11 @@ read the same kind of value to also use the same history key (see
 
 Both kinds of history are saved to a file when Emacs is exited.
 
+- User Option: transient-save-history ::
+
+  This option controls whether the history of transient commands is
+  saved when exiting Emacs.
+
 - User Option: transient-history-file ::
 
   This option names the file that is used to persist the history of

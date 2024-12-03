@@ -437,6 +437,11 @@ read the same kind of value to also use the same history key (see
 
 Both kinds of history are saved to a file when Emacs is exited.
 
+@defopt transient-save-history
+This option controls whether the history of transient commands is
+saved when exiting Emacs.
+@end defopt
+
 @defopt transient-history-file
 This option names the file that is used to persist the history of
 transients and their infixes between Emacs sessions.
