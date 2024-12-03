@@ -616,6 +616,48 @@ the absolute value).
 @end itemize
 @end defopt
 
+@defopt transient-show-during-minibuffer-read
+This option controls whether the transient menu continues to be
+displayed while the minibuffer is used to read user input.
+
+This is only relevant to commands that do not close the menu, such as
+commands that set infix arguments.  If a command exits the menu, and
+uses the minibuffer, then the menu is always closed before the
+minibuffer is entered, irrespective of the value of this option.
+
+When @code{nil} (the default), hide the menu while the minibuffer is in use.
+When @code{t}, keep showing the menu, but allow for the menu window to be
+resized to ensure that completion candidates can be displayed.
+
+When @code{fixed}, keep showing the menu and prevent it from being resized,
+which may make it impossible to display the completion candidates.  If
+that ever happens for you, consider using @code{t} or an integer, as described
+below.
+
+If the value is @code{fixed} and the menu window uses the full height of its
+frame, then the former is ignored and resizing is allowed anyway.  This
+is necessary because individual menus may use unusual display actions
+different from what @code{transient-display-buffer-action} specifies (likely
+to display that menu in a side-window).
+
+When using a third-party mode, which automatically resizes windows
+(e.g., by calling @code{balance-windows} on @code{post-command-hook}), then
+@code{fixed} (or @code{nil}) is likely a better choice than @code{t}.
+
+The value can also be an integer, in which case the behavior depends on
+whether at least that many lines are left to display windows other than
+the menu window.  If that is the case, display the menu and preserve the
+size of that window.  Otherwise, allow resizing the menu window if the
+number is positive, or hide the menu if it is negative.
+@end defopt
+
+@defopt transient-read-with-initial-input
+This option controls whether the last history element is used as the
+initial minibuffer input when reading the value of an infix argument
+from the user.  If @code{nil}, there is no initial input and the first
+element has to be accessed the same way as the older elements.
+@end defopt
+
 @defopt transient-enable-popup-navigation
 This option controls whether navigation commands are enabled in the
 transient popup buffer.  If the value is @code{verbose}, additionally show
@@ -779,48 +821,6 @@ optimized for lisp.
               (replace-match "(" t t key 1)
             key))))
 @end lisp
-@end defopt
-
-@defopt transient-read-with-initial-input
-This option controls whether the last history element is used as the
-initial minibuffer input when reading the value of an infix argument
-from the user.  If @code{nil}, there is no initial input and the first
-element has to be accessed the same way as the older elements.
-@end defopt
-
-@defopt transient-show-during-minibuffer-read
-This option controls whether the transient menu continues to be
-displayed while the minibuffer is used to read user input.
-
-This is only relevant to commands that do not close the menu, such as
-commands that set infix arguments.  If a command exits the menu, and
-uses the minibuffer, then the menu is always closed before the
-minibuffer is entered, irrespective of the value of this option.
-
-When @code{nil} (the default), hide the menu while the minibuffer is in use.
-When @code{t}, keep showing the menu, but allow for the menu window to be
-resized to ensure that completion candidates can be displayed.
-
-When @code{fixed}, keep showing the menu and prevent it from being resized,
-which may make it impossible to display the completion candidates.  If
-that ever happens for you, consider using @code{t} or an integer, as described
-below.
-
-If the value is @code{fixed} and the menu window uses the full height of its
-frame, then the former is ignored and resizing is allowed anyway.  This
-is necessary because individual menus may use unusual display actions
-different from what @code{transient-display-buffer-action} specifies (likely
-to display that menu in a side-window).
-
-When using a third-party mode, which automatically resizes windows
-(e.g., by calling @code{balance-windows} on @code{post-command-hook}), then
-@code{fixed} (or @code{nil}) is likely a better choice than @code{t}.
-
-The value can also be an integer, in which case the behavior depends on
-whether at least that many lines are left to display windows other than
-the menu window.  If that is the case, display the menu and preserve the
-size of that window.  Otherwise, allow resizing the menu window if the
-number is positive, or hide the menu if it is negative.
 @end defopt
 
 @defopt transient-align-variable-pitch
