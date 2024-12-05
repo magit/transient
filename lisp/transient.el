@@ -2152,7 +2152,9 @@ EDIT may be non-nil."
   "Setup the CHILDREN of GROUP.
 If the value of the `setup-children' slot is non-nil, then call
 that function with CHILDREN as the only argument and return the
-value.  Otherwise return CHILDREN as is."
+value.  Otherwise return CHILDREN as is.")
+
+(cl-defmethod transient-setup-children ((group transient-group) children)
   (if (slot-boundp group 'setup-children)
       (funcall (oref group setup-children) children)
     children))
@@ -3326,9 +3328,8 @@ Use `transient-default-value' to determine the default value."
 
 ;;;; Default
 
-(cl-defgeneric transient-default-value (_)
-  "Return the default value."
-  nil)
+(cl-defgeneric transient-default-value (obj)
+  "Return the default value.")
 
 (cl-defmethod transient-default-value ((obj transient-prefix))
   "Return the default value as specified by the `default-value' slot.
@@ -3341,6 +3342,10 @@ that.  If the slot is unbound, return nil."
           (funcall default)
         default)
     nil))
+
+(cl-defmethod transient-default-value ((_   transient-suffix))
+  "Return nil."
+  nil)
 
 ;;;; Read
 
@@ -3822,14 +3827,18 @@ If no prefix matches, return nil."
 ;;; History
 
 (cl-defgeneric transient--history-key (obj)
-  "Return OBJ's history key.
-If the value of the `history-key' slot is non-nil, then return
-that.  Otherwise return the value of the `command' slot."
+  "Return OBJ's history key.")
+
+(cl-defmethod transient--history-key ((obj transient-prefix))
+  "If the value of the `history-key' slot is non-nil, return that.
+Otherwise return the value of the `command' slot."
   (or (oref obj history-key)
       (oref obj command)))
 
 (cl-defgeneric transient--history-push (obj)
-  "Push the current value of OBJ to its entry in `transient-history'."
+  "Push the current value of OBJ to its entry in `transient-history'.")
+
+(cl-defmethod transient--history-push ((obj transient-prefix))
   (let ((key (transient--history-key obj)))
     (setf (alist-get key transient-history)
           (let ((args (transient-get-value)))
