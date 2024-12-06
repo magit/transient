@@ -30,6 +30,8 @@
   used to override ~transient-display-buffer-action~ and
   ~transient-mode-line-format~ for individual prefix menus.  #332
 
+- Updated the manual considerably.
+
 Bug fixes:
 
 - Fixes some menu navigation edge-cases.
