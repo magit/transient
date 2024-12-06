@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.0    UNRELEASED
+* v0.8.0    2024-12-06
 
 - While the minibuffer is in use, the menu window is now hidden by
   default.  The new option ~transient-show-during-minibuffer-read~ not
