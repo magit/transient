@@ -203,10 +203,8 @@ The default is:
     (inhibit-same-window . t))
 
 This displays the window at the bottom of the selected frame.
-Another useful FUNCTION is `display-buffer-below-selected', which
-is what `magit-popup' used by default.  For more alternatives see
-info node `(elisp)Display Action Functions' and info node
-`(elisp)Buffer Display Action Alists'.
+For alternatives see info node `(elisp)Display Action Functions'
+and info node `(elisp)Buffer Display Action Alists'.
 
 Note that the buffer that was current before the transient buffer
 is shown should remain the current buffer.  Many suffix commands
@@ -283,7 +281,7 @@ minibuffer is entered, irrespective of the value of this option.
 
 When nil (the default), hide the menu while the minibuffer is in use.
 When t, keep showing the menu, but allow for the menu window to be
-resized to ensure that completion candidates can be displayed.
+resized, to ensure that completion candidates can be displayed.
 
 When `fixed', keep showing the menu and prevent it from being resized,
 which may make it impossible to display the completion candidates.  If
