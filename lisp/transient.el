@@ -3343,10 +3343,6 @@ that.  If the slot is unbound, return nil."
         default)
     nil))
 
-(cl-defmethod transient-default-value ((_   transient-suffix))
-  "Return nil."
-  nil)
-
 ;;;; Read
 
 (cl-defgeneric transient-infix-read (obj)
