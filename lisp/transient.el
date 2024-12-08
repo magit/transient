@@ -1760,6 +1760,9 @@ probably use this instead:
           ;; impossible to disambiguate redundant bindings.
           (if command
               (car suffixes)
+            ;; TODO Decide whether it is legimate to use this function
+            ;; as a predicate, and also whether to return an object for
+            ;; suffixes common to all prefixes.  See #29 and #337.
             (error "BUG: Cannot determine suffix object")))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
@@ -2418,7 +2421,8 @@ value.  Otherwise return CHILDREN as is.")
        ((not (transient--edebug-command-p))
         (setq this-command 'transient-undefined))))
      ((and transient--editp
-           (transient-suffix-object)
+           ;; See TODO in that function.
+           (ignore-errors (transient-suffix-object))
            (not (memq this-command '(transient-quit-one
                                      transient-quit-all
                                      transient-help))))

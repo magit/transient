@@ -1,4 +1,11 @@
 # -*- mode: org -*-
+* v0.8.1    UNRELEASED
+
+Bug fixes:
+
+- Interactively setting the level of a transient prefix resulted in
+  an error.  #337.
+
 * v0.8.0    2024-12-06
 
 - While the minibuffer is in use, the menu window is now hidden by
