@@ -3981,12 +3981,12 @@ have a history of their own.")
                            ((natnump format) format)
                            ((eq format 'line) 1)))
              (face `(,@(and (>= emacs-major-version 27) '(:extend t))
-                     :background
-                     ,(or (face-foreground (transient--key-face nil 'non-suffix)
-                                           nil t)
-                          "#gray60"))))
+                     :background ,(transient--prefix-color))))
     (concat (propertize "__" 'face face 'display `(space :height (,height)))
             (propertize "\n" 'face face 'line-height t))))
+
+(defun transient--prefix-color ()
+  (or (face-foreground (transient--key-face nil 'non-suffix) nil t) "#gray60"))
 
 (defmacro transient-with-shadowed-buffer (&rest body)
   "While in the transient buffer, temporarily make the shadowed buffer current."
