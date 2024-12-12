@@ -3948,13 +3948,24 @@ have a history of their own.")
         (transient--fit-window-to-buffer transient--window)))))
 
 (defun transient--display-action ()
-  (cond ((oref transient--prefix display-action))
-        ((memq 'display-buffer-full-frame
-               (ensure-list (car transient-display-buffer-action)))
-         (user-error "%s disallowed in %s"
-                     'display-buffer-full-frame
-                     'transient-display-buffer-action))
-        (transient-display-buffer-action)))
+  (let ((action
+         (cond ((oref transient--prefix display-action))
+               ((memq 'display-buffer-full-frame
+                      (ensure-list (car transient-display-buffer-action)))
+                (user-error "%s disallowed in %s"
+                            'display-buffer-full-frame
+                            'transient-display-buffer-action))
+               (transient-display-buffer-action))))
+    (when (and (assq 'pop-up-frame-parameters (cdr action))
+               (fboundp 'buffer-line-statistics)) ; Emacs >= 28.1
+      (setq action (copy-tree action))
+      (pcase-let ((`(,height ,width)
+                   (buffer-line-statistics transient--buffer))
+                  (params (assq 'pop-up-frame-parameters (cdr action))))
+        (setf (alist-get 'height params) height)
+        (setf (alist-get 'width params)
+              (max width (or transient-minimal-frame-width 0)))))
+    action))
 
 (defun transient--fit-window-to-buffer (window)
   (set-window-parameter window 'window-preserved-size nil)
