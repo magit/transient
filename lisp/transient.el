@@ -3948,8 +3948,11 @@ have a history of their own.")
 
 (defun transient--display-action ()
   (cond ((oref transient--prefix display-action))
-        ((eq (car action) 'display-buffer-full-frame)
-         (user-error "Invalid value for `transient-display-buffer-action'"))
+        ((memq 'display-buffer-full-frame
+               (ensure-list (car transient-display-buffer-action)))
+         (user-error "%s disallowed in %s"
+                     'display-buffer-full-frame
+                     'transient-display-buffer-action))
         (transient-display-buffer-action)))
 
 (defun transient--fit-window-to-buffer (window)
