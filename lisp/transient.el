@@ -3935,11 +3935,12 @@ have a history of their own.")
     (unless (window-live-p transient--window)
       (setq transient--window
             (display-buffer transient--buffer
-                            (transient--display-action))))
-    (when (window-live-p transient--window)
+                            (transient--display-action)))
       (with-selected-window transient--window
         (set-window-parameter nil 'prev--no-other-window
-                              (window-parameter nil 'no-other-window))
+                              (window-parameter nil 'no-other-window))))
+    (when (window-live-p transient--window)
+      (with-selected-window transient--window
         (set-window-parameter nil 'no-other-window t)
         (goto-char (point-min))
         (when transient-enable-popup-navigation
