@@ -230,6 +230,15 @@ want to change the value of `transient-mode-line-format'."
   :type '(cons (choice function (repeat :tag "Functions" function))
                alist))
 
+(defcustom transient-minimal-frame-width 83
+  "Minimal width of dedicated frame used to display transient menu.
+This is only used if the transient menu is actually displayed in a
+dedicated frame (see `transient-display-buffer-action').  The value
+is in characters."
+  :package-version '(transient . "0.8.1")
+  :group 'transient
+  :type 'natnum)
+
 (defcustom transient-mode-line-format 'line
   "The mode-line format for the transient popup buffer.
 
@@ -2470,7 +2479,9 @@ value.  Otherwise return CHILDREN as is.")
                               (window-parameter win 'prev--no-other-window))
         (set-window-parameter win 'prev--no-other-window nil))
        ((with-demoted-errors "Error while exiting transient: %S"
-          (delete-window win))))
+          (if (window-parent win)
+              (delete-window win)
+            (delete-frame (window-frame win) t)))))
       (when (buffer-live-p transient--buffer)
         (kill-buffer transient--buffer))
       (setq transient--buffer nil)
@@ -3946,11 +3957,14 @@ have a history of their own.")
   (set-window-parameter window 'window-preserved-size nil)
   (let ((window-resize-pixelwise t)
         (window-size-fixed nil))
-    (if (eq (car (window-parameter window 'quit-restore)) 'other)
-        ;; Grow but never shrink window that previously displayed
-        ;; another buffer and is going to display that again.
-        (fit-window-to-buffer window nil (window-height window))
-      (fit-window-to-buffer window nil 1)))
+    (cond ((not (window-parent window))
+           (fit-frame-to-buffer (window-frame window) nil nil nil
+                                transient-minimal-frame-width))
+          ((eq (car (window-parameter window 'quit-restore)) 'other)
+           ;; Grow but never shrink window that previously displayed
+           ;; another buffer and is going to display that again.
+           (fit-window-to-buffer window nil (window-height window)))
+          ((fit-window-to-buffer window nil 1))))
   (set-window-parameter window 'window-preserved-size
                         (list (window-buffer window)
                               (window-body-width window t)
