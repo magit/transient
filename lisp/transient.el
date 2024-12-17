@@ -4009,7 +4009,8 @@ have a history of their own.")
             (propertize "\n" 'face face 'line-height t))))
 
 (defun transient--prefix-color ()
-  (or (face-foreground (transient--key-face nil 'non-suffix) nil t) "#gray60"))
+  (or (face-foreground (transient--key-face nil nil 'non-suffix) nil t)
+      "#gray60"))
 
 (defmacro transient-with-shadowed-buffer (&rest body)
   "While in the transient buffer, temporarily make the shadowed buffer current."
@@ -4161,13 +4162,6 @@ as a button."
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
 
-(cl-defmethod transient-format-key :around ((obj transient-suffix))
-  "Add `transient-inapt-suffix' face if suffix is inapt."
-  (let ((str (cl-call-next-method)))
-    (if (oref obj inapt)
-        (transient--add-face str 'transient-inapt-suffix)
-      str)))
-
 (cl-defmethod transient-format-key ((obj transient-suffix))
   "Format OBJ's `key' for display and return the result."
   (let ((key (if (slot-boundp obj 'key) (oref obj key) ""))
@@ -4200,16 +4194,16 @@ as a button."
                 (setq suf (string-replace " " "" suf)))
               (concat (propertize pre 'face 'transient-unreachable-key)
                       (and (string-prefix-p (concat pre " ") key) " ")
-                      (propertize suf 'face (transient--key-face cmd))
+                      (propertize suf 'face (transient--key-face cmd key))
                       (save-excursion
                         (and (string-match " +\\'" key)
                              (propertize (match-string 0 key)
                                          'face 'fixed-pitch))))))
            ((transient--lookup-key transient-sticky-map (kbd key))
-            (propertize key 'face (transient--key-face cmd)))
+            (propertize key 'face (transient--key-face cmd key)))
            (t
             (propertize key 'face 'transient-unreachable-key))))
-      (propertize key 'face (transient--key-face cmd)))))
+      (propertize key 'face (transient--key-face cmd key)))))
 
 (cl-defmethod transient-format-key :around ((obj transient-argument))
   "Handle `transient-highlight-mismatched-keys'."
@@ -4358,13 +4352,12 @@ apply the face `transient-unreachable' to the complete string."
     (add-face-text-property (or beg 0) (or end (length str)) face append str)
     str))
 
-(defun transient--key-face (&optional cmd enforce-type)
+(defun transient--key-face (cmd key &optional enforce-type)
   (or (and transient-semantic-coloring
            (not transient--helpp)
            (not transient--editp)
-           (or (and cmd (get cmd 'transient-face))
-               (get (transient--get-pre-command cmd nil enforce-type)
-                    'transient-face)))
+           (get (transient--get-pre-command cmd key enforce-type)
+                'transient-face))
       (if cmd 'transient-key 'transient-key-noop)))
 
 (defun transient--key-unreachable-p (obj)
