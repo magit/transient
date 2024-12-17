@@ -713,7 +713,6 @@ If `transient-save-history' is nil, then do nothing."
   ((prototype   :initarg :prototype)
    (command     :initarg :command)
    (level       :initarg :level)
-   (variable    :initarg :variable    :initform nil)
    (init-value  :initarg :init-value)
    (value) (default-value :initarg :value)
    (scope       :initarg :scope       :initform nil)
