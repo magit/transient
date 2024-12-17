@@ -2417,8 +2417,8 @@ value.  Otherwise return CHILDREN as is.")
     ;; lead to a suffix being remapped to a non-suffix.  We have to undo
     ;; the remapping in that case.  However, remapping a non-suffix to
     ;; another should remain possible.
-    (when (and (transient--get-pre-command this-original-command 'suffix)
-               (not (transient--get-pre-command this-command 'suffix)))
+    (when (and (transient--get-pre-command this-original-command nil 'suffix)
+               (not (transient--get-pre-command this-command nil 'suffix)))
       (setq this-command this-original-command))
     (cond
      ((memq this-command '(transient-update transient-quit-seq))
@@ -2816,7 +2816,7 @@ exit."
 ;;; Pre-Commands
 
 (defun transient--call-pre-command ()
-  (if-let ((fn (transient--get-pre-command this-command nil
+  (if-let ((fn (transient--get-pre-command this-command
                                            (this-command-keys-vector))))
       (let ((action (funcall fn)))
         (when (eq action transient--exit)
@@ -2829,12 +2829,12 @@ exit."
         (setq this-command 'transient-undefined)))
     transient--stay))
 
-(defun transient--get-pre-command (&optional cmd enforce-type keys)
+(defun transient--get-pre-command (&optional cmd key enforce-type)
   (or (and (not (eq enforce-type 'non-suffix))
            (symbolp cmd)
-           (or (and keys
+           (or (and key
                     (let ((def (lookup-key transient--predicate-map
-                                           (vconcat keys (list cmd)))))
+                                           (vconcat key (list cmd)))))
                       (and (symbolp def) def)))
                (lookup-key transient--predicate-map (vector cmd))))
       (and (not (eq enforce-type 'suffix))
@@ -4363,7 +4363,7 @@ apply the face `transient-unreachable' to the complete string."
            (not transient--helpp)
            (not transient--editp)
            (or (and cmd (get cmd 'transient-face))
-               (get (transient--get-pre-command cmd enforce-type)
+               (get (transient--get-pre-command cmd nil enforce-type)
                     'transient-face)))
       (if cmd 'transient-key 'transient-key-noop)))
 
