@@ -3920,6 +3920,7 @@ have a history of their own.")
   (transient--timer-cancel)
   (setq transient--showp t)
   (let ((transient--shadowed-buffer (current-buffer))
+        (setup (not (get-buffer transient--buffer-name)))
         (focus nil))
     (setq transient--buffer (get-buffer-create transient--buffer-name))
     (with-current-buffer transient--buffer
@@ -3929,22 +3930,23 @@ have a history of their own.")
                              (button-get (1- (point)) 'command))
                         (transient--heading-at-point))))
       (erase-buffer)
-      (when transient-force-fixed-pitch
-        (transient--force-fixed-pitch))
-      (when (bound-and-true-p tab-line-format)
-        (setq tab-line-format nil))
-      (setq header-line-format nil)
-      (setq mode-line-format
-            (let ((format (transient--mode-line-format)))
-              (if (or (natnump format) (eq format 'line)) nil format)))
-      (setq mode-line-buffer-identification
-            (symbol-name (oref transient--prefix command)))
-      (if transient-enable-popup-navigation
-          (setq-local cursor-in-non-selected-windows 'box)
-        (setq cursor-type nil))
-      (setq display-line-numbers nil)
-      (setq show-trailing-whitespace nil)
-      (run-hooks 'transient-setup-buffer-hook)
+      (when setup
+        (when transient-force-fixed-pitch
+          (transient--force-fixed-pitch))
+        (when (bound-and-true-p tab-line-format)
+          (setq tab-line-format nil))
+        (setq header-line-format nil)
+        (setq mode-line-format
+              (let ((format (transient--mode-line-format)))
+                (if (or (natnump format) (eq format 'line)) nil format)))
+        (setq mode-line-buffer-identification
+              (symbol-name (oref transient--prefix command)))
+        (if transient-enable-popup-navigation
+            (setq-local cursor-in-non-selected-windows 'box)
+          (setq cursor-type nil))
+        (setq display-line-numbers nil)
+        (setq show-trailing-whitespace nil)
+        (run-hooks 'transient-setup-buffer-hook))
       (transient--insert-groups)
       (when (or transient--helpp transient--editp)
         (transient--insert-help))
