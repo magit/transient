@@ -3987,7 +3987,8 @@ have a history of their own.")
 
 (defun transient--fit-window-to-buffer (window)
   (set-window-parameter window 'window-preserved-size nil)
-  (let ((window-resize-pixelwise t)
+  (let ((fit-window-to-buffer-horizontally t)
+        (window-resize-pixelwise t)
         (window-size-fixed nil))
     (cond ((not (window-parent window))
            (fit-frame-to-buffer (window-frame window) nil nil nil
