@@ -4045,7 +4045,8 @@ have a history of their own.")
 (cl-defgeneric transient--insert-group (group)
   "Format GROUP and its elements and insert the result.")
 
-(cl-defmethod transient--insert-group :around ((group transient-group))
+(cl-defmethod transient--insert-group :around ((group transient-group)
+                                               &optional _)
   "Insert GROUP's description, if any."
   (when-let ((desc (transient-with-shadowed-buffer
                      (transient-format-description group))))
