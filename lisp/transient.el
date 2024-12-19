@@ -1887,11 +1887,7 @@ to `transient-predicate-map'.  See also `transient-base-map'.")
                (list "C-z" "Suspend transient stack"  #'transient-suspend))
               (vector
                "Customize"
-               (list "C-x t" 'transient-toggle-common :description
-                     (lambda ()
-                       (if transient-show-common-commands
-                           "Hide common commands"
-                         "Show common permanently")))
+               (list "C-x t" #'transient-toggle-common)
                (list "C-x l" "Show/hide suffixes" #'transient-set-level)
                (list "C-x a" #'transient-toggle-level-limit)))))
        t)))
@@ -1957,7 +1953,6 @@ of the corresponding object."
   "<transient-quit-seq>"          #'transient--do-stay
   "<transient-show>"              #'transient--do-stay
   "<transient-update>"            #'transient--do-stay
-  "<transient-toggle-common>"     #'transient--do-stay
   "<transient-set>"               #'transient--do-call
   "<transient-set-and-exit>"      #'transient--do-exit
   "<transient-save>"              #'transient--do-call
@@ -3261,8 +3256,12 @@ transient is active."
 
 ;;;; Auxiliary
 
-(defun transient-toggle-common ()
+(transient-define-suffix transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
+  :description (lambda ()
+                 (if transient-show-common-commands
+                     "Hide common commands"
+                   "Show common permanently"))
   (interactive)
   (setq transient-show-common-commands (not transient-show-common-commands)))
 
