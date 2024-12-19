@@ -1957,14 +1957,26 @@ functions use ~describe-function~.
 - Function: transient-init-value obj ::
 
   This generic function sets the initial value of the object {{{var(OBJ)}}}.
+  Methods exist for both prefix and suffix objects.
 
-  This function is called for all suffix commands, but unless a
-  concrete method is implemented this falls through to the default
-  implementation, which is a noop.  In other words this usually
-  only does something for infix commands, but note that this is
-  not implemented for the abstract class ~transient-infix~, so if
-  your class derives from that directly, then you must implement
-  a method.
+  For ~transient-argument~ objects this function handles setting the
+  value by itself.
+
+  For other ~transient-suffix~ objects (including ~transient-infix~
+  objects), this calls ~transient-default-value~ and uses the value
+  returned by that, unless it is the special value ~eieio--unbound~,
+  which indicates that there is no default value.  Since that is what
+  the default method for ~transient-suffix~ objects does, both of these
+  functions effectively are noops for these classes.
+
+  If you implement a class that derives from ~transient-infix~ directly,
+  then you must implement a dedicated method for this function and/or
+  ~transient-default-value~.
+
+- Function: transient-default-value obj ::
+
+  This generic function returns the default value of the object {{{var(OBJ)}}}.
+  Methods exist for both prefix and suffix objects.
 
 - Function: transient-infix-read obj ::
 
@@ -2590,7 +2602,7 @@ General Public License for more details.
 #  LocalWords:  Magit's Makefile OBJ OBJ's Pre alist arglist
 #  LocalWords:  args autoloaded boolean booleans customizable docstring
 #  LocalWords:  eval featurep infixes init isearch keymap keymaps loc
-#  LocalWords:  magit manpage minibuffer monospaced ness nilly noop
+#  LocalWords:  magit manpage minibuffer monospaced ness nilly noop noops
 #  LocalWords:  plist pre prev rebase redisplay src subclass subclasses
 #  LocalWords:  subcommands subprocess superclass tooltip termcap utils
 

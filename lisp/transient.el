@@ -3331,9 +3331,13 @@ Use `transient-default-value' to determine the default value."
               (cdr saved)
             (transient-default-value obj)))))
 
-(cl-defmethod transient-init-value ((_   transient-suffix))
-  "Non-infix suffixes usually don't have a value, so this is a noop."
-  nil)
+(cl-defmethod transient-init-value ((obj transient-suffix))
+  "Non-infix suffixes usually don't have a value.
+Call `transient-default-value' but because that is a noop for
+`transient-suffix', this function is effectively also a noop."
+  (let ((value (transient-default-value obj)))
+    (unless (eq value eieio--unbound)
+      (oset obj value value))))
 
 (cl-defmethod transient-init-value ((obj transient-argument))
   "Extract OBJ's value from the value of the prefix object."
@@ -3378,6 +3382,11 @@ that.  If the slot is unbound, return nil."
           (funcall default)
         default)
     nil))
+
+(cl-defmethod transient-default-value ((_   transient-suffix))
+  "Return `eieio--unbound' to indicate that there is no default value.
+Doing so causes `transient-init-value' to skip setting the `value' slot."
+  eieio--unbound)
 
 ;;;; Read
 

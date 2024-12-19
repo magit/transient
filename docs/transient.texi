@@ -2221,14 +2221,26 @@ functions use @code{describe-function}.
 
 @defun transient-init-value obj
 This generic function sets the initial value of the object @var{OBJ}.
+Methods exist for both prefix and suffix objects.
 
-This function is called for all suffix commands, but unless a
-concrete method is implemented this falls through to the default
-implementation, which is a noop.  In other words this usually
-only does something for infix commands, but note that this is
-not implemented for the abstract class @code{transient-infix}, so if
-your class derives from that directly, then you must implement
-a method.
+For @code{transient-argument} objects this function handles setting the
+value by itself.
+
+For other @code{transient-suffix} objects (including @code{transient-infix}
+objects), this calls @code{transient-default-value} and uses the value
+returned by that, unless it is the special value @code{eieio--unbound},
+which indicates that there is no default value.  Since that is what
+the default method for @code{transient-suffix} objects does, both of these
+functions effectively are noops for these classes.
+
+If you implement a class that derives from @code{transient-infix} directly,
+then you must implement a dedicated method for this function and/or
+@code{transient-default-value}.
+@end defun
+
+@defun transient-default-value obj
+This generic function returns the default value of the object @var{OBJ}.
+Methods exist for both prefix and suffix objects.
 @end defun
 
 @defun transient-infix-read obj
