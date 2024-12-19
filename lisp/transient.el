@@ -3258,6 +3258,7 @@ transient is active."
 
 (transient-define-suffix transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
+  :transient t
   :description (lambda ()
                  (if transient-show-common-commands
                      "Hide common commands"
