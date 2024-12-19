@@ -436,6 +436,15 @@ like to use them for all menus, bind them in ~transient-map~.
   This command copies the contents of the menu buffer to the kill
   ring.
 
+- Command: transient-toggle-docstrings ::
+
+  This command toggle between showing suffix descriptions in the menu
+  (as usual) or showing the first lines of the respective docstrings
+  in their place.  For commands that do not have a docstring, always
+  display the suffix description.  Because there likely isn't enough
+  room to display multiple docstrings side-by-side, a single column
+  is used when displaying docstrings.
+
 ** Configuration
 
 More options are described in [[* Common Suffix Commands]], in [[* Saving

@@ -594,6 +594,15 @@ This command copies the contents of the menu buffer to the kill
 ring.
 @end deffn
 
+@deffn Command transient-toggle-docstrings
+This command toggle between showing suffix descriptions in the menu
+(as usual) or showing the first lines of the respective docstrings
+in their place.  For commands that do not have a docstring, always
+display the suffix description.  Because there likely isn't enough
+room to display multiple docstrings side-by-side, a single column
+is used when displaying docstrings.
+@end deffn
+
 @node Configuration
 @section Configuration
 

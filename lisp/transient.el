@@ -1604,6 +1604,7 @@ That buffer is current and empty when this hook runs.")
 (defvar transient--exitp nil "Whether to exit the transient.")
 (defvar transient--showp nil "Whether to show the transient popup buffer.")
 (defvar transient--helpp nil "Whether help-mode is active.")
+(defvar transient--docsp nil "Whether docstring-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
 
 (defvar transient--refreshp nil
@@ -1972,6 +1973,7 @@ of the corresponding object."
   "<transient-isearch-backward>"  #'transient--do-move
   "<transient-isearch-forward>"   #'transient--do-move
   "<transient-copy-menu-text>"    #'transient--do-stay
+  "<transient-toggle-docstrings>" #'transient--do-stay
   ;; If a valid but incomplete prefix sequence is followed by
   ;; an unbound key, then Emacs calls the `undefined' command
   ;; but does not set `this-command', `this-original-command'
@@ -3267,6 +3269,13 @@ transient is active."
   (interactive)
   (setq transient-show-common-commands (not transient-show-common-commands)))
 
+(transient-define-suffix transient-toggle-docstrings ()
+  "Toggle whether to show docstrings instead of suffix descriptions.
+To make this available in all menus, bind it in `transient-map'."
+  :transient t
+  (interactive)
+  (setq transient--docsp (not transient--docsp)))
+
 (defun transient-toggle-debug ()
   "Toggle debugging statements for transient commands."
   (interactive)
@@ -4100,7 +4109,7 @@ have a history of their own.")
           (insert ?\n))))))
 
 (cl-defmethod transient--insert-group ((group transient-columns))
-  (if transient-force-single-column
+  (if (or transient-force-single-column transient--docsp)
       (dolist (group (oref group suffixes))
         (transient--insert-group group t))
     (let* ((columns
@@ -4295,10 +4304,16 @@ face `transient-heading' to the complete string."
 If the result is nil, then use \"(BUG: no description)\" as the
 description.  If the OBJ's `key' is currently unreachable, then
 apply the face `transient-unreachable' to the complete string."
-  (let ((desc (or (cl-call-next-method obj)
-                  (and (slot-boundp transient--prefix 'suffix-description)
-                       (funcall (oref transient--prefix suffix-description)
-                                obj)))))
+  (let ((desc (if-let ((transient--docsp)
+                       (cmd (oref obj command))
+                       (doc (ignore-errors (documentation cmd)))
+                       ((not (equal doc (documentation
+                                         'transient--default-infix-command)))))
+                  (substring doc 0 (string-match "\\.?\n" doc))
+                (or (cl-call-next-method obj)
+                    (and (slot-boundp transient--prefix 'suffix-description)
+                         (funcall (oref transient--prefix suffix-description)
+                                  obj))))))
     (if desc
         (when-let ((face (transient--get-face obj 'face)))
           (setq desc (transient--add-face desc face t)))
