@@ -2520,6 +2520,11 @@ This is the abstract superclass of @code{transient-suffix} and @code{transient-g
 This is where the shared @code{if*} and @code{inapt-if*} slots (see @ref{Predicate Slots})
 and the @code{level} slot (see @ref{Enabling and Disabling Suffixes}) are defined.
 
+@itemize
+@item
+@code{parent} The object for the parent group.
+@end itemize
+
 @anchor{Slots of @code{transient-suffix}}
 @subheading Slots of @code{transient-suffix}
 

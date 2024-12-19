@@ -2236,6 +2236,8 @@ This is the abstract superclass of ~transient-suffix~ and ~transient-group~.
 This is where the shared ~if*~ and ~inapt-if*~ slots (see [[*Predicate Slots]])
 and the ~level~ slot (see [[*Enabling and Disabling Suffixes]]) are defined.
 
+- ~parent~ The object for the parent group.
+
 *** Slots of ~transient-suffix~
 :PROPERTIES:
 :UNNUMBERED: notoc

@@ -747,7 +747,11 @@ the prototype is stored in the clone's `prototype' slot.")
 ;;;; Suffix
 
 (defclass transient-child ()
-  ((level
+  ((parent
+    :initarg :parent
+    :initform nil
+    :documentation "The parent group object.")
+   (level
     :initarg :level
     :initform (symbol-value 'transient--default-child-level)
     :documentation "Enable if level of prefix is equal or greater.")
@@ -2254,7 +2258,7 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--init-group (levels spec parent)
   (pcase-let ((`(,level ,class ,args ,children) (append spec nil)))
     (and-let* (((transient--use-level-p level))
-               (obj (apply class :level level args))
+               (obj (apply class :parent parent :level level args))
                ((transient--use-suffix-p obj))
                ((prog1 t
                   (when (or (and parent (oref parent inapt))
@@ -2280,12 +2284,13 @@ value.  Otherwise return CHILDREN as is.")
         (autoload-do-load fn)))
     (when (transient--use-level-p level)
       (let ((obj (if (child-of-class-p class 'transient-information)
-                     (apply class :level level args)
+                     (apply class :parent parent :level level args)
                    (unless (and cmd (symbolp cmd))
                      (error "BUG: Non-symbolic suffix command: %s" cmd))
                    (if-let ((proto (and cmd (transient--suffix-prototype cmd))))
                        (apply #'clone proto :level level args)
-                     (apply class :command cmd :level level args)))))
+                     (apply class :command cmd :parent parent :level level
+                            args)))))
         (cond ((not cmd))
               ((commandp cmd))
               ((or (cl-typep obj 'transient-switch)
