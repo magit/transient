@@ -906,6 +906,12 @@ They become the value of this argument.")
    (set :initarg := :initform nil))
   "Class used by the `transient-preset' suffix command.")
 
+(defclass transient-describe-target (transient-suffix)
+  ((transient :initform #'transient--do-suspend)
+   (helper :initarg :helper :initform nil)
+   (target :initarg := :initform nil))
+  "Class used by the `transient-describe' suffix command.")
+
 ;;;; Group
 
 (defclass transient-group (transient-child)
@@ -2953,6 +2959,9 @@ Do not push the active transient to the transient stack."
 
 (defun transient--do-suspend ()
   "Suspend the active transient, saving the transient stack."
+  ;; Export so that `transient-describe' instances can use
+  ;; `transient-suffix-object' to get their respective object.
+  (transient--export)
   (transient--stack-push)
   (setq transient--exitp 'suspend)
   transient--exit)
@@ -3128,18 +3137,32 @@ transient is active."
       (when (lookup-key transient--transient-map
                         (this-single-command-raw-keys))
         (setq transient--helpp nil)
-        (let ((winconf (current-window-configuration)))
-          (transient-show-help
-           (if (eq this-original-command 'transient-help)
-               transient--prefix
-             (or (transient-suffix-object)
-                 this-original-command)))
-          (setq-local transient--restore-winconf winconf))
-        (fit-window-to-buffer nil (frame-height) (window-height))
-        (transient-resume-mode)
-        (message (substitute-command-keys
-                  "Type \\`q' to resume transient command."))
-        t))))
+        (transient--display-help #'transient-show-help
+                                 (if (eq this-original-command 'transient-help)
+                                     transient--prefix
+                                   (or (transient-suffix-object)
+                                       this-original-command)))))))
+
+(transient-define-suffix transient-describe ()
+  "From a transient menu, describe something in another buffer.
+
+This command can be bound multiple times to describe different targets.
+Each binding must specify the thing it describes, be setting the value
+of its `target' slot, using the keyword argument `:='.
+
+The `helper' slot specifies the low-level function used to describe the
+target, and can be omitted, in which case `transient--describe-function'
+is used for a symbol, `transient--show-manual' is used for a string
+beginning with a parenthesis, and `transient--show-manpage' is used for
+any other string.
+
+For example:
+  [(\"e\" \"about emacs\" transient-describe := \"(emacs)\")
+   (\"g\" \"about git\"   transient-describe := \"git\")]"
+  :class 'transient-describe-target
+  (interactive)
+  (with-slots (helper target) (transient-suffix-object)
+    (transient--display-help helper target)))
 
 ;;;; Level
 
@@ -4537,6 +4560,21 @@ Select the help window, and make the help buffer current and return it."
        ,@body
        (setq buffer (current-buffer)))
      (set-buffer buffer)))
+
+(defun transient--display-help (helper target)
+  (let ((winconf (current-window-configuration)))
+    (funcall (cond (helper)
+                   ((symbolp target) #'transient--describe-function)
+                   ((stringp target)
+                    (if (string-prefix-p "(" target)
+                        #'transient--show-manual
+                      #'transient--show-manpage))
+                   ((error "Unknown how to show help for %S" target)))
+             target)
+    (setq-local transient--restore-winconf winconf))
+  (fit-window-to-buffer nil (frame-height) (window-height))
+  (transient-resume-mode)
+  (message (substitute-command-keys "Type \\`q' to resume transient command.")))
 
 (defun transient--describe-function (fn)
   (let* ((buffer nil)

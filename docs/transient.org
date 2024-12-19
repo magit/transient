@@ -1902,6 +1902,9 @@ object should not affect later invocations.
   it is somewhat likely that future improvements won't be fully
   backward compatible.
 
+- The ~transient-describe-target~ class is used by the command
+  ~transient-describe~.
+
 - The ~transient-value-preset~ class is used to implement the command
   ~transient-preset~, which activates a value preset.
 

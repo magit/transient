@@ -2158,6 +2158,10 @@ it is somewhat likely that future improvements won't be fully
 backward compatible.
 
 @item
+The @code{transient-describe-target} class is used by the command
+@code{transient-describe}.
+
+@item
 The @code{transient-value-preset} class is used to implement the command
 @code{transient-preset}, which activates a value preset.
 @end itemize
