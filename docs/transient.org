@@ -428,6 +428,14 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
   lines.  If {{{var(ARG)}}} is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-down-command~ (which see).
 
+The following commands are not available by default.  If you would
+like to use them for all menus, bind them in ~transient-map~.
+
+- Command: transient-copy-menu-text ::
+
+  This command copies the contents of the menu buffer to the kill
+  ring.
+
 ** Configuration
 
 More options are described in [[* Common Suffix Commands]], in [[* Saving

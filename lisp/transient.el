@@ -1971,6 +1971,7 @@ of the corresponding object."
   "<transient-forward-button>"    #'transient--do-move
   "<transient-isearch-backward>"  #'transient--do-move
   "<transient-isearch-forward>"   #'transient--do-move
+  "<transient-copy-menu-text>"    #'transient--do-stay
   ;; If a valid but incomplete prefix sequence is followed by
   ;; an unbound key, then Emacs calls the `undefined' command
   ;; but does not set `this-command', `this-original-command'
@@ -3272,6 +3273,14 @@ transient is active."
   (setq transient--debug (not transient--debug))
   (message "Debugging transient %s"
            (if transient--debug "enabled" "disabled")))
+
+(defun transient-copy-menu-text ()
+  "Copy the contents of the menu buffer to the kill ring.
+To make this available in all menus, bind it in `transient-map'"
+  (interactive)
+  (transient--show)
+  (with-current-buffer (get-buffer transient--buffer-name)
+    (copy-region-as-kill (point-min) (point-max))))
 
 (transient-define-suffix transient-echo-arguments (arguments)
   "Show the transient's active ARGUMENTS in the echo area.

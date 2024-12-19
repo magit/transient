@@ -586,6 +586,14 @@ lines.  If @var{ARG} is @code{nil}, then it scrolls near full screen.  This
 is a wrapper around @code{scroll-down-command} (which see).
 @end deffn
 
+The following commands are not available by default.  If you would
+like to use them for all menus, bind them in @code{transient-map}.
+
+@deffn Command transient-copy-menu-text
+This command copies the contents of the menu buffer to the kill
+ring.
+@end deffn
+
 @node Configuration
 @section Configuration
 
