@@ -1,4 +1,39 @@
 # -*- mode: org -*-
+* v0.8.2    UNRELEASED
+
+- Added support for displaying the transient menu in a dedicated
+  frame.  bf58c0bb
+
+- When including a group via a variable, the imported value can now be
+  a top-level group.  eebcbe30
+
+- The transient window is now fitted to its buffer horizontally as well.
+  fd9811ea
+
+- Added new command ~transient-copy-menu-text~.  042f37aa
+
+- Added new command ~transient-toggle-docstrings~.  52679f98
+
+- Added new command ~transient-describe~, which can be bound as many times
+  as needed to show help for arbitrary things.  5a18a791
+
+Bug fixes:
+
+- The use of ~display-buffer-full-frame~ was prevented too aggressively.
+  5353464b
+
+- Fixed remembering and restoring the old value of the ~no-other-window~
+  window parameter.  de984302
+
+- When a command is bound multiple times and the instances use different
+  transient behavior, then the behavior (and color) for the last binding
+  was used for all bindings.  fe71a7e7, a99dcda9
+
+- Enabling ~transient-force-single-column~ resulted in an error.
+  28347e59
+
+- ~transient-toggle-common~ used to exit the menu.  98c01b84
+
 * v0.8.1    2024-12-08
 
 Bug fixes:
