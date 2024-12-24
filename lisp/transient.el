@@ -78,6 +78,10 @@ similar defect.") :emergency))
 
 (eval-when-compile (require 'subr-x))
 
+(eval-and-compile
+  (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
+    (defvaralias 'eieio--unbound 'eieio-unbound nil)))
+
 (declare-function info "info" (&optional file-or-node buffer))
 (declare-function Man-find-section "man" (section))
 (declare-function Man-next-section "man" (n))
