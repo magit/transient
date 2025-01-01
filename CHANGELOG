@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.2    UNRELEASED
+* v0.8.2    2025-01-01
 
 - Added support for displaying the transient menu in a dedicated
   frame.  bf58c0bb
