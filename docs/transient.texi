@@ -97,12 +97,6 @@ Defining New Commands
 * Current Prefix Command::
 * Transient State::
 
-Binding Suffix and Infix Commands
-
-* Group Specifications::
-* Suffix Specifications::
-
-
 Classes and Methods
 
 * Group Classes::
@@ -114,12 +108,6 @@ Classes and Methods
 * Prefix Slots::
 * Suffix Slots::
 * Predicate Slots::
-
-Suffix Methods
-
-* Suffix Value Methods::
-* Suffix Format Methods::
-
 
 @end detailmenu
 @end menu
@@ -1202,12 +1190,7 @@ functions such as @code{transient-insert-suffix} (see @ref{Modifying Existing Tr
 their arguments, which has the same form as the specifications used in
 @code{transient-define-prefix}.
 
-@menu
-* Group Specifications::
-* Suffix Specifications::
-@end menu
-
-@node Group Specifications
+@anchor{Group Specifications}
 @subsection Group Specifications
 
 @cindex group specifications
@@ -1355,7 +1338,7 @@ using @code{,}.  This feature is experimental and should be avoided.
 
 The form of suffix specifications is documented in the next node.
 
-@node Suffix Specifications
+@anchor{Suffix Specifications}
 @subsection Suffix Specifications
 
 @cindex suffix specifications
@@ -2232,12 +2215,7 @@ commands.  The default method effectively describes the command using
 To get information about the methods implementing these generic
 functions use @code{describe-function}.
 
-@menu
-* Suffix Value Methods::
-* Suffix Format Methods::
-@end menu
-
-@node Suffix Value Methods
+@anchor{Suffix Value Methods}
 @subsection Suffix Value Methods
 
 @defun transient-init-value obj
@@ -2319,7 +2297,7 @@ unless a concrete method is implemented, this falls through to
 the default implementation, which is a noop.
 @end defun
 
-@node Suffix Format Methods
+@anchor{Suffix Format Methods}
 @subsection Suffix Format Methods
 
 @defun transient-format obj
