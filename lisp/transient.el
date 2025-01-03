@@ -40,6 +40,7 @@
 (require 'edmacro)
 (require 'format-spec)
 (require 'pcase)
+(require 'pp)
 
 (eval-and-compile
   (when (and (featurep 'seq)
