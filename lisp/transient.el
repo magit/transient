@@ -34,6 +34,8 @@
 
 ;;; Code:
 
+(defconst transient-version "0.8.2")
+
 (require 'cl-lib)
 (require 'compat)
 (require 'eieio)
