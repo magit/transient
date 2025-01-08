@@ -2196,8 +2196,9 @@ functions use ~describe-function~.
 - ~mode-line-format~ is this prefix's mode line format, overriding
   ~transient-mode-line-format~.  It should have the same type.
 
-- ~column-width~ is only respected inside ~transient-columns~ groups and
-  allows aligning columns across separate instances of that.
+- ~column-widths~ is only respected inside ~transient-columns~ groups and
+  allows aligning columns across separate instances of that.  A list
+  of integers.
 
 - ~variable-pitch~ controls whether alignment is done pixel-wise to
   account for use of variable-pitch characters, which is useful, e.g.,

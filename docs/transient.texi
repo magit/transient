@@ -2451,8 +2451,9 @@ being initialized.  This slot is still experimental.
 @code{transient-mode-line-format}.  It should have the same type.
 
 @item
-@code{column-width} is only respected inside @code{transient-columns} groups and
-allows aligning columns across separate instances of that.
+@code{column-widths} is only respected inside @code{transient-columns} groups and
+allows aligning columns across separate instances of that.  A list
+of integers.
 
 @item
 @code{variable-pitch} controls whether alignment is done pixel-wise to
