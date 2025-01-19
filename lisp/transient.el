@@ -4655,34 +4655,44 @@ Select the help window, and make the help buffer current and return it."
     (insert "\n"))
   (when transient--helpp
     (insert
-     (format (propertize "\
+     (format
+      (propertize "\
 Type a %s to show help for that suffix command, or %s to show manual.
 Type %s to exit help.\n"
-                         'face 'transient-heading)
-             (propertize "<KEY>" 'face 'transient-key)
-             (propertize "?"     'face 'transient-key)
-             (propertize "C-g"   'face 'transient-key))))
+                  'face 'transient-heading)
+      (propertize "<KEY>" 'face 'transient-key)
+      (propertize "?"     'face 'transient-key)
+      (propertize "C-g"   'face 'transient-key))))
   (when transient--editp
     (unless transient--helpp
       (insert
-       (format (propertize "\
-Type a %s to set level for that suffix command.
-Type %s to set what levels are available for this prefix command.\n"
-                           'face 'transient-heading)
-               (propertize "<KEY>" 'face 'transient-key)
-               (propertize "C-x l" 'face 'transient-key))))
+       (format
+        (propertize "\
+Type %s and then %s to put the respective suffix command on level %s.
+Type %s and then %s to display suffixes up to level %s in this menu.
+Type %s and then %s to describe the respective suffix command.\n"
+                    'face 'transient-heading)
+        (propertize "<KEY>" 'face 'transient-key)
+        (propertize "<N>"   'face 'transient-key)
+        (propertize " N "   'face 'transient-enabled-suffix)
+        (propertize "C-x l" 'face 'transient-key)
+        (propertize "<N>"   'face 'transient-key)
+        (propertize " N "   'face 'transient-enabled-suffix)
+        (propertize "C-h"   'face 'transient-key)
+        (propertize "<KEY>" 'face 'transient-key))))
     (with-slots (level) transient--prefix
       (insert
-       (format (propertize "
-Suffixes on levels %s are available.
-Suffixes on levels %s and %s are unavailable.\n"
-                           'face 'transient-heading)
-               (propertize (format "1-%s" level)
-                           'face 'transient-enabled-suffix)
-               (propertize " 0 "
-                           'face 'transient-disabled-suffix)
-               (propertize (format ">=%s" (1+ level))
-                           'face 'transient-disabled-suffix))))))
+       (format
+        (propertize "
+The current level of this menu is %s, so
+  commands on levels %s are displayed, and
+  commands on levels %s and %s are not displayed.\n"
+                    'face 'transient-heading)
+        (propertize (format " %s " level)    'face 'transient-enabled-suffix)
+        (propertize (format " 1..%s " level) 'face 'transient-enabled-suffix)
+        (propertize (format " >= %s " (1+ level))
+                    'face 'transient-disabled-suffix)
+        (propertize " 0 " 'face 'transient-disabled-suffix))))))
 
 (cl-defgeneric transient-show-summary (obj &optional return)
   "Show brief summary about the command at point in the echo area.
