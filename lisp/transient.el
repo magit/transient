@@ -2501,6 +2501,8 @@ value.  Otherwise return CHILDREN as is.")
   (setq transient--redisplay-map nil)
   (setq transient--redisplay-key nil)
   (setq transient--helpp nil)
+  (unless (eq transient--docsp 'permanent)
+    (setq transient--docsp nil))
   (setq transient--editp nil)
   (setq transient--prefix nil)
   (setq transient--layout nil)
@@ -3313,8 +3315,12 @@ For example:
   (interactive)
   (setq transient-show-common-commands (not transient-show-common-commands)))
 
-(transient-define-suffix transient-toggle-docstrings ()
+(transient-define-suffix transient-toggle-docstrings (&optional permanent)
   "Toggle whether to show docstrings instead of suffix descriptions.
+
+By default this is only enabled temporarily for the current transient
+menu invocation.  With a prefix argument, enable this until explicitly
+disabled again.
 
 Infix arguments are not affected by this, because otherwise many menus
 would likely become unreadable.  To make this command available in all
@@ -3322,8 +3328,8 @@ menus, bind it in `transient-map'.  `transient-show-docstring-format'
 controls how the docstrings are displayed and whether descriptions are
 also displayed."
   :transient t
-  (interactive)
-  (setq transient--docsp (not transient--docsp)))
+  (interactive (list current-prefix-arg))
+  (setq transient--docsp (if permanent 'permanent (not transient--docsp))))
 
 (defun transient-toggle-debug ()
   "Toggle debugging statements for transient commands."
