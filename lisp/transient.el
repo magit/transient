@@ -4334,12 +4334,16 @@ face `transient-heading' to the complete string."
 If the result is nil, then use \"(BUG: no description)\" as the
 description.  If the OBJ's `key' is currently unreachable, then
 apply the face `transient-unreachable' to the complete string."
-  (let ((desc (if-let ((transient--docsp)
-                       (cmd (oref obj command))
-                       (doc (ignore-errors (documentation cmd)))
-                       ((not (equal doc (documentation
-                                         'transient--default-infix-command)))))
-                  (substring doc 0 (string-match "\\.?\n" doc))
+  (let ((desc (if-let*
+                  ((transient--docsp)
+                   (cmd (oref obj command))
+                   ((not (memq 'transient--default-infix-command
+                               (function-alias-p cmd))))
+                   (docstr (ignore-errors (documentation cmd)))
+                   (docstr (string-trim
+                            (substring docstr 0 (string-match "\\.?\n" docstr))))
+                   ((not (equal docstr ""))))
+                  docstr
                 (or (cl-call-next-method obj)
                     (and (slot-boundp transient--prefix 'suffix-description)
                          (funcall (oref transient--prefix suffix-description)
