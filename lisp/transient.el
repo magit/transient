@@ -332,6 +332,20 @@ number is positive, or hide the menu if it is negative."
                    :format "\n   %t: %v"
                    :value -20)))
 
+(defcustom transient-show-docstring-format "%s"
+  "How to display suffix docstrings.
+
+The command `transient-toggle-docstrings' toggles between showing suffix
+descriptions as usual, and instead or additionally displaying the suffix
+docstrings.  The format specified here controls how that is done.  %c is
+the description and %s is the docstring.  Use \"%-14c %s\" or similar to
+display both.
+
+This command is not bound by default, see its docstring for instructions."
+  :package-version '(transient . "0.8.4")
+  :group 'transient
+  :type 'string)
+
 (defcustom transient-read-with-initial-input nil
   "Whether to use the last history element as initial minibuffer input."
   :package-version '(transient . "0.2.0")
@@ -3301,7 +3315,12 @@ For example:
 
 (transient-define-suffix transient-toggle-docstrings ()
   "Toggle whether to show docstrings instead of suffix descriptions.
-To make this available in all menus, bind it in `transient-map'."
+
+Infix arguments are not affected by this, because otherwise many menus
+would likely become unreadable.  To make this command available in all
+menus, bind it in `transient-map'.  `transient-show-docstring-format'
+controls how the docstrings are displayed and whether descriptions are
+also displayed."
   :transient t
   (interactive)
   (setq transient--docsp (not transient--docsp)))
@@ -4334,20 +4353,21 @@ face `transient-heading' to the complete string."
 If the result is nil, then use \"(BUG: no description)\" as the
 description.  If the OBJ's `key' is currently unreachable, then
 apply the face `transient-unreachable' to the complete string."
-  (let ((desc (if-let*
-                  ((transient--docsp)
-                   (cmd (oref obj command))
-                   ((not (memq 'transient--default-infix-command
-                               (function-alias-p cmd))))
-                   (docstr (ignore-errors (documentation cmd)))
-                   (docstr (string-trim
-                            (substring docstr 0 (string-match "\\.?\n" docstr))))
-                   ((not (equal docstr ""))))
-                  docstr
-                (or (cl-call-next-method obj)
-                    (and (slot-boundp transient--prefix 'suffix-description)
-                         (funcall (oref transient--prefix suffix-description)
-                                  obj))))))
+  (let ((desc (or (cl-call-next-method obj)
+                  (and (slot-boundp transient--prefix 'suffix-description)
+                       (funcall (oref transient--prefix suffix-description)
+                                obj)))))
+    (when-let* ((transient--docsp)
+                (cmd (oref obj command))
+                ((not (memq 'transient--default-infix-command
+                            (function-alias-p cmd))))
+                (docstr (ignore-errors (documentation cmd)))
+                (docstr (string-trim
+                         (substring docstr 0 (string-match "\\.?\n" docstr))))
+                ((not (equal docstr ""))))
+      (setq desc (format-spec transient-show-docstring-format
+                              `((?c . ,desc)
+                                (?s . ,docstr)))))
     (if desc
         (when-let ((face (transient--get-face obj 'face)))
           (setq desc (transient--add-face desc face t)))
