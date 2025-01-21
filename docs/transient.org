@@ -1142,6 +1142,12 @@ constructor of that class.
   contained in a group are right padded, effectively aligning the
   descriptions.
 
+- If a keyword argument accepts a function as value, you an use a
+  ~lambda~ expression.  As a special case, the ~##~ macro (which returns a
+  ~lambda~ expression and is implemented in the ~llama~ package) is also
+  supported.  Inside group specifications, the use of ~##~ is not
+  supported anywhere but directly following a keyword symbol.
+
 The {{{var(ELEMENT)}}}s are either all subgroups, or all suffixes and strings.
 (At least currently no group type exists that would allow mixing
 subgroups with commands at the same level, though in principle there
@@ -1251,6 +1257,12 @@ Finally, details can be specified using optional {{{var(KEYWORD)}}}-{{{var(VALUE
 Each keyword has to be a keyword symbol, either ~:class~ or a keyword
 argument supported by the constructor of that class.  See [[*Suffix
 Slots]].
+
+If a keyword argument accepts a function as value, you an use a ~lambda~
+expression.  As a special case, the ~##~ macro (which returns a ~lambda~
+expression and is implemented in the ~llama~ package) is also supported.
+Inside suffix bindings, the use of ~##~ is not supported anywhere but
+directly following a keyword symbol.
 
 ** Defining Suffix and Infix Commands
 #+cindex: defining suffix commands

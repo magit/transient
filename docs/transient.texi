@@ -1318,6 +1318,13 @@ be replaced with an error.
 The boolean @code{:pad-keys} argument controls whether keys of all suffixes
 contained in a group are right padded, effectively aligning the
 descriptions.
+
+@item
+If a keyword argument accepts a function as value, you an use a
+@code{lambda} expression.  As a special case, the @code{##} macro (which returns a
+@code{lambda} expression and is implemented in the @code{llama} package) is also
+supported.  Inside group specifications, the use of @code{##} is not
+supported anywhere but directly following a keyword symbol.
 @end itemize
 
 The @var{ELEMENT}s are either all subgroups, or all suffixes and strings.
@@ -1438,6 +1445,12 @@ guessed based on the long argument.  If the argument ends with @samp{=}
 Finally, details can be specified using optional @var{KEYWORD}-@var{VALUE} pairs.
 Each keyword has to be a keyword symbol, either @code{:class} or a keyword
 argument supported by the constructor of that class.  See @ref{Suffix Slots}.
+
+If a keyword argument accepts a function as value, you an use a @code{lambda}
+expression.  As a special case, the @code{##} macro (which returns a @code{lambda}
+expression and is implemented in the @code{llama} package) is also supported.
+Inside suffix bindings, the use of @code{##} is not supported anywhere but
+directly following a keyword symbol.
 
 @node Defining Suffix and Infix Commands
 @section Defining Suffix and Infix Commands
