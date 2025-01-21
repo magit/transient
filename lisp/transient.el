@@ -3937,37 +3937,48 @@ a default implementation, which is a noop.")
 
 ;;;; Get
 
-(defun transient-scope (&optional prefixes)
+(defun transient-scope (&optional prefixes classes)
   "Return the scope of the active or current transient prefix command.
 
-If optional PREFIXES is nil, return the scope of the prefix currently
-being setup, making this variant useful, e.g., in `:if*' predicates.
-If no prefix is being setup, but the current command was invoked from
-some prefix, then return the scope of that.
-
-When this function is called from the body or `interactive' form of a
-suffix command, PREFIXES should be non-nil.
+If optional PREFIXES and CLASSES are both nil, return the scope of
+the prefix currently being setup, making this variation useful, e.g.,
+in `:if*' predicates.  If no prefix is being setup, but the current
+command was invoked from some prefix, then return the scope of that.
 
 If PREFIXES is non-nil, it must be a prefix command or a list of such
-commands.  In this case try the following in order:
+commands.  If CLASSES is non-nil, it must be a prefix class or a list
+of such classes.  When this function is called from the body or the
+`interactive' form of a suffix command, PREFIXES and/or CLASSES should
+be non-nil.  If either is non-nil, try the following in order:
 
 - If the current suffix command was invoked from a prefix, which
-  appears in PREFIXES, then return the scope of that prefix.
+  appears in PREFIXES, return the scope of that prefix.
 
-- If a prefix is being setup and it appears in PREFIXES, then return
-  its scope.
+- If the current suffix command was invoked from a prefix, and its
+  class derives from one of the CLASSES, return the scope of that
+  prefix.
 
-- Finally try to return the default scope of the first prefix in
+- If a prefix is being setup and it appears in PREFIXES, return its
+  scope.
+
+- If a prefix is being setup and its class derives from one of the
+  CLASSES, return its scope.
+
+- Finally try to return the default scope of the first command in
   PREFIXES.  This only works if that slot is set in the respective
   class definition or using its `transient-init-scope' method.
 
 If no prefix matches, return nil."
-  (if prefixes
-      (let ((prefixes (ensure-list prefixes)))
-        (if-let* ((obj (or (and-let* ((obj transient-current-prefix))
-                             (and (memq (oref obj command) prefixes) obj))
-                           (and-let* ((obj transient--prefix))
-                             (and (memq (oref obj command) prefixes) obj)))))
+  (if (or prefixes classes)
+      (let ((prefixes (ensure-list prefixes))
+            (type (if (symbolp classes) classes (cons 'or classes))))
+        (if-let ((obj (cl-flet ((match (obj)
+                                  (and obj
+                                       (or (memq (oref obj command) prefixes)
+                                           (cl-typep obj type))
+                                       obj)))
+                        (or (match transient-current-prefix)
+                            (match transient--prefix)))))
             (oref obj scope)
           (and (get (car prefixes) 'transient--prefix)
                (oref (transient--init-prefix (car prefixes)) scope))))

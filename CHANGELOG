@@ -58,10 +58,14 @@ Bug fixes:
 
 - Added documentation for ~inapt-if*~ slots to manual.  179545a6
 
-- ~transient-args~ and ~transient-scope~ now both take a prefix command or
-  a list of prefix commands as argument.  ~transient-scope~ can still be
-  called without an argument, but that should only be done in functions
-  that take part in setting up a menu, not in a suffix command.
+- ~transient-args~ now takes a prefix command or a list of prefix
+  commands as argument.
+
+- ~transient-scope~ now takes a prefix command or a list of prefix
+  commands and/or a prefix class or list of prefix classes as
+  arguments.  It can still be called without any argument, but that
+  should only be done in functions that take part in setting up a
+  menu, not in a suffix command.
 
 - Added new generic function ~transient-prefix-value~, giving finer
   control over how the value returned by ~transient-args~ is determined.
