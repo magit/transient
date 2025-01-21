@@ -2278,8 +2278,9 @@ Also see [[*Suffix Classes]].
 :END:
 
 This is the abstract superclass of ~transient-suffix~ and ~transient-group~.
-This is where the shared ~if*~ and ~inapt-if*~ slots (see [[*Predicate Slots]])
-and the ~level~ slot (see [[*Enabling and Disabling Suffixes]]) are defined.
+This is where the shared ~if*~ and ~inapt-if*~ slots (see [[*Predicate Slots]]),
+the ~level~ slot (see [[*Enabling and Disabling Suffixes]]), and the ~advice~
+and ~advice*~ slots (see [[*Slots of ~transient-suffix~]]) are defined.
 
 - ~parent~ The object for the parent group.
 
@@ -2320,6 +2321,20 @@ and the ~level~ slot (see [[*Enabling and Disabling Suffixes]]) are defined.
 
 - ~definition~ A command, which is used if the body is omitted when
   defining a command using ~transient-define-suffix~.
+
+The following two slots are experimental.  They can also be set for a
+group, in which case they apply to all suffixes in that group, except
+for suffixes that set the same slot to a non-nil value.
+
+- ~advice~ A function used to advise the command.  The advise is called
+  using ~(apply advice command args)~, i.e., it behaves like an "around"
+  advice.
+
+- ~advice*~ A function used to advise the command.  Unlike ~advice~, this
+  advises not only the command body but also its ~interactive~ spec.  If
+  both slots are non-nil, ~advice~ is used for the body and ~advice*~ is
+  used for the ~interactive~ form.  When advising the ~interactive~ spec,
+  called using ~(funcall advice #'advice-eval-interactive-spec spec)~.
 
 *** Slots of ~transient-infix~
 :PROPERTIES:

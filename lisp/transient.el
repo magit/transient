@@ -844,7 +844,15 @@ the prototype is stored in the clone's `prototype' slot.")
    (inapt-if-not-derived
     :initarg :inapt-if-not-derived
     :initform nil
-    :documentation "Inapt if major-mode does not derive from value."))
+    :documentation "Inapt if major-mode does not derive from value.")
+   (advice
+    :initarg :advice
+    :initform nil
+    :documentation "Advise applied to the command body.")
+   (advice*
+    :initarg :advice*
+    :initform nil
+    :documentation "Advise applied to the command body and interactive spec."))
   "Abstract superclass for group and suffix classes.
 
 It is undefined which predicates are used if more than one `if*'
@@ -2633,7 +2641,13 @@ value.  Otherwise return CHILDREN as is.")
                  (let ((abort t))
                    (unwind-protect
                        (prog1 (let ((debugger #'transient--exit-and-debug))
-                                (advice-eval-interactive-spec spec))
+                                (if-let* ((obj (transient-suffix-object suffix))
+                                          (grp (oref obj parent))
+                                          (adv (or (oref obj advice*)
+                                                   (oref grp advice*))))
+                                    (funcall
+                                     adv #'advice-eval-interactive-spec spec)
+                                  (advice-eval-interactive-spec spec)))
                          (setq abort nil))
                      (when abort
                        (when-let ((unwind (oref prefix unwind-suffix)))
@@ -2643,7 +2657,14 @@ value.  Otherwise return CHILDREN as is.")
                        (oset prefix unwind-suffix nil))))))
               (unwind-protect
                   (let ((debugger #'transient--exit-and-debug))
-                    (apply fn args))
+                    (if-let* ((obj (transient-suffix-object suffix))
+                              (grp (oref obj parent))
+                              (adv (or (oref obj advice)
+                                       (oref grp advice)
+                                       (oref obj advice*)
+                                       (oref grp advice*))))
+                        (apply adv fn args)
+                      (apply fn args)))
                 (when-let ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind suffix))
@@ -2663,7 +2684,13 @@ value.  Otherwise return CHILDREN as is.")
               (let ((abort t))
                 (unwind-protect
                     (prog1 (let ((debugger #'transient--exit-and-debug))
-                             (advice-eval-interactive-spec spec))
+                             (if-let* ((obj (transient-suffix-object suffix))
+                                       (grp (oref obj parent))
+                                       (adv (or (oref obj advice*)
+                                                (oref grp advice*))))
+                                 (funcall
+                                  adv #'advice-eval-interactive-spec spec)
+                               (advice-eval-interactive-spec spec)))
                       (setq abort nil))
                   (when abort
                     (when-let ((unwind (oref prefix unwind-suffix)))
@@ -2675,7 +2702,14 @@ value.  Otherwise return CHILDREN as is.")
             (lambda (fn &rest args)
               (unwind-protect
                   (let ((debugger #'transient--exit-and-debug))
-                    (apply fn args))
+                    (if-let* ((obj (transient-suffix-object suffix))
+                              (grp (oref obj parent))
+                              (adv (or (oref obj advice)
+                                       (oref grp advice)
+                                       (oref obj advice*)
+                                       (oref grp advice*))))
+                        (apply adv fn args)
+                      (apply fn args)))
                 (when-let ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind suffix))
