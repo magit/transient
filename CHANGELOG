@@ -1,4 +1,21 @@
 # -*- mode: org -*-
+* v0.8.4    UNRELEASED
+
+- Added new option ~transient-show-docstring-format~.  65cd6cec
+
+- Unless called with a prefix argument, ~transient-toggle-docstrings~
+  now only shows docstrings for the current menu invocation.  13f3f5e0
+
+- The ~##~ macro from the ~llama~ package can now be used after keywords
+  in group specifications (including suffix bindings).  7c650436
+
+- Suffix commands can now be advised using the new ~advice~ and ~advice*~
+  slots available for suffixes and groups.  This feature is still
+  experimental.  #340
+
+- ~transient-scope~ can now also match against prefix classes, not just
+  specific prefix commands.  #334
+
 * v0.8.3    2025-01-03
 
 - Added new constant ~transient-version~.  3022f6d5
