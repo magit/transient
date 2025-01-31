@@ -774,7 +774,7 @@ the prototype is stored in the clone's `prototype' slot.")
     :documentation "The parent group object.")
    (level
     :initarg :level
-    :initform (symbol-value 'transient--default-child-level)
+    :initform nil
     :documentation "Enable if level of prefix is equal or greater.")
    (if
     :initarg :if
@@ -1269,7 +1269,7 @@ commands are aliases for."
       (message "WARNING: %s: When %s is used, %s must also be specified"
                'transient-define-prefix :setup-children :class))
     (list 'vector
-          (or level transient--default-child-level)
+          level
           (list 'quote
                 (cond (class)
                       ((cl-typep (car spec)
@@ -1370,7 +1370,7 @@ commands are aliases for."
                   (shortarg (plist-get args :shortarg)))
         (use :key shortarg)))
     (list 'list
-          (or level transient--default-child-level)
+          level
           (macroexp-quote (or class 'transient-suffix))
           (cons 'list args))))
 
@@ -1604,6 +1604,21 @@ See info node `(transient)Modifying Existing Transients'."
 
 (defun transient--nthcdr (n list)
   (nthcdr (if (< n 0) (- (length list) (abs n)) n) list))
+
+(defun transient-set-default-level (command level)
+  "Set the default level of suffix COMMAND to LEVEL.
+
+The default level is shadowed if the binding of the suffix in a
+prefix menu specifies a level, and also if the user changes the
+level of such a binding.
+
+The default level can only be set for commands that were defined
+using `transient-define-suffix', `transient-define-infix' or
+`transient-define-argument'."
+  (if-let ((proto (transient--suffix-prototype command)))
+      (oset proto level level)
+    (user-error "Cannot set level for `%s'; no prototype object exists"
+                command)))
 
 ;;; Variables
 
@@ -2291,7 +2306,8 @@ value.  Otherwise return CHILDREN as is.")
     (string  (list spec))))
 
 (defun transient--init-group (levels spec parent)
-  (pcase-let ((`(,level ,class ,args ,children) (append spec nil)))
+  (pcase-let* ((`(,level ,class ,args ,children) (append spec nil))
+               (level (or level transient--default-child-level)))
     (and-let* (((transient--use-level-p level))
                (obj (apply class :parent parent :level level args))
                ((transient--use-suffix-p obj))
@@ -2308,9 +2324,12 @@ value.  Otherwise return CHILDREN as is.")
   (pcase-let* ((`(,level ,class ,args) spec)
                (cmd (plist-get args :command))
                (key (transient--kbd (plist-get args :key)))
+               (proto (and cmd (transient--suffix-prototype cmd)))
                (level (or (alist-get (cons cmd key) levels nil nil #'equal)
                           (alist-get cmd levels)
-                          level)))
+                          level
+                          (and proto (oref proto level))
+                          transient--default-child-level)))
     (let ((fn (and (symbolp cmd)
                    (symbol-function cmd))))
       (when (autoloadp fn)
@@ -2321,7 +2340,7 @@ value.  Otherwise return CHILDREN as is.")
                      (apply class :parent parent :level level args)
                    (unless (and cmd (symbolp cmd))
                      (error "BUG: Non-symbolic suffix command: %s" cmd))
-                   (if-let ((proto (and cmd (transient--suffix-prototype cmd))))
+                   (if proto
                        (apply #'clone proto :level level args)
                      (apply class :command cmd :parent parent :level level
                             args)))))

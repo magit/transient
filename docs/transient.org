@@ -408,6 +408,48 @@ available even if the user lowers the transient level.
   the level specified by ~transient-default-level~ are temporarily
   available anyway.
 
+- Function: transient-set-default-level suffix level ::
+
+  This function sets the default level of the suffix COMMAND to LEVEL.
+
+  If a suffix command appears in multiple menus, it may make sense to
+  consistently change its level in all those menus at once.  For
+  example, the ~--gpg-sign~ argument (which is implemented using the
+  command ~magit:--gpg-sign~), is bound in all of Magit's menu which
+  create commits.  Users who sometimes sign their commits would want
+  that argument to be available in all of these menus, while for users
+  who never sign it is just unnecessary noise in any menus.
+
+  To always make ~--gpg-sign~ available, use:
+
+  #+begin_src emacs-lisp
+    (transient-set-default-level 'magit:--gpg-sign 1)
+  #+end_src
+
+  To never make ~--gpg-sign~ available, use:
+
+  #+begin_src emacs-lisp
+    (transient-set-default-level 'magit:--gpg-sign 0)
+  #+end_src
+
+  This sets the level in the suffix prototype object for this command.
+  Commands only have a suffix prototype if they were defined using one
+  of ~transient-define-argument~, ~transient-define-infix~ and
+  ~transient-define-suffix~.  For all other commands this would signal
+  an error.  (This is one of the reasons why package authors should
+  use one of these functions to define shared suffix commands, and
+  especially shared arguments.)
+
+  If the user changes the level of a suffix in a particular menu,
+  using {{{kbd(C-x l)}}} as shown above, then that obviously shadows the default.
+
+  It is also possible to set the level of a suffix binding in a
+  particular menu, either when defining the menu using
+  ~transient-define-prefix,~ or later using ~transient-insert-suffix~.  If
+  such bindings specify a level, then that also overrides the default.
+  (Per-suffix default levels is a new feature, so you might encounter
+  this quite often.)
+
 ** Other Commands
 
 When invoking a transient in a small frame, the transient window may
