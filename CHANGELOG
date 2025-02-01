@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.4    UNRELEASED
+* v0.8.4    2025-02-01
 
 - Added new option ~transient-show-docstring-format~.  65cd6cec
 
