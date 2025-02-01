@@ -16,6 +16,10 @@
 - ~transient-scope~ can now also match against prefix classes, not just
   specific prefix commands.  #334
 
+- The default level of a suffix command can now be set via its
+  prototype, using the new function ~transient-set-default-level~.
+  f6c249c7
+
 * v0.8.3    2025-01-03
 
 - Added new constant ~transient-version~.  3022f6d5
