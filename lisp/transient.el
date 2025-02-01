@@ -32,7 +32,7 @@
 
 ;;; Code:
 
-(defconst transient-version "0.8.4")
+(defconst transient-version "0.8.4-builtin")
 
 (require 'cl-lib)
 (require 'eieio)
