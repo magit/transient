@@ -3017,7 +3017,7 @@ If there is no parent prefix, then just call the command."
         (when (memq (if (slot-boundp suffix-obj 'transient)
                         (oref suffix-obj transient)
                       (oref transient-current-prefix transient-suffix))
-                    (list t #'transient--do-recurse))
+                    (list t 'recurse #'transient--do-recurse))
           (oset prefix-obj transient-suffix t))))))
 
 (defun transient--do-stack ()
