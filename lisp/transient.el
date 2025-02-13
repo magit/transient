@@ -2341,7 +2341,7 @@ value.  Otherwise return CHILDREN as is.")
                    (unless (and cmd (symbolp cmd))
                      (error "BUG: Non-symbolic suffix command: %s" cmd))
                    (if proto
-                       (apply #'clone proto :level level args)
+                       (apply #'clone proto :parent parent :level level args)
                      (apply class :command cmd :parent parent :level level
                             args)))))
         (cond ((not cmd))
