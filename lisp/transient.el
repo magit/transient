@@ -2136,7 +2136,7 @@ of the corresponding object."
                       (`(infix   ,_  ,_) #'transient--do-stay)
                       (`(suffix   t  ,_) #'transient--do-call)
                       ('(suffix nil   t) #'transient--do-return)
-                      (`(suffix nil  ,_) #'transient--do-exit)
+                      (`(suffix nil nil) #'transient--do-exit)
                       (`(suffix ,do  ,_) do))))))
         (when pre
           (if-let ((alt (lookup-key map id)))
