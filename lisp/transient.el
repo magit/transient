@@ -2119,7 +2119,7 @@ of the corresponding object."
                    ((slot-boundp obj 'transient)
                     (pcase (list kind
                                  (transient--resolve-pre-command
-                                  (oref obj transient))
+                                  (oref obj transient) nil t)
                                  return)
                       (`(prefix   t  ,_) #'transient--do-recurse)
                       (`(prefix nil  ,_) #'transient--do-stack)
@@ -2939,14 +2939,19 @@ exit."
             (oref transient--prefix transient-non-suffix)
             t))))
 
-(defun transient--resolve-pre-command (pre &optional resolve-boolean)
-  (cond ((booleanp pre)
-         (if resolve-boolean
-             (if pre #'transient--do-stay #'transient--do-warn)
-           pre))
-        ((string-match-p "--do-" (symbol-name pre)) pre)
-        ((let ((sym (intern (format "transient--do-%s" pre))))
-           (if (functionp sym) sym pre)))))
+(defun transient--resolve-pre-command (pre &optional resolve-boolean correct)
+  (setq pre (cond ((booleanp pre)
+                   (if resolve-boolean
+                       (if pre #'transient--do-stay #'transient--do-warn)
+                     pre))
+                  ((string-match-p "--do-" (symbol-name pre)) pre)
+                  ((let ((sym (intern (format "transient--do-%s" pre))))
+                     (if (functionp sym) sym pre)))))
+  (cond ((not correct) pre)
+        ((and (eq pre 'transient--do-return)
+              (not transient--stack))
+         'transient--do-exit)
+        (pre)))
 
 (defun transient--do-stay ()
   "Call the command without exporting variables and stay transient."
