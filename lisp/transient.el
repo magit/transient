@@ -3011,14 +3011,14 @@ If there is no parent prefix, then just call the command."
   (transient--do-stack))
 
 (defun transient--setup-recursion (prefix-obj)
-  (when transient--stack
-    (let ((command (oref prefix-obj command)))
-      (when-let ((suffix-obj (transient-suffix-object command)))
-        (when (memq (if (slot-boundp suffix-obj 'transient)
-                        (oref suffix-obj transient)
-                      (oref transient-current-prefix transient-suffix))
-                    (list t 'recurse #'transient--do-recurse))
-          (oset prefix-obj transient-suffix t))))))
+  (when-let* ((transient--stack)
+              (command (oref prefix-obj command))
+              (suffix-obj (transient-suffix-object command))
+              ((memq (if (slot-boundp suffix-obj 'transient)
+                         (oref suffix-obj transient)
+                       (oref transient-current-prefix transient-suffix))
+                     (list t 'recurse #'transient--do-recurse))))
+    (oset prefix-obj transient-suffix t)))
 
 (defun transient--do-stack ()
   "Call the transient prefix command, stacking the active transient.
