@@ -736,6 +736,7 @@ If `transient-save-history' is nil, then do nothing."
    (level       :initarg :level)
    (init-value  :initarg :init-value)
    (value) (default-value :initarg :value)
+   (return      :initarg :return      :initform nil)
    (scope       :initarg :scope       :initform nil)
    (history     :initarg :history     :initform nil)
    (history-pos :initarg :history-pos :initform 0)
@@ -2097,7 +2098,7 @@ of the corresponding object."
 (defun transient--make-predicate-map ()
   (let* ((default (transient--resolve-pre-command
                    (oref transient--prefix transient-suffix)))
-         (return (and transient--stack (eq default t)))
+         (return (and transient--stack (oref transient--prefix return)))
          (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
     (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
@@ -2274,9 +2275,9 @@ value.  Otherwise return CHILDREN as is.")
                       :level (or (alist-get t (alist-get name transient-levels))
                                  transient-default-level)
                       params))))
-    (transient--setup-recursion obj)
-    (transient-init-scope obj)
-    (transient-init-value obj)
+    (transient-init-value  obj)
+    (transient-init-return obj)
+    (transient-init-scope  obj)
     obj))
 
 (defun transient--init-suffixes (name)
@@ -2828,9 +2829,9 @@ value.  Otherwise return CHILDREN as is.")
   (push (list (oref transient--prefix command)
               transient--layout
               transient--editp
-              :transient-suffix (oref transient--prefix transient-suffix)
-              :scope (oref transient--prefix scope)
-              :value (transient-get-value))
+              :value  (transient-get-value)
+              :return (oref transient--prefix return)
+              :scope  (oref transient--prefix scope))
         transient--stack))
 
 (defun transient--stack-pop ()
@@ -3009,16 +3010,6 @@ Use that command's pre-command to determine transient behavior."
   "Call the transient prefix command, preparing for return to outer transient.
 If there is no parent prefix, then just call the command."
   (transient--do-stack))
-
-(defun transient--setup-recursion (prefix-obj)
-  (when-let* ((transient--stack)
-              (command (oref prefix-obj command))
-              (suffix-obj (transient-suffix-object command))
-              ((memq (if (slot-boundp suffix-obj 'transient)
-                         (oref suffix-obj transient)
-                       (oref transient-current-prefix transient-suffix))
-                     (list t 'recurse #'transient--do-recurse))))
-    (oset prefix-obj transient-suffix t)))
 
 (defun transient--do-stack ()
   "Call the transient prefix command, stacking the active transient.
@@ -3931,6 +3922,18 @@ Append \"=\ to ARG to indicate that it is an option."
                                         args))))
           (or (match-string 1 match) "")))
     (and (member arg args) t)))
+
+;;; Return
+
+(defun transient-init-return (obj)
+  (when-let* ((transient--stack)
+              (command (oref obj command))
+              (suffix-obj (transient-suffix-object command))
+              ((memq (if (slot-boundp suffix-obj 'transient)
+                         (oref suffix-obj transient)
+                       (oref transient-current-prefix transient-suffix))
+                     (list t 'recurse #'transient--do-recurse))))
+    (oset obj return t)))
 
 ;;; Scope
 ;;;; Init
