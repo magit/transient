@@ -613,7 +613,7 @@ character used to separate possible values from each other."
     (((class color) (background dark))
      :inherit transient-key
      :foreground "#ddffdd"))
-  "Face used for keys of suffixes that don't exit transient state."
+  "Face used for keys of suffixes that don't exit the menu."
   :group 'transient-faces)
 
 (defface transient-key-noop
@@ -633,7 +633,7 @@ character used to separate possible values from each other."
     (((class color) (background dark))
      :inherit transient-key
      :foreground "#ffffcc"))
-  "Face used for keys of suffixes that return to the parent transient."
+  "Face used for keys of suffixes that return to the parent menu."
   :group 'transient-faces)
 
 (defface transient-key-exit
@@ -643,7 +643,7 @@ character used to separate possible values from each other."
     (((class color) (background dark))
      :inherit transient-key
      :foreground "#ffdddd"))
-  "Face used for keys of suffixes that exit transient state."
+  "Face used for keys of suffixes that exit the menu."
   :group 'transient-faces)
 
 (defface transient-unreachable-key
