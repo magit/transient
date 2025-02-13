@@ -636,6 +636,26 @@ character used to separate possible values from each other."
   "Face used for keys of suffixes that return to the parent menu."
   :group 'transient-faces)
 
+(defface transient-key-recurse
+  `((((class color) (background light))
+     :inherit transient-key
+     :foreground "#2266ff")
+    (((class color) (background dark))
+     :inherit transient-key
+     :foreground "#2299ff"))
+  "Face used for keys of sub-menus whose suffixes return to the parent menu."
+  :group 'transient-faces)
+
+(defface transient-key-stack
+  `((((class color) (background light))
+     :inherit transient-key
+     :foreground "#dd4488")
+    (((class color) (background dark))
+     :inherit transient-key
+     :foreground "#ff6699"))
+  "Face used for keys of sub-menus that exit the parent menu."
+  :group 'transient-faces)
+
 (defface transient-key-exit
   `((((class color) (background light))
      :inherit transient-key
@@ -3083,8 +3103,8 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-exit       'transient-face 'transient-key-exit)
 (put 'transient--do-leave      'transient-face 'transient-key-exit)
 
-(put 'transient--do-recurse    'transient-face 'transient-key-stay)
-(put 'transient--do-stack      'transient-face 'transient-key-stay)
+(put 'transient--do-recurse    'transient-face 'transient-key-recurse)
+(put 'transient--do-stack      'transient-face 'transient-key-stack)
 (put 'transient--do-replace    'transient-face 'transient-key-exit)
 (put 'transient--do-suspend    'transient-face 'transient-key-exit)
 
