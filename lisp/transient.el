@@ -3006,7 +3006,7 @@ Use that command's pre-command to determine transient behavior."
     (transient--call-pre-command)))
 
 (defun transient--do-recurse ()
-  "Call the transient prefix command, preparing for return to active transient.
+  "Call the transient prefix command, preparing for return to outer transient.
 If there is no parent prefix, then just call the command."
   (transient--do-stack))
 
