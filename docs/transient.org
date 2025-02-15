@@ -864,8 +864,10 @@ that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, 
   they are never active at the same time, see [[*Predicate Slots]].
 
   Unfortunately both false-positives and false-negatives are possible.
-  To deal with the former use non-~nil~ {{{var(KEEP-OTHER.)}}}  To deal with the
-  latter remove the conflicting binding explicitly.
+  To deal with the former use non-~nil~ {{{var(KEEP-OTHER.)}}}  The symbol ~always~
+  prevents the removal of a false-positive in some cases where other
+  non-~nil~ values would fail.  To deal with false-negatives remove the
+  conflicting binding separately, using ~transient-remove-suffix~.
 
 - Function: transient-replace-suffix prefix loc suffix ::
 

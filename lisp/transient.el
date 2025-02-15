@@ -1459,7 +1459,8 @@ Intended for use in a group's `:setup-children' function."
                suffix prefix loc
                "suffixes and groups cannot be siblings"))
      (t
-      (when-let* ((bindingp (listp suf))
+      (when-let* (((not (eq keep-other 'always)))
+                  (bindingp (listp suf))
                   (key (transient--spec-key suf))
                   (conflict (car (transient--layout-member key prefix)))
                   (conflictp
@@ -1487,7 +1488,9 @@ LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
 Remove a conflicting binding unless optional KEEP-OTHER is
-  non-nil.
+  non-nil.  When the conflict appears to be a false-positive,
+  non-nil KEEP-OTHER may be ignored, which can be prevented
+  by using `always'.
 See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'insert keep-other))
@@ -1502,7 +1505,9 @@ LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
 Remove a conflicting binding unless optional KEEP-OTHER is
-  non-nil.
+  non-nil.  When the conflict appears to be a false-positive,
+  non-nil KEEP-OTHER may be ignored, which can be prevented
+  by using `always'.
 See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--insert-suffix prefix loc suffix 'append keep-other))

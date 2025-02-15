@@ -1019,8 +1019,10 @@ that multiple suffix commands can be bound to the same key, provided
 they are never active at the same time, see @ref{Predicate Slots}.
 
 Unfortunately both false-positives and false-negatives are possible.
-To deal with the former use non-@code{nil} @var{KEEP-OTHER@.}  To deal with the
-latter remove the conflicting binding explicitly.
+To deal with the former use non-@code{nil} @var{KEEP-OTHER@.}  The symbol @code{always}
+prevents the removal of a false-positive in some cases where other
+non-@code{nil} values would fail.  To deal with false-negatives remove the
+conflicting binding separately, using @code{transient-remove-suffix}.
 @end defun
 
 @defun transient-replace-suffix prefix loc suffix
