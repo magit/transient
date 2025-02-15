@@ -213,6 +213,11 @@ This displays the window at the bottom of the selected frame.
 For alternatives see info node `(elisp)Display Action Functions'
 and info node `(elisp)Buffer Display Action Alists'.
 
+When you switch to a different ACTION, you should keep the ALIST
+entries for `dedicated' and `inhibit-same-window' in most cases.
+Do not drop them because you are unsure whether they are needed;
+if you are unsure, then keep them.
+
 Note that the buffer that was current before the transient buffer
 is shown should remain the current buffer.  Many suffix commands
 act on the thing at point, if appropriate, and if the transient
