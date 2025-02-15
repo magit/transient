@@ -1875,16 +1875,9 @@ the suffix's @code{transient} slot.
 @item
 While a sub-prefix is active we nearly always want @kbd{C-g} to take the
 user back to the ``super-prefix'', even when the other suffixes don't
-do that.  However, in rare cases this may not be desirable, and that
-makes the following complication necessary:
-
-For @code{transient-suffix} objects the @code{transient} slot is unbound.  We can
-ignore that for the most part because @code{nil} and the slot being unbound
-are treated as equivalent, and mean ``do exit''.  That isn't actually
-true for suffixes that are sub-prefixes though.  For such suffixes
-unbound means ``do exit but allow going back'', which is the default,
-while @code{nil} means ``do exit permanently'', which requires that slot to
-be explicitly set to that value.
+do that.  However, in rare cases this may not be desirable, in which
+case @code{replace} can be used as the value of the sub-prefix's @code{transient}
+slot.
 @end itemize
 
 @anchor{Pre-commands for Infixes}

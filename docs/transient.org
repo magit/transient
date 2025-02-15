@@ -1657,16 +1657,9 @@ For completeness sake, some notes about complications:
 
 - While a sub-prefix is active we nearly always want {{{kbd(C-g)}}} to take the
   user back to the “super-prefix”, even when the other suffixes don't
-  do that.  However, in rare cases this may not be desirable, and that
-  makes the following complication necessary:
-
-  For ~transient-suffix~ objects the ~transient~ slot is unbound.  We can
-  ignore that for the most part because ~nil~ and the slot being unbound
-  are treated as equivalent, and mean “do exit”.  That isn't actually
-  true for suffixes that are sub-prefixes though.  For such suffixes
-  unbound means “do exit but allow going back”, which is the default,
-  while ~nil~ means “do exit permanently”, which requires that slot to
-  be explicitly set to that value.
+  do that.  However, in rare cases this may not be desirable, in which
+  case ~replace~ can be used as the value of the sub-prefix's ~transient~
+  slot.
 
 *** Pre-commands for Infixes
 :PROPERTIES:
