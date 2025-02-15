@@ -1926,7 +1926,7 @@ predicate is automatically picked based on the value of the @code{transient}
 slot for the sub-prefix itself.
 
 @defun transient--do-recurse
-Call the transient prefix command, preparing for return to active
+Call the transient prefix command, preparing for return to outer
 transient.
 
 Whether we actually return to the parent transient is ultimately
