@@ -594,7 +594,7 @@ See info node `(transient)Enabling and Disabling Suffixes'."
 
 (defface transient-higher-level
   `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
-              :color ,(let ((color (face-attribute 'shadow :foreground nil t)))
+              :color ,(let ((color (face-attribute 'shadow :foreground t t)))
                         (or (and (not (eq color 'unspecified)) color)
                             "grey60")))))
   "Face optionally used to highlight suffixes on higher levels.
