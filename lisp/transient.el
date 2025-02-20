@@ -286,8 +286,8 @@ See `mode-line-format' for details."
   "Whether to show common transient suffixes in the popup buffer.
 
 These commands are always shown after typing the prefix key
-\"C-x\" when a transient command is active.  To toggle the value
-of this variable use \"C-x t\" when a transient is active."
+\\`C-x' when a transient command is active.  To toggle the value
+of this variable use \\`C-x t' when a transient is active."
   :package-version '(transient . "0.1.0")
   :group 'transient
   :type 'boolean)
@@ -485,7 +485,7 @@ Integers between 1 and 7 (inclusive) are valid levels.
 
 The levels of individual transients and/or their individual
 suffixes can be changed individually, by invoking the prefix and
-then pressing \"C-x l\".
+then pressing \\`C-x l'.
 
 The default level for both transients and their suffixes is 4.
 This option only controls the default for transients.  The default
@@ -5018,22 +5018,22 @@ search instead."
     (remove-hook 'transient-exit-hook #'transient--resume-which-key-mode)))
 
 (defun transient-bind-q-to-quit ()
-  "Modify some keymaps to bind \"q\" to the appropriate quit command.
+  "Modify some keymaps to bind \\`q' to the appropriate quit command.
 
-\"C-g\" is the default binding for such commands now, but Transient's
-predecessor Magit-Popup used \"q\" instead.  If you would like to get
+\\`C-g' is the default binding for such commands now, but Transient's
+predecessor Magit-Popup used \\`q' instead.  If you would like to get
 that binding back, then call this function in your init file like so:
 
   (with-eval-after-load \\='transient
     (transient-bind-q-to-quit))
 
-Individual transients may already bind \"q\" to something else
+Individual transients may already bind \\`q' to something else
 and such a binding would shadow the quit binding.  If that is the
-case then \"Q\" is bound to whatever \"q\" would have been bound
+case then \\`Q' is bound to whatever \\`q' would have been bound
 to by setting `transient-substitute-key-function' to a function
-that does that.  Of course \"Q\" may already be bound to something
-else, so that function binds \"M-q\" to that command instead.
-Of course \"M-q\" may already be bound to something else, but
+that does that.  Of course \\`Q' may already be bound to something
+else, so that function binds \\`M-q' to that command instead.
+Of course \\`M-q' may already be bound to something else, but
 we stop there."
   (keymap-set transient-base-map   "q" #'transient-quit-one)
   (keymap-set transient-sticky-map "q" #'transient-quit-seq)
