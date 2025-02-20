@@ -3233,7 +3233,8 @@ transient is active."
 ;;;; Help
 
 (defun transient-help (&optional interactive)
-  "Show help for the active transient or one of its suffixes.\n\n(fn)"
+  "Show help for the active transient or one of its suffixes.
+\n(fn)"
   (interactive (list t))
   (if interactive
       (setq transient--helpp t)
