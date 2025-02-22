@@ -2861,7 +2861,7 @@ value.  Otherwise return CHILDREN as is.")
                (not (zerop transient-show-popup))
                (not transient--timer))
       (transient--timer-start))
-    (transient--show-brief)))
+    (transient--show-hint)))
 
 (defun transient--timer-start ()
   (setq transient--timer
@@ -4050,7 +4050,7 @@ have a history of their own.")
 
 ;;; Display
 
-(defun transient--show-brief ()
+(defun transient--show-hint ()
   (let ((message-log-max nil))
     (message "%s" (transient--format-hint))))
 
