@@ -2571,28 +2571,6 @@ value.  Otherwise return CHILDREN as is.")
   (setq transient--original-buffer nil)
   (setq transient--window nil))
 
-(defun transient--delete-window ()
-  (when (window-live-p transient--window)
-    (let ((win transient--window)
-          (remain-in-minibuffer-window
-           (and (minibuffer-selected-window)
-                (selected-window))))
-      (cond
-       ((eq (car (window-parameter win 'quit-restore)) 'other)
-        ;; Window used to display another buffer.
-        (set-window-parameter win 'no-other-window
-                              (window-parameter win 'prev--no-other-window))
-        (set-window-parameter win 'prev--no-other-window nil))
-       ((with-demoted-errors "Error while exiting transient: %S"
-          (if (window-parent win)
-              (delete-window win)
-            (delete-frame (window-frame win) t)))))
-      (when remain-in-minibuffer-window
-        (select-window remain-in-minibuffer-window))))
-  (when (buffer-live-p transient--buffer)
-    (kill-buffer transient--buffer))
-  (setq transient--buffer nil))
-
 (defun transient--export ()
   (setq transient-current-prefix transient--prefix)
   (setq transient-current-command (oref transient--prefix command))
@@ -4149,6 +4127,30 @@ have a history of their own.")
                         (list (window-buffer window)
                               (window-body-width window t)
                               (window-body-height window t))))
+
+;;; Delete
+
+(defun transient--delete-window ()
+  (when (window-live-p transient--window)
+    (let ((win transient--window)
+          (remain-in-minibuffer-window
+           (and (minibuffer-selected-window)
+                (selected-window))))
+      (cond
+       ((eq (car (window-parameter win 'quit-restore)) 'other)
+        ;; Window used to display another buffer.
+        (set-window-parameter win 'no-other-window
+                              (window-parameter win 'prev--no-other-window))
+        (set-window-parameter win 'prev--no-other-window nil))
+       ((with-demoted-errors "Error while exiting transient: %S"
+          (if (window-parent win)
+              (delete-window win)
+            (delete-frame (window-frame win) t)))))
+      (when remain-in-minibuffer-window
+        (select-window remain-in-minibuffer-window))))
+  (when (buffer-live-p transient--buffer)
+    (kill-buffer transient--buffer))
+  (setq transient--buffer nil))
 
 ;;; Format
 
