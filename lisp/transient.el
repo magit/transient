@@ -4146,7 +4146,7 @@ have a history of their own.")
     (kill-buffer transient--buffer))
   (setq transient--buffer nil))
 
-(defun transient--preserve-window-p (nohide)
+(defun transient--preserve-window-p (&optional nohide)
   (let ((show (if nohide 'fixed transient-show-during-minibuffer-read)))
     (when (and (integerp show)
                (window-live-p transient--window)
