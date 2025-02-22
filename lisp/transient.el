@@ -4076,38 +4076,11 @@ have a history of their own.")
           (cons val (delete val (alist-get (transient--history-key obj)
                                            transient-history))))))
 
-;;; Draw
+;;; Display
 
 (defun transient--show-brief ()
   (let ((message-log-max nil))
-    (if (and transient-show-popup (<= transient-show-popup 0))
-        (message "%s-" (key-description (this-command-keys)))
-      (message
-       "%s- [%s] %s"
-       (key-description (this-command-keys))
-       (oref transient--prefix command)
-       (mapconcat
-        #'identity
-        (sort
-         (mapcan
-          (lambda (suffix)
-            (let ((key (kbd (oref suffix key))))
-              ;; Don't list any common commands.
-              (and (not (memq (oref suffix command)
-                              `(,(lookup-key transient-map key)
-                                ,(lookup-key transient-sticky-map key)
-                                ;; From transient-common-commands:
-                                transient-set
-                                transient-save
-                                transient-history-prev
-                                transient-history-next
-                                transient-quit-one
-                                transient-toggle-common
-                                transient-set-level)))
-                   (list (propertize (oref suffix key) 'face 'transient-key)))))
-          transient--suffixes)
-         #'string<)
-        (propertize "|" 'face 'transient-delimiter))))))
+    (message "%s" (transient--format-hint))))
 
 (defun transient--show ()
   (transient--timer-cancel)
@@ -4123,28 +4096,7 @@ have a history of their own.")
                              (button-get (1- (point)) 'command))
                         (transient--heading-at-point))))
       (erase-buffer)
-      (when setup
-        (when transient-force-fixed-pitch
-          (transient--force-fixed-pitch))
-        (when (bound-and-true-p tab-line-format)
-          (setq tab-line-format nil))
-        (setq header-line-format nil)
-        (setq mode-line-format
-              (let ((format (transient--mode-line-format)))
-                (if (or (natnump format) (eq format 'line)) nil format)))
-        (setq mode-line-buffer-identification
-              (symbol-name (oref transient--prefix command)))
-        (if transient-enable-popup-navigation
-            (setq-local cursor-in-non-selected-windows 'box)
-          (setq cursor-type nil))
-        (setq display-line-numbers nil)
-        (setq show-trailing-whitespace nil)
-        (run-hooks 'transient-setup-buffer-hook))
-      (transient--insert-groups)
-      (when (or transient--helpp transient--editp)
-        (transient--insert-help))
-      (when-let ((line (transient--separator-line)))
-        (insert line)))
+      (transient--insert-menu setup))
     (unless (window-live-p transient--window)
       (setq transient--window
             (display-buffer transient--buffer
@@ -4197,6 +4149,62 @@ have a history of their own.")
                         (list (window-buffer window)
                               (window-body-width window t)
                               (window-body-height window t))))
+
+;;; Format
+
+(defun transient--format-hint ()
+  (if (and transient-show-popup (<= transient-show-popup 0))
+      (format "%s-" (key-description (this-command-keys)))
+    (format
+     "%s- [%s] %s"
+     (key-description (this-command-keys))
+     (oref transient--prefix command)
+     (mapconcat
+      #'identity
+      (sort
+       (mapcan
+        (lambda (suffix)
+          (let ((key (kbd (oref suffix key))))
+            ;; Don't list any common commands.
+            (and (not (memq (oref suffix command)
+                            `(,(lookup-key transient-map key)
+                              ,(lookup-key transient-sticky-map key)
+                              ;; From transient-common-commands:
+                              transient-set
+                              transient-save
+                              transient-history-prev
+                              transient-history-next
+                              transient-quit-one
+                              transient-toggle-common
+                              transient-set-level)))
+                 (list (propertize (oref suffix key) 'face 'transient-key)))))
+        transient--suffixes)
+       #'string<)
+      (propertize "|" 'face 'transient-delimiter)))))
+
+(defun transient--insert-menu (setup)
+  (when setup
+    (when transient-force-fixed-pitch
+      (transient--force-fixed-pitch))
+    (when (bound-and-true-p tab-line-format)
+      (setq tab-line-format nil))
+    (setq header-line-format nil)
+    (setq mode-line-format
+          (let ((format (transient--mode-line-format)))
+            (if (or (natnump format) (eq format 'line)) nil format)))
+    (setq mode-line-buffer-identification
+          (symbol-name (oref transient--prefix command)))
+    (if transient-enable-popup-navigation
+        (setq-local cursor-in-non-selected-windows 'box)
+      (setq cursor-type nil))
+    (setq display-line-numbers nil)
+    (setq show-trailing-whitespace nil)
+    (run-hooks 'transient-setup-buffer-hook))
+  (transient--insert-groups)
+  (when (or transient--helpp transient--editp)
+    (transient--insert-help))
+  (when-let ((line (transient--separator-line)))
+    (insert line)))
 
 (defun transient--mode-line-format ()
   (if (slot-boundp transient--prefix 'mode-line-format)
