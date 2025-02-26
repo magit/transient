@@ -747,7 +747,8 @@ should not change it manually.")
   "Save the value of `transient-history'.
 If `transient-save-history' is nil, then do nothing."
   (when transient-save-history
-    (transient-save-history)))
+    (with-demoted-errors "Error saving transient history: %S"
+      (transient-save-history))))
 
 (unless noninteractive
   (add-hook 'kill-emacs-hook #'transient-maybe-save-history))
