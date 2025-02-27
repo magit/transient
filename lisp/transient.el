@@ -103,8 +103,7 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
         `(pred (cl-typep _ ',type))))))
 
 (make-obsolete-variable 'transient-hide-during-minibuffer-read
-                        "use `transient-show-during-minibuffer-read' instead."
-                        "0.8.0")
+                        'transient-show-during-minibuffer-read "0.8.0")
 
 (defmacro transient--with-emergency-exit (id &rest body)
   (declare (indent defun))
