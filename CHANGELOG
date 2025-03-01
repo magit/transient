@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.5    UNRELEASED
+* v0.8.5    2025-03-01
 
 - Added new faces ~transient-key-recurse~ and ~transient-key-stack~.
   58e22554
