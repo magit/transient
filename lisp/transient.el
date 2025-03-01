@@ -2489,7 +2489,7 @@ value.  Otherwise return CHILDREN as is.")
   (transient--debug 'setup-transient)
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
-  (add-hook 'pre-command-hook  #'transient--pre-command)
+  (add-hook 'pre-command-hook  #'transient--pre-command 99)
   (add-hook 'post-command-hook #'transient--post-command)
   (advice-add 'recursive-edit :around #'transient--recursive-edit)
   (when transient--exitp
