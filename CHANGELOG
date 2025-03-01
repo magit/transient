@@ -1,4 +1,40 @@
 # -*- mode: org -*-
+* v0.8.5    UNRELEASED
+
+- Added new faces ~transient-key-recurse~ and ~transient-key-stack~.
+  58e22554
+
+Bug fixes:
+
+- ~transient--setup-recursion~ did not consider the ~resurse~ shorthand.
+  32a7e256
+
+- The parent group was not always stored in suffix objects.  #354
+
+- Invoking a suffix of a sub-prefix (which is configured to return to
+  the outer prefix), did exit instead of returning, if the suffix's
+  own behavior was not explicitly specified.  #352
+
+- The color of a suffix that returns to the outer prefix, was wrong
+  when there isn't actually an outer prefix.  e88005d2
+
+- When potentially removing other bindings for the same command
+  while adding a new binding, false-negative avoidance was to heavily
+  favored over false-positive avoidance.  #355
+
+- Defining the ~transient-higher-level~ face involves calling
+  ~face-attributes~ on another face.  That call requested the value
+  for the current frame (which may not exist yet) instead of using
+  the default.  #359
+
+- When the transient window is hidden while the minibuffer is used,
+  then it was not restored if using Helm.  #361
+
+- Non-suffix command that aren't accessed via a symbol, were not
+  properly wrapped to ensure post-command cleanup happens even in
+  case of an error or if the user aborts a minibuffer use, causing
+  the menu window to get stuck.  08201f06
+
 * v0.8.4    2025-02-01
 
 - Added new option ~transient-show-docstring-format~.  65cd6cec
