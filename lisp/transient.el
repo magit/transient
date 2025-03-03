@@ -4874,7 +4874,8 @@ This is used when a tooltip is needed.")
         ((doc (cond ((functionp summary)
                      (funcall summary obj))
                     (summary)
-                    ((car (split-string (documentation command) "\n")))))
+                    ((documentation command)
+                     (car (split-string (documentation command) "\n")))))
          ((stringp doc))
          ((not (equal doc
                       (car (split-string (documentation
