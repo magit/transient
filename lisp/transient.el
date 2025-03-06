@@ -2656,8 +2656,7 @@ value.  Otherwise return CHILDREN as is.")
        ,@body)))
 
 (defun transient--wrap-command ()
-  (when (autoloadp this-command)
-    (autoload-do-load this-command))
+  (transient--load-command-if-autoload this-command)
   (static-if (>= emacs-major-version 30)
       (letrec
           ((command this-command)
