@@ -2361,11 +2361,7 @@ value.  Otherwise return CHILDREN as is.")
                           level
                           (and proto (oref proto level))
                           transient--default-child-level)))
-    (let ((fn (and (symbolp cmd)
-                   (symbol-function cmd))))
-      (when (autoloadp fn)
-        (transient--debug "   autoload %s" cmd)
-        (autoload-do-load fn)))
+    (transient--load-command-if-autoload cmd)
     (when (transient--use-level-p level)
       (let ((obj (if (child-of-class-p class 'transient-information)
                      (apply class :parent parent :level level args)
@@ -2482,6 +2478,13 @@ value.  Otherwise return CHILDREN as is.")
                  :inapt-if-nil :inapt-if-non-nil
                  :inapt-if-mode :inapt-if-not-mode
                  :inapt-if-derived :inapt-if-not-derived))))
+
+(defun transient--load-command-if-autoload (cmd)
+  (when-let* (((symbolp cmd))
+              (fn (symbol-function cmd))
+              ((autoloadp fn)))
+    (transient--debug "   autoload %s" cmd)
+    (autoload-do-load fn)))
 
 ;;; Flow-Control
 
