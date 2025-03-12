@@ -1859,22 +1859,25 @@ probably use this instead:
                         this-command))))
             (or transient--suffixes
                 transient-current-suffixes))))
-      (or (if (cdr suffixes)
-              (cl-find-if
-               (lambda (obj)
-                 (equal (listify-key-sequence (transient--kbd (oref obj key)))
-                        (listify-key-sequence (this-command-keys))))
-               suffixes)
-            (car suffixes))
-          ;; COMMAND is only provided if `this-command' is meaningless, in
-          ;; which case `this-command-keys' is also meaningless, making it
-          ;; impossible to disambiguate redundant bindings.
-          (if command
-              (car suffixes)
-            ;; TODO Decide whether it is legimate to use this function
-            ;; as a predicate, and also whether to return an object for
-            ;; suffixes common to all prefixes.  See #29 and #337.
-            (error "BUG: Cannot determine suffix object")))))
+      (cond
+       ((length= suffixes 1)
+        (car suffixes))
+       ((cl-find-if (lambda (obj)
+                      (equal
+                       (listify-key-sequence (transient--kbd (oref obj key)))
+                       (listify-key-sequence (this-command-keys))))
+                    suffixes))
+       ;; COMMAND is only provided if `this-command' is meaningless, in
+       ;; which case `this-command-keys' is also meaningless, making it
+       ;; impossible to disambiguate bindings for the same command.
+       (command (car suffixes))
+       ;; If COMMAND is nil, then failure to disambiguate likely means
+       ;; that there is a bug somewhere.
+       ((length> suffixes 1)
+        (error "BUG: Cannot unambigiously determine suffix object"))
+       ;; It is legimate to use this function as a predicate of sorts.
+       ;; `transient--pre-command' and `transient-help' are examples.
+       (t nil))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
       (progn
@@ -2541,8 +2544,7 @@ value.  Otherwise return CHILDREN as is.")
        ((not (transient--edebug-command-p))
         (setq this-command 'transient-undefined))))
      ((and transient--editp
-           ;; See TODO in that function.
-           (ignore-errors (transient-suffix-object))
+           (transient-suffix-object)
            (not (memq this-command '(transient-quit-one
                                      transient-quit-all
                                      transient-help))))
