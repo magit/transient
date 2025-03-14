@@ -19,7 +19,7 @@ Bug fixes:
   when there isn't actually an outer prefix.  e88005d2
 
 - When potentially removing other bindings for the same command
-  while adding a new binding, false-negative avoidance was to heavily
+  while adding a new binding, false-negative avoidance was too heavily
   favored over false-positive avoidance.  #355
 
 - Defining the ~transient-higher-level~ face involves calling
