@@ -1,4 +1,26 @@
 # -*- mode: org -*-
+* v0.8.6    UNRELEASED
+
+Bug fixes:
+
+- ~transient-show-summary~ errored for commands that have neither a
+  summary nor a docstring.  0886651d
+
+- ~transient-format-description~ errored for ~transient-information~
+  and ~transient-information*~ suffixes.  #366
+
+- ~transient--wrap-command~ failed to load autoloaded commands.
+  40308623
+
+- ~transient-suffix-object~ errored if a command is bound more than
+  once and is invoked using the mouse or ~RET~.  f69e1286
+
+- For some releases ~transient-suffix-object~ errored if it could not
+  identify a unique suffix, which helped establish that it is in fact
+  legitimate to use this function as a predicate.  No longer error if
+  there are zero matches, but continue to error if their are multiple
+  matches that cannot be disambiguated.  4a06aeb0
+
 * v0.8.5    2025-03-01
 
 - Added new faces ~transient-key-recurse~ and ~transient-key-stack~.
