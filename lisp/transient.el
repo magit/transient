@@ -1671,7 +1671,14 @@ values.  In complex cases it might be necessary to use this
 variable instead.")
 
 (defvar transient-exit-hook nil
-  "Hook run after exiting a transient.")
+  "Hook run after exiting a transient menu.
+Unlike `transient-post-exit-hook', this runs even if another transient
+menu becomes active at the same time. ")
+
+(defvar transient-post-exit-hook nil
+  "Hook run after exiting all transient menus.
+Unlike `transient-exit-hook', this does not run if another transient
+menu becomes active at the same time.")
 
 (defvar transient-setup-buffer-hook nil
   "Hook run when setting up the transient buffer.
@@ -2832,9 +2839,10 @@ value.  Otherwise return CHILDREN as is.")
     (remove-hook 'pre-command-hook  #'transient--pre-command)
     (remove-hook 'post-command-hook #'transient--post-command)
     (advice-remove 'recursive-edit #'transient--recursive-edit))
-  (let ((resume (and transient--stack
+  (let ((replace (eq transient--exitp 'replace))
+        (resume (and transient--stack
                      (not (memq transient--exitp '(replace suspend))))))
-    (unless (or resume (eq transient--exitp 'replace))
+    (unless (or resume replace)
       (setq transient--showp nil))
     (setq transient--exitp nil)
     (setq transient--helpp nil)
@@ -2847,8 +2855,9 @@ value.  Otherwise return CHILDREN as is.")
       (setq transient-current-command nil)
       (setq transient-current-suffixes nil)
       (setq transient--current-suffix nil))
-    (when resume
-      (transient--stack-pop))))
+    (cond (resume (transient--stack-pop))
+          ((not replace)
+           (run-hooks 'transient-post-exit-hook)))))
 
 (defun transient--stack-push ()
   (transient--debug 'stack-push)

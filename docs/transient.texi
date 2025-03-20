@@ -949,7 +949,13 @@ same customization.
 @subheading Hook Variables
 
 @defvar transient-exit-hook
-This hook is run after a transient is exited.
+This hook is run after a transient menu is exited, even if another
+transient menu becomes active at the same time.
+@end defvar
+
+@defvar transient-post-exit-hook
+This hook is run after a transient menu is exited, provided no other
+transient menu becomes active at the same time.
 @end defvar
 
 @defvar transient-setup-buffer-hook

@@ -802,7 +802,13 @@ These options are mainly intended for developers.
 
 - Variable: transient-exit-hook ::
 
-  This hook is run after a transient is exited.
+  This hook is run after a transient menu is exited, even if another
+  transient menu becomes active at the same time.
+
+- Variable: transient-post-exit-hook ::
+
+  This hook is run after a transient menu is exited, provided no other
+  transient menu becomes active at the same time.
 
 - Variable: transient-setup-buffer-hook ::
 
