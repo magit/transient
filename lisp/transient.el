@@ -145,10 +145,10 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
   after that many seconds of inactivity (using the absolute value)."
   :package-version '(transient . "0.1.0")
   :group 'transient
-  :type '(choice (const  :tag "instantly" t)
-                 (const  :tag "on demand" nil)
-                 (const  :tag "on demand (no summary)" 0)
-                 (number :tag "after delay" 1)))
+  :type '(choice (const  :tag "Instantly" t)
+                 (const  :tag "On demand" nil)
+                 (const  :tag "On demand (no summary)" 0)
+                 (number :tag "After delay" 1)))
 
 (defcustom transient-enable-popup-navigation 'verbose
   "Whether navigation commands are enabled in the transient popup.
@@ -180,9 +180,9 @@ then it is likely, that you would want \\`RET' to do what it would do
 if no transient were active."
   :package-version '(transient . "0.7.8")
   :group 'transient
-  :type '(choice (const :tag "enable navigation and echo summary" verbose)
-                 (const :tag "enable navigation commands" t)
-                 (const :tag "disable navigation commands" nil)))
+  :type '(choice (const :tag "Enable navigation and echo summary" verbose)
+                 (const :tag "Enable navigation commands" t)
+                 (const :tag "Disable navigation commands" nil)))
 
 (defcustom transient-display-buffer-action
   '(display-buffer-in-side-window
@@ -273,13 +273,13 @@ Otherwise this can be any mode-line format.
 See `mode-line-format' for details."
   :package-version '(transient . "0.2.0")
   :group 'transient
-  :type '(choice (const  :tag "hide mode-line" nil)
-                 (const  :tag "substitute thin line" line)
-                 (number :tag "substitute line with thickness")
-                 (const  :tag "name of prefix command"
+  :type '(choice (const  :tag "Hide mode-line" nil)
+                 (const  :tag "Substitute thin line" line)
+                 (number :tag "Substitute line with thickness")
+                 (const  :tag "Name of prefix command"
                          ("%e" mode-line-front-space
                           mode-line-buffer-identification))
-                 (sexp   :tag "custom mode-line format")))
+                 (sexp   :tag "Custom mode-line format")))
 
 (defcustom transient-show-common-commands nil
   "Whether to show common transient suffixes in the popup buffer.
