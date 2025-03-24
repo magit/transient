@@ -1455,14 +1455,14 @@ Intended for use in a group's `:setup-children' function."
     (setq suf (eval suf t))
     (cond
      ((not mem)
-      (message "Cannot insert %S into %s; %s not found"
-               suffix prefix loc))
+      (error "Cannot insert %S into %s; %s not found"
+             suffix prefix loc))
      ((or (and (vectorp suffix) (not (vectorp elt)))
           (and (listp   suffix) (vectorp elt))
           (and (stringp suffix) (vectorp elt)))
-      (message "Cannot place %S into %s at %s; %s"
-               suffix prefix loc
-               "suffixes and groups cannot be siblings"))
+      (error "Cannot place %S into %s at %s; %s"
+             suffix prefix loc
+             "suffixes and groups cannot be siblings"))
      (t
       (when-let* (((not (eq keep-other 'always)))
                   (bindingp (listp suf))

@@ -1055,15 +1055,6 @@ This function edits the suffix or group at @var{LOC} in @var{PREFIX}, by setting
 the @var{PROP} of its plist to @var{VALUE}.
 @end defun
 
-Most of these functions do not signal an error if they cannot perform
-the requested modification.  The functions that insert new suffixes
-show a warning if @var{LOC} cannot be found in @var{PREFIX} without signaling an
-error.  The reason for doing it like this is that establishing a key
-binding (and that is what we essentially are trying to do here) should
-not prevent the rest of the configuration from loading.  Among these
-functions only @code{transient-get-suffix} and @code{transient-suffix-put} may
-signal an error.
-
 @node Defining New Commands
 @chapter Defining New Commands
 
