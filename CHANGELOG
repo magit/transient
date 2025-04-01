@@ -1,4 +1,16 @@
 # -*- mode: org -*-
+* v0.8.7    UNRELEASED
+
+- Added new hook ~transient-post-exit-hook~.  55050b60
+
+- ~transient-insert-suffix~ and ~transient-append-suffix~ now signal
+  error if the specified location is invalid.  #374
+
+Bug fixes:
+
+- Autoloaded commands were loaded too late in ~transient-init-suffix~,
+  resulting in the suffix prototype object not being used.  00112c11
+
 * v0.8.6    2025-03-15
 
 Bug fixes:
