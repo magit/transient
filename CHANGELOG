@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.7    UNRELEASED
+* v0.8.7    2025-04-01
 
 - Added new hook ~transient-post-exit-hook~.  55050b60
 
