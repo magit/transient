@@ -1758,6 +1758,10 @@ This is bound while the suffixes are drawn in the transient buffer.")
     mwheel-scroll
     scroll-bar-toolkit-scroll))
 
+(defvar text-conversion-style)  ; Introduced in 30.1.
+(defvar transient--text-conversion-style nil
+  "Value of `text-conversion-style' before invoking transient.")
+
 ;;; Identities
 
 (defun transient-active-prefix (&optional prefixes)
@@ -2505,6 +2509,10 @@ value.  Otherwise return CHILDREN as is.")
 
 (defun transient--setup-transient ()
   (transient--debug 'setup-transient)
+  (when (fboundp 'set-text-conversion-style)
+    (setq transient--text-conversion-style
+          text-conversion-style)
+    (set-text-conversion-style nil))
   (transient--push-keymap 'transient--transient-map)
   (transient--push-keymap 'transient--redisplay-map)
   (add-hook 'pre-command-hook  #'transient--pre-command 99)
@@ -2566,6 +2574,8 @@ value.  Otherwise return CHILDREN as is.")
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
+  (when (fboundp 'set-text-conversion-style)
+    (set-text-conversion-style transient--text-conversion-style))
   (transient--delete-window)
   (transient--timer-cancel)
   (transient--pop-keymap 'transient--transient-map)
