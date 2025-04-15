@@ -934,6 +934,13 @@ predicates of those suffixes prevent that more than one of them is
 enabled at a time.
 @end defopt
 
+@defopt transient-error-on-insert-failure
+This option controls whether to signal an error when
+@code{transient-insert-suffix} or @code{transient-append-suffix} failed to insert
+a suffix into an existing prefix.  By default a warning is shown
+instead.
+@end defopt
+
 @defopt transient-highlight-higher-levels
 This option controls whether suffixes that would not be available by
 default are highlighted.

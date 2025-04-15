@@ -784,6 +784,13 @@ These options are mainly intended for developers.
   predicates of those suffixes prevent that more than one of them is
   enabled at a time.
 
+- User Option: transient-error-on-insert-failure ::
+
+  This option controls whether to signal an error when
+  ~transient-insert-suffix~ or ~transient-append-suffix~ failed to insert
+  a suffix into an existing prefix.  By default a warning is shown
+  instead.
+
 - User Option: transient-highlight-higher-levels ::
 
   This option controls whether suffixes that would not be available by
