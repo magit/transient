@@ -1968,39 +1968,34 @@ to `transient-predicate-map'.  See also `transient-base-map'.")
   "C-g" #'transient-quit-seq)
 
 (defvar transient--common-command-prefixes '(?\C-x))
-
 (put 'transient-common-commands
      'transient--layout
      (list
       (eval
        (car (transient--parse-child
              'transient-common-commands
-             (vector
-              :hide
+             [:hide
               (lambda ()
-                (and (not (memq
-                           (car (bound-and-true-p transient--redisplay-key))
-                           transient--common-command-prefixes))
+                (defvar transient--redisplay-key)
+                (and (not (memq (car transient--redisplay-key)
+                                transient--common-command-prefixes))
                      (not transient-show-common-commands)))
-              (vector
-               "Value commands"
-               (list "C-x s  " "Set"            #'transient-set)
-               (list "C-x C-s" "Save"           #'transient-save)
-               (list "C-x C-k" "Reset"          #'transient-reset)
-               (list "C-x p  " "Previous value" #'transient-history-prev)
-               (list "C-x n  " "Next value"     #'transient-history-next))
-              (vector
-               "Sticky commands"
+              ["Value commands"
+               ("C-x s  " "Set"            transient-set)
+               ("C-x C-s" "Save"           transient-save)
+               ("C-x C-k" "Reset"          transient-reset)
+               ("C-x p  " "Previous value" transient-history-prev)
+               ("C-x n  " "Next value"     transient-history-next)]
+              ["Sticky commands"
                ;; Like `transient-sticky-map' except that
                ;; "C-g" has to be bound to a different command.
-               (list "C-g" "Quit prefix or transient" #'transient-quit-one)
-               (list "C-q" "Quit transient stack"     #'transient-quit-all)
-               (list "C-z" "Suspend transient stack"  #'transient-suspend))
-              (vector
-               "Customize"
-               (list "C-x t" #'transient-toggle-common)
-               (list "C-x l" "Show/hide suffixes" #'transient-set-level)
-               (list "C-x a" #'transient-toggle-level-limit)))))
+               ("C-g" "Quit prefix or transient" transient-quit-one)
+               ("C-q" "Quit transient stack"     transient-quit-all)
+               ("C-z" "Suspend transient stack"  transient-suspend)]
+              ["Customize"
+               ("C-x t" transient-toggle-common)
+               ("C-x l" "Show/hide suffixes" transient-set-level)
+               ("C-x a" transient-toggle-level-limit)]]))
        t)))
 
 (defvar-keymap transient-popup-navigation-map
