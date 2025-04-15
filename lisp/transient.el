@@ -432,6 +432,16 @@ used."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-error-on-insert-failure nil
+  "Whether to signal an error when failing to insert a suffix.
+
+When `transient-insert-suffix' and `transient-append-suffix' fail
+to insert a suffix into an existing prefix, they usually just show
+a warning.  If this is non-nil, they signal an error instead."
+  :package-version '(transient . "0.8.8")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-align-variable-pitch nil
   "Whether to align columns pixel-wise in the popup buffer.
 
@@ -1455,14 +1465,16 @@ Intended for use in a group's `:setup-children' function."
     (setq suf (eval suf t))
     (cond
      ((not mem)
-      (error "Cannot insert %S into %s; %s not found"
-             suffix prefix loc))
+      (funcall (if transient-error-on-insert-failure #'error #'message)
+               "Cannot insert %S into %s; %s not found"
+               suffix prefix loc))
      ((or (and (vectorp suffix) (not (vectorp elt)))
           (and (listp   suffix) (vectorp elt))
           (and (stringp suffix) (vectorp elt)))
-      (error "Cannot place %S into %s at %s; %s"
-             suffix prefix loc
-             "suffixes and groups cannot be siblings"))
+      (funcall (if transient-error-on-insert-failure #'error #'message)
+               "Cannot place %S into %s at %s; %s"
+               suffix prefix loc
+               "suffixes and groups cannot be siblings"))
      (t
       (when-let* (((not (eq keep-other 'always)))
                   (bindingp (listp suf))
