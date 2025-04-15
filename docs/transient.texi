@@ -308,36 +308,59 @@ if any.
 @cindex common suffix commands
 
 A few shared suffix commands are available in all transients.  These
-suffix commands are not shown in the popup buffer by default.
+suffix commands are not shown permanently in every menu by default.
+Most of these commands share a common prefix key and pressing that key
+causes the common commands to be temporarily shown in the active menu.
 
-This includes the aborting commands mentioned in the previous section,
-as well as some other commands that are all bound to @kbd{C-x @var{KEY}}.  After
-@kbd{C-x} is pressed, a section featuring all these common commands is
-temporarily shown in the popup buffer.  After invoking one of them,
-the section disappears again.  Note, however, that one of these
-commands is described as ``Show common permanently''; invoke that if you
-want the common commands to always be shown for all transients.
+@defopt transient-show-common-commands
+This option controls whether shared suffix commands are permanently
+shown alongside the menu-specific infix and suffix commands.  By
+default, the shared commands are not permanently shown to avoid
+wasting precious space and overwhelming the user with too many
+choices.
+
+If you prefer to always see these commands, then set this option to
+a non-@code{nil} value.  Alternatively the value can be toggled for the
+current Emacs session only, using @code{transient-toggle-common}, described
+below.
+@end defopt
+
+@defopt transient-common-command-prefix
+This option specifies the prefix key used in all transient menus
+to invoke most of the shared commands, which are available in all
+transient menus.  By default these bindings are only shown after
+pressing that prefix key and before following that up with a valid
+key binding (but see the previous option).
+
+For historic reasons @kbd{C-x} is used by default, but users are
+encouraged to pick another key, preferably one that is not commonly
+used in Emacs but is still convenient to them.
+
+Usually, while a transient menu is active, the user cannot invoke
+commands that are not bound in the menu itself.  For those menus it
+does not matter, if @kbd{C-x} or another commonly used prefix key is used
+for common menu commands.  However, certain other, newer menus do
+not suppress key bindings established outside the menu itself, and
+in those cases a binding for a common menu command could shadow an
+external binding.  For example, @kbd{C-x C-s} could not be used to invoke
+@code{save-buffer}, if that binding is shadowed by the menu binding for
+@code{transient-save}.
+
+Which key is most suitable depends on the user's preferences, but
+good choices may include function keys and @kbd{C-z} (for many keyboard
+layouts @kbd{z} is right next to @kbd{x}, and invoking @code{suspend-frame}, while a
+transient menu is active, would not be a good idea anyway).
+@end defopt
 
 @table @asis
 @item @kbd{C-x t} (@code{transient-toggle-common})
 @kindex C-x t
 @findex transient-toggle-common
-This command toggles whether the generic commands that are common to
-all transients are always displayed or only after typing the
-incomplete prefix key sequence @kbd{C-x}.  This only affects the current
+This command toggles whether the generic commands, that are common
+to all transients, are permanently displayed or only after typing
+the incomplete prefix key sequence@kbd{}.  This only affects the current
 Emacs session.
 @end table
-
-@defopt transient-show-common-commands
-This option controls whether shared suffix commands are shown
-alongside the transient-specific infix and suffix commands.  By
-default, the shared commands are not shown to avoid overwhelming
-the user with too many options.
-
-While a transient is active, pressing @kbd{C-x} always shows the common
-commands.  The value of this option can be changed for the current
-Emacs session by typing @kbd{C-x t} while a transient is active.
-@end defopt
 
 The other common commands are described in either the previous or in
 one of the following sections.
@@ -362,6 +385,10 @@ If the user does not save the value and just exits using a regular
 suffix command, then the value is merely saved to the transient's
 history.  That value won't be used when the transient is next invoked,
 but it is easily accessible (see @ref{Using History}).
+
+Option @code{transient-common-command-prefix} controls the prefix key used
+in the following bindings.  For simplicity's sake the default, @kbd{C-x},
+is shown below.
 
 @table @asis
 @item @kbd{C-x s} (@code{transient-set})
@@ -396,6 +423,10 @@ Every time the user invokes a suffix command the transient's current
 value is saved to its history.  These values can be cycled through,
 the same way one can cycle through the history of commands that read
 user-input in the minibuffer.
+
+Option @code{transient-common-command-prefix} controls the prefix key used
+in the following bindings.  For simplicity's sake the default, @kbd{C-x},
+is shown below.
 
 @table @asis
 @item @kbd{C-M-p} (@code{transient-history-prev})
@@ -496,8 +527,8 @@ For suffixes, 0 is also valid; it means that the suffix is not
 displayed at any level.
 
 The levels of individual transients and/or their individual suffixes
-can be changed interactively, by invoking the transient and then
-pressing @kbd{C-x l} to enter the ``edit'' mode, see below.
+can be changed interactively, by invoking the menu and entering its
+``edit'' mode using the command @code{transient-set-level}, as described below.
 
 The default level for both transients and their suffixes is 4.  The
 @code{transient-default-level} option only controls the default for
@@ -517,6 +548,10 @@ user has not set that individually.
 This option names the file that is used to persist the levels of
 transients and their suffixes between Emacs sessions.
 @end defopt
+
+Option @code{transient-common-command-prefix} controls the prefix key used
+in the following bindings.  For simplicity's sake the default, @kbd{C-x},
+is shown below.
 
 @table @asis
 @item @kbd{C-x l} (@code{transient-set-level})
@@ -642,7 +677,7 @@ More options are described in @ref{Common Suffix Commands}, in @ref{Saving Value
 @anchor{Essential Options}
 @subheading Essential Options
 
-Also see @ref{Common Suffix Commands}.
+Two more essential options are documented in @ref{Common Suffix Commands}.
 
 @defopt transient-show-popup
 This option controls whether the current transient's infix and
@@ -668,17 +703,6 @@ pressing an incomplete prefix key sequence.  Unless this is zero,
 the popup is shown after that many seconds of inactivity (using
 the absolute value).
 @end itemize
-@end defopt
-
-@defopt transient-show-common-commands
-This option controls whether shared suffix commands are shown
-alongside the transient-specific infix and suffix commands.  By
-default, the shared commands are not shown to avoid overwhelming
-the user with too many options.
-
-While a transient is active, pressing @kbd{C-x} always shows the common
-commands.  The value of this option can be changed for the current
-Emacs session by typing @kbd{C-x t} while a transient is active.
 @end defopt
 
 @defopt transient-show-during-minibuffer-read
@@ -2949,49 +2973,6 @@ See @uref{https://github.com/magit/transient/wiki/Comparison-with-prefix-keys-an
 @appendixsec How does Transient compare to Magit-Popup and Hydra?
 
 See @uref{https://github.com/magit/transient/wiki/Comparison-with-other-packages}.
-
-@anchor{Why did some of the key bindings change?}
-@appendixsec Why did some of the key bindings change?
-
-You may have noticed that the bindings for some of the common commands
-do @strong{not} have the prefix @kbd{C-x} and that furthermore some of these commands
-are grayed out while others are not.  That unfortunately is a bit
-confusing if the section of common commands is not shown permanently,
-making the following explanation necessary.
-
-The purpose of usually hiding that section but showing it after the
-user pressed the respective prefix key is to conserve space and not
-overwhelm users with too much noise, while allowing the user to
-quickly list common bindings on demand.
-
-That however should not keep us from using the best possible key
-bindings.  The bindings that do use a prefix do so to avoid wasting
-too many non-prefix bindings, keeping them available for use in
-individual transients.  The bindings that do not use a prefix and that
-are @strong{not} grayed out are very important bindings that are @strong{always}
-available, even when invoking the ``common command key prefix'' or @strong{any
-other} transient-specific prefix.  The non-prefix keys that @strong{are} grayed
-out however, are not available when any incomplete prefix key sequence
-is active.  They do not use the ``common command key prefix'' because it
-is likely that users want to invoke them several times in a row and
-e.g., @kbd{M-p M-p M-p} is much more convenient than @kbd{C-x M-p C-x M-p C-x M-p}.
-
-You may also have noticed that the ``Set'' command is bound to @kbd{C-x s},
-while Magit-Popup used to bind @kbd{C-c C-c} instead.  I have seen several
-users praise the latter binding (sic), so I did not change it
-willy-nilly.  The reason that I changed it is that using different
-prefix keys for different common commands, would have made the
-temporary display of the common commands even more confusing, i.e.,
-after pressing @kbd{C-c} all the bindings that begin with the @kbd{C-x} prefix
-would be grayed out.
-
-Using a single prefix for common commands key means that all other
-potential prefix keys can be used for transient-specific commands
-@strong{without} the section of common commands also popping up.  @kbd{C-c} in
-particular is a prefix that I want to (and already do) use for Magit, and
-also using that for a common command would prevent me from doing so.
-
-(See also the next question.)
 
 @anchor{Why does @kbd{q} not quit popups anymore?}
 @appendixsec Why does @kbd{q} not quit popups anymore?

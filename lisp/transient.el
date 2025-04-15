@@ -105,6 +105,8 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
 (make-obsolete-variable 'transient-hide-during-minibuffer-read
                         'transient-show-during-minibuffer-read "0.8.0")
 
+(defvar transient-common-command-prefix)
+
 (defmacro transient--with-emergency-exit (id &rest body)
   (declare (indent defun))
   (unless (keywordp id)
@@ -282,11 +284,16 @@ See `mode-line-format' for details."
                  (sexp   :tag "Custom mode-line format")))
 
 (defcustom transient-show-common-commands nil
-  "Whether to show common transient suffixes in the popup buffer.
+  "Whether to permanently show common suffix commands in transient menus.
 
-These commands are always shown after typing the prefix key
-\\`C-x' when a transient command is active.  To toggle the value
-of this variable use \\`C-x t' when a transient is active."
+By default these commands are only temporarily shown after typing their
+shared prefix key \
+\\<transient--docstr-hint-1>\\[transient-common-command-prefix], \
+while a transient menu is active.  When the value
+of this option is non-nil, then these commands are permanently shown.
+To toggle the value for the current Emacs session only type \
+\\<transient--docstr-hint-2>\\[transient-toggle-common] while
+any transient menu is active."
   :package-version '(transient . "0.1.0")
   :group 'transient
   :type 'boolean)
@@ -494,7 +501,7 @@ Integers between 1 and 7 (inclusive) are valid levels.
 
 The levels of individual transients and/or their individual
 suffixes can be changed individually, by invoking the prefix and
-then pressing \\`C-x l'.
+then pressing \\<transient--docstr-hint-2>\\[transient-set-level].
 
 The default level for both transients and their suffixes is 4.
 This option only controls the default for transients.  The default
@@ -1402,9 +1409,12 @@ commands are aliases for."
             (_ (use key val)))))
       (when spec
         (error "Need keyword, got %S" (car spec)))
-      (when-let* (((not (plist-get args :key)))
-                  (shortarg (plist-get args :shortarg)))
-        (use :key shortarg)))
+      (if-let ((key (plist-get args :key)))
+          (when (string-match "\\`\\({p}\\)" key)
+            (use :key
+                 (replace-match transient-common-command-prefix t t key 1)))
+        (when-let ((shortarg (plist-get args :shortarg)))
+          (use :key shortarg))))
     (list 'list
           level
           (macroexp-quote (or class 'transient-suffix))
@@ -1943,7 +1953,7 @@ to `transient-predicate-map'."
     (keymap-set map "C-t"   #'transient-show)
     (keymap-set map "?"     #'transient-help)
     (keymap-set map "C-h"   #'transient-help)
-    ;; Also bound to "C-x p" and "C-x n" in transient-common-commands.
+    ;; Next two have additional bindings in transient-common-commands.
     (keymap-set map "C-M-p" #'transient-history-prev)
     (keymap-set map "C-M-n" #'transient-history-next)
     (when (fboundp 'other-frame-prefix) ;Emacs >= 28.1
@@ -1958,45 +1968,78 @@ to `transient-predicate-map'.  See also `transient-base-map'.")
 (defvar-keymap transient-edit-map
   :doc "Keymap that is active while a transient in is in \"edit mode\"."
   :parent transient-base-map
-  "?"     #'transient-help
-  "C-h"   #'transient-help
-  "C-x l" #'transient-set-level)
+  "?"   #'transient-help
+  "C-h" #'transient-help)
 
 (defvar-keymap transient-sticky-map
   :doc "Keymap that is active while an incomplete key sequence is active."
   :parent transient-base-map
   "C-g" #'transient-quit-seq)
 
-(defvar transient--common-command-prefixes '(?\C-x))
-(put 'transient-common-commands
-     'transient--layout
-     (list
-      (eval
-       (car (transient--parse-child
-             'transient-common-commands
-             [:hide
-              (lambda ()
-                (defvar transient--redisplay-key)
-                (and (not (memq (car transient--redisplay-key)
-                                transient--common-command-prefixes))
-                     (not transient-show-common-commands)))
-              ["Value commands"
-               ("C-x s  " "Set"            transient-set)
-               ("C-x C-s" "Save"           transient-save)
-               ("C-x C-k" "Reset"          transient-reset)
-               ("C-x p  " "Previous value" transient-history-prev)
-               ("C-x n  " "Next value"     transient-history-next)]
-              ["Sticky commands"
-               ;; Like `transient-sticky-map' except that
-               ;; "C-g" has to be bound to a different command.
-               ("C-g" "Quit prefix or transient" transient-quit-one)
-               ("C-q" "Quit transient stack"     transient-quit-all)
-               ("C-z" "Suspend transient stack"  transient-suspend)]
-              ["Customize"
-               ("C-x t" transient-toggle-common)
-               ("C-x l" "Show/hide suffixes" transient-set-level)
-               ("C-x a" transient-toggle-level-limit)]]))
-       t)))
+(defvar transient-common-commands
+  [:hide (lambda ()
+           (defvar transient--redisplay-key)
+           (and (not (equal (vconcat transient--redisplay-key)
+                            (read-kbd-macro transient-common-command-prefix)))
+                (not transient-show-common-commands)))
+   ["Value commands"
+    ("{p} s  " "Set"            transient-set)
+    ("{p} C-s" "Save"           transient-save)
+    ("{p} C-k" "Reset"          transient-reset)
+    ("{p} p  " "Previous value" transient-history-prev)
+    ("{p} n  " "Next value"     transient-history-next)]
+   ["Sticky commands"
+    ;; Like `transient-sticky-map' except that
+    ;; "C-g" has to be bound to a different command.
+    ("C-g" "Quit prefix or transient" transient-quit-one)
+    ("C-q" "Quit transient stack"     transient-quit-all)
+    ("C-z" "Suspend transient stack"  transient-suspend)]
+   ["Customize"
+    ("{p} t" transient-toggle-common)
+    ("{p} l" "Show/hide suffixes" transient-set-level)
+    ("{p} a" transient-toggle-level-limit)]]
+  "Commands available in all transient menus.
+The same functions that are used to change bindings in transient prefix
+commands, can be used to modify these bindings as well, but note that
+customizing `transient-common-command-prefix' resets these bindings and
+that the special meaning of \"{p}\" does not apply when modifying these
+bindings.")
+
+(defun transient--init-common-commands ()
+  (put 'transient-common-commands
+       'transient--layout
+       (list (eval (car (transient--parse-child 'transient-common-commands
+                                                transient-common-commands))
+                   t)))
+  (defvar transient-common-command-prefix)
+  (defvar transient--docstr-hint-1)
+  (defvar transient--docstr-hint-2)
+  (setq transient--docstr-hint-1
+        (define-keymap transient-common-command-prefix
+          'transient-common-command-prefix))
+  (setq transient--docstr-hint-2
+        (define-keymap (concat transient-common-command-prefix " t")
+          'transient-toggle-common)))
+
+(defcustom transient-common-command-prefix "C-x"
+  "The prefix key used for most commands common to all menus.
+
+Some shared commands are available in all transient menus, most of
+which share a common prefix specified by this option.  By default the
+bindings for these shared commands are only shown after pressing that
+prefix key and before following that up with a valid key binding.
+
+For historic reasons \\`C-x' is used by default, but users are
+encouraged to pick another key, preferably one that is not commonly used
+in Emacs but is still convenient to them.  See info node `(transient)
+Common Suffix Commands'."
+  :type 'key
+  :initialize (lambda (symbol exp)
+                (custom-initialize-default symbol exp)
+                (transient--init-common-commands))
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (transient--init-common-commands)))
 
 (defvar-keymap transient-popup-navigation-map
   :doc "One of the keymaps used when popup navigation is enabled.
@@ -2109,9 +2152,11 @@ of the corresponding object."
 
 (defun transient--make-transient-map ()
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map (if transient--editp
-                               transient-edit-map
-                             transient-map))
+    (cond (transient--editp
+           (keymap-set map (concat transient-common-command-prefix " l")
+                       #'transient-set-level)
+           (set-keymap-parent map transient-edit-map))
+          ((set-keymap-parent map transient-map)))
     (dolist (obj transient--suffixes)
       (let ((key (oref obj key)))
         (when (vectorp key)
@@ -4865,7 +4910,8 @@ Type %s and then %s to describe the respective suffix command.\n"
         (propertize "<KEY>" 'face 'transient-key)
         (propertize "<N>"   'face 'transient-key)
         (propertize " N "   'face 'transient-enabled-suffix)
-        (propertize "C-x l" 'face 'transient-key)
+        (propertize (concat transient-common-command-prefix " l")
+                    'face 'transient-key)
         (propertize "<N>"   'face 'transient-key)
         (propertize " N "   'face 'transient-enabled-suffix)
         (propertize "C-h"   'face 'transient-key)
