@@ -108,13 +108,14 @@ A transient prefix command is invoked like any other command by
 pressing the key that is bound to that command.  The main difference
 to other commands is that a transient prefix command activates a
 transient keymap, which temporarily binds the transient's infix and
-suffix commands, and that those bindings are displayed in a transient
-menu, displayed in a popup buffer.  Bindings from other keymaps may,
-or may not, be disabled while the transient state is in effect.
+suffix commands, and that those bindings are shown in menu buffer,
+which is displayed in a new window, until the menu is exited.
+Bindings from other keymaps may, or may not, be disabled while the
+transient state is in effect.
 
 There are two kinds of commands that are available after invoking a
 transient prefix command; infix and suffix commands.  Infix commands
-set some value (which is then shown in the popup buffer), without
+set some value (which is then shown in the menu buffer), without
 leaving the transient.  Suffix commands, on the other hand, usually
 quit the transient and they may use the values set by the infix
 commands, i.e., the infix *arguments*.
@@ -139,7 +140,7 @@ prefix key, but not the complete transient).
 A transient prefix command can be bound as a suffix of another
 transient.  Invoking such a suffix replaces the current transient
 state with a new transient state, i.e., the available bindings change
-and the information displayed in the popup buffer is updated
+and the information displayed in the menu buffer is updated
 accordingly.  Pressing {{{kbd(C-g)}}} while a nested transient is active only
 quits the innermost transient, causing a return to the previous
 transient.
@@ -495,13 +496,13 @@ window, and the key bindings are the same as for ~scroll-up-command~ and
 
 - Command: transient-scroll-up arg ::
 
-  This command scrolls text of transient popup window upward {{{var(ARG)}}}
+  This command scrolls text of transient's menu window upward {{{var(ARG)}}}
   lines.  If {{{var(ARG)}}} is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-up-command~ (which see).
 
 - Command: transient-scroll-down arg ::
 
-  This command scrolls text of transient popup window down {{{var(ARG)}}}
+  This command scrolls text of transient's menu window down {{{var(ARG)}}}
   lines.  If {{{var(ARG)}}} is ~nil~, then it scrolls near full screen.  This
   is a wrapper around ~scroll-down-command~ (which see).
 
@@ -536,24 +537,23 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 
 - User Option: transient-show-popup ::
 
-  This option controls whether the current transient's infix and
-  suffix commands are shown in the popup buffer.
+  This option controls whether and when transient's menu buffer is
+  shown.
 
-  - If ~t~ (the default) then the popup buffer is shown as soon as a
+  - If ~t~ (the default), then the buffer is shown as soon as a
     transient prefix command is invoked.
 
-  - If ~nil~, then the popup buffer is not shown unless the user
-    explicitly requests it, by pressing an incomplete prefix key
-    sequence.
+  - If ~nil~, then the buffer is not shown unless the user explicitly
+    requests it, by pressing an incomplete prefix key sequence.
 
   - If a number, then the a brief one-line summary is shown instead of
-    the popup buffer.  If zero or negative, then not even that summary
+    the menu buffer.  If zero or negative, then not even that summary
     is shown; only the pressed key itself is shown.
 
-    The popup is shown when the user explicitly requests it by
+    The buffer is shown once the user explicitly requests it by
     pressing an incomplete prefix key sequence.  Unless this is zero,
-    the popup is shown after that many seconds of inactivity (using
-    the absolute value).
+    the menu is shown after that many seconds of inactivity (using the
+    absolute value).
 
 - User Option: transient-show-during-minibuffer-read ::
 
@@ -599,21 +599,21 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 
 - User Option: transient-enable-popup-navigation ::
 
-  This option controls whether navigation commands are enabled in the
-  transient popup buffer.  If the value is ~verbose~ (the default),
+  This option controls whether navigation commands are enabled in
+  transient's menu buffer.  If the value is ~verbose~ (the default),
   brief documentation about the command under point is additionally
   show in the echo area.
 
-  While a transient is active the transient popup buffer is not the
-  current buffer, making it necessary to use dedicated commands to act
-  on that buffer itself.  If this option is non-~nil~, then the
-  following features are available:
+  While a transient is active the menu buffer is not the current
+  buffer, making it necessary to use dedicated commands to act on that
+  buffer itself.  If this option is non-~nil~, then the following
+  features are available:
 
   - {{{kbd(UP)}}} moves the cursor to the previous suffix.
   - {{{kbd(DOWN)}}} moves the cursor to the next suffix.
   - {{{kbd(M-RET)}}} invokes the suffix the cursor is on.
   - {{{kbd(mouse-1)}}} invokes the clicked on suffix.
-  - {{{kbd(C-s)}}} and {{{kbd(C-r)}}} start isearch in the popup buffer.
+  - {{{kbd(C-s)}}} and {{{kbd(C-r)}}} start isearch in the menu buffer.
 
   By default {{{kbd(M-RET)}}} is bound to ~transient-push-button~, instead of
   {{{kbd(RET)}}}, because if a transient allows the invocation of non-suffixes,
@@ -622,8 +622,8 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 
 - User Option: transient-display-buffer-action ::
 
-  This option specifies the action used to display the transient popup
-  buffer.  The transient popup buffer is displayed in a window using
+  This option specifies the action used to display the transient's
+  menu buffer.  The menu buffer is displayed in a window using
   {{{codevar((display-buffer BUFFER transient-display-buffer-action))}}}.
 
   The value of this option has the form {{{codevar((FUNCTION . ALIST))}}},
@@ -687,7 +687,7 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 
 - User Option: transient-mode-line-format ::
 
-  This option controls whether the transient popup buffer has a
+  This option controls whether transient's menu buffer has a
   mode-line, separator line, or neither.
 
   If ~nil~, then the buffer has no mode-line.  If the buffer is not
@@ -768,7 +768,7 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 - User Option: transient-align-variable-pitch ::
 
   This option controls whether columns are aligned pixel-wise in the
-  popup buffer.
+  menu buffer.
 
   If this is non-~nil~, then columns are aligned pixel-wise to support
   variable-pitch fonts.  Keys are not aligned, so you should use a
@@ -782,10 +782,10 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 - User Option: transient-force-fixed-pitch ::
 
   This option controls whether to force the use of a monospaced font
-  in popup buffer.  Even if you use a proportional font for the
-  ~default~ face, you might still want to use a monospaced font in
-  transient's popup buffer.  Setting this option to ~t~ causes ~default~
-  to be remapped to ~fixed-pitch~ in that buffer.
+  in menu buffer.  Even if you use a proportional font for the ~default~
+  face, you might still want to use a monospaced font in the menu
+  buffer.  Setting this option to ~t~ causes ~default~ to be remapped to
+  ~fixed-pitch~ in that buffer.
 
 *** Developer Options
 :PROPERTIES:
@@ -951,7 +951,7 @@ When the user calls a transient prefix command, a transient
 (temporary) keymap is activated, which binds the transient's infix and
 suffix commands, and functions that control the transient state are
 added to ~pre-command-hook~ and ~post-command-hook~.  The available suffix
-and infix commands and their state are shown in a popup buffer until
+and infix commands and their state are shown in a menu buffer until
 the transient state is exited by invoking a suffix command.
 
 Calling an infix command causes its value to be changed.  How that is
@@ -962,7 +962,7 @@ toggled on or off.  More complex infix commands may read a value from
 the user, using the minibuffer.
 
 Calling a suffix command usually causes the transient to be exited;
-the transient keymaps and hook functions are removed, the popup buffer
+the transient keymaps and hook functions are removed, the menu buffer
 no longer shows information about the (no longer bound) suffix
 commands, the values of some public global variables are set, while
 some internal global variables are unset, and finally the command is
@@ -980,11 +980,11 @@ arguments have been set using a command such as ~universal-argument~.
 #+cindex: command dispatchers
 Transient can be used to implement simple “command dispatchers”.  The
 main benefit then is that the user can see all the available commands
-in a popup buffer, which can be thought of as a “menu”.  That is
-useful by itself because it frees the user from having to remember all
-the keys that are valid after a certain prefix key or command.
-Magit's ~magit-dispatch~ (on {{{kbd(C-x M-g)}}}) command is an example of using
-Transient to merely implement a command dispatcher.
+in a temporarily shown buffer, which can be thought of as a “menu”.
+That is useful by itself because it frees the user from having to
+remember all the keys that are valid after a certain prefix key or
+command.  Magit's ~magit-dispatch~ (on {{{kbd(C-x M-g)}}}) command is an example of
+using Transient to merely implement a command dispatcher.
 
 In addition to that, Transient also allows users to interactively pass
 arguments to commands.  These arguments can be much more complex than
@@ -1064,7 +1064,7 @@ that is used to invoke that transient.
   explicitly.
 
   {{{var(GROUP)}}}s add key bindings for infix and suffix commands and specify
-  how these bindings are presented in the popup buffer.  At least one
+  how these bindings are presented in the menu buffer.  At least one
   {{{var(GROUP)}}} has to be specified.  See [[*Binding Suffix and Infix Commands]].
 
   The {{{var(BODY)}}} is optional.  If it is omitted, then {{{var(ARGLIST)}}} is ignored and
@@ -1331,7 +1331,7 @@ argument that is mandatory in all cases.
   also be specified using ~:shortarg~) and the second as the long argument
   (which can also be specified using ~:argument~).
 
-  Only the long argument is displayed in the popup buffer.  See
+  Only the long argument is displayed in the menu buffer.  See
   ~transient-detect-key-conflicts~ for how the short argument may be
   used.
 
@@ -1946,7 +1946,7 @@ beginning of the class specification, e.g., ~[:class transient-columns
 
   This generic function formats the group and its elements and inserts
   the result into the current buffer, which is a temporary buffer.
-  The contents of that buffer are later inserted into the popup buffer.
+  The contents of that buffer are later inserted into the menu buffer.
 
   Functions that are called by this function may need to operate in
   the buffer from which the transient was called.  To do so they can
@@ -2416,7 +2416,7 @@ and ~advice*~ slots (see [[*Slots of ~transient-suffix~]]) are defined.
 
 - ~transient~ Whether to stay transient.  See [[*Transient State]].
 
-- ~format~ The format used to display the suffix in the popup buffer.
+- ~format~ The format used to display the suffix in the menu buffer.
   It must contain the following %-placeholders:
 
   - ~%k~ For the key.
@@ -2596,24 +2596,24 @@ See [[*Enabling and Disabling Suffixes]].
 :APPENDIX:   t
 :END:
 
-** Can I control how the popup buffer is displayed?
+** Can I control how the menu buffer is displayed?
 :PROPERTIES:
 :UNNUMBERED: notoc
 :END:
 
 Yes, see ~transient-display-buffer-action~ in [[*Configuration]].  You can
-also control how the popup buffer is displayed on a case-by-case basis
+also control how the menu buffer is displayed on a case-by-case basis
 by passing ~:display-action~ to ~transient-define-prefix~.
 
-** How can I copy text from the popup buffer?
+** How can I copy text from the menu buffer?
 :PROPERTIES:
 :UNNUMBERED: notoc
 :END:
 
-To be able to mark text in Transient's popup buffer using the mouse,
+To be able to mark text in Transient's menu buffer using the mouse,
 you have to add the below binding.  Note that for technical reasons,
 the region won't be visualized, while doing so.  After you have quit
-the transient popup, you will be able to yank it in another buffer.
+the transient menu, you will be able to yank it in another buffer.
 
 #+begin_src emacs-lisp
   (keymap-set transient-predicate-map

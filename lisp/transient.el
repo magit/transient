@@ -130,20 +130,20 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
   :group 'extensions)
 
 (defcustom transient-show-popup t
-  "Whether to show the current transient in a popup buffer.
+  "Whether and when to show transient's menu in a buffer.
 \\<transient-map>
-- If t, then show the popup as soon as a transient prefix command
+- If t, then show the buffer as soon as a transient prefix command
   is invoked.
 
-- If nil, then do not show the popup unless the user explicitly
+- If nil, then do not show the buffer unless the user explicitly
   requests it, by pressing \\[transient-show] or a prefix key.
 
-- If a number, then delay displaying the popup and instead show
+- If a number, then delay displaying the buffer and instead show
   a brief one-line summary.  If zero or negative, then suppress
   even showing that summary and display the pressed key only.
 
-  Show the popup when the user explicitly requests it by pressing
-  \\[transient-show] or a prefix key.  Unless zero, then also show the popup
+  Show the buffer once the user explicitly requests it by pressing
+  \\[transient-show] or a prefix key.  Unless zero, then also show the buffer
   after that many seconds of inactivity (using the absolute value)."
   :package-version '(transient . "0.1.0")
   :group 'transient
@@ -153,12 +153,12 @@ TYPE is a type descriptor as accepted by `cl-typep', which see."
                  (number :tag "After delay" 1)))
 
 (defcustom transient-enable-popup-navigation 'verbose
-  "Whether navigation commands are enabled in the transient popup.
+  "Whether navigation commands are enabled in the menu buffer.
 
 If the value is `verbose', additionally show brief documentation
 about the command under point in the echo area.
 
-While a transient is active the transient popup buffer is not the
+While a transient is active transient's menu buffer is not the
 current buffer, making it necessary to use dedicated commands to
 act on that buffer itself.  If this is non-nil, then the following
 bindings are available:
@@ -171,7 +171,7 @@ bindings are available:
 - \\`<mouse-1>' and \\`<mouse-2>' invoke the clicked on suffix.
 \\<transient-popup-navigation-map>\
 - \\[transient-isearch-backward]\
- and \\[transient-isearch-forward] start isearch in the popup buffer.
+ and \\[transient-isearch-forward] start isearch in the menu buffer.
 
 \\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-push-button'.
 All other bindings are in `transient-popup-navigation-map'.
@@ -191,9 +191,9 @@ if no transient were active."
     (side . bottom)
     (dedicated . t)
     (inhibit-same-window . t))
-  "The action used to display the transient popup buffer.
+  "The action used to display transient's menu buffer.
 
-The transient popup buffer is displayed in a window using
+The transient menu buffer is displayed in a window using
 
   (display-buffer BUFFER transient-display-buffer-action)
 
@@ -253,7 +253,7 @@ is in characters."
   :type 'natnum)
 
 (defcustom transient-mode-line-format 'line
-  "The mode-line format for the transient popup buffer.
+  "The mode-line format for transient's menu buffer.
 
 If nil, then the buffer has no mode-line.  If the buffer is not
 displayed right above the echo area, then this probably is not
@@ -423,7 +423,7 @@ using a layout optimized for Lisp.
 
 If non-nil, then the key binding of each suffix is colorized to
 indicate whether it exits the transient state or not, and the
-line that is drawn below the transient popup buffer is used to
+line that is drawn below transient's menu buffer is used to
 indicate the behavior of non-suffix commands."
   :package-version '(transient . "0.5.0")
   :group 'transient
@@ -450,7 +450,7 @@ a warning.  If this is non-nil, they signal an error instead."
   :type 'boolean)
 
 (defcustom transient-align-variable-pitch nil
-  "Whether to align columns pixel-wise in the popup buffer.
+  "Whether to align columns pixel-wise in the menu buffer.
 
 If this is non-nil, then columns are aligned pixel-wise to
 support variable-pitch fonts.  Keys are not aligned, so you
@@ -467,11 +467,11 @@ See also `transient-force-fixed-pitch'."
   :type 'boolean)
 
 (defcustom transient-force-fixed-pitch nil
-  "Whether to force use of monospaced font in the popup buffer.
+  "Whether to force use of monospaced font in the menu buffer.
 
 Even if you use a proportional font for the `default' face,
 you might still want to use a monospaced font in transient's
-popup buffer.  Setting this option to t causes `default' to
+menu buffer.  Setting this option to t causes `default' to
 be remapped to `fixed-pitch' in that buffer.
 
 See also `transient-align-variable-pitch'."
@@ -1031,7 +1031,7 @@ argument supported by the constructor of that class.  The
 explicitly.
 
 GROUPs add key bindings for infix and suffix commands and specify
-how these bindings are presented in the popup buffer.  At least
+how these bindings are presented in the menu buffer.  At least
 one GROUP has to be specified.  See info node `(transient)Binding
 Suffix and Infix Commands'.
 
@@ -1714,7 +1714,7 @@ That buffer is current and empty when this hook runs.")
 (defconst transient--exit nil "Do exit the transient.")
 
 (defvar transient--exitp nil "Whether to exit the transient.")
-(defvar transient--showp nil "Whether to show the transient popup buffer.")
+(defvar transient--showp nil "Whether to show the transient menu buffer.")
 (defvar transient--helpp nil "Whether help-mode is active.")
 (defvar transient--docsp nil "Whether docstring-mode is active.")
 (defvar transient--editp nil "Whether edit-mode is active.")
@@ -1738,7 +1738,7 @@ That buffer is current and empty when this hook runs.")
   "The transient menu buffer.")
 
 (defvar transient--window nil
-  "The window used to display the transient popup buffer.")
+  "The window used to display transient's menu buffer.")
 
 (defvar transient--original-window nil
   "The window that was selected before the transient was invoked.
@@ -2042,7 +2042,7 @@ Common Suffix Commands'."
          (transient--init-common-commands)))
 
 (defvar-keymap transient-popup-navigation-map
-  :doc "One of the keymaps used when popup navigation is enabled.
+  :doc "One of the keymaps used when menu navigation is enabled.
 See `transient-enable-popup-navigation'."
   "<down-mouse-1>" #'transient-noop
   "<up>"   #'transient-backward-button
@@ -2052,7 +2052,7 @@ See `transient-enable-popup-navigation'."
   "M-RET"  #'transient-push-button)
 
 (defvar-keymap transient-button-map
-  :doc "One of the keymaps used when popup navigation is enabled.
+  :doc "One of the keymaps used when menu navigation is enabled.
 See `transient-enable-popup-navigation'."
   "<mouse-1>" #'transient-push-button
   "<mouse-2>" #'transient-push-button)
@@ -3223,7 +3223,7 @@ This should never happen.
 Please open an issue and post the shown command log." :error)))
 
 (defun transient-inhibit-move ()
-  "Warn the user that popup navigation is disabled."
+  "Warn the user that menu navigation is disabled."
   (interactive)
   (message "To enable use of `%s', please customize `%s'"
            this-original-command
@@ -3244,12 +3244,12 @@ Please open an issue and post the shown command log." :error)))
   (interactive))
 
 (defun transient-update ()
-  "Redraw the transient's state in the popup buffer."
+  "Redraw the transient's state in the menu buffer."
   (interactive)
   (setq prefix-arg current-prefix-arg))
 
 (defun transient-show ()
-  "Show the transient's state in the popup buffer."
+  "Show the transient's state in the menu buffer."
   (interactive)
   (setq transient--showp t))
 
@@ -4962,10 +4962,10 @@ This is used when a tooltip is needed.")
         (let ((message-log-max nil))
           (message "%s" doc))))))
 
-;;; Popup Navigation
+;;; Menu Navigation
 
 (defun transient-scroll-up (&optional arg)
-  "Scroll text of transient popup window upward ARG lines.
+  "Scroll text of transient's menu window upward ARG lines.
 If ARG is nil scroll near full screen.  This is a wrapper
 around `scroll-up-command' (which see)."
   (interactive "^P")
@@ -4973,7 +4973,7 @@ around `scroll-up-command' (which see)."
     (scroll-up-command arg)))
 
 (defun transient-scroll-down (&optional arg)
-  "Scroll text of transient popup window down ARG lines.
+  "Scroll text of transient's menu window down ARG lines.
 If ARG is nil scroll near full screen.  This is a wrapper
 around `scroll-down-command' (which see)."
   (interactive "^P")
@@ -4981,7 +4981,7 @@ around `scroll-down-command' (which see)."
     (scroll-down-command arg)))
 
 (defun transient-backward-button (n)
-  "Move to the previous button in the transient popup buffer.
+  "Move to the previous button in transient's menu buffer.
 See `backward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
@@ -4990,7 +4990,7 @@ See `backward-button' for information about N."
       (transient-show-summary (get-text-property (point) 'suffix)))))
 
 (defun transient-forward-button (n)
-  "Move to the next button in the transient popup buffer.
+  "Move to the next button in transient's menu buffer.
 See `forward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
@@ -5030,7 +5030,7 @@ See `forward-button' for information about N."
                beg 'face nil (line-end-position))))))
 
 ;;; Compatibility
-;;;; Popup Isearch
+;;;; Menu Isearch
 
 (defvar-keymap transient--isearch-mode-map
   :parent isearch-mode-map
