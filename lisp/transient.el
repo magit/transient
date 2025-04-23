@@ -1228,6 +1228,8 @@ commands are aliases for."
     ;; ARGLIST and FORM are only optional for backward compatibility.
     ;; This is necessary because "emoji.el" from Emacs 29 calls this
     ;; function directly, with just one argument.
+    (declare (advertised-calling-convention
+              (args arglist form &optional nobody) "0.7.1"))
     (unless (listp arglist)
       (error "Mandatory ARGLIST is missing"))
     (let (class keys suffixes docstr declare (interactive-only t))
