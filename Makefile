@@ -20,6 +20,7 @@ help:
 	$(info make release      - publish release manuals)
 	$(info make stats        - generate statistics)
 	$(info make stats-upload - publish statistics)
+	$(info make test         - run tests)
 	$(info make clean        - remove most generated files)
 	@printf "\n"
 
@@ -53,6 +54,10 @@ stats:
 stats-upload:
 	@$(MAKE) -C docs stats-upload
 
+test: lisp
+	@$(MAKE) -C test test
+
 clean:
 	@$(MAKE) -C lisp clean
 	@$(MAKE) -C docs clean
+	@$(MAKE) -C test clean
