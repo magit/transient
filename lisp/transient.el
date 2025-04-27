@@ -1604,8 +1604,10 @@ See info node `(transient)Modifying Existing Transients'."
                 (setq val nil))
             (setq val (if loc (car mem) mem)))))
       (setq loc (car loc)))
+    (when (stringp loc)
+      (setq loc (kbd loc)))
     (if loc
-        (transient--layout-member-1 (transient--kbd loc) val remove)
+        (transient--layout-member-1 loc val remove)
       val)))
 
 (defun transient--layout-member-1 (loc layout remove)
@@ -1629,18 +1631,10 @@ See info node `(transient)Modifying Existing Transients'."
                               (cmd (plist-get def :command)))
                          (if (symbolp loc)
                              (eq cmd loc)
-                           (equal (transient--kbd
-                                   (or (plist-get def :key)
-                                       (transient--command-key cmd)))
+                           (equal (kbd (or (plist-get def :key)
+                                           (transient--command-key cmd)))
                                   loc)))))
                 (aref group 3)))
-
-(defun transient--kbd (keys)
-  (when (vectorp keys)
-    (setq keys (key-description keys)))
-  (when (stringp keys)
-    (setq keys (kbd keys)))
-  keys)
 
 (defun transient--spec-key (spec)
   (let ((plist (nth 2 spec)))
@@ -1894,9 +1888,8 @@ probably use this instead:
        ((length= suffixes 1)
         (car suffixes))
        ((cl-find-if (lambda (obj)
-                      (equal
-                       (listify-key-sequence (transient--kbd (oref obj key)))
-                       (listify-key-sequence (this-command-keys))))
+                      (equal (listify-key-sequence (kbd (oref obj key)))
+                             (listify-key-sequence (this-command-keys))))
                     suffixes))
        ;; COMMAND is only provided if `this-command' is meaningless, in
        ;; which case `this-command-keys' is also meaningless, making it
@@ -2425,7 +2418,7 @@ value.  Otherwise return CHILDREN as is.")
   (pcase-let* ((`(,level ,class ,args) spec)
                (cmd (plist-get args :command))
                (_ (transient--load-command-if-autoload cmd))
-               (key (transient--kbd (plist-get args :key)))
+               (key (kbd (plist-get args :key)))
                (proto (and cmd (transient--suffix-prototype cmd)))
                (level (or (alist-get (cons cmd key) levels nil nil #'equal)
                           (alist-get cmd levels)
