@@ -1079,9 +1079,10 @@ to the setup function:
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--prefix
             (,(or class 'transient-prefix) :command ',name ,@slots))
-       (put ',name 'transient--layout
-            (list ,@(mapcan (lambda (s) (transient--parse-child name s))
-                            suffixes))))))
+       (transient--set-layout
+        ',name
+        (list ,@(mapcan (lambda (s) (transient--parse-child name s))
+                        suffixes))))))
 
 (defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
@@ -1447,6 +1448,13 @@ symbol property.")
   (setq read-extended-command-predicate
         #'transient-command-completion-not-suffix-only-p))
 
+(defun transient--set-layout (prefix layout)
+  (put prefix 'transient--layout layout))
+
+(defun transient--get-layout (prefix)
+  (or (get prefix 'transient--layout)
+      (error "Not a transient prefix command: %s" prefix)))
+
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
 PREFIX is a prefix command, a symbol.
@@ -1590,8 +1598,7 @@ See info node `(transient)Modifying Existing Transients'."
           (plist-put (elt suf 2) prop value))))
 
 (defun transient--layout-member (loc prefix &optional remove)
-  (let ((val (or (get prefix 'transient--layout)
-                 (error "%s is not a transient command" prefix))))
+  (let ((val (transient--get-layout prefix)))
     (when (vectorp loc)
       (setq loc (append loc nil)))
     (when (listp loc)
@@ -1602,7 +1609,7 @@ See info node `(transient)Modifying Existing Transients'."
               (let ((rest (delq (car mem) children)))
                 (if (vectorp val)
                     (aset val 3 rest)
-                  (put prefix 'transient--layout rest))
+                  (transient--set-layout prefix rest))
                 (setq val nil))
             (setq val (if loc (car mem) mem)))))
       (setq loc (car loc)))
@@ -2003,11 +2010,11 @@ that the special meaning of \"{p}\" does not apply when modifying these
 bindings.")
 
 (defun transient--init-common-commands ()
-  (put 'transient-common-commands
-       'transient--layout
-       (list (eval (car (transient--parse-child 'transient-common-commands
-                                                transient-common-commands))
-                   t)))
+  (transient--set-layout
+   'transient-common-commands
+   (list (eval (car (transient--parse-child 'transient-common-commands
+                                            transient-common-commands))
+               t)))
   (defvar transient-common-command-prefix)
   (defvar transient--docstr-hint-1)
   (defvar transient--docstr-hint-2)
@@ -2378,10 +2385,9 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--init-suffixes (name)
   (let ((levels (alist-get name transient-levels)))
     (mapcan (lambda (c) (transient--init-child levels c nil))
-            (append (get name 'transient--layout)
+            (append (transient--get-layout name)
                     (and (not transient--editp)
-                         (get 'transient-common-commands
-                              'transient--layout))))))
+                         (transient--get-layout 'transient-common-commands))))))
 
 (defun transient--flatten-suffixes (layout)
   (cl-labels ((s (def)
