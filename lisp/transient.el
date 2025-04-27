@@ -1476,12 +1476,11 @@ Intended for use in a group's `:setup-children' function."
 
 (defun transient--insert-suffix (prefix loc suffix action &optional keep-other)
   (let* ((suf (cl-etypecase suffix
-                (vector (transient--parse-group  prefix suffix))
-                (list   (transient--parse-suffix prefix suffix))
+                (vector (eval (transient--parse-group  prefix suffix) t))
+                (list   (eval (transient--parse-suffix prefix suffix) t))
                 (string suffix)))
          (mem (transient--layout-member loc prefix))
          (elt (car mem)))
-    (setq suf (eval suf t))
     (cond
      ((not mem)
       (funcall (if transient-error-on-insert-failure #'error #'message)
