@@ -1571,17 +1571,6 @@ See info node `(transient)Modifying Existing Transients'."
   (declare (indent defun))
   (transient--layout-member loc prefix 'remove))
 
-(defun transient-get-suffix (prefix loc)
-  "Return the suffix or group at LOC in PREFIX.
-PREFIX is a prefix command, a symbol.
-LOC is a command, a key vector, a key description (a string
-  as returned by `key-description'), or a coordination list
-  (whose last element may also be a command or key).
-See info node `(transient)Modifying Existing Transients'."
-  (if-let ((mem (transient--layout-member loc prefix)))
-      (car mem)
-    (error "%s not found in %s" loc prefix)))
-
 (defun transient-suffix-put (prefix loc prop value)
   "Edit the suffix at LOC in PREFIX, setting PROP to VALUE.
 PREFIX is a prefix command, a symbol.
@@ -1594,6 +1583,17 @@ See info node `(transient)Modifying Existing Transients'."
   (let ((suf (transient-get-suffix prefix loc)))
     (setf (elt suf 2)
           (plist-put (elt suf 2) prop value))))
+
+(defun transient-get-suffix (prefix loc)
+  "Return the suffix or group at LOC in PREFIX.
+PREFIX is a prefix command, a symbol.
+LOC is a command, a key vector, a key description (a string
+  as returned by `key-description'), or a coordination list
+  (whose last element may also be a command or key).
+See info node `(transient)Modifying Existing Transients'."
+  (if-let ((mem (transient--layout-member loc prefix)))
+      (car mem)
+    (error "%s not found in %s" loc prefix)))
 
 (defun transient--layout-member (loc prefix &optional remove)
   (let ((layout (transient--get-layout prefix)))
