@@ -1456,20 +1456,24 @@ symbol property.")
 
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
-PREFIX is a prefix command, a symbol.
+PREFIX is a prefix command symbol or object.
 SUFFIX is a suffix command or a group specification (of
   the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
-  (cl-assert (and prefix (symbolp prefix)))
+  (if (cl-typep prefix 'transient-prefix)
+      (setq prefix (oref prefix command))
+    (transient--get-layout prefix)) ; validate
   (eval (car (transient--parse-child prefix suffix)) t))
 
 (defun transient-parse-suffixes (prefix suffixes)
   "Parse SUFFIXES, to be added to PREFIX.
-PREFIX is a prefix command, a symbol.
+PREFIX is a prefix command symbol or object.
 SUFFIXES is a list of suffix command or a group specification
   (of the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
-  (cl-assert (and prefix (symbolp prefix)))
+  (if (cl-typep prefix 'transient-prefix)
+      (setq prefix (oref prefix command))
+    (transient--get-layout prefix)) ; validate
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
 ;;; Edit
