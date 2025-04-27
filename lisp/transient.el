@@ -1066,7 +1066,7 @@ to the setup function:
            (indent defun)
            (doc-string 3))
   (pcase-let
-      ((`(,class ,slots ,suffixes ,docstr ,body ,interactive-only)
+      ((`(,class ,slots ,groups ,docstr ,body ,interactive-only)
         (transient--expand-define-args args arglist 'transient-define-prefix)))
     `(progn
        (defalias ',name
@@ -1081,8 +1081,7 @@ to the setup function:
             (,(or class 'transient-prefix) :command ',name ,@slots))
        (transient--set-layout
         ',name
-        (list ,@(mapcan (lambda (s) (transient--parse-child name s))
-                        suffixes))))))
+        (list ,@(mapcan (lambda (s) (transient--parse-child name s)) groups))))))
 
 (defmacro transient-define-suffix (name arglist &rest args)
   "Define NAME as a transient suffix command.
