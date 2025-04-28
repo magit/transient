@@ -1,4 +1,17 @@
 # -*- mode: org -*-
+* v0.8.8    UNRELEASED
+
+- Added option ~transient-common-command-prefix~ to allow using a key
+  other than ~C-x~ as the prefix key used for many commands common to
+  all transient menus.  Because the use of the ~C-x~ prefix for these
+  commands causes many global bindings to be shadowed even for menus
+  that allow invoking non-suffix commands, I highly recommend that
+  users customize this.  7d08039c
+
+- Added option ~transient-error-on-insert-failure~, defaulting to ~nil~.
+  I.e., go back to the pre-v0.8.7 behavior by default but let users
+  opt-in to errors for certain minor issues.  #374
+
 * v0.8.7    2025-04-01
 
 - Added new hook ~transient-post-exit-hook~.  55050b60
