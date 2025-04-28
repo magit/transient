@@ -2323,6 +2323,7 @@ EDIT may be non-nil."
        (transient--redisplay))
      (get name 'transient--prefix))
     (transient--setup-transient)
+    (transient--suspend-text-conversion-style)
     (transient--suspend-which-key-mode)))
 
 (cl-defgeneric transient-setup-children (group children)
@@ -5109,6 +5110,16 @@ search instead."
                               "\\s-+\\(" lisp-mode-symbol-regexp "\\)")
                   2)
             lisp-imenu-generic-expression :test #'equal)
+
+(defun transient--suspend-text-conversion-style ()
+  (static-if (boundp 'overriding-text-conversion-style) ; since Emasc 30.1
+      (when text-conversion-style
+        (letrec ((suspended overriding-text-conversion-style)
+                 (fn (lambda ()
+                       (setq overriding-text-conversion-style nil)
+                       (remove-hook 'transient-exit-hook fn))))
+          (setq overriding-text-conversion-style suspended)
+          (add-hook 'transient-exit-hook fn)))))
 
 (declare-function which-key-mode "ext:which-key" (&optional arg))
 
