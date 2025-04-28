@@ -1255,10 +1255,19 @@ commands are aliases for."
               (setq class v)
             (push k keys)
             (push v keys))))
-      (while (let ((arg (car args)))
-               (or (vectorp arg)
-                   (and arg (symbolp arg))))
-        (push (pop args) suffixes))
+      (while-let
+          ((arg (car args))
+           (arg (cond
+                 ;; Inline group definition.
+                 ((vectorp arg)
+                  (pop args))
+                 ;; Quoted include, as one would expect.
+                 ((eq (car-safe arg) 'quote)
+                  (cadr (pop args)))
+                 ;; Unquoted include, for compatibility.
+                 ((and arg (symbolp arg))
+                  (pop args)))))
+        (push arg suffixes))
       (when (eq (car-safe (car args)) 'declare)
         (setq declare (car args))
         (setq args (cdr args))
