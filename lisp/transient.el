@@ -2322,8 +2322,8 @@ EDIT may be non-nil."
        (setq transient--minibuffer-depth (minibuffer-depth))
        (transient--redisplay))
      (get name 'transient--prefix))
-    (transient--setup-transient)
     (transient--suspend-text-conversion-style)
+    (transient--setup-transient)
     (transient--suspend-which-key-mode)))
 
 (cl-defgeneric transient-setup-children (group children)
