@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.8.8    UNRELEASED
+* v0.8.8    2025-05-01
 
 - Added option ~transient-common-command-prefix~ to allow using a key
   other than ~C-x~ as the prefix key used for many commands common to
