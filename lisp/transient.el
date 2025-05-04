@@ -1506,8 +1506,10 @@ Intended for use in a group's `:setup-children' function."
                    (and (not (and (eq action 'replace)
                                   (eq conflict elt)))
                         (or (not keep-other)
-                            (eq (plist-get (nth 2 suf) :command)
-                                (plist-get (nth 2 conflict) :command)))
+                            (eq (plist-get (transient--suffix-props suf)
+                                           :command)
+                                (plist-get (transient--suffix-props conflict)
+                                           :command)))
                         (equal (transient--suffix-predicate suf)
                                (transient--suffix-predicate conflict)))))
         (transient-remove-suffix prefix key))
@@ -1584,9 +1586,13 @@ LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
 See info node `(transient)Modifying Existing Transients'."
-  (let ((suf (transient-get-suffix prefix loc)))
-    (setf (elt suf 2)
-          (plist-put (elt suf 2) prop value))))
+  (let ((child (transient-get-suffix prefix loc)))
+    (if (vectorp child)
+        (aset child 2 (plist-put (aref child 2) prop value))
+      (setf (caddr child)
+            (plist-put (transient--suffix-props child) prop value)))))
+
+(defalias 'transient--suffix-props #'caddr)
 
 (defun transient-get-suffix (prefix loc)
   "Return the suffix or group at LOC in PREFIX.
@@ -1637,20 +1643,20 @@ See info node `(transient)Modifying Existing Transients'."
 (defun transient--group-member (loc group)
   (cl-member-if (lambda (suffix)
                   (and (listp suffix)
-                       (let* ((plist (nth 2 suffix))
-                              (cmd (plist-get plist :command)))
+                       (let* ((props (transient--suffix-props suffix))
+                              (cmd (plist-get props :command)))
                          (if (symbolp loc)
                              (eq cmd loc)
-                           (equal (kbd (or (plist-get plist :key)
+                           (equal (kbd (or (plist-get props :key)
                                            (transient--command-key cmd)))
                                   loc)))))
                 (aref group 3)))
 
 (defun transient--spec-key (spec)
-  (let ((plist (nth 2 spec)))
-    (or (plist-get plist :key)
+  (let ((props (transient--suffix-props spec)))
+    (or (plist-get props :key)
         (transient--command-key
-         (plist-get plist :command)))))
+         (plist-get props :command)))))
 
 (defun transient--command-key (cmd)
   (and-let* ((obj (transient--suffix-prototype cmd)))
@@ -2538,9 +2544,9 @@ value.  Otherwise return CHILDREN as is.")
    (default)))
 
 (defun transient--suffix-predicate (spec)
-  (let ((plist (nth 2 spec)))
+  (let ((props (transient--suffix-props spec)))
     (seq-some (lambda (prop)
-                (and-let* ((pred (plist-get plist prop)))
+                (and-let* ((pred (plist-get props prop)))
                   (list prop pred)))
               '( :if :if-not
                  :if-nil :if-non-nil
