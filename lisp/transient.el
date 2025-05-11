@@ -1905,7 +1905,7 @@ probably use this instead:
        ;; If COMMAND is nil, then failure to disambiguate likely means
        ;; that there is a bug somewhere.
        ((length> suffixes 1)
-        (error "BUG: Cannot unambigiously determine suffix object"))
+        (error "BUG: Cannot unambiguously determine suffix object"))
        ;; It is legimate to use this function as a predicate of sorts.
        ;; `transient--pre-command' and `transient-help' are examples.
        (t nil))))
@@ -5112,7 +5112,7 @@ search instead."
             lisp-imenu-generic-expression :test #'equal)
 
 (defun transient--suspend-text-conversion-style ()
-  (static-if (boundp 'overriding-text-conversion-style) ; since Emasc 30.1
+  (static-if (boundp 'overriding-text-conversion-style) ; since Emacs 30.1
       (when text-conversion-style
         (letrec ((suspended overriding-text-conversion-style)
                  (fn (lambda ()

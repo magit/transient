@@ -56,7 +56,7 @@ Bug fixes:
 
 Bug fixes:
 
-- ~transient--setup-recursion~ did not consider the ~resurse~ shorthand.
+- ~transient--setup-recursion~ did not consider the ~recurse~ shorthand.
   32a7e256
 
 - The parent group was not always stored in suffix objects.  #354
