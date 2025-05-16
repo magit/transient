@@ -1454,6 +1454,8 @@ symbol property.")
   (or (get prefix 'transient--layout)
       (error "Not a transient prefix command: %s" prefix)))
 
+(defalias 'transient--get-children #'transient--get-layout)
+
 (defun transient-parse-suffix (prefix suffix)
   "Parse SUFFIX, to be added to PREFIX.
 PREFIX is a prefix command symbol or object.
@@ -2392,9 +2394,9 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--init-suffixes (name)
   (let ((levels (alist-get name transient-levels)))
     (mapcan (lambda (c) (transient--init-child levels c nil))
-            (append (transient--get-layout name)
+            (append (transient--get-children name)
                     (and (not transient--editp)
-                         (transient--get-layout 'transient-common-commands))))))
+                         (transient--get-children 'transient-common-commands))))))
 
 (defun transient--flatten-suffixes (layout)
   (cl-labels ((s (def)
