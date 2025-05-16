@@ -20,7 +20,7 @@ EMACS_ARGS ?= --eval "(progn \
   (put 'when-let 'byte-obsolete-info nil))"
 
 LOAD_PATH  ?= $(addprefix -L ../../,$(DEPS))
-LOAD_PATH  += -L .
+LOAD_PATH  += -L $(TOP)lisp
 
 ifndef ORG_LOAD_PATH
 ORG_LOAD_PATH  = -L ../../org/lisp
@@ -33,3 +33,7 @@ MANUAL_HTML_ARGS ?= --css-ref /assets/page.css
 GITSTATS      ?= gitstats
 GITSTATS_DIR  ?= $(TOP)docs/stats
 GITSTATS_ARGS ?= -c style=https://magit.vc/assets/stats.css -c max_authors=999
+
+%.elc: %.el
+	@printf "Compiling $<\n"
+	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) -f batch-byte-compile $<
