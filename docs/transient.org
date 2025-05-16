@@ -875,11 +875,11 @@ The following functions share a few arguments:
   {{{var(SUFFIX)}}} may also be a group in the same form as expected by
   ~transient-define-prefix~.  See [[*Group Specifications]].
 
-- {{{var(LOC)}}} is a command, a key vector, a key description (a string as
-  returned by ~key-description~), or a list specifying coordinates (the
-  last element may also be a command or key).  For example ~(1 0 -1)~
-  identifies the last suffix (~-1~) of the first subgroup (~0~) of the
-  second group (~1~).
+- {{{var(LOC)}}} is a command, a key description (a string as returned by
+  ~key-description~ and understood by ~kbd~), or a list specifying
+  coordinates (the last element may also be a command or key).  For
+  example ~(1 0 -1)~ identifies the last suffix (~-1~) of the first
+  subgroup (~0~) of the second group (~1~).
 
   If {{{var(LOC)}}} is a list of coordinates, then it can be used to identify a
   group, not just an individual suffix command.
@@ -1285,7 +1285,15 @@ the object's values just for the binding inside this transient.
 - {{{var(LEVEL)}}} is the suffix level, an integer between 1 and 7.  See
   [[*Enabling and Disabling Suffixes]].
 
-- {{{var(KEY)}}} is the key binding, either a vector or key description string.
+- KEY is the key binding, a string in the format returned by
+  ~describe-key~ and understood by ~kbd~.
+
+  That format is more permissive than the one accepted by ~key-valid-p~.
+  Being more permissive makes it possible, for example, to write the
+  key binding, which toggles the ~-a~ command line argument, as "-a",
+  instead of having to write "- a".  Likewise additional spaces can be
+  added, which is not removed when displaying the binding in the menu,
+  which is useful for alignment purposes.
 
 - {{{var(DESCRIPTION)}}} is the description, either a string or a function that
   takes zero or one arguments (the suffix object) and returns a string.
@@ -2410,7 +2418,15 @@ and ~advice*~ slots (see [[*Slots of ~transient-suffix~]]) are defined.
 :UNNUMBERED: notoc
 :END:
 
-- ~key~ The key, a key vector or a key description string.
+- ~key~ is the key binding, a string in the format returned by
+  ~describe-key~ and understood by ~kbd~.
+
+  That format is more permissive than the one accepted by ~key-valid-p~.
+  Being more permissive makes it possible, for example, to write the
+  key binding, which toggles the ~-a~ command line argument, as "-a",
+  instead of having to write "- a".  Likewise additional spaces can be
+  added, which is not removed when displaying the binding in the menu,
+  which is useful for alignment purposes.
 
 - ~command~ The command, a symbol.
 
