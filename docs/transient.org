@@ -860,11 +860,14 @@ with an example:
 #+end_src
 
 This inserts a new infix argument to toggle the ~--reverse~ argument
-after the infix argument that toggles ~-3~ in ~magit-patch-apply~.
+after the infix argument that is bound to ~-3~ in ~magit-patch-apply~.
 
 The following functions share a few arguments:
 
 - {{{var(PREFIX)}}} is a transient prefix command, a symbol.
+
+  PREFIX may also by a symbol identifying a separately defined group,
+  which can be included in multiple prefixes.  See TODO.
 
 - {{{var(SUFFIX)}}} is a transient infix or suffix specification in the same form
   as expected by ~transient-define-prefix~.  Note that an infix is a
@@ -875,24 +878,32 @@ The following functions share a few arguments:
   {{{var(SUFFIX)}}} may also be a group in the same form as expected by
   ~transient-define-prefix~.  See [[*Group Specifications]].
 
-- {{{var(LOC)}}} is a command, a key description (a string as returned by
-  ~key-description~ and understood by ~kbd~), or a list specifying
-  coordinates (the last element may also be a command or key).  For
-  example ~(1 0 -1)~ identifies the last suffix (~-1~) of the first
-  subgroup (~0~) of the second group (~1~).
+- {{{var(LOC)}}} is a key description (a string as returned by ~key-description~
+  and understood by ~kbd~), a command, a symbol identifying an included
+  group, or a vector specifying coordinates.  For example, ~[1 0 -1]~
+  identifies the last suffix (~-1~) of the first subgroup (~0~) of the
+  second group (~1~).
 
-  If {{{var(LOC)}}} is a list of coordinates, then it can be used to identify a
-  group, not just an individual suffix command.
+  If {{{var(LOC)}}} is a vector, then it can be used to identify a group, not
+  just an individual suffix command.  The last element in a vector may
+  also be a symbol or key, in which case the preceding elements must
+  match a group and the last element is looked up within that group.
 
   The function ~transient-get-suffix~ can be useful to determine whether
-  a certain coordination list identifies the suffix or group that you
+  a certain coordinate vector identifies the suffix or group that you
   expect it to identify.  In hairy cases it may be necessary to look
-  at the definition of the transient prefix command.
+  at the internal layout representation, which you can access using
+  the function ~transient--get-layout~.
 
 These functions operate on the information stored in the
-~transient--layout~ property of the {{{var(PREFIX)}}} symbol.  Suffix entries in
-that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, where
-{{{var(PLIST)}}} should set at least ~:key~, ~:description~ and ~:command~.
+~transient--layout~ property of the {{{var(PREFIX)}}} symbol.  Elements in that
+tree are not objects but have the form {{{codevar((CLASS PLIST) for suffixes)}}} and
+[CLASS PLIST CHILDREN] for groups.  At the root of the tree is an
+element [N nil CHILDREN], where N is the version of the layout format,
+currently and hopefully for a long time 2.  While that element looks
+like a group vector, that element does not count when identifying a
+group using a coordinate vector, i.e., [0] is its first child, not the
+root element itself.
 
 - Function: transient-insert-suffix prefix loc suffix &optional keep-other ::
 - Function: transient-append-suffix prefix loc suffix &optional keep-other ::
@@ -906,8 +917,8 @@ that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, 
   they are never active at the same time, see [[*Predicate Slots]].
 
   Unfortunately both false-positives and false-negatives are possible.
-  To deal with the former use non-~nil~ {{{var(KEEP-OTHER.)}}}  The symbol ~always~
-  prevents the removal of a false-positive in some cases where other
+  To deal with the former, use non-~nil~ {{{var(KEEP-OTHER.)}}}  The symbol ~always~
+  prevents the removal of a false-positive, in some cases where other
   non-~nil~ values would fail.  To deal with false-negatives remove the
   conflicting binding separately, using ~transient-remove-suffix~.
 
@@ -929,6 +940,19 @@ that tree are not objects but have the form {{{codevar((LEVEL CLASS PLIST))}}}, 
 
   This function edits the suffix or group at {{{var(LOC)}}} in {{{var(PREFIX)}}}, by setting
   the {{{var(PROP)}}} of its plist to {{{var(VALUE)}}}.
+
+Some prefix commands share suffixes, which are separately and then
+included in each prefix when it is defined.  The inclusion is done by
+reference, the included suffix groups are not inlined by default.  So
+if you change, for example, the key binding for an argument in
+~magit-diff~ (~d~) the same change also applies to ~magit-diff-refresh~ (~D~).
+In the rare case that this is not desirable use ~transient-inline-group~
+before making changes to included suffixes.
+
+- Function: transient-inline-group PREFIX GROUP ::
+
+  This function inlines the included GROUP into PREFIX, by replacing
+  the symbol GROUP with its expanded layout in the layout of PREFIX.
 
 Most of these functions do not signal an error if they cannot perform
 the requested modification.  The functions that insert new suffixes
@@ -1094,6 +1118,22 @@ that is used to invoke that transient.
 
   For example, the scope of the ~magit-branch-configure~ transient is
   the branch whose variables are being configured.
+
+Sometimes multiple prefix commands share a common set of suffixes.
+For example, while ~magit-diff~ (~d~) and ~magit-diff-refresh~ (~D~) offer
+different suffixes to actually create or update a diff, they both
+offer the same infix arguments to control how that diff is formatted.
+Such shared groups should be defined using ~transient-define-group~
+and then included in multiple prefixes, by using the symbol that
+identifies the group in the prefix definition, in a location where
+you would otherwise use a group vector.  If an included group is
+placed at the top-level of a prefix (as opposed of inside inside
+a vector as a child group), then the symbol should be quoted.
+
+- Macro: transient-define-group name group... ::
+
+  This macro define one or more groups and stores them in symbol NAME.
+  GROUPs have the same form as for ~transient-define-prefix~.
 
 ** Binding Suffix and Infix Commands
 
