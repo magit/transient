@@ -1591,9 +1591,8 @@ LOC is a command, a key vector, a key description (a string
   as returned by `key-description'), or a coordination list
   (whose last element may also be a command or key).
 See info node `(transient)Modifying Existing Transients'."
-  (if-let ((mem (transient--layout-member loc prefix)))
-      (car mem)
-    (error "%s not found in %s" loc prefix)))
+  (or (car (transient--layout-member loc prefix))
+      (error "%s not found in %s" loc prefix)))
 
 (defun transient--layout-member (loc prefix &optional remove)
   (let ((layout (transient--get-layout prefix)))
