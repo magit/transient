@@ -1592,6 +1592,8 @@ See info node `(transient)Modifying Existing Transients'."
 (defun transient--layout-member (loc prefix &optional remove)
   (let ((val (or (get prefix 'transient--layout)
                  (error "%s is not a transient command" prefix))))
+    (when (vectorp loc)
+      (setq loc (append loc nil)))
     (when (listp loc)
       (while (integerp (car loc))
         (let* ((children (if (vectorp val) (aref val 3) val))
