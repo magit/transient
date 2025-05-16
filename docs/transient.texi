@@ -1010,13 +1010,16 @@ with an example:
 @end lisp
 
 This inserts a new infix argument to toggle the @code{--reverse} argument
-after the infix argument that toggles @code{-3} in @code{magit-patch-apply}.
+after the infix argument that is bound to @code{-3} in @code{magit-patch-apply}.
 
 The following functions share a few arguments:
 
 @itemize
 @item
 @var{PREFIX} is a transient prefix command, a symbol.
+
+PREFIX may also by a symbol identifying a separately defined group,
+which can be included in multiple prefixes.  See TODO@.
 
 @item
 @var{SUFFIX} is a transient infix or suffix specification in the same form
@@ -1029,25 +1032,33 @@ means the former.  See @ref{Suffix Specifications}.
 @code{transient-define-prefix}.  See @ref{Group Specifications}.
 
 @item
-@var{LOC} is a command, a key vector, a key description (a string as
-returned by @code{key-description}), or a list specifying coordinates (the
-last element may also be a command or key).  For example @code{(1 0 -1)}
+@var{LOC} is a key description (a string as returned by @code{key-description}
+and understood by @code{kbd}), a command, a symbol identifying an included
+group, or a vector specifying coordinates.  For example, @code{[1 0 -1]}
 identifies the last suffix (@code{-1}) of the first subgroup (@code{0}) of the
 second group (@code{1}).
 
-If @var{LOC} is a list of coordinates, then it can be used to identify a
-group, not just an individual suffix command.
+If @var{LOC} is a vector, then it can be used to identify a group, not
+just an individual suffix command.  The last element in a vector may
+also be a symbol or key, in which case the preceding elements must
+match a group and the last element is looked up within that group.
 
 The function @code{transient-get-suffix} can be useful to determine whether
-a certain coordination list identifies the suffix or group that you
+a certain coordinate vector identifies the suffix or group that you
 expect it to identify.  In hairy cases it may be necessary to look
-at the definition of the transient prefix command.
+at the internal layout representation, which you can access using
+the function @code{transient--get-layout}.
 @end itemize
 
 These functions operate on the information stored in the
-@code{transient--layout} property of the @var{PREFIX} symbol.  Suffix entries in
-that tree are not objects but have the form @code{(@var{LEVEL} @var{CLASS} @var{PLIST})}, where
-@var{PLIST} should set at least @code{:key}, @code{:description} and @code{:command}.
+@code{transient--layout} property of the @var{PREFIX} symbol.  Elements in that
+tree are not objects but have the form @code{(@var{CLASS} @var{PLIST}) for suffixes} and
+[CLASS PLIST CHILDREN] for groups.  At the root of the tree is an
+element [N nil CHILDREN], where N is the version of the layout format,
+currently and hopefully for a long time 2.  While that element looks
+like a group vector, that element does not count when identifying a
+group using a coordinate vector, i.e., [0] is its first child, not the
+root element itself.
 
 @defun transient-insert-suffix prefix loc suffix &optional keep-other
 @end defun
@@ -1061,8 +1072,8 @@ that multiple suffix commands can be bound to the same key, provided
 they are never active at the same time, see @ref{Predicate Slots}.
 
 Unfortunately both false-positives and false-negatives are possible.
-To deal with the former use non-@code{nil} @var{KEEP-OTHER@.}  The symbol @code{always}
-prevents the removal of a false-positive in some cases where other
+To deal with the former, use non-@code{nil} @var{KEEP-OTHER@.}  The symbol @code{always}
+prevents the removal of a false-positive, in some cases where other
 non-@code{nil} values would fail.  To deal with false-negatives remove the
 conflicting binding separately, using @code{transient-remove-suffix}.
 @end defun
@@ -1084,6 +1095,19 @@ returned value has the form mentioned above.
 @defun transient-suffix-put prefix loc prop value
 This function edits the suffix or group at @var{LOC} in @var{PREFIX}, by setting
 the @var{PROP} of its plist to @var{VALUE}.
+@end defun
+
+Some prefix commands share suffixes, which are separately and then
+included in each prefix when it is defined.  The inclusion is done by
+reference, the included suffix groups are not inlined by default.  So
+if you change, for example, the key binding for an argument in
+@code{magit-diff} (@code{d}) the same change also applies to @code{magit-diff-refresh} (@code{D}).
+In the rare case that this is not desirable use @code{transient-inline-group}
+before making changes to included suffixes.
+
+@defun transient-inline-group PREFIX GROUP
+This function inlines the included GROUP into PREFIX, by replacing
+the symbol GROUP with its expanded layout in the layout of PREFIX@.
 @end defun
 
 Most of these functions do not signal an error if they cannot perform
@@ -1265,6 +1289,22 @@ setup function:
 
 For example, the scope of the @code{magit-branch-configure} transient is
 the branch whose variables are being configured.
+@end defmac
+
+Sometimes multiple prefix commands share a common set of suffixes.
+For example, while @code{magit-diff} (@code{d}) and @code{magit-diff-refresh} (@code{D}) offer
+different suffixes to actually create or update a diff, they both
+offer the same infix arguments to control how that diff is formatted.
+Such shared groups should be defined using @code{transient-define-group}
+and then included in multiple prefixes, by using the symbol that
+identifies the group in the prefix definition, in a location where
+you would otherwise use a group vector.  If an included group is
+placed at the top-level of a prefix (as opposed of inside inside
+a vector as a child group), then the symbol should be quoted.
+
+@defmac transient-define-group name group@dots{}
+This macro define one or more groups and stores them in symbol NAME@.
+GROUPs have the same form as for @code{transient-define-prefix}.
 @end defmac
 
 @node Binding Suffix and Infix Commands
@@ -1470,7 +1510,15 @@ the object's values just for the binding inside this transient.
 @ref{Enabling and Disabling Suffixes}.
 
 @item
-@var{KEY} is the key binding, either a vector or key description string.
+KEY is the key binding, a string in the format returned by
+@code{describe-key} and understood by @code{kbd}.
+
+That format is more permissive than the one accepted by @code{key-valid-p}.
+Being more permissive makes it possible, for example, to write the
+key binding, which toggles the @code{-a} command line argument, as "-a",
+instead of having to write "- a".  Likewise additional spaces can be
+added, which is not removed when displaying the binding in the menu,
+which is useful for alignment purposes.
 
 @item
 @var{DESCRIPTION} is the description, either a string or a function that
@@ -2687,7 +2735,15 @@ and @code{advice*} slots (see @ref{Slots of @code{transient-suffix}}) are define
 
 @itemize
 @item
-@code{key} The key, a key vector or a key description string.
+@code{key} is the key binding, a string in the format returned by
+@code{describe-key} and understood by @code{kbd}.
+
+That format is more permissive than the one accepted by @code{key-valid-p}.
+Being more permissive makes it possible, for example, to write the
+key binding, which toggles the @code{-a} command line argument, as "-a",
+instead of having to write "- a".  Likewise additional spaces can be
+added, which is not removed when displaying the binding in the menu,
+which is useful for alignment purposes.
 
 @item
 @code{command} The command, a symbol.
