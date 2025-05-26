@@ -1350,9 +1350,10 @@ commands are aliases for."
               (guard (commandp (cadr spec))))
          (use :description (macroexp-quote (pop spec)))))
       (pcase (car spec)
-        ((or :info :info*))
+        ((or :info :info* :cons))
         ((and (cl-type keyword) invalid)
-         (error "Need command, argument, `:info' or `:info*'; got `%s'" invalid))
+         (error "Need command, argument, `:info', `:info*' or `:cons'; got `%s'"
+                invalid))
         ((cl-type symbol)
          (use :command (macroexp-quote (pop spec))))
         ;; During macro-expansion this is expected to be a `lambda'
@@ -1407,6 +1408,15 @@ commands are aliases for."
                     (use :description val))
             (:info* (setq class 'transient-information*)
                     (use :description val))
+            (:cons
+             (setq class 'transient-cons-option)
+             (use :command
+                  (let ((sym (intern (format "transient:%s:%s" prefix val))))
+                    `(prog1 ',sym
+                       (put ',sym 'interactive-only t)
+                       (put ',sym 'completion-predicate #'transient--suffix-only)
+                       (defalias ',sym #'transient--default-infix-command))))
+             (use :argument val))
             ((guard (eq (car-safe val) '\,))
              (use key (cadr val)))
             ((guard (or (symbolp val)
