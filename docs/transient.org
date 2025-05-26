@@ -2083,6 +2083,25 @@ object should not affect later invocations.
   it is somewhat likely that future improvements won't be fully
   backward compatible.
 
+- The ~transient-cons-option~ class is intended for situations where
+  ~transient-args~ should return an alist, instead of a list of strings
+  (arguments).  Such suffixes can be specified in prefix definitions
+  like so:
+
+  #+begin_src emacs-lisp
+    (:cons OPTION :key KEY [KEYWORD VALUE]...)
+  #+end_src
+
+  OPTION may be something other than a string, likely a keyword or
+  some other symbol, it is used as the ~car~ of the cons-cell.  When
+  using such an inline definition ~:key~ has to be specified.  In most
+  cases ~:reader~ should also be specified.  When defining such a suffix
+  separately, the "alist key" has to be specified using the ~:variable~
+  keyword argument.
+
+  This class is still experimental it is somewhat likely that future
+  improvements won't be fully backward compatible.
+
 - The ~transient-describe-target~ class is used by the command
   ~transient-describe~.
 

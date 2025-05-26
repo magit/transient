@@ -24,6 +24,10 @@
 - Added new macro ~transient-inline-group~, which inlines an included
   group into a specific menu.
 
+- Added new, experimental suffix class ~transient-cons-option~, which is
+  intended for situations where ~transient-args~ should return an alist,
+  instead of a list of strings (arguments).
+
 * v0.8.8    2025-05-01
 
 - Added option ~transient-common-command-prefix~ to allow using a key

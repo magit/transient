@@ -2333,6 +2333,26 @@ it is somewhat likely that future improvements won't be fully
 backward compatible.
 
 @item
+The @code{transient-cons-option} class is intended for situations where
+@code{transient-args} should return an alist, instead of a list of strings
+(arguments).  Such suffixes can be specified in prefix definitions
+like so:
+
+@lisp
+(:cons OPTION :key KEY [KEYWORD VALUE]...)
+@end lisp
+
+OPTION may be something other than a string, likely a keyword or
+some other symbol, it is used as the @code{car} of the cons-cell.  When
+using such an inline definition @code{:key} has to be specified.  In most
+cases @code{:reader} should also be specified.  When defining such a suffix
+separately, the "alist key" has to be specified using the @code{:variable}
+keyword argument.
+
+This class is still experimental it is somewhat likely that future
+improvements won't be fully backward compatible.
+
+@item
 The @code{transient-describe-target} class is used by the command
 @code{transient-describe}.
 

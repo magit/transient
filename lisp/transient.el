@@ -2540,7 +2540,9 @@ value.  Otherwise return CHILDREN as is.")
   (if (transient-switches--eieio-childp obj)
       (cl-call-next-method obj)
     (when-let* (((not (slot-boundp obj 'shortarg)))
-                (shortarg (transient--derive-shortarg (oref obj argument))))
+                (argument (oref obj argument))
+                ((stringp argument))
+                (shortarg (transient--derive-shortarg argument)))
       (oset obj shortarg shortarg))
     (unless (slot-boundp obj 'key)
       (if (slot-boundp obj 'shortarg)
@@ -4682,7 +4684,7 @@ apply the face `transient-unreachable' to the complete string."
                       'transient-inactive-argument)))
 
 (cl-defmethod transient-format-value ((obj transient-option))
-  (let ((argument (oref obj argument)))
+  (let ((argument (prin1-to-string (oref obj argument) t)))
     (if-let ((value (oref obj value)))
         (pcase-exhaustive (oref obj multi-value)
           ('nil
@@ -5311,6 +5313,29 @@ as stand-in for elements of exhausted lists."
 
 (defun transient-lisp-variable--reader (prompt initial-input _history)
   (read--expression prompt initial-input))
+
+;;;; `transient-cons-option'
+
+(defclass transient-cons-option (transient-option)
+  ((format :initform " %k %d: %v"))
+  "[Experimental] Class used for unencoded key-value pairs.")
+
+(cl-defmethod transient-infix-value ((obj transient-cons-option))
+  "Return ARGUMENT and VALUE as a cons-cell or nil if the latter is nil."
+  (and-let* ((value (oref obj value)))
+    (cons (oref obj argument) value)))
+
+(cl-defmethod transient-format-description ((obj transient-cons-option))
+  (or (oref obj description)
+      (let ((description (prin1-to-string (oref obj argument) t)))
+        (if (string-prefix-p ":" description)
+            (substring description 1)
+          description))))
+
+(cl-defmethod transient-format-value ((obj transient-cons-option))
+  (let ((value (oref obj value)))
+    (propertize (prin1-to-string value t) 'face
+                (if value 'transient-value 'transient-inactive-value))))
 
 ;;; _
 (provide 'transient)
