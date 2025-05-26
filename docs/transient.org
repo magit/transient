@@ -2062,8 +2062,8 @@ object should not affect later invocations.
   take these form:
 
   #+begin_src emacs-lisp
-    ([LEVEL] :info DESCRIPTION [KEYWORD VALUE]...)
-    ([LEVEL] :info* DESCRIPTION [KEYWORD VALUE]...)
+    (:info DESCRIPTION [KEYWORD VALUE]...)
+    (:info* DESCRIPTION [KEYWORD VALUE]...)
   #+end_src
 
   The ~:info~ and ~:info*~ keyword arguments replaces the ~:description~
