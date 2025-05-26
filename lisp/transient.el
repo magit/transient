@@ -3568,14 +3568,15 @@ such as when suggesting a new feature or reporting an issue."
   :description "Echo arguments"
   :key "x"
   (interactive (list (transient-args transient-current-command)))
-  (message "%s: %s"
-           (key-description (this-command-keys))
-           (mapconcat (lambda (arg)
-                        (propertize (if (string-match-p " " arg)
-                                        (format "%S" arg)
-                                      arg)
-                                    'face 'transient-argument))
-                      arguments " ")))
+  (if (seq-every-p #'stringp arguments)
+      (message "%s: %s" (key-description (this-command-keys))
+               (mapconcat (lambda (arg)
+                            (propertize (if (string-match-p " " arg)
+                                            (format "%S" arg)
+                                          arg)
+                                        'face 'transient-argument))
+                          arguments " "))
+    (message "%s: %S" (key-description (this-command-keys)) arguments)))
 
 ;;; Value
 ;;;; Init
