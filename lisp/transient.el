@@ -1549,7 +1549,7 @@ Intended for use in a group's `:setup-children' function."
      (t
       (when-let* (((not (eq keep-other 'always)))
                   (bindingp (listp suf))
-                  (key (transient--spec-key suf))
+                  (key (transient--suffix-key suf))
                   (conflict (car (transient--locate-child prefix key)))
                   (conflictp
                    (and (not (and (eq action 'replace)
@@ -1714,7 +1714,7 @@ See info node `(transient)Modifying Existing Transients'."
 (defun transient--nth (n list)
   (nth (if (< n 0) (- (length list) (abs n)) n) list))
 
-(defun transient--spec-key (spec)
+(defun transient--suffix-key (spec)
   (let ((props (transient--suffix-props spec)))
     (or (plist-get props :key)
         (transient--command-key
