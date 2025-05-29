@@ -2649,6 +2649,7 @@ value.  Otherwise return CHILDREN as is.")
   (add-hook 'pre-command-hook  #'transient--pre-command 99)
   (add-hook 'post-command-hook #'transient--post-command)
   (advice-add 'recursive-edit :around #'transient--recursive-edit)
+  (set-default-toplevel-value 'inhibit-quit t)
   (when transient--exitp
     ;; This prefix command was invoked as the suffix of another.
     ;; Prevent `transient--post-command' from removing the hooks
@@ -2988,6 +2989,8 @@ value.  Otherwise return CHILDREN as is.")
     (setq transient--editp nil)
     (setq transient--all-levels-p nil)
     (setq transient--minibuffer-depth 0)
+    (setq quit-flag nil)
+    (set-default-toplevel-value 'inhibit-quit nil)
     (run-hooks 'transient-exit-hook)
     (when command
       (setq transient-current-prefix nil)
