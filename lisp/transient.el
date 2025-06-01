@@ -3078,9 +3078,10 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--emergency-exit (&optional id)
   "Exit the current transient command after an error occurred.
 When no transient is active (i.e., when `transient--prefix' is
-nil) then do nothing.  Optional ID is a keyword identifying the
-exit."
+nil) then only reset `inhibit-quit'.  Optional ID is a keyword
+identifying the exit."
   (transient--debug 'emergency-exit id)
+  (set-default-toplevel-value 'inhibit-quit nil)
   (when transient--prefix
     (setq transient--stack nil)
     (setq transient--exitp t)
