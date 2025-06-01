@@ -1,32 +1,36 @@
 # -*- mode: org -*-
-* v0.9.0    UNRELEASED
+* v0.9.0    2025-06-01
 
 - Key descriptions (as returned by ~key-description~ and understood by
   ~kbd~) are now the only key binding format understood by Transient.
-  Vectors are no longer supported.
+  Vectors are no longer supported.  c4e0cba6
 
 - Vectors are now preferred to identify a suffix or group in a menu by
   coordinates.  It is still possible, but discouraged, to use a list.
+  1933dda9
 
 - The internal format used to store menu layouts has been improved.
   The old format is still supported and translated on the fly when
   encountered.  Instead of rely on that translation, users are advised
   to recompile dependent packages after updating Transient to this
-  release.
+  release.  bcc0bf83
 
 - Added new macro ~transient-define-group~, which defines one or more
   groups of suffixes to be included in multiple menus.  Such included
   groups are no longer immediately inlined when referenced in a menu
   definition, which makes it possible for users to make changes to
   included group and have those change affect all menus that include
-  them.
+  them.  bcc0bf83
 
 - Added new macro ~transient-inline-group~, which inlines an included
-  group into a specific menu.
+  group into a specific menu.  bcc0bf83
 
 - Added new, experimental suffix class ~transient-cons-option~, which is
   intended for situations where ~transient-args~ should return an alist,
-  instead of a list of strings (arguments).
+  instead of a list of strings (arguments).  81727bac, e8eb3ebd
+
+- While a transient menu is active, ~inhibit-quit~ is now set to t.
+  #388
 
 * v0.8.8    2025-05-01
 
