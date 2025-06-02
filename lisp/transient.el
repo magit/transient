@@ -1519,9 +1519,8 @@ PREFIX is a prefix command symbol or object.
 SUFFIX is a suffix command or a group specification (of
   the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
-  (if (cl-typep prefix 'transient-prefix)
-      (setq prefix (oref prefix command))
-    (transient--get-layout prefix)) ; validate
+  (when (cl-typep prefix 'transient-prefix)
+    (setq prefix (oref prefix command)))
   (eval (car (transient--parse-child prefix suffix)) t))
 
 (defun transient-parse-suffixes (prefix suffixes)
@@ -1530,9 +1529,8 @@ PREFIX is a prefix command symbol or object.
 SUFFIXES is a list of suffix command or a group specification
   (of the same forms as expected by `transient-define-prefix').
 Intended for use in a group's `:setup-children' function."
-  (if (cl-typep prefix 'transient-prefix)
-      (setq prefix (oref prefix command))
-    (transient--get-layout prefix)) ; validate
+  (when (cl-typep prefix 'transient-prefix)
+    (setq prefix (oref prefix command)))
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
 ;;; Edit
