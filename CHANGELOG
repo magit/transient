@@ -1,8 +1,12 @@
 # -*- mode: org -*-
-* v0.9.1    UNRELEASED
+* v0.9.1    2025-06-03
 
 - As an additional safety measure, unconditionally reset ~inhibit-quit~
-  when the emergency exit is taken.
+  when the emergency exit is taken.  b326421f
+
+- Including groups that are still defined as a variable, instead of
+  using ~transient-define-group~ (added in v0.9.0), failed in some cases
+  and prevented the menu from being displayed at all.  #389
 
 * v0.9.0    2025-06-01
 
