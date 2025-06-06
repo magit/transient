@@ -3026,6 +3026,14 @@ the transient menu, you will be able to yank it in another buffer.
             #'transient--do-stay)
 @end lisp
 
+Copying the region while not seeing the region is a bit fiddly, so a
+dedicated command, @code{transient-copy-menu-text}, was added.  You have to
+add a binding for this command in @code{transient-map}.
+
+@lisp
+(keymap-set transient-map "C-c C-w" #'transient-copy-menu-text)
+@end lisp
+
 @anchor{How can I autoload prefix and suffix commands?}
 @appendixsec How can I autoload prefix and suffix commands?
 

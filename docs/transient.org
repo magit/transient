@@ -2696,6 +2696,14 @@ the transient menu, you will be able to yank it in another buffer.
               #'transient--do-stay)
 #+end_src
 
+Copying the region while not seeing the region is a bit fiddly, so a
+dedicated command, ~transient-copy-menu-text~, was added.  You have to
+add a binding for this command in ~transient-map~.
+
+#+begin_src emacs-lisp
+  (keymap-set transient-map "C-c C-w" #'transient-copy-menu-text)
+#+end_src
+
 ** How can I autoload prefix and suffix commands?
 :PROPERTIES:
 :UNNUMBERED: notoc
