@@ -5123,7 +5123,9 @@ See `forward-button' for information about N."
     (when (re-search-forward (concat "^" (regexp-quote command)) nil t)
       (goto-char (match-beginning 0))))
    (command
-    (cl-flet ((found () (eq (button-get (button-at (point)) 'command) command)))
+    (cl-flet ((found ()
+                (and-let* ((button (button-at (point))))
+                  (eq (button-get button 'command) command))))
       (while (and (ignore-errors (forward-button 1))
                   (not (found))))
       (unless (found)
