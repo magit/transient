@@ -1570,7 +1570,9 @@ Intended for use in a group's `:setup-children' function."
                         (equal (transient--suffix-predicate suf)
                                (transient--suffix-predicate conflict)))))
         (transient-remove-suffix prefix key))
-      (let ((mem (memq elt (aref group 2))))
+      (pcase-let*
+          ((`(,elt ,group) (transient--locate-child prefix loc))
+           (mem (memq elt (aref group 2))))
         (pcase-exhaustive action
           ('insert  (setcdr mem (cons elt (cdr mem)))
                     (setcar mem suf))
