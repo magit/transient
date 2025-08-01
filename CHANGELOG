@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v0.9.4    2025-08-01
+
+- When using coordinates, trying to insert the same suffix into the
+  same menu twice, caused it to instead be removed the second time.
+  #400
+
 * v0.9.3    2025-07-01
 
 - Improved kludge to work around a bug in Emacs, which may cause
