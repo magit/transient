@@ -38,53 +38,14 @@
 (defconst transient-version "0.9.4")
 
 (require 'cl-lib)
-(require 'compat)
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
 (require 'pcase)
 (require 'pp)
-
-(eval-and-compile
-  (when (and (featurep 'seq)
-             (not (fboundp 'seq-keep)))
-    (unload-feature 'seq 'force)))
 (require 'seq)
-(unless (fboundp 'seq-keep)
-  (display-warning 'transient (substitute-command-keys "\
-Transient requires `seq' >= 2.24,
-but due to bad defaults, Emacs's package manager, refuses to
-upgrade this and other built-in packages to higher releases
-from GNU Elpa, when a package specifies that this is needed.
-
-To fix this, you have to add this to your init file:
-
-  (setq package-install-upgrade-built-in t)
-
-Then evaluate that expression by placing the cursor after it
-and typing \\[eval-last-sexp].
-
-Once you have done that, you have to explicitly upgrade `seq':
-
-  \\[package-upgrade] seq \\`RET'
-
-Then you also must make sure the updated version is loaded,
-by evaluating this form:
-
-  (progn (unload-feature 'seq t) (require 'seq))
-
-Until you do this, you will get random errors about `seq-keep'
-being undefined while using Transient.
-
-If you don't use the `package' package manager but still get
-this warning, then your chosen package manager likely has a
-similar defect.") :emergency))
 
 (eval-when-compile (require 'subr-x))
-
-(eval-and-compile
-  (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
-    (defvaralias 'eieio--unbound 'eieio-unbound nil)))
 
 (declare-function info "info" (&optional file-or-node buffer))
 (declare-function Man-find-section "man" (section))
@@ -92,16 +53,6 @@ similar defect.") :emergency))
 (declare-function Man-getpage-in-background "man" (topic))
 
 (defvar Man-notify-method)
-(defvar pp-default-function) ; since Emacs 29.1
-
-(eval-and-compile
-  (when (< emacs-major-version 28)
-    (pcase-defmacro cl-type (type)
-      "Pcase pattern that matches objects of TYPE.
-TYPE is a type descriptor as accepted by `cl-typep', which see."
-      (static-if (< emacs-major-version 30)
-          `(pred (pcase--flip cl-typep ',type))
-        `(pred (cl-typep _ ',type))))))
 
 (make-obsolete-variable 'transient-hide-during-minibuffer-read
                         'transient-show-during-minibuffer-read "0.8.0")
@@ -1571,8 +1522,7 @@ Intended for use in a group's `:setup-children' function."
                         (equal (transient--suffix-predicate suf)
                                (transient--suffix-predicate conflict)))))
         (transient-remove-suffix prefix key)
-        (let ((eg (transient--locate-child prefix loc)))
-          (setq elt (car eg) group (cadr eg))))
+        (pcase-setq `(,elt ,group) (transient--locate-child prefix loc)))
       (let ((mem (memq elt (aref group 2))))
         (pcase-exhaustive action
           ('insert  (setcdr mem (cons elt (cdr mem)))
@@ -2810,106 +2760,52 @@ value.  Otherwise return CHILDREN as is.")
 
 (defun transient--wrap-command ()
   (transient--load-command-if-autoload this-command)
-  (static-if (>= emacs-major-version 30)
-      (letrec
-          ((command this-command)
-           (suffix (transient-suffix-object this-command))
-           (prefix transient--prefix)
-           (advice
-            (lambda (fn &rest args)
-              (interactive
-               (lambda (spec)
-                 (let ((abort t))
-                   (unwind-protect
-                       (prog1 (let ((debugger #'transient--exit-and-debug))
-                                (if-let* ((obj suffix)
-                                          (grp (oref obj parent))
-                                          (adv (or (oref obj advice*)
-                                                   (oref grp advice*))))
-                                    (funcall
-                                     adv #'advice-eval-interactive-spec spec)
-                                  (advice-eval-interactive-spec spec)))
-                         (setq abort nil))
-                     (when abort
-                       (when-let* ((unwind (oref prefix unwind-suffix)))
-                         (transient--debug 'unwind-interactive)
-                         (funcall unwind command))
-                       (when (symbolp command)
-                         (remove-function (symbol-function command) advice))
-                       (oset prefix unwind-suffix nil))))))
-              (unwind-protect
-                  (let ((debugger #'transient--exit-and-debug))
-                    (if-let* ((obj suffix)
-                              (grp (oref obj parent))
-                              (adv (or (oref obj advice)
-                                       (oref obj advice*)
-                                       (oref grp advice)
-                                       (oref grp advice*))))
-                        (apply adv fn args)
-                      (apply fn args)))
-                (when-let* ((unwind (oref prefix unwind-suffix)))
-                  (transient--debug 'unwind-command)
-                  (funcall unwind command))
-                (when (symbolp command)
-                  (remove-function (symbol-function command) advice))
-                (oset prefix unwind-suffix nil)))))
-        (add-function :around (if (symbolp this-command)
-                                  (symbol-function this-command)
-                                this-command)
-                      advice '((depth . -99)))
-        (cl-assert
-         (>= emacs-major-version 30) nil
-         "Emacs was downgraded, making it necessary to recompile Transient"))
-    ;; (< emacs-major-version 30)
-    (let* ((command this-command)
-           (suffix (transient-suffix-object this-command))
-           (prefix transient--prefix)
-           (advice nil)
-           (advice-interactive
-            (lambda (spec)
-              (let ((abort t))
-                (unwind-protect
-                    (prog1 (let ((debugger #'transient--exit-and-debug))
-                             (if-let* ((obj suffix)
-                                       (grp (oref obj parent))
-                                       (adv (or (oref obj advice*)
-                                                (oref grp advice*))))
-                                 (funcall
-                                  adv #'advice-eval-interactive-spec spec)
-                               (advice-eval-interactive-spec spec)))
-                      (setq abort nil))
-                  (when abort
-                    (when-let* ((unwind (oref prefix unwind-suffix)))
-                      (transient--debug 'unwind-interactive)
-                      (funcall unwind command))
-                    (when (symbolp command)
-                      (remove-function (symbol-function command) advice))
-                    (oset prefix unwind-suffix nil))))))
-           (advice-body
-            (lambda (fn &rest args)
-              (unwind-protect
-                  (let ((debugger #'transient--exit-and-debug))
-                    (if-let* ((obj suffix)
-                              (grp (oref obj parent))
-                              (adv (or (oref obj advice)
-                                       (oref obj advice*)
-                                       (oref grp advice)
-                                       (oref grp advice*))))
-                        (apply adv fn args)
-                      (apply fn args)))
-                (when-let* ((unwind (oref prefix unwind-suffix)))
-                  (transient--debug 'unwind-command)
-                  (funcall unwind command))
-                (when (symbolp command)
-                  (remove-function (symbol-function command) advice))
-                (oset prefix unwind-suffix nil)))))
-      (setq advice `(lambda (fn &rest args)
-                      (interactive ,advice-interactive)
-                      (apply ',advice-body fn args)))
-      (add-function :around (if (symbolp this-command)
-                                (symbol-function this-command)
-                              this-command)
-                    advice '((depth . -99))))))
+  (letrec
+      ((command this-command)
+       (suffix (transient-suffix-object this-command))
+       (prefix transient--prefix)
+       (advice
+        (lambda (fn &rest args)
+          (interactive
+           (lambda (spec)
+             (let ((abort t))
+               (unwind-protect
+                   (prog1 (let ((debugger #'transient--exit-and-debug))
+                            (if-let* ((obj suffix)
+                                      (grp (oref obj parent))
+                                      (adv (or (oref obj advice*)
+                                               (oref grp advice*))))
+                                (funcall
+                                 adv #'advice-eval-interactive-spec spec)
+                              (advice-eval-interactive-spec spec)))
+                     (setq abort nil))
+                 (when abort
+                   (when-let* ((unwind (oref prefix unwind-suffix)))
+                     (transient--debug 'unwind-interactive)
+                     (funcall unwind command))
+                   (when (symbolp command)
+                     (remove-function (symbol-function command) advice))
+                   (oset prefix unwind-suffix nil))))))
+          (unwind-protect
+              (let ((debugger #'transient--exit-and-debug))
+                (if-let* ((obj suffix)
+                          (grp (oref obj parent))
+                          (adv (or (oref obj advice)
+                                   (oref obj advice*)
+                                   (oref grp advice)
+                                   (oref grp advice*))))
+                    (apply adv fn args)
+                  (apply fn args)))
+            (when-let* ((unwind (oref prefix unwind-suffix)))
+              (transient--debug 'unwind-command)
+              (funcall unwind command))
+            (when (symbolp command)
+              (remove-function (symbol-function command) advice))
+            (oset prefix unwind-suffix nil)))))
+    (add-function :around (if (symbolp this-command)
+                              (symbol-function this-command)
+                            this-command)
+                  advice '((depth . -99)))))
 
 (defun transient--premature-post-command ()
   (and (equal (this-command-keys-vector) [])
