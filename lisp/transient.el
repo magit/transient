@@ -1936,10 +1936,9 @@ probably use this instead:
        (t nil))))
    ((and-let* ((obj (transient--suffix-prototype (or command this-command)))
                (obj (clone obj)))
-      (progn
-        (transient-init-scope obj)
-        (transient-init-value obj)
-        obj)))))
+      (transient-init-scope obj)
+      (transient-init-value obj)
+      obj))))
 
 (defun transient--suffix-prototype (command)
   (or (get command 'transient--suffix)
@@ -2447,9 +2446,8 @@ value.  Otherwise return CHILDREN as is.")
                     (oset obj inapt t))))
                (suffixes (mapcan (lambda (c) (transient--init-child levels c obj))
                                  (transient-setup-children obj children))))
-      (progn
-        (oset obj suffixes suffixes)
-        (list obj)))))
+      (oset obj suffixes suffixes)
+      (list obj))))
 
 (defun transient--init-suffix (levels spec parent)
   (pcase-let* ((`(,class . ,args) spec)
