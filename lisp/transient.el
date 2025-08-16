@@ -3518,15 +3518,12 @@ For example:
   :description
   (lambda ()
     (cond
-     ((= transient-default-level transient--max-level)
-      "Always displaying all levels")
      (transient--all-levels-p
       (format "Hide suffix %s"
               (propertize
                (format "levels > %s" (oref (transient-prefix-object) level))
                'face 'transient-higher-level)))
      ("Show all suffix levels")))
-  :inapt-if (lambda () (= transient-default-level transient--max-level))
   :transient t
   (interactive)
   (setq transient--all-levels-p (not transient--all-levels-p))
