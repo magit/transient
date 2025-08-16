@@ -589,6 +589,11 @@ give you as many additional suffixes as you hoped.)"
   "Face used for inactive arguments."
   :group 'transient-faces)
 
+(defface transient-inapt-argument '((t :inherit shadow :weight bold))
+  "Face used for inapt arguments with a (currently ignored) value.
+Depending on the type this is used for the argument and/or value."
+  :group 'transient-faces)
+
 (defface transient-value '((t :inherit font-lock-string-face :weight bold))
   "Face used for values."
   :group 'transient-faces)
@@ -4780,28 +4785,33 @@ apply the face `transient-unreachable' to the complete string."
 (cl-defmethod transient-format-value ((obj transient-suffix))
   (propertize (oref obj argument)
               'face (if (oref obj value)
-                        'transient-argument
+                        (if (oref obj inapt)
+                            'transient-inapt-argument
+                          'transient-argument)
                       'transient-inactive-argument)))
 
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((argument (prin1-to-string (oref obj argument) t)))
     (if-let ((value (oref obj value)))
-        (pcase-exhaustive (oref obj multi-value)
-          ('nil
-           (concat (propertize argument 'face 'transient-argument)
-                   (propertize value    'face 'transient-value)))
-          ((or 't 'rest)
-           (concat (propertize (if (string-suffix-p " " argument)
-                                   argument
-                                 (concat argument " "))
-                               'face 'transient-argument)
-                   (propertize (mapconcat #'prin1-to-string value " ")
-                               'face 'transient-value)))
-          ('repeat
-           (mapconcat (lambda (value)
-                        (concat (propertize argument 'face 'transient-argument)
-                                (propertize value    'face 'transient-value)))
-                      value " ")))
+        (let* ((inapt (oref obj inapt))
+               (aface (if inapt 'transient-inapt-argument 'transient-argument))
+               (vface (if inapt 'transient-inapt-argument 'transient-value)))
+          (pcase-exhaustive (oref obj multi-value)
+            ('nil
+             (concat (propertize argument 'face aface)
+                     (propertize value    'face vface)))
+            ((or 't 'rest)
+             (concat (propertize (if (string-suffix-p " " argument)
+                                     argument
+                                   (concat argument " "))
+                                 'face aface)
+                     (propertize (mapconcat #'prin1-to-string value " ")
+                                 'face vface)))
+            ('repeat
+             (mapconcat (lambda (value)
+                          (concat (propertize argument 'face aface)
+                                  (propertize value    'face vface)))
+                        value " "))))
       (propertize argument 'face 'transient-inactive-argument))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
@@ -4816,7 +4826,9 @@ apply the face `transient-unreachable' to the complete string."
               (lambda (choice)
                 (propertize choice 'face
                             (if (equal (format argument-format choice) value)
-                                'transient-value
+                                (if (oref obj inapt)
+                                    'transient-inapt-argument
+                                  'transient-value)
                               'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
