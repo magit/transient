@@ -3970,8 +3970,9 @@ Only intended for use by `transient-set'.
 See also `transient-prefix-set'.")
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
-  (oset (oref obj prototype) value (transient-get-value))
-  (transient--history-push obj))
+  (let ((value (transient-get-value)))
+    (oset (oref obj prototype) value value)
+    (transient--history-push obj value)))
 
 ;;;; Save
 
@@ -3982,8 +3983,8 @@ See also `transient-prefix-set'.")
   (let ((value (transient-get-value)))
     (oset (oref obj prototype) value value)
     (setf (alist-get (oref obj command) transient-values) value)
-    (transient-save-values))
-  (transient--history-push obj))
+    (transient-save-values)
+    (transient--history-push obj value)))
 
 ;;;; Reset
 
@@ -3995,8 +3996,8 @@ See also `transient-prefix-set'.")
     (oset obj value value)
     (oset (oref obj prototype) value value)
     (setf (alist-get (oref obj command) transient-values nil 'remove) nil)
-    (transient-save-values))
-  (transient--history-push obj)
+    (transient-save-values)
+    (transient--history-push obj value))
   (mapc #'transient-init-value transient--suffixes))
 
 ;;;; Get
@@ -4252,14 +4253,14 @@ Otherwise return the value of the `command' slot."
   (or (oref obj history-key)
       (oref obj command)))
 
-(cl-defgeneric transient--history-push (obj)
-  "Push the current value of OBJ to its entry in `transient-history'.")
+(cl-defgeneric transient--history-push (obj value)
+  "Push VALUE to OBJ's entry in `transient-history'.")
 
-(cl-defmethod transient--history-push ((obj transient-prefix))
+(cl-defmethod transient--history-push
+  ((obj transient-prefix) &optional (value (transient-get-value)))
   (let ((key (transient--history-key obj)))
     (setf (alist-get key transient-history)
-          (let ((args (transient-get-value)))
-            (cons args (delete args (alist-get key transient-history)))))))
+          (cons value (delete value (alist-get key transient-history))))))
 
 (cl-defgeneric transient--history-init (obj)
   "Initialize OBJ's `history' slot.
