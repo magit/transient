@@ -3514,7 +3514,7 @@ For example:
     (transient-undefined))))
 
 (transient-define-suffix transient-toggle-level-limit ()
-  "Toggle whether to temporarily displayed suffixes on all levels."
+  "Toggle whether to temporarily display suffixes on all levels."
   :description
   (lambda ()
     (cond
