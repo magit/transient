@@ -808,6 +808,7 @@ If `transient-save-history' is nil, then do nothing."
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (transient-switch-frame :initarg :transient-switch-frame)
    (refresh-suffixes     :initarg :refresh-suffixes     :initform nil)
+   (remember-value       :initarg :remember-value       :initform nil)
    (environment          :initarg :environment          :initform nil)
    (incompatible         :initarg :incompatible         :initform nil)
    (suffix-description   :initarg :suffix-description)
@@ -2738,6 +2739,7 @@ value.  Otherwise return CHILDREN as is.")
       (let ((exitp (eq (transient--call-pre-command) transient--exit)))
         (transient--wrap-command)
         (when exitp
+          (transient--maybe-set-value 'exit)
           (transient--pre-exit)))))))
 
 (defun transient--pre-exit ()
@@ -2768,7 +2770,8 @@ value.  Otherwise return CHILDREN as is.")
   (setq transient-current-prefix transient--prefix)
   (setq transient-current-command (oref transient--prefix command))
   (setq transient-current-suffixes transient--suffixes)
-  (transient--history-push transient--prefix))
+  (unless (transient--maybe-set-value 'export)
+    (transient--history-push transient--prefix)))
 
 (defun transient--suspend-override (&optional nohide)
   (transient--debug 'suspend-override)
@@ -3993,6 +3996,24 @@ See also `transient-prefix-set'.")
   (let ((value (transient--get-savable-value)))
     (oset (oref obj prototype) value value)
     (transient--history-push obj value)))
+
+(defun transient--maybe-set-value (event)
+  "Maybe set the value, subject to EVENT and the `remember-value' slot."
+  (let* ((event (if (and (eq event 'exit)
+                         (memq this-command transient--quit-commands))
+                    'quit
+                  event))
+         (spec (oref transient--prefix remember-value))
+         (spec (cond ((listp spec) spec)
+                     ((memq spec '(export exit quit))
+                      (list spec))
+                     ((boundp spec)
+                      (symbol-value spec)))))
+    (and (memq event spec)
+         (prog1 t
+           (if (memq 'save spec)
+               (transient-save-value transient--prefix)
+             (transient-set-value transient--prefix))))))
 
 ;;;; Save
 

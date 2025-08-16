@@ -2634,6 +2634,45 @@ then this slot has to be set to the same value for all of them.  You
 probably don't want that.
 
 @item
+@code{remember-value} When a suffix command is invoked, which can consume
+the prefix's value (which depends on the suffix slot @code{transient} and
+the prefix slots @code{transient-suffix} and @code{transient-non-suffix}), then
+the value is automatically pushed to the prefix's value history.
+
+This slot allows additionally setting or even saving the value, so
+that it becomes the initial value when the menu is invoked again.
+
+Beside @code{nil}, the value can be one of these symbols:
+
+@itemize
+@item
+@code{export} Set the value when it is exported.  That is the time when
+the value would ordinarily just be pushed to the history stack.
+
+@item
+@code{exit} Set the value when the menu is exited, except when that is
+done using a command whose sole purpose is to quit the menu.
+
+@item
+@code{quit} Set the value when the menu is quit, using a command whose
+sole purpose is to do so.
+@end itemize
+
+The value can also be a list of one or more of these symbols and
+optionally also the symbol @code{save}.
+
+@itemize
+@item
+@code{save} Instead of merely setting the value, save it, so that it will
+be used in future Emacs sessions.  At least one other symbol has
+to be used together with this.
+@end itemize
+
+The value can also be a (quoted) variable, whose value is a list of
+symbols as described above.  Ideally an option should be used, since
+not all users will find the automatic saving of the value desirable.
+
+@item
 @code{incompatible} A list of lists.  Each sub-list specifies a set of
 mutually exclusive arguments.  Enabling one of these arguments
 causes the others to be disabled.  An argument may appear in
