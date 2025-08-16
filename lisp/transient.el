@@ -4302,8 +4302,8 @@ have a history of their own.")
 
 (cl-defmethod transient--history-init ((obj transient-prefix))
   "Initialize OBJ's `history' slot from the variable `transient-history'."
-  (let ((val (oref obj value)))
-    (oset obj history
+  (oset obj history
+        (let ((val (transient--get-extended-value)))
           (cons val (delete val (alist-get (transient--history-key obj)
                                            transient-history))))))
 
