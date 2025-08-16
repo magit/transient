@@ -4017,17 +4017,35 @@ returned value."
   (when (listp prefix)
     (setq prefix (car (or (memq transient-current-command prefix) prefix))))
   (if-let ((obj (get prefix 'transient--prefix)))
+      ;; This OBJ is only used for dispatch purposes; see below.
       (transient-prefix-value obj)
     (error "Not a transient prefix: %s" prefix)))
 
 (cl-defgeneric transient-prefix-value (obj)
-  "Return the value of the prefix object OBJ.
-This function is used by `transient-args'.")
+  "Return a list of the values of the suffixes of the specified prefix.
+
+OBJ is a prototype object and is only used to select the appropriate
+method of this generic function.  Transient itself only provides one
+such method, which should be suitable for most prefixes.
+
+This function is only intended to be used by `transient-args'.  It is
+not defined as an internal function because third-party packages may
+define their own methods.  That does not mean that it would be a good
+idea to call it for any other purpose.")
 
 (cl-defmethod transient-prefix-value ((obj transient-prefix))
-  "Return a list of the values of the suffixes the prefix object OBJ.
-Use `transient-infix-value' to collect the values of individual suffix
-objects."
+  "Return a list of the values of the suffixes of the specified prefix.
+
+OBJ is a prototype object.  This method does not return the value of
+that object.  Instead it extracts the name of the respective command
+from the object and uses that to collect the current values from the
+suffixes of the prefix from which the current command was invoked.
+If the current command was not invoked from the identified prefix,
+then this method returns the set, save or default value, as described
+for `transient-args'.
+
+This method uses `transient-suffixes' (which see) to determine the
+suffix objects and then extracts the value(s) from those objects."
   (mapcan #'transient--get-wrapped-value
           (transient-suffixes (oref obj command))))
 
@@ -4035,7 +4053,7 @@ objects."
   "Return the suffix objects of the transient prefix command PREFIX.
 
 If PREFIX is not the current prefix, initialize the suffixes so that
-they can be returned.  Doing so doesn't have any side-effects."
+they can be returned.  That does not cause the menu to be displayed."
   (if (eq transient-current-command prefix)
       transient-current-suffixes
     (let ((transient--prefix (transient--init-prefix prefix)))
