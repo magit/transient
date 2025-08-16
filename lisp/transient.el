@@ -837,6 +837,8 @@ the prototype is stored in the clone's `prototype' slot.")
     :initarg :level
     :initform nil
     :documentation "Enable if level of prefix is equal or greater.")
+   (inactive
+    :initform nil)
    (if
     :initarg :if
     :initform nil
@@ -2271,9 +2273,11 @@ of the corresponding object."
           (cond ((not alt)
                  (define-key map kbd cmd))
                 ((eq alt cmd))
+                ((oref obj inactive))
                 ((oref obj inapt))
                 ((and-let* ((alt (transient-suffix-object alt)))
-                   (oref alt inapt))
+                   (or (oref alt inactive)
+                       (oref alt inapt)))
                  (define-key map kbd cmd))
                 (transient-detect-key-conflicts
                  (error "Cannot bind %S to %s and also %s"
@@ -2311,6 +2315,7 @@ of the corresponding object."
                          ((cl-typep obj 'transient-infix) 'infix)
                          (t                               'suffix)))
              (pre (cond
+                   ((oref obj inactive) nil)
                    ((oref obj inapt) #'transient--do-warn-inapt)
                    ((slot-boundp obj 'transient)
                     (pcase (list kind
@@ -2526,45 +2531,50 @@ value.  Otherwise return CHILDREN as is.")
         (list obj)))))
 
 (defun transient--init-suffix (levels spec parent)
-  (pcase-let* ((`(,class . ,args) spec)
-               (cmd (plist-get args :command))
-               (_ (transient--load-command-if-autoload cmd))
-               (key (plist-get args :key))
-               (key (and key (kbd key)))
-               (proto (and cmd (transient--suffix-prototype cmd)))
-               (level (or (alist-get (cons cmd key) levels nil nil #'equal)
-                          (alist-get cmd levels)
-                          (plist-get args :level)
-                          (and proto (oref proto level))
-                          transient--default-child-level))
-               (args (plist-put (copy-sequence args) :level level)))
-    (when (transient--use-level-p level)
-      (let ((obj (if (child-of-class-p class 'transient-information)
+  (let* ((class  (car spec))
+         (args   (cdr spec))
+         (cmd    (plist-get args :command))
+         (_      (transient--load-command-if-autoload cmd))
+         (key    (plist-get args :key))
+         (key    (and key (kbd key)))
+         (proto  (and cmd (transient--suffix-prototype cmd)))
+         (level  (or (alist-get (cons cmd key) levels nil nil #'equal)
+                     (alist-get cmd levels)
+                     (plist-get args :level)
+                     (and proto (oref proto level))
+                     transient--default-child-level))
+         (args   (plist-put (copy-sequence args) :level level))
+         (obj    (if (child-of-class-p class 'transient-information)
                      (apply class :parent parent args)
                    (unless (and cmd (symbolp cmd))
                      (error "BUG: Non-symbolic suffix command: %s" cmd))
                    (if proto
                        (apply #'clone proto :parent parent args)
-                     (apply class :command cmd :parent parent args)))))
-        (cond ((not cmd))
-              ((commandp cmd))
-              ((or (cl-typep obj 'transient-switch)
-                   (cl-typep obj 'transient-option))
-               ;; As a temporary special case, if the package was compiled
-               ;; with an older version of Transient, then we must define
-               ;; "anonymous" switch and option commands here.
-               (defalias cmd #'transient--default-infix-command))
-              ((transient--use-suffix-p obj)
-               (error "Suffix command %s is not defined or autoloaded" cmd)))
-        (when (transient--use-suffix-p obj)
-          (when (transient--inapt-suffix-p obj)
-            (oset obj inapt t))
-          (unless (cl-typep def 'transient-information)
-            (transient--init-suffix-key obj)
-            (transient-init-scope obj)
-            (transient-init-value obj)
-            (push obj transient--suffixes))
-          (list obj))))))
+                     (apply class :command cmd :parent parent args))))
+         (active (and (transient--use-level-p level)
+                      (transient--use-suffix-p obj)))
+         (inapt  (and active (transient--inapt-suffix-p obj)))
+         (active (and active (not inapt))))
+    (cond (inapt
+           (oset obj inapt t))
+          ((not active)
+           (oset obj inactive t)))
+    (cond ((not cmd))
+          ((commandp cmd))
+          ((or (cl-typep obj 'transient-switch)
+               (cl-typep obj 'transient-option))
+           ;; As a temporary special case, if the package was compiled
+           ;; with an older version of Transient, then we must define
+           ;; "anonymous" switch and option commands here.
+           (defalias cmd #'transient--default-infix-command))
+          (active
+           (error "Suffix command %s is not defined or autoloaded" cmd)))
+    (cond ((not (cl-typep obj 'transient-information))
+           (transient--init-suffix-key obj)
+           (transient-init-scope obj)
+           (transient-init-value obj)
+           (push obj transient--suffixes)))
+    (list obj)))
 
 (cl-defmethod transient--init-suffix-key ((obj transient-suffix))
   (unless (slot-boundp obj 'key)
@@ -4064,7 +4074,8 @@ for `transient-args'.
 This method uses `transient-suffixes' (which see) to determine the
 suffix objects and then extracts the value(s) from those objects."
   (mapcan (lambda (obj)
-            (and (not (oref obj inapt))
+            (and (not (oref obj inactive))
+                 (not (oref obj inapt))
                  (transient--get-wrapped-value obj)))
           (transient-suffixes (oref obj command))))
 
@@ -4088,14 +4099,15 @@ invoked, whether from a menu or not, in which case `transient-args'
 should be used."
   (transient--with-emergency-exit :get-value
     (mapcan (lambda (obj)
-              (and (not (oref obj inapt))
+              (and (not (oref obj inactive))
+                   (not (oref obj inapt))
                    (transient--get-wrapped-value obj)))
             transient--suffixes)))
 
 (defun transient--get-extended-value ()
   "Return the extended value of the extant prefix.
 
-Unlike `transient-get-value' also include the values of
+Unlike `transient-get-value' also include the values of inactive and
 inapt arguments.  This function is mainly intended for internal use.
 It is used to preserve the full value when a menu is being refreshed,
 including the presently ineffective parts."
@@ -4516,6 +4528,12 @@ have a history of their own.")
       (when groups
         (insert ?\n)))))
 
+(defun transient--active-suffixes (group)
+  (seq-remove (lambda (suffix)
+                (and (cl-typep suffix 'transient-suffix)
+                     (oref suffix inactive)))
+              (oref group suffixes)))
+
 (defvar transient--max-group-level 1)
 
 (cl-defgeneric transient--insert-group (group)
@@ -4534,7 +4552,7 @@ have a history of their own.")
 
 (cl-defmethod transient--insert-group ((group transient-row))
   (transient--maybe-pad-keys group)
-  (dolist (suffix (oref group suffixes))
+  (dolist (suffix (transient--active-suffixes group))
     (insert (transient-with-shadowed-buffer (transient-format suffix)))
     (insert "   "))
   (insert ?\n))
@@ -4542,7 +4560,7 @@ have a history of their own.")
 (cl-defmethod transient--insert-group ((group transient-column)
                                        &optional skip-empty)
   (transient--maybe-pad-keys group)
-  (dolist (suffix (oref group suffixes))
+  (dolist (suffix (transient--active-suffixes group))
     (let ((str (transient-with-shadowed-buffer (transient-format suffix))))
       (unless (and (not skip-empty) (equal str ""))
         (insert str)
@@ -4561,7 +4579,8 @@ have a history of their own.")
                  `(,@(and-let* ((desc (transient-format-description column)))
                        (list desc))
                    ,@(let ((transient--pending-group column))
-                       (mapcar #'transient-format (oref column suffixes))))))
+                       (mapcar #'transient-format
+                               (transient--active-suffixes column))))))
              (oref group suffixes)))
            (stops (transient--column-stops columns)))
       (dolist (row (apply #'transient--mapn #'list columns))
