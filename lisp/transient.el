@@ -4060,7 +4060,7 @@ in `transient-set-value' and `transient-save-value' methods.  Unlike
   "Return a list of the value(s) of suffix object OBJ.
 
 Internally a suffix only ever has one value, stored in its `value'
-slot, but callers of `transient-args', wish to treat the values of
+slot, but callers of `transient-args' wish to treat the values of
 certain suffixes as multiple values.  That translation is handled
 here.  The object's `multi-value' slot specifies whether and how
 to interpret the `value' as multiple values."
