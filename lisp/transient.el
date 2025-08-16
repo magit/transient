@@ -2462,7 +2462,8 @@ value.  Otherwise return CHILDREN as is.")
         (t
          (setq transient--suffixes nil)
          (setq transient--layout (transient--init-suffixes name))
-         (setq transient--suffixes (nreverse transient--suffixes)))))
+         (setq transient--suffixes (nreverse transient--suffixes))))
+  (slot-makeunbound transient--prefix 'value))
 
 (defun transient--init-prefix (name &optional params)
   (let ((obj (let ((proto (get name 'transient--prefix)))
