@@ -2271,9 +2271,9 @@ of the corresponding object."
           (cond ((not alt)
                  (define-key map kbd cmd))
                 ((eq alt cmd))
-                ((transient--inapt-suffix-p obj))
-                ((and-let* ((obj (transient-suffix-object alt)))
-                   (transient--inapt-suffix-p obj))
+                ((oref obj inapt))
+                ((and-let* ((alt (transient-suffix-object alt)))
+                   (oref alt inapt))
                  (define-key map kbd cmd))
                 (transient-detect-key-conflicts
                  (error "Cannot bind %S to %s and also %s"
