@@ -2554,10 +2554,10 @@ value.  Otherwise return CHILDREN as is.")
         (unless (cl-typep obj 'transient-information)
           (transient--init-suffix-key obj))
         (when (transient--use-suffix-p obj)
-          (if (transient--inapt-suffix-p obj)
-              (oset obj inapt t)
-            (transient-init-scope obj)
-            (transient-init-value obj))
+          (when (transient--inapt-suffix-p obj)
+            (oset obj inapt t))
+          (transient-init-scope obj)
+          (transient-init-value obj)
           (unless (cl-typep def 'transient-information)
             (push obj transient--suffixes))
           (list obj))))))
@@ -4059,7 +4059,9 @@ for `transient-args'.
 
 This method uses `transient-suffixes' (which see) to determine the
 suffix objects and then extracts the value(s) from those objects."
-  (mapcan #'transient--get-wrapped-value
+  (mapcan (lambda (obj)
+            (and (not (oref obj inapt))
+                 (transient--get-wrapped-value obj)))
           (transient-suffixes (oref obj command))))
 
 (defun transient-suffixes (prefix)
