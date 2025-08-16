@@ -1879,6 +1879,10 @@ This is bound while the suffixes are drawn in the transient buffer.")
     mwheel-scroll
     scroll-bar-toolkit-scroll))
 
+(defvar transient--quit-commands
+  '(transient-quit-one
+    transient-quit-all))
+
 ;;; Identities
 
 (defun transient-active-prefix (&optional prefixes)
@@ -2715,8 +2719,7 @@ value.  Otherwise return CHILDREN as is.")
      ((memq this-command '(transient-update transient-quit-seq))
       (transient--pop-keymap 'transient--redisplay-map))
      ((and transient--helpp
-           (not (memq this-command '(transient-quit-one
-                                     transient-quit-all))))
+           (not (memq this-command transient--quit-commands)))
       (cond
        ((transient-help)
         (transient--do-suspend)
@@ -2726,9 +2729,8 @@ value.  Otherwise return CHILDREN as is.")
         (setq this-command 'transient-undefined))))
      ((and transient--editp
            (transient-suffix-object)
-           (not (memq this-command '(transient-quit-one
-                                     transient-quit-all
-                                     transient-help))))
+           (not (memq this-command
+                      (cons 'transient-help transient--quit-commands))))
       (setq this-command 'transient-set-level)
       (transient--wrap-command))
      (t
