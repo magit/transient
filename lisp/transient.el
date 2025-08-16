@@ -4070,8 +4070,8 @@ in `transient-set-value' and `transient-save-value' methods.  Unlike
 `unsavable' slot is non-nil."
   (transient--with-emergency-exit :get-value
     (mapcan (lambda (obj)
-              (and (or (not (slot-exists-p obj 'unsavable))
-                       (not (oref obj unsavable)))
+              (and (not (and (slot-exists-p obj 'unsavable)
+                             (oref obj unsavable)))
                    (transient--get-wrapped-value obj)))
             (or transient--suffixes transient-current-suffixes))))
 
