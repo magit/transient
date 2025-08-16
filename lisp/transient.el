@@ -2442,7 +2442,7 @@ value.  Otherwise return CHILDREN as is.")
         ;; invoked suffix indicates that it has updated that.
         (setq transient--refreshp (oref transient--prefix refresh-suffixes))
       ;; Otherwise update the prefix value from suffix values.
-      (oset transient--prefix value (transient-get-value))))
+      (oset transient--prefix value (transient--get-extended-value))))
   (transient--init-objects name layout params)
   (transient--init-keymaps))
 
@@ -3016,7 +3016,7 @@ value.  Otherwise return CHILDREN as is.")
   (push (list (oref transient--prefix command)
               transient--layout
               transient--editp
-              :value  (transient-get-value)
+              :value  (transient--get-extended-value)
               :return (oref transient--prefix return)
               :scope  (oref transient--prefix scope))
         transient--stack))
@@ -3970,7 +3970,7 @@ Only intended for use by `transient-set'.
 See also `transient-prefix-set'.")
 
 (cl-defmethod transient-set-value ((obj transient-prefix))
-  (let ((value (transient-get-value)))
+  (let ((value (transient--get-savable-value)))
     (oset (oref obj prototype) value value)
     (transient--history-push obj value)))
 
@@ -3980,7 +3980,7 @@ See also `transient-prefix-set'.")
   "Save the value of the transient prefix OBJ.")
 
 (cl-defmethod transient-save-value ((obj transient-prefix))
-  (let ((value (transient-get-value)))
+  (let ((value (transient--get-savable-value)))
     (oset (oref obj prototype) value value)
     (setf (alist-get (oref obj command) transient-values) value)
     (transient-save-values)
@@ -4014,7 +4014,12 @@ PREFIX may also be a list of prefixes.  If no prefix is active, the
 fallback value of the first of these prefixes is used.
 
 The generic function `transient-prefix-value' is used to determine the
-returned value."
+returned value.
+
+This function is intended to be used by suffix commands, whether they
+are invoked from a menu or not.  It is not intended to be used when
+setting up a menu and its suffixes, in which case `transient-get-value'
+should be used."
   (when (listp prefix)
     (setq prefix (car (or (memq transient-current-command prefix) prefix))))
   (if-let ((obj (get prefix 'transient--prefix)))
@@ -4062,18 +4067,39 @@ they can be returned.  That does not cause the menu to be displayed."
        (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
-  "Return the value of the current prefix.
+  "Return the value of the extant prefix.
 
-This is mostly intended for internal use, but may also be of use
-in `transient-set-value' and `transient-save-value' methods.  Unlike
-`transient-args', this does not include the values of suffixes whose
-`unsavable' slot is non-nil."
+This function is intended to be used when setting up a menu and its
+suffixes.  It is not intended to be used when a suffix command is
+invoked, whether from a menu or not, in which case `transient-args'
+should be used."
   (transient--with-emergency-exit :get-value
+    (mapcan (lambda (obj)
+              (and (not (oref obj inapt))
+                   (transient--get-wrapped-value obj)))
+            transient--suffixes)))
+
+(defun transient--get-extended-value ()
+  "Return the extended value of the extant prefix.
+
+Unlike `transient-get-value' also include the values of
+inapt arguments.  This function is mainly intended for internal use.
+It is used to preserve the full value when a menu is being refreshed,
+including the presently ineffective parts."
+  (transient--with-emergency-exit :get-value
+    (mapcan #'transient--get-wrapped-value transient--suffixes)))
+
+(defun transient--get-savable-value ()
+  "Return the value of the extant prefix, excluding unsavable parts.
+
+This function is only intended for internal use.  It is used to save
+the value."
+  (transient--with-emergency-exit :get-savable-value
     (mapcan (lambda (obj)
               (and (not (and (slot-exists-p obj 'unsavable)
                              (oref obj unsavable)))
                    (transient--get-wrapped-value obj)))
-            (or transient--suffixes transient-current-suffixes))))
+            transient--suffixes)))
 
 (defun transient--get-wrapped-value (obj)
   "Return a list of the value(s) of suffix object OBJ.
@@ -4257,7 +4283,8 @@ Otherwise return the value of the `command' slot."
   "Push VALUE to OBJ's entry in `transient-history'.")
 
 (cl-defmethod transient--history-push
-  ((obj transient-prefix) &optional (value (transient-get-value)))
+  ((obj transient-prefix)
+   &optional (value (transient--get-savable-value)))
   (let ((key (transient--history-key obj)))
     (setf (alist-get key transient-history)
           (cons value (delete value (alist-get key transient-history))))))

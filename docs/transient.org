@@ -1494,14 +1494,27 @@ function, which for infix arguments serves about the same purpose as
   command was not invoked from {{{var(PREFIX)}}}, then it returns the set, saved
   or default value for {{{var(PREFIX)}}}.
 
+  PREFIX may also be a list of prefixes.  If no prefix is active, the
+  fallback value of the first of these prefixes is used.
+
+  The generic function ~transient-prefix-value~ is used to determine the
+  returned value.
+
+  This function is intended to be used by suffix commands, whether they
+  are invoked from a menu or not.  It is not intended to be used when
+  setting up a menu and its suffixes, in which case ~transient-get-value~
+  should be used.
+
 - Function: transient-get-value ::
 
-  This function returns the value of the current prefix.
+  This function returns the value of the erant prefix.
 
-  This is mostly intended for internal use, but may also be of use
-  in ~transient-set-value~ and ~transient-save-value~ methods.  Unlike
-  ~transient-args~, this does not include the values of suffixes whose
-  ~unsavable~ slot is non-~nil~.
+  This function is intended to be used when setting up a menu and its
+  suffixes.  It is not intended to be used when a suffix command is
+  invoked, whether from a menu or not, in which case ~transient-args~
+  should be used.  In other words, use this, e.g., in a suffixes ~:if*~
+  or ~:inapt-if*~ predicate and ~:description~ function, but never in its
+  ~interactive~ form or function body.
 
 - Function: transient-arg-value arg args ::
 

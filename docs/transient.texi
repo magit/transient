@@ -1685,15 +1685,28 @@ If the current command was invoked from the transient prefix command
 @var{PREFIX}, then it returns the active infix arguments.  If the current
 command was not invoked from @var{PREFIX}, then it returns the set, saved
 or default value for @var{PREFIX}.
+
+PREFIX may also be a list of prefixes.  If no prefix is active, the
+fallback value of the first of these prefixes is used.
+
+The generic function @code{transient-prefix-value} is used to determine the
+returned value.
+
+This function is intended to be used by suffix commands, whether they
+are invoked from a menu or not.  It is not intended to be used when
+setting up a menu and its suffixes, in which case @code{transient-get-value}
+should be used.
 @end defun
 
 @defun transient-get-value
-This function returns the value of the current prefix.
+This function returns the value of the erant prefix.
 
-This is mostly intended for internal use, but may also be of use
-in @code{transient-set-value} and @code{transient-save-value} methods.  Unlike
-@code{transient-args}, this does not include the values of suffixes whose
-@code{unsavable} slot is non-@code{nil}.
+This function is intended to be used when setting up a menu and its
+suffixes.  It is not intended to be used when a suffix command is
+invoked, whether from a menu or not, in which case @code{transient-args}
+should be used.  In other words, use this, e.g., in a suffixes @code{:if*}
+or @code{:inapt-if*} predicate and @code{:description} function, but never in its
+@code{interactive} form or function body.
 @end defun
 
 @defun transient-arg-value arg args
