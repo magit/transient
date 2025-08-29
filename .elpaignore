@@ -1,10 +1,15 @@
-*~
+.dir-locals.el
 .elpaignore
+.github
 .gitignore
 .mailmap
+LICENSE
 Makefile
 default.mk
+docs/.orgconfig
 docs/Makefile
+docs/gpl.texi
 docs/htmlxref.cnf
 docs/transient.texi
 lisp/Makefile
+test
