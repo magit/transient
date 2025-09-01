@@ -1,4 +1,35 @@
 # -*- mode: org -*-
+* v0.10.0    UNRELEASED
+
+- Added more context-specific functions for getting the prefix's
+  value and improved the documentation explaining when to use which
+  function and why.  b4edb633 (See also the commit message.)
+
+- When suffixes are being initialized, no longer drop inactive
+  suffixes (inap suffixes and those on a level that is currently
+  not being used).  If/when such a suffix later becomes active,
+  it now uses its set or saved value; previously the default value
+  would have been used.  #316, #364, #407
+
+- The value and scope of inapt suffixes are now initialized when
+  the prefix is being initialized, which is useful because they
+  may later become apt.  #407
+
+- While setting up suffixes, the suffix being setup can now access
+  suffixes that have already been setup (including their values).
+  #316
+
+- After suffixes have been setup, the value of the prefix's ~value~
+  slot is now made unbound, to prevent access to this potentially
+  outdated value.  5bf26de9
+
+- Added new face ~transient-inapt-argument~ and use it for arguments
+  and values that are set but aren't being used because the suffix
+  is currently inapt.  fed866ba
+
+- Added new prefix slot ~remember-value~, which allows specifing
+  various modes of automatically saving the current value.  #287
+
 * v0.9.4    2025-08-01
 
 - When using coordinates, trying to insert the same suffix into the
