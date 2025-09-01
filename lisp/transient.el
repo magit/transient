@@ -6,8 +6,11 @@
 ;; Homepage: https://github.com/magit/transient
 ;; Keywords: extensions
 
-;; Package-Version: 0.9.4
-;; Package-Requires: ((emacs "26.1") (compat "30.1") (seq "2.24"))
+;; Package-Version: 0.10.0
+;; Package-Requires: (
+;;     (emacs  "26.1")
+;;     (compat "30.1")
+;;     (seq     "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -34,7 +37,7 @@
 
 ;;; Code:
 
-(defconst transient-version "0.9.4")
+(defconst transient-version "0.10.0")
 
 (require 'cl-lib)
 (require 'compat)

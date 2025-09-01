@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.10.0    UNRELEASED
+* v0.10.0    2025-09-01
 
 - Added more context-specific functions for getting the prefix's
   value and improved the documentation explaining when to use which
