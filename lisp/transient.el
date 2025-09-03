@@ -3940,8 +3940,8 @@ prompt."
         (if (stringp prompt)
             prompt
           "[BUG: invalid prompt]: "))
-    (if-let* ((name (or (and (slot-boundp obj 'argument) (oref obj argument))
-                        (and (slot-boundp obj 'variable) (oref obj variable)))))
+    (if-let ((name (or (and (slot-boundp obj 'argument) (oref obj argument))
+                       (and (slot-boundp obj 'variable) (oref obj variable)))))
         (if (and (stringp name)
                  (string-suffix-p "=" name))
             name
