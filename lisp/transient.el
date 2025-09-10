@@ -4147,7 +4147,7 @@ the value."
               (and (not (and (slot-exists-p obj 'unsavable)
                              (oref obj unsavable)))
                    (transient--get-wrapped-value obj)))
-            transient--suffixes)))
+            (or transient--suffixes transient-current-suffixes))))
 
 (defun transient--get-wrapped-value (obj)
   "Return a list of the value(s) of suffix object OBJ.
