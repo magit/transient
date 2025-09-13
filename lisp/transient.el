@@ -2515,9 +2515,9 @@ value.  Otherwise return CHILDREN as is.")
   (cl-etypecase spec
     (symbol (mapcan (lambda (c) (transient--init-child levels c parent))
                     (transient--get-children spec)))
-    (vector  (transient--init-group  levels spec parent))
-    (list    (transient--init-suffix levels spec parent))
-    (string  (list spec))))
+    (vector (transient--init-group  levels spec parent))
+    (list   (transient--init-suffix levels spec parent))
+    (string (list spec))))
 
 (defun transient--init-group (levels spec parent)
   (pcase-let* ((`[,class ,args ,children] spec)
