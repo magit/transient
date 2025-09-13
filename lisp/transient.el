@@ -2304,10 +2304,10 @@ of the corresponding object."
     map))
 
 (defun transient--make-predicate-map ()
-  (let* ((default (transient--resolve-pre-command
-                   (oref transient--prefix transient-suffix)))
-         (return (and transient--stack (oref transient--prefix return)))
-         (map (make-sparse-keymap)))
+  (let ((default (transient--resolve-pre-command
+                  (oref transient--prefix transient-suffix)))
+        (return (and transient--stack (oref transient--prefix return)))
+        (map (make-sparse-keymap)))
     (set-keymap-parent map transient-predicate-map)
     (when (or (and (slot-boundp transient--prefix 'transient-switch-frame)
                    (transient--resolve-pre-command
