@@ -1511,26 +1511,27 @@ symbol property.")
                 layout
               (error "Unsupported layout version %s for %s" version prefix)))
         ;; Upgrade from version 1.
-        (transient--set-layout
-         prefix
-         (named-let upgrade ((spec layout))
-           (cond ((vectorp spec)
-                  (pcase-let ((`[,level ,class ,args ,children] spec))
-                    (when level
-                      (setq args (plist-put args :level level)))
-                    (vector class args (mapcar #'upgrade children))))
-                 ((and (listp spec)
-                       (length= spec 3)
-                       (or (null (car spec))
-                           (natnump (car spec)))
-                       (symbolp (cadr spec)))
-                  (pcase-let ((`(,level ,class ,args) spec))
-                    (when level
-                      (setq args (plist-put args :level level)))
-                    (cons class args)))
-                 ((listp spec)
-                  (mapcar #'upgrade spec))
-                 (t spec)))))
+        (cl-labels
+            ((upgrade (spec)
+               (cond
+                ((vectorp spec)
+                 (pcase-let ((`[,level ,class ,args ,children] spec))
+                   (when level
+                     (setq args (plist-put args :level level)))
+                   (vector class args (mapcar #'upgrade children))))
+                ((and (listp spec)
+                      (length= spec 3)
+                      (or (null (car spec))
+                          (natnump (car spec)))
+                      (symbolp (cadr spec)))
+                 (pcase-let ((`(,level ,class ,args) spec))
+                   (when level
+                     (setq args (plist-put args :level level)))
+                   (cons class args)))
+                ((listp spec)
+                 (mapcar #'upgrade spec))
+                (t spec))))
+          (transient--set-layout prefix (upgrade layout))))
     (error "Not a transient prefix command or group definition: %s" prefix)))
 
 (defun transient--get-children (prefix)
@@ -2502,14 +2503,16 @@ value.  Otherwise return CHILDREN as is.")
                          (transient--get-children 'transient-common-commands))))))
 
 (defun transient--flatten-suffixes (layout)
-  (named-let flatten ((def layout))
-    (cond ((stringp def) nil)
-          ((cl-typep def 'transient-information) nil)
-          ((listp def) (mapcan #'flatten def))
-          ((cl-typep def 'transient-group)
-           (mapcan #'flatten (oref def suffixes)))
-          ((cl-typep def 'transient-suffix)
-           (list def)))))
+  (cl-labels ((s (def)
+                (cond
+                 ((stringp def) nil)
+                 ((cl-typep def 'transient-information) nil)
+                 ((listp def) (mapcan #'s def))
+                 ((cl-typep def 'transient-group)
+                  (mapcan #'s (oref def suffixes)))
+                 ((cl-typep def 'transient-suffix)
+                  (list def)))))
+    (mapcan #'s layout)))
 
 (defun transient--init-child (levels spec parent)
   (cl-etypecase spec
