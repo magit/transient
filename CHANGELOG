@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v0.10.1    UNRELEASED
+
+- ~transient--get-savable-value~ now also functions properly when
+  used while exiting the menu.  #410
+
 * v0.10.0    2025-09-01
 
 - Added more context-specific functions for getting the prefix's
