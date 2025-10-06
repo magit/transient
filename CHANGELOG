@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.10.1    UNRELEASED
+* v0.10.1    2025-10-06
 
 - ~transient--get-savable-value~ now also functions properly when
   used while exiting the menu.  #410
