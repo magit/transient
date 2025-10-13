@@ -8,7 +8,7 @@
 
 ;; Package-Version: 0.10.1
 ;; Package-Requires: (
-;;     (emacs  "26.1")
+;;     (emacs  "28.1")
 ;;     (compat "30.1")
 ;;     (seq     "2.24"))
 
@@ -84,10 +84,6 @@ similar defect.") :emergency))
 
 (eval-when-compile (require 'subr-x))
 
-(eval-and-compile
-  (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
-    (defvaralias 'eieio--unbound 'eieio-unbound nil)))
-
 (declare-function info "info" (&optional file-or-node buffer))
 (declare-function Man-find-section "man" (section))
 (declare-function Man-next-section "man" (n))
@@ -95,15 +91,6 @@ similar defect.") :emergency))
 
 (defvar Man-notify-method)
 (defvar pp-default-function) ; since Emacs 29.1
-
-(eval-and-compile
-  (when (< emacs-major-version 28)
-    (pcase-defmacro cl-type (type)
-      "Pcase pattern that matches objects of TYPE.
-TYPE is a type descriptor as accepted by `cl-typep', which see."
-      (static-if (< emacs-major-version 30)
-          `(pred (pcase--flip cl-typep ',type))
-        `(pred (cl-typep _ ',type))))))
 
 (static-if (< emacs-major-version 30)
     (progn
@@ -630,10 +617,9 @@ See info node `(transient)Enabling and Disabling Suffixes'."
   :group 'transient-faces)
 
 (defface transient-higher-level
-  `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
-              :color ,(let ((color (face-attribute 'shadow :foreground t t)))
-                        (or (and (not (eq color 'unspecified)) color)
-                            "grey60")))))
+  (let* ((color (face-attribute 'shadow :foreground t t))
+         (color (if (eq color 'unspecified) "grey60" color)))
+    `((t :box (:line-width (-1 . -1) :color ,color))))
   "Face optionally used to highlight suffixes on higher levels.
 See also option `transient-highlight-higher-levels'."
   :group 'transient-faces)
@@ -714,15 +700,13 @@ character used to separate possible values from each other."
   :group 'transient-faces)
 
 (defface transient-nonstandard-key
-  `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
-              :color "cyan")))
+  `((t :box (:line-width (-1 . -1) :color "cyan")))
   "Face optionally used to highlight keys conflicting with short-argument.
 See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
 (defface transient-mismatched-key
-  `((t :box ( :line-width ,(if (>= emacs-major-version 28) (cons -1 -1) -1)
-              :color "magenta")))
+  `((t :box (:line-width (-1 . -1) :color "magenta")))
   "Face optionally used to highlight keys without a short-argument.
 See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
@@ -1480,8 +1464,7 @@ See also `transient-command-completion-not-suffix-only-p'.
 Only use this alias as the value of the `completion-predicate'
 symbol property.")
 
-(when (and (boundp 'read-extended-command-predicate) ; since Emacs 28.1
-           (not read-extended-command-predicate))
+(unless read-extended-command-predicate
   (setq read-extended-command-predicate
         #'transient-command-completion-not-suffix-only-p))
 
@@ -2051,25 +2034,22 @@ to `transient-predicate-map'."
   "<next>"  #'transient-scroll-up
   "<prior>" #'transient-scroll-down)
 
-(defvar transient-map
-  (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map transient-base-map)
-    (keymap-set map "C-u"   #'universal-argument)
-    (keymap-set map "C--"   #'negative-argument)
-    (keymap-set map "C-t"   #'transient-show)
-    (keymap-set map "?"     #'transient-help)
-    (keymap-set map "C-h"   #'transient-help)
-    ;; Next two have additional bindings in transient-common-commands.
-    (keymap-set map "C-M-p" #'transient-history-prev)
-    (keymap-set map "C-M-n" #'transient-history-next)
-    (when (fboundp 'other-frame-prefix) ;Emacs >= 28.1
-      (keymap-set map "C-x 5 5" 'other-frame-prefix)
-      (keymap-set map "C-x 4 4" 'other-window-prefix))
-    map)
-  "Top-level keymap used by all transients.
+(defvar-keymap transient-map
+  :doc "Top-level keymap used by all transients.
 
 If you add a new command here, then you must also add a binding
-to `transient-predicate-map'.  See also `transient-base-map'.")
+to `transient-predicate-map'.  See also `transient-base-map'."
+  :parent transient-base-map
+  "C-u"     #'universal-argument
+  "C--"     #'negative-argument
+  "C-t"     #'transient-show
+  "?"       #'transient-help
+  "C-h"     #'transient-help
+  "C-x 5 5" #'other-frame-prefix
+  "C-x 4 4" #'other-window-prefix
+  ;; These have additional bindings in transient-common-commands.
+  "C-M-p"   #'transient-history-prev
+  "C-M-n"   #'transient-history-next)
 
 (defvar-keymap transient-edit-map
   :doc "Keymap that is active while a transient in is in \"edit mode\"."
@@ -4523,8 +4503,7 @@ have a history of their own.")
              (height (cond ((not window-system) nil)
                            ((natnump format) format)
                            ((eq format 'line) 1)))
-             (face `(,@(and (>= emacs-major-version 27) '(:extend t))
-                     :background ,(transient--prefix-color))))
+             (face `(:background ,(transient--prefix-color) :extend t)))
     (concat (propertize "__" 'face face 'display `(space :height (,height)))
             (propertize "\n" 'face face 'line-height t))))
 

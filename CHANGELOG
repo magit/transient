@@ -1,4 +1,12 @@
 # -*- mode: org -*-
+
+* v0.11.0    UNRELEASED
+
+- At least Emacs 28.1 is required now.  Emacs 30.1 was released
+  earlier this year, so we still support Emacs "oldoldstable".
+  Because Emacs 28.1 was the first release that bundled this
+  package, we have to keep support for that release.
+
 * v0.10.1    2025-10-06
 
 - ~transient--get-savable-value~ now also functions properly when
