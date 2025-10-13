@@ -33,7 +33,7 @@
 ;;; Code:
 ;;;; Frontmatter
 
-(defconst transient-version "0.10.1")
+(defconst transient-version "0.10.1-builtin")
 
 (require 'cl-lib)
 (require 'eieio)
