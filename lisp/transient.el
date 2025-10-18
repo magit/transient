@@ -5243,6 +5243,7 @@ See `forward-button' for information about N."
 
 (defvar-keymap transient--isearch-mode-map
   :parent isearch-mode-map
+  "<t>"                      #'transient-isearch-exit
   "<remap> <isearch-exit>"   #'transient-isearch-exit
   "<remap> <isearch-cancel>" #'transient-isearch-cancel
   "<remap> <isearch-abort>"  #'transient-isearch-abort)

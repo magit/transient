@@ -7,6 +7,9 @@
   Because Emacs 28.1 was the first release that bundled this
   package, we have to keep support for that release.
 
+- When Isearch was exited using a key that has no binding in
+  ~isearch-mode-map~, then the Transient state was not resumed.
+
 * v0.10.1    2025-10-06
 
 - ~transient--get-savable-value~ now also functions properly when
