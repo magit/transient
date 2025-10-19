@@ -8,9 +8,10 @@
 
 ;; Package-Version: 0.10.1
 ;; Package-Requires: (
-;;     (emacs  "28.1")
-;;     (compat "30.1")
-;;     (seq     "2.24"))
+;;     (emacs   "28.1")
+;;     (compat  "30.1")
+;;     (cond-let "0.2")
+;;     (seq      "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -41,6 +42,7 @@
 
 (require 'cl-lib)
 (require 'compat)
+(require 'cond-let)
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
@@ -5473,6 +5475,10 @@ as stand-in for elements of exhausted lists."
 ;;; _
 (provide 'transient)
 ;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let"))
 ;; indent-tabs-mode: nil
 ;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
 ;; End:
