@@ -1265,7 +1265,7 @@ commands are aliases for."
               (setq class v)
             (push k keys)
             (push v keys))))
-      (while-let
+      (while-let*
           ((arg (car args))
            (arg (cond
                  ;; Inline group definition.
@@ -5478,7 +5478,8 @@ as stand-in for elements of exhausted lists."
 ;; read-symbol-shorthands: (
 ;;   ("and-let"      . "cond-let--and-let")
 ;;   ("if-let"       . "cond-let--if-let")
-;;   ("when-let"     . "cond-let--when-let"))
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let"))
 ;; indent-tabs-mode: nil
 ;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
 ;; End:
