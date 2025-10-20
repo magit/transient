@@ -10,7 +10,7 @@
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
 ;;     (compat  "30.1")
-;;     (cond-let "0.2")
+;;     (cond-let "0.1")
 ;;     (seq      "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
