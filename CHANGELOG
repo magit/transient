@@ -1,14 +1,16 @@
 # -*- mode: org -*-
-
 * v0.11.0    UNRELEASED
 
 - At least Emacs 28.1 is required now.  Emacs 30.1 was released
   earlier this year, so we still support Emacs "oldoldstable".
   Because Emacs 28.1 was the first release that bundled this
-  package, we have to keep support for that release.
+  package, we have to keep support for that release.  d361d272
+
+- Use my new Cond-Let package.  87fb8396..1d2710c7
 
 - When Isearch was exited using a key that has no binding in
   ~isearch-mode-map~, then the Transient state was not resumed.
+  82baa889
 
 * v0.10.1    2025-10-06
 
@@ -43,7 +45,7 @@
   and values that are set but aren't being used because the suffix
   is currently inapt.  fed866ba
 
-- Added new prefix slot ~remember-value~, which allows specifing
+- Added new prefix slot ~remember-value~, which allows specifying
   various modes of automatically saving the current value.  #287
 
 * v0.9.4    2025-08-01
