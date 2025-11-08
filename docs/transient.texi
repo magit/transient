@@ -1735,16 +1735,16 @@ its value can be accessed using @code{transient-args}.
 This function returns the scope of the active or current transient
 prefix command.
 
-If optional PREFIXES and CLASSES are both nil, return the scope of
+If optional PREFIXES and CLASSES are both @code{nil}, return the scope of
 the prefix currently being setup, making this variation useful, e.g.,
 in @code{:if*} predicates.  If no prefix is being setup, but the current
 command was invoked from some prefix, then return the scope of that.
 
-If PREFIXES is non-nil, it must be a prefix command or a list of such
-commands.  If CLASSES is non-nil, it must be a prefix class or a list
+If PREFIXES is non-@code{nil}, it must be a prefix command or a list of such
+commands.  If CLASSES is non-@code{nil}, it must be a prefix class or a list
 of such classes.  When this function is called from the body or the
 @code{interactive} form of a suffix command, PREFIXES and/or CLASSES should
-be non-nil.  If either is non-nil, try the following in order:
+be non-@code{nil}.  If either is non-@code{nil}, try the following in order:
 
 @itemize
 @item
@@ -1770,7 +1770,7 @@ PREFIXES@.  This only works if that slot is set in the respective
 class definition or using its `transient-init-scope' method.
 @end itemize
 
-If no prefix matches, return nil.
+If no prefix matches, return @code{nil}.
 @end defun
 
 @node Current Suffix Command
@@ -2879,7 +2879,7 @@ defining a command using @code{transient-define-suffix}.
 
 The following two slots are experimental.  They can also be set for a
 group, in which case they apply to all suffixes in that group, except
-for suffixes that set the same slot to a non-nil value.
+for suffixes that set the same slot to a non-@code{nil} value.
 
 @itemize
 @item
@@ -2890,7 +2890,7 @@ advice.
 @item
 @code{advice*} A function used to advise the command.  Unlike @code{advice}, this
 advises not only the command body but also its @code{interactive} spec.  If
-both slots are non-nil, @code{advice} is used for the body and @code{advice*} is
+both slots are non-@code{nil}, @code{advice} is used for the body and @code{advice*} is
 used for the @code{interactive} form.  When advising the @code{interactive} spec,
 called using @code{(funcall advice #'advice-eval-interactive-spec spec)}.
 @end itemize
