@@ -1053,11 +1053,11 @@ the function @code{transient--get-layout}.
 These functions operate on the information stored in the
 @code{transient--layout} property of the @var{PREFIX} symbol.  Elements in that
 tree are not objects but have the form @code{(@var{CLASS} @var{PLIST}) for suffixes} and
-[CLASS PLIST CHILDREN] for groups.  At the root of the tree is an
-element [N nil CHILDREN], where N is the version of the layout format,
+@code{[CLASS PLIST CHILDREN]} for groups.  At the root of the tree is an
+element @code{[N Nil CHILDREN]}, where @code{N} is the version of the layout format,
 currently and hopefully for a long time 2.  While that element looks
 like a group vector, that element does not count when identifying a
-group using a coordinate vector, i.e., [0] is its first child, not the
+group using a coordinate vector, i.e., @code{[0]} is its first child, not the
 root element itself.
 
 @defun transient-insert-suffix prefix loc suffix &optional keep-other
