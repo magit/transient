@@ -1,5 +1,7 @@
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 
+DOMAIN ?= magit.vc
+
 PKG = transient
 
 ELS   = $(PKG).el
@@ -8,9 +10,6 @@ ELCS  = $(ELS:.el=.elc)
 DEPS  = compat
 DEPS += cond-let
 DEPS += seq
-
-DOMAIN      ?= magit.vc
-CFRONT_DIST ?= E2LUHBKU1FBV02
 
 VERSION ?= $(shell test -e $(TOP).git && git describe --tags --abbrev=0 | cut -c2-)
 REVDESC := $(shell test -e $(TOP).git && git describe --tags)
@@ -38,3 +37,6 @@ GITSTATS_ARGS ?= -c style=https://magit.vc/assets/stats.css -c max_authors=999
 %.elc: %.el
 	@printf "Compiling $<\n"
 	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) -f batch-byte-compile $<
+
+RCLONE      ?= rclone
+RCLONE_ARGS ?= -v
