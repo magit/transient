@@ -13,8 +13,8 @@ contact_links:
     url: https://github.com/magit/transient/discussions/categories/q-a
     about: Please keep in mind that our bandwidth is limited.
   - name: "ℹ️ Transient FAQ"
-    url: https://magit.vc/manual/transient/FAQ.html
+    url: https://docs.magit.vc/transient/FAQ.html
     about: Others might have had the same question before.
   - name: "ℹ️ Transient Manual"
-    url: https://magit.vc/manual/transient/#Top
+    url: https://docs.magit.vc/transient/#Top
     about: The fine manual may also be of use.

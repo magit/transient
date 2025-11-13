@@ -582,7 +582,7 @@ Bug fixes:
   which temporarily shows all suffix commands a transient has to
   offer.  This makes it possible to occasionally use more obscure
   commands and arguments, without having to always display them.
-  For more information see [[https://magit.vc/manual/transient/Enabling-and-Disabling-Suffixes.html][Enabling and Disabling Suffixes]].  #243
+  For more information see [[https://docs.magit.vc/transient/Enabling-and-Disabling-Suffixes.html][Enabling and Disabling Suffixes]].  #243
 
 The changes described below, only directly affect package authors and
 users who implement their own transients.  If that does not describe
