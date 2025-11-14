@@ -879,6 +879,9 @@ This option controls whether key bindings of infix commands that do
 not match the respective command-line argument should be highlighted.
 For other infix commands this option has no effect.
 
+This is mostly indended for autors of transient menus and disabled
+by default.
+
 When this option is non-@code{nil}, the key binding for an infix argument
 is highlighted when only a long argument (e.g., @code{--verbose}) is
 specified but no shorthand (e.g., @code{-v}).  In the rare case that a

@@ -136,9 +136,10 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
 
 (defcustom transient-show-popup t
   "Whether and when to show transient's menu in a buffer.
-\\<transient-map>
-- If t, then show the buffer as soon as a transient prefix command
-  is invoked.
+
+\\<transient-map>\
+- If t (the default), then show the buffer as soon as a transient
+  prefix command is invoked.
 
 - If nil, then do not show the buffer unless the user explicitly
   requests it, by pressing \\[transient-show] or a prefix key.
@@ -160,8 +161,8 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
 (defcustom transient-enable-popup-navigation 'verbose
   "Whether navigation commands are enabled in the menu buffer.
 
-If the value is `verbose', additionally show brief documentation
-about the command under point in the echo area.
+If the value is `verbose' (the default), additionally show brief
+documentation about the command under point in the echo area.
 
 While a transient is active transient's menu buffer is not the
 current buffer, making it necessary to use dedicated commands to
@@ -250,6 +251,7 @@ want to change the value of `transient-mode-line-format'."
 
 (defcustom transient-minimal-frame-width 83
   "Minimal width of dedicated frame used to display transient menu.
+
 This is only used if the transient menu is actually displayed in a
 dedicated frame (see `transient-display-buffer-action').  The value
 is in characters."
@@ -371,12 +373,15 @@ This command is not bound by default, see its docstring for instructions."
 (defcustom transient-highlight-mismatched-keys nil
   "Whether to highlight keys that do not match their argument.
 
-This only affects infix arguments that represent command-line
-arguments.  When this option is non-nil, then the key binding
-for infix argument are highlighted when only a long argument
-\(e.g., \"--verbose\") is specified but no shorthand (e.g., \"-v\").
-In the rare case that a short-hand is specified but does not
-match the key binding, then it is highlighted differently.
+This is mostly intended for authors of transient menus and disabled by
+default.
+
+This only affects infix arguments that represent command-line arguments.
+When this option is non-nil, then the key binding for infix argument are
+highlighted when only a long argument \(e.g., \"--verbose\") is specified
+but no shorthand (e.g., \"-v\"). In the rare case that a short-hand is
+specified but does not match the key binding, then it is highlighted
+differently.
 
 The highlighting is done using `transient-mismatched-key'
 and `transient-nonstandard-key'."

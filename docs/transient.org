@@ -728,6 +728,9 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   not match the respective command-line argument should be highlighted.
   For other infix commands this option has no effect.
 
+  This is mostly indended for autors of transient menus and disabled
+  by default.
+
   When this option is non-~nil~, the key binding for an infix argument
   is highlighted when only a long argument (e.g., ~--verbose~) is
   specified but no shorthand (e.g., ~-v~).  In the rare case that a
