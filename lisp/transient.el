@@ -4790,9 +4790,9 @@ apply the face `transient-unreachable' to the complete string."
         (when-let ((face (transient--get-face obj 'face)))
           (setq desc (transient--add-face desc face t)))
       (setq desc (propertize "(BUG: no description)" 'face 'error)))
-    (when (if transient--all-levels-p
-              (> (oref obj level) transient--default-prefix-level)
-            (and transient-highlight-higher-levels
+    (when (cond (transient--all-levels-p
+                 (> (oref obj level) transient--default-prefix-level))
+                (transient-highlight-higher-levels
                  (> (max (oref obj level) transient--max-group-level)
                     transient--default-prefix-level)))
       (setq desc (transient--add-face desc 'transient-higher-level)))
