@@ -107,9 +107,6 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
       (advice-add 'internal--build-binding :around
                   #'internal--build-binding@backport-e680827e814)))
 
-(make-obsolete-variable 'transient-hide-during-minibuffer-read
-                        'transient-show-during-minibuffer-read "0.8.0")
-
 (defvar transient-common-command-prefix)
 
 (defmacro transient--with-emergency-exit (id &rest body)
