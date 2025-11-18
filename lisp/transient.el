@@ -1439,12 +1439,12 @@ commands are aliases for."
             (_ (use key val)))))
       (when spec
         (error "Need keyword, got %S" (car spec)))
-      (cond-let
-        ([key (plist-get args :key)]
+      (cond*
+        ((bind-and* (key (plist-get args :key)))
          (when (string-match "\\`\\({p}\\)" key)
            (use :key
                 (replace-match transient-common-command-prefix t t key 1))))
-        ([shortarg (plist-get args :shortarg)]
+        ((bind-and* (shortarg (plist-get args :shortarg)))
          (use :key shortarg))))
     (list 'cons
           (macroexp-quote (or class 'transient-suffix))
@@ -1478,21 +1478,23 @@ symbol property.")
   (put prefix 'transient--layout (vector 2 nil layout)))
 
 (defun transient--get-layout (prefix)
-  (cond-let
-    [[layout (or (get prefix 'transient--layout)
-                 ;; Migrate unparsed legacy group definition.
-                 (condition-case-unless-debug err
-                     (and-let* ((value (symbol-value prefix)))
-                       (transient--set-layout
-                        prefix
-                        (if (and (listp value)
-                                 (or (listp (car value))
-                                     (vectorp (car value))))
-                            (transient-parse-suffixes prefix value)
-                          (list (transient-parse-suffix prefix value)))))
-                   (error
-                    (message "Not a legacy group definition: %s: %S" prefix err)
-                    nil)))]]
+  (cond*
+    ((bind*
+      (layout
+       (or (get prefix 'transient--layout)
+           ;; Migrate unparsed legacy group definition.
+           (condition-case-unless-debug err
+               (and-let* ((value (symbol-value prefix)))
+                 (transient--set-layout
+                  prefix
+                  (if (and (listp value)
+                           (or (listp (car value))
+                               (vectorp (car value))))
+                      (transient-parse-suffixes prefix value)
+                    (list (transient-parse-suffix prefix value)))))
+             (error
+              (message "Not a legacy group definition: %s: %S" prefix err)
+              nil))))))
     ((not layout)
      (error "Not a transient prefix command or group definition: %s" prefix))
     ((vectorp layout)
@@ -1717,11 +1719,11 @@ See info node `(transient)Modifying Existing Transients'."
 (defun transient--match-child (group loc child)
   (cl-etypecase child
     (string nil)
-    (symbol (cond-let
+    (symbol (cond*
               ((symbolp loc)
                (and (eq child loc)
                     (list child group)))
-              ([include (transient--get-layout child)]
+              ((bind-and* (include (transient--get-layout child)))
                (transient--locate-child include loc))))
     (vector (seq-some (lambda (subgroup)
                         (transient--locate-child subgroup loc))
@@ -1968,7 +1970,7 @@ probably use this instead:
   (get COMMAND \\='transient--suffix)"
   (when command
     (cl-check-type command command))
-  (cond-let*
+  (cond*
     (transient--pending-suffix)
     (transient--current-suffix)
     ((or transient--prefix
@@ -2003,8 +2005,8 @@ probably use this instead:
         ;; It is legimate to use this function as a predicate of sorts.
         ;; `transient--pre-command' and `transient-help' are examples.
         (t nil))))
-    ([obj (transient--suffix-prototype (or command this-command))]
-     [obj (clone obj)]
+    ((bind-and* (obj (transient--suffix-prototype (or command this-command)))
+                (obj (clone obj)))
      (transient-init-scope obj)
      (transient-init-value obj)
      obj)))
@@ -3917,16 +3919,17 @@ command-line option) or \": \".
 
 Finally fall through to using \"(BUG: no prompt): \" as the
 prompt."
-  (cond-let
-    ([prompt (oref obj prompt)]
+  (cond*
+    ((bind-and* (prompt (oref obj prompt)))
      (let ((prompt (if (functionp prompt)
                        (funcall prompt obj)
                      prompt)))
        (if (stringp prompt)
            prompt
          "[BUG: invalid prompt]: ")))
-    ([name (or (and (slot-boundp obj 'argument) (oref obj argument))
-               (and (slot-boundp obj 'variable) (oref obj variable)))]
+    ((bind-and*
+      (name (or (and (slot-boundp obj 'argument) (oref obj argument))
+                (and (slot-boundp obj 'variable) (oref obj variable)))))
      (if (and (stringp name)
               (string-suffix-p "=" name))
          name
@@ -4979,13 +4982,13 @@ if non-nil, else show the `man-page' if non-nil, else use
 Also used to dispatch showing documentation for the current
 prefix.  If the suffix is a sub-prefix, then also call the
 prefix method."
-  (cond-let
+  (cond*
     ((eq this-command 'transient-help)
      (transient-show-help transient--prefix))
-    ([prefix (get (oref obj command) 'transient--prefix)]
-     [_(not (eq (oref transient--prefix command) this-command))]
+    ((bind-and* (prefix (get (oref obj command) 'transient--prefix))
+                (n/a (not (eq (oref transient--prefix command) this-command))))
      (transient-show-help prefix))
-    ([show-help (oref obj show-help)]
+    ((bind-and* (show-help (oref obj show-help)))
      (funcall show-help obj))
     ((transient--describe-function this-command))))
 
@@ -4993,12 +4996,12 @@ prefix method."
   "Call `show-help' if non-nil, else show the `man-page'
 if non-nil, else use `describe-function'.  When showing the
 manpage, then try to jump to the correct location."
-  (cond-let
-    ([show-help (oref obj show-help)]
+  (cond*
+    ((bind-and* (show-help (oref obj show-help)))
      (funcall show-help obj))
-    ([man-page (oref transient--prefix man-page)]
-     [argument (and (slot-boundp obj 'argument)
-                    (oref obj argument))]
+    ((bind-and* (man-page (oref transient--prefix man-page))
+                (argument (and (slot-boundp obj 'argument)
+                               (oref obj argument))))
      (transient--show-manpage man-page argument))
     ((transient--describe-function this-command))))
 
