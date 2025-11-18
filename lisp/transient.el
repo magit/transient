@@ -37,6 +37,7 @@
 ;; used to implement similar menus in other packages.
 
 ;;; Code:
+;;;; Frontmatter
 
 (defconst transient-version "0.11.0")
 
@@ -125,7 +126,7 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
   (transient--emergency-exit :debugger)
   (apply #'debug args))
 
-;;; Options
+;;;; Options
 
 (defgroup transient nil
   "Transient commands."
@@ -565,7 +566,7 @@ give you as many additional suffixes as you hoped.)"
   :group 'transient
   :type 'boolean)
 
-;;; Faces
+;;;; Faces
 
 (defgroup transient-faces nil
   "Faces used by Transient."
@@ -715,7 +716,7 @@ See also option `transient-highlight-mismatched-keys'."
 See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
-;;; Persistence
+;;;; Persistence
 
 (defun transient--read-file-contents (file)
   (with-demoted-errors "Transient error: %S"
@@ -778,7 +779,7 @@ If `transient-save-history' is nil, then do nothing."
 (unless noninteractive
   (add-hook 'kill-emacs-hook #'transient-maybe-save-history))
 
-;;; Classes
+;;;; Classes
 ;;;; Prefix
 
 (defclass transient-prefix ()
@@ -1028,7 +1029,7 @@ commands or strings.  This group inserts an empty line between
 subgroups.  The subgroups are responsible for displaying their
 elements themselves.")
 
-;;; Define
+;;;; Define
 
 (defmacro transient-define-prefix (name arglist &rest args)
   "Define NAME as a transient prefix command.
@@ -1545,7 +1546,7 @@ Intended for use in a group's `:setup-children' function."
     (setq prefix (oref prefix command)))
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
-;;; Edit
+;;;; Edit
 
 (defun transient--insert-suffix (prefix loc suffix action &optional keep-other)
   (pcase-let* ((suf (cl-etypecase suffix
@@ -1765,7 +1766,7 @@ using `transient-define-suffix', `transient-define-infix' or
     (user-error "Cannot set level for `%s'; no prototype object exists"
                 command)))
 
-;;; Variables
+;;;; Variables
 
 (defvar transient-current-prefix nil
   "The transient from which this suffix command was invoked.
@@ -1876,7 +1877,7 @@ This is bound while the suffixes are drawn in the transient buffer.")
   '(transient-quit-one
     transient-quit-all))
 
-;;; Identities
+;;;; Identities
 
 (defun transient-active-prefix (&optional prefixes)
   "Return the active transient object.
@@ -2013,7 +2014,7 @@ probably use this instead:
       (seq-some (lambda (cmd) (get cmd 'transient--suffix))
                 (function-alias-p command))))
 
-;;; Keymaps
+;;;; Keymaps
 
 (defvar-keymap transient-base-map
   :doc "Parent of other keymaps used by Transient.
@@ -2375,7 +2376,7 @@ of the corresponding object."
        transient--transient-map))
     topmap))
 
-;;; Setup
+;;;; Setup
 
 (defun transient-setup (&optional name layout edit &rest params)
   "Setup the transient specified by NAME.
@@ -2665,7 +2666,7 @@ value.  Otherwise return CHILDREN as is.")
     (transient--debug "   autoload %s" cmd)
     (autoload-do-load fn)))
 
-;;; Flow-Control
+;;;; Flow-Control
 
 (defun transient--setup-transient ()
   (transient--debug 'setup-transient)
@@ -3132,7 +3133,7 @@ identifying the exit."
       ('disable
        (remove-function command-error-function "inhibit-quit")))))
 
-;;; Pre-Commands
+;;;; Pre-Commands
 
 (defun transient--call-pre-command ()
   (if-let ((fn (transient--get-pre-command this-command
@@ -3315,7 +3316,7 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-move       'transient-face 'transient-key-stay)
 (put 'transient--do-minus      'transient-face 'transient-key-stay)
 
-;;; Commands
+;;;; Commands
 ;;;; Noop
 
 (defun transient-noop ()
@@ -3635,7 +3636,7 @@ such as when suggesting a new feature or reporting an issue."
                           arguments " "))
     (message "%s: %S" (key-description (this-command-keys)) arguments)))
 
-;;; Value
+;;;; Value
 ;;;; Init
 
 (cl-defgeneric transient-init-value (obj)
@@ -4216,7 +4217,7 @@ Append \"=\ to ARG to indicate that it is an option."
           (or (match-string 1 match) "")))
     (and (member arg args) t)))
 
-;;; Return
+;;;; Return
 
 (defun transient-init-return (obj)
   (when-let* ((_ transient--stack)
@@ -4228,7 +4229,7 @@ Append \"=\ to ARG to indicate that it is an option."
                       (list t 'recurse #'transient--do-recurse))))
     (oset obj return t)))
 
-;;; Scope
+;;;; Scope
 ;;;; Init
 
 (cl-defgeneric transient-init-scope (obj)
@@ -4300,7 +4301,7 @@ If no prefix matches, return nil."
     (and-let* ((obj (transient-prefix-object)))
       (oref obj scope))))
 
-;;; History
+;;;; History
 
 (cl-defgeneric transient--history-key (obj)
   "Return OBJ's history key.")
@@ -4333,7 +4334,7 @@ have a history of their own.")
           (cons val (delete val (alist-get (transient--history-key obj)
                                            transient-history))))))
 
-;;; Display
+;;;; Display
 
 (defun transient--show-hint ()
   (let ((message-log-max nil))
@@ -4407,7 +4408,7 @@ have a history of their own.")
                               (window-body-width window t)
                               (window-body-height window t))))
 
-;;; Delete
+;;;; Delete
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
@@ -4441,7 +4442,7 @@ have a history of their own.")
       (setq show (natnump show)))
     show))
 
-;;; Format
+;;;; Format
 
 (defun transient--format-hint ()
   (if (and transient-show-popup (<= transient-show-popup 0))
@@ -4958,7 +4959,7 @@ a prefix command, while porting a regular keymap to a transient."
         (propertize (car (split-string doc "\n")) 'face 'font-lock-doc-face)
       (propertize (symbol-name command) 'face 'font-lock-function-name-face))))
 
-;;; Help
+;;;; Help
 
 (cl-defgeneric transient-show-help (obj)
   "Show documentation for the command represented by OBJ.")
@@ -5176,7 +5177,7 @@ This is used when a tooltip is needed.")
         (let ((message-log-max nil))
           (message "%s" doc))))))
 
-;;; Menu Navigation
+;;;; Menu Navigation
 
 (defun transient-scroll-up (&optional arg)
   "Scroll text of transient's menu window upward ARG lines.
@@ -5245,7 +5246,7 @@ See `forward-button' for information about N."
           beg (next-single-property-change
                beg 'face nil (line-end-position))))))
 
-;;; Compatibility
+;;;; Compatibility
 ;;;; Menu Isearch
 
 (defvar-keymap transient--isearch-mode-map
@@ -5402,7 +5403,7 @@ as stand-in for elements of exhausted lists."
       (setq lists (mapcar #'cdr lists)))
     (nreverse result)))
 
-;;; Font-Lock
+;;;; Font-Lock
 
 (defconst transient-font-lock-keywords
   (eval-when-compile
@@ -5420,7 +5421,7 @@ as stand-in for elements of exhausted lists."
 
 (font-lock-add-keywords 'emacs-lisp-mode transient-font-lock-keywords)
 
-;;; Auxiliary Classes
+;;;; Auxiliary Classes
 ;;;; `transient-lisp-variable'
 
 (defclass transient-lisp-variable (transient-variable)
@@ -5477,7 +5478,7 @@ as stand-in for elements of exhausted lists."
     (propertize (prin1-to-string value t) 'face
                 (if value 'transient-value 'transient-inactive-value))))
 
-;;; _
+;;;; _
 (provide 'transient)
 ;; Local Variables:
 ;; read-symbol-shorthands: (
