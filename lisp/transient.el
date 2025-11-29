@@ -4738,7 +4738,7 @@ and its value is returned to the caller."
 
 (cl-defmethod transient-format-description ((obj transient-value-preset))
   (pcase-let* (((eieio description key set) obj)
-               ((eieio value) transient--prefix)
+               (value (transient--get-extended-value))
                (active (seq-set-equal-p set value)))
     (format
      "%s %s"
