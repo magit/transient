@@ -1,4 +1,4 @@
-;;; llama-tests.el --- Tests for Llama  -*- lexical-binding:t -*-
+;;; transient-tests.el --- Tests for Transient  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2018-2025 Jonas Bernoulli
 

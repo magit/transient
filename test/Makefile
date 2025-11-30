@@ -5,12 +5,12 @@ LOAD_PATH += -L ../lisp
 
 test: lisp
 	@printf "  Testing...\n"
-	@$(EMACS_BATCH) -l $(PKG)-test -f ert-run-tests-batch-and-exit
+	@$(EMACS_BATCH) -l $(PKG)-tests -f ert-run-tests-batch-and-exit
 
 test-interactive:
-	@$(EMACS_INTR) -l $(PKG)-test --eval "(ert t)"
+	@$(EMACS_INTR) -l $(PKG)-tests --eval "(ert t)"
 
-lisp: $(addprefix ../lisp/,$(ELCS)) $(PKG)-test.elc
+lisp: $(addprefix ../lisp/,$(ELCS)) $(PKG)-tests.elc
 
 %.elc: %.el
 	@printf "Compiling $<\n"
@@ -18,4 +18,4 @@ lisp: $(addprefix ../lisp/,$(ELCS)) $(PKG)-test.elc
 
 clean:
 	@printf " Cleaning test/*...\n"
-	@rm -rf $(PKG)-test.elc
+	@rm -rf $(PKG)-tests.elc
