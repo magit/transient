@@ -724,16 +724,16 @@ See also option `transient-highlight-mismatched-keys'."
            (insert-file-contents file)
            (read (current-buffer))))))
 
-(defun transient--pp-to-file (list file)
-  (when (or list (file-exists-p file))
+(defun transient--pp-to-file (value file)
+  (when (or value (file-exists-p file))
     (make-directory (file-name-directory file) t)
-    (setq list (cl-sort (copy-sequence list) #'string< :key #'car))
+    (setq value (cl-sort (copy-sequence value) #'string< :key #'car))
     (with-temp-file file
       (let ((print-level nil)
             (print-length nil)
             (pp-default-function 'pp-28)
             (fill-column 999))
-        (pp list (current-buffer))))))
+        (pp value (current-buffer))))))
 
 (defvar transient-values
   (transient--read-file-contents transient-values-file)
