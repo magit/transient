@@ -1,7 +1,7 @@
 -include ../config.mk
 include ../default.mk
 
-LOAD_PATH  += -L $(TOP)test
+LOAD_PATH += -L $(TOP)test
 
 test: lisp
 	@printf "  Testing...\n"
@@ -9,6 +9,10 @@ test: lisp
 	-l ert -l $(PKG)-test -f ert-run-tests-batch-and-exit
 
 lisp: ../lisp/$(PKG).elc $(PKG)-test.elc
+
+%.elc: %.el
+	@printf "Compiling $<\n"
+	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) -f batch-byte-compile $<
 
 clean:
 	@printf " Cleaning test/*...\n"

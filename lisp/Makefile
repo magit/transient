@@ -5,6 +5,10 @@ lisp: $(ELCS) autoloads check-declare
 
 autoloads: $(PKG)-autoloads.el
 
+%.elc: %.el
+	@printf "Compiling $<\n"
+	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) -f batch-byte-compile $<
+
 check-declare:
 	@printf " Checking function declarations\n"
 	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) \
