@@ -3425,21 +3425,22 @@ transient is active."
 
 ;;;; Help
 
-(defun transient-help (&optional interactive)
+(defun transient-help (&optional interactivep)
   "Show help for the active transient or one of its suffixes.
 \n(fn)"
   (interactive (list t))
-  (if interactive
-      (setq transient--helpp t)
+  (cond
+   (interactivep
+    (setq transient--helpp t))
+   ((lookup-key transient--transient-map
+                (this-single-command-raw-keys))
+    (setq transient--helpp nil)
     (with-demoted-errors "transient-help: %S"
-      (when (lookup-key transient--transient-map
-                        (this-single-command-raw-keys))
-        (setq transient--helpp nil)
-        (transient--display-help #'transient-show-help
-                                 (if (eq this-original-command 'transient-help)
-                                     transient--prefix
-                                   (or (transient-suffix-object)
-                                       this-original-command)))))))
+      (transient--display-help #'transient-show-help
+                               (if (eq this-original-command 'transient-help)
+                                   transient--prefix
+                                 (or (transient-suffix-object)
+                                     this-original-command)))))))
 
 (transient-define-suffix transient-describe ()
   "From a transient menu, describe something in another buffer.
