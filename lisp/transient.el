@@ -4866,7 +4866,9 @@ apply the face `transient-unreachable' to the complete string."
 (cl-defmethod transient--get-description ((obj transient-child))
   (cond-let* [[desc (oref obj description)]]
              ((functionp desc)
-              (transient--arity-funcall desc obj))
+              (condition-case nil
+                  (funcall desc obj)
+                (wrong-number-of-arguments (funcall desc))))
              (desc)))
 
 (cl-defmethod transient--get-face ((obj transient-suffix) slot)
@@ -4875,7 +4877,9 @@ apply the face `transient-unreachable' to the complete string."
              ((facep face) face)
              ((functionp face)
               (let ((transient--pending-suffix obj))
-                (transient--arity-funcall face obj)))))
+                (condition-case nil
+                    (funcall face obj)
+                  (wrong-number-of-arguments (funcall face)))))))
 
 (defun transient--add-face (string face &optional append beg end)
   (let ((str (copy-sequence string)))
@@ -5381,12 +5385,6 @@ we stop there."
   (require 'face-remap)
   (face-remap-reset-base 'default)
   (face-remap-add-relative 'default 'fixed-pitch))
-
-(defun transient--arity-funcall (fn &rest args)
-  (let ((max (cdr (func-arity (advice--cd*r (if (symbolp fn)
-                                                (symbol-function fn)
-                                              fn))))))
-    (apply fn (if (eq max 'many) args (seq-take args max)))))
 
 (defun transient--seq-reductions-from (function sequence initial-value)
   (let ((acc (list initial-value)))
