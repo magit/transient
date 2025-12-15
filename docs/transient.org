@@ -902,7 +902,7 @@ These functions operate on the information stored in the
 ~transient--layout~ property of the {{{var(PREFIX)}}} symbol.  Elements in that
 tree are not objects but have the form {{{codevar((CLASS PLIST))}}} for suffixes and
 ~[CLASS PLIST CHILDREN]~ for groups.  At the root of the tree is an
-element ~[N Nil CHILDREN]~, where ~N~ is the version of the layout format,
+element ~[N nil CHILDREN]~, where ~N~ is the version of the layout format,
 currently and hopefully for a long time 2.  While that element looks
 like a group vector, that element does not count when identifying a
 group using a coordinate vector, i.e., ~[0]~ is its first child, not the
