@@ -1055,7 +1055,7 @@ the function @code{transient--get-layout}.
 
 These functions operate on the information stored in the
 @code{transient--layout} property of the @var{PREFIX} symbol.  Elements in that
-tree are not objects but have the form @code{(@var{CLASS} @var{PLIST}) for suffixes} and
+tree are not objects but have the form @code{(@var{CLASS} @var{PLIST})} for suffixes and
 @code{[CLASS PLIST CHILDREN]} for groups.  At the root of the tree is an
 element @code{[N Nil CHILDREN]}, where @code{N} is the version of the layout format,
 currently and hopefully for a long time 2.  While that element looks
