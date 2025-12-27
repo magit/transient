@@ -1,4 +1,18 @@
 # -*- mode: org -*-
+* v0.12.0    UNRELEASED
+
+- Fixed a regression when using the ~transient-value-preset~ class,
+  introduced in v0.10.0.  f960acdf
+
+- Stopped creating a new file to save an unmodified default value
+  (the empty list).  3fdd8043
+
+- Various makefile improvements. 4e6d3fc8..151622e1
+
+- Gave up on determining function arity upfront.  6d1d8656
+
+- Various build improvements.
+
 * v0.11.0    2025-11-18
 
 - At least Emacs 28.1 is required now.  Emacs 30.1 was released
