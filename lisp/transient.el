@@ -5481,6 +5481,8 @@ as stand-in for elements of exhausted lists."
 ;;; _
 (provide 'transient)
 ;; Local Variables:
+;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
+;; indent-tabs-mode: nil
 ;; read-symbol-shorthands: (
 ;;   ("and$"         . "cond-let--and$")
 ;;   ("and-let"      . "cond-let--and-let")
@@ -5488,7 +5490,5 @@ as stand-in for elements of exhausted lists."
 ;;   ("when$"        . "cond-let--when$")
 ;;   ("when-let"     . "cond-let--when-let")
 ;;   ("while-let"    . "cond-let--while-let"))
-;; indent-tabs-mode: nil
-;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
 ;; End:
 ;;; transient.el ends here
