@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.12.0    UNRELEASED
+* v0.12.0    2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,
   introduced in v0.10.0.  f960acdf
