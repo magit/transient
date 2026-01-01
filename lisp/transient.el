@@ -1,6 +1,6 @@
 ;;; transient.el --- Transient commands  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2018-2025 Free Software Foundation, Inc.
+;; Copyright (C) 2018-2026 Free Software Foundation, Inc.
 
 ;; Author: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/magit/transient

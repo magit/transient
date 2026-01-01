@@ -1,6 +1,6 @@
 ;;; transient-tests.el --- Tests for Transient  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2018-2025 Jonas Bernoulli
+;; Copyright (C) 2018-2026 Jonas Bernoulli
 
 ;; Authors: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/magit/transient
