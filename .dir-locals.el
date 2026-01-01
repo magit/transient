@@ -1,5 +1,7 @@
 ((nil
-  (indent-tabs-mode . nil))
+  (indent-tabs-mode . nil)
+  (copyright-names-regexp
+   . "\\(?:Jonas Bernoulli\\|Free Software Foundation, Inc\\.\\)"))
  (makefile-mode
   (indent-tabs-mode . t))
  (git-commit-mode
