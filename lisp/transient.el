@@ -2843,25 +2843,25 @@ value.  Otherwise return CHILDREN as is.")
            (advice
             (lambda (fn &rest args)
               (interactive
-               (lambda (spec)
-                 (let ((abort t))
-                   (unwind-protect
-                       (prog1 (let ((debugger #'transient--exit-and-debug))
-                                (if-let* ((obj suffix)
-                                          (grp (oref obj parent))
-                                          (adv (or (oref obj advice*)
-                                                   (oref grp advice*))))
-                                    (funcall
-                                     adv #'advice-eval-interactive-spec spec)
-                                  (advice-eval-interactive-spec spec)))
-                         (setq abort nil))
-                     (when abort
-                       (when-let ((unwind (oref prefix unwind-suffix)))
-                         (transient--debug 'unwind-interactive)
-                         (funcall unwind command))
-                       (when (symbolp command)
-                         (remove-function (symbol-function command) advice))
-                       (oset prefix unwind-suffix nil))))))
+                (lambda (spec)
+                  (let ((abort t))
+                    (unwind-protect
+                        (prog1 (let ((debugger #'transient--exit-and-debug))
+                                 (if-let* ((obj suffix)
+                                           (grp (oref obj parent))
+                                           (adv (or (oref obj advice*)
+                                                    (oref grp advice*))))
+                                     (funcall
+                                      adv #'advice-eval-interactive-spec spec)
+                                   (advice-eval-interactive-spec spec)))
+                          (setq abort nil))
+                      (when abort
+                        (when-let ((unwind (oref prefix unwind-suffix)))
+                          (transient--debug 'unwind-interactive)
+                          (funcall unwind command))
+                        (when (symbolp command)
+                          (remove-function (symbol-function command) advice))
+                        (oset prefix unwind-suffix nil))))))
               (unwind-protect
                   (let ((debugger #'transient--exit-and-debug))
                     (if-let* ((obj suffix)
@@ -3468,20 +3468,20 @@ For example:
 (defun transient-set-level (&optional command level)
   "Set the level of the transient or one of its suffix commands."
   (interactive
-   (let ((command this-original-command)
-         (prefix (oref transient--prefix command)))
-     (and (or (not (eq command 'transient-set-level))
-              (and transient--editp
-                   (setq command prefix)))
-          (list command
-                (let ((keys (this-single-command-raw-keys)))
-                  (and (lookup-key transient--transient-map keys)
-                       (progn
-                         (transient--show)
-                         (string-to-number
-                          (transient--read-number-N
-                           (format "Set level for `%s': " command)
-                           nil nil (not (eq command prefix)))))))))))
+    (let ((command this-original-command)
+          (prefix (oref transient--prefix command)))
+      (and (or (not (eq command 'transient-set-level))
+               (and transient--editp
+                    (setq command prefix)))
+           (list command
+                 (let ((keys (this-single-command-raw-keys)))
+                   (and (lookup-key transient--transient-map keys)
+                        (progn
+                          (transient--show)
+                          (string-to-number
+                           (transient--read-number-N
+                            (format "Set level for `%s': " command)
+                            nil nil (not (eq command prefix)))))))))))
   (cond
     ((not command)
      (setq transient--editp t)
@@ -5484,7 +5484,8 @@ as stand-in for elements of exhausted lists."
 ;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
 ;; indent-tabs-mode: nil
 ;; lisp-indent-local-overrides: (
-;;   (cond . 0))
+;;   (cond . 0)
+;;   (interactive . 0))
 ;; read-symbol-shorthands: (
 ;;   ("and$"         . "cond-let--and$")
 ;;   ("and-let"      . "cond-let--and-let")
