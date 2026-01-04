@@ -4864,22 +4864,24 @@ apply the face `transient-unreachable' to the complete string."
               (propertize "|" 'face 'transient-delimiter))))))
 
 (cl-defmethod transient--get-description ((obj transient-child))
-  (cond-let* [[desc (oref obj description)]]
-             ((functionp desc)
-              (condition-case nil
-                  (funcall desc obj)
-                (wrong-number-of-arguments (funcall desc))))
-             (desc)))
+  (cond-let*
+    [[desc (oref obj description)]]
+    ((functionp desc)
+     (condition-case nil
+         (funcall desc obj)
+       (wrong-number-of-arguments (funcall desc))))
+    (desc)))
 
 (cl-defmethod transient--get-face ((obj transient-suffix) slot)
-  (cond-let* ((not (slot-boundp obj slot)) nil)
-             [[face (slot-value obj slot)]]
-             ((facep face) face)
-             ((functionp face)
-              (let ((transient--pending-suffix obj))
-                (condition-case nil
-                    (funcall face obj)
-                  (wrong-number-of-arguments (funcall face)))))))
+  (cond-let*
+    ((not (slot-boundp obj slot)) nil)
+    [[face (slot-value obj slot)]]
+    ((facep face) face)
+    ((functionp face)
+     (let ((transient--pending-suffix obj))
+       (condition-case nil
+           (funcall face obj)
+         (wrong-number-of-arguments (funcall face)))))))
 
 (defun transient--add-face (string face &optional append beg end)
   (let ((str (copy-sequence string)))
