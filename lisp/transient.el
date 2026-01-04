@@ -2,15 +2,10 @@
 
 ;; Copyright (C) 2018-2026 Free Software Foundation, Inc.
 
-;; Author: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
-;; Homepage: https://github.com/magit/transient
+;; Author: Jonas Bernoulli <jonas@bernoul.li>
+;; URL: https://github.com/magit/transient
 ;; Keywords: extensions
-
-;; Package-Version: 0.12.0
-;; Package-Requires: (
-;;     (emacs   "28.1")
-;;     (compat  "30.1")
-;;     (seq      "2.24"))
+;; Version: 0.12.0
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
