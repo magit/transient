@@ -1702,7 +1702,7 @@ should be used.
 @end defun
 
 @defun transient-get-value
-This function returns the value of the erant prefix.
+This function returns the value of the extant prefix.
 
 This function is intended to be used when setting up a menu and its
 suffixes.  It is not intended to be used when a suffix command is
