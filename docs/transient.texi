@@ -1346,7 +1346,9 @@ brackets to do the latter.
 Group specifications then have this form:
 
 @lisp
-[@{LEVEL@} @{DESCRIPTION@} @{KEYWORD VALUE@}... ELEMENT...]
+[@{@var{LEVEL}@} @{@var{DESCRIPTION}@}
+ @{@var{KEYWORD} @var{VALUE}@}...
+ @var{ELEMENT}...]
 @end lisp
 
 The @var{LEVEL} is optional and defaults to 4.  @xref{Enabling and
@@ -1501,7 +1503,9 @@ suffixes''.  Here it means the former.
 Suffix specifications have this form:
 
 @lisp
-([LEVEL] [KEY [DESCRIPTION]] COMMAND|ARGUMENT [KEYWORD VALUE]...)
+([@var{LEVEL}]
+ [@var{KEY} [@var{DESCRIPTION}]]
+ @var{COMMAND}|@var{ARGUMENT} [@var{KEYWORD} @var{VALUE}]...)
 @end lisp
 
 @var{LEVEL}, @var{KEY} and @var{DESCRIPTION} can also be specified using the @var{KEYWORD}s
