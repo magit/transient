@@ -57,7 +57,6 @@ stats-upload:
 
 test: lisp
 	@$(MAKE) -C test test
-
 test-interactive:
 	@$(MAKE) -C test test-interactive
 
