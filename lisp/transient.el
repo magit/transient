@@ -10,7 +10,6 @@
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
 ;;     (compat  "30.1")
-;;     (cond-let "0.2")
 ;;     (seq      "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -43,7 +42,6 @@
 
 (require 'cl-lib)
 (require 'compat)
-(require 'cond-let)
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
@@ -1269,7 +1267,7 @@ commands are aliases for."
               (setq class v)
             (push k keys)
             (push v keys))))
-      (while-let*
+      (while-let
           ((arg (car args))
            (arg (cond
                   ;; Inline group definition.
@@ -1285,7 +1283,7 @@ commands are aliases for."
       (when (eq (car-safe (car args)) 'declare)
         (setq declare (car args))
         (setq args (cdr args))
-        (when-let ((int (assq 'interactive-only declare)))
+        (when-let* ((int (assq 'interactive-only declare)))
           (setq interactive-only (cadr int))
           (delq int declare))
         (unless (cdr declare)
@@ -1395,7 +1393,7 @@ commands are aliases for."
               (use :argument (cadr arg))
               (setq arg (cadr arg)))
              (string
-              (when-let ((shortarg (transient--derive-shortarg arg)))
+              (when-let* ((shortarg (transient--derive-shortarg arg)))
                 (use :shortarg shortarg))
               (use :argument arg)))
            (use :command
@@ -1764,7 +1762,7 @@ level of such a binding.
 The default level can only be set for commands that were defined
 using `transient-define-suffix', `transient-define-infix' or
 `transient-define-argument'."
-  (if-let ((proto (transient--suffix-prototype command)))
+  (if-let* ((proto (transient--suffix-prototype command)))
       (oset proto level level)
     (user-error "Cannot set level for `%s'; no prototype object exists"
                 command)))
@@ -2338,7 +2336,7 @@ of the corresponding object."
                        (`(suffix nil nil) #'transient--do-exit)
                        (`(suffix ,do  ,_) do))))))
         (when pre
-          (if-let ((alt (lookup-key map id)))
+          (if-let* ((alt (lookup-key map id)))
               (unless (eq alt pre)
                 (define-key map (vconcat (oref obj key) id) pre))
             (define-key map id pre)))))
@@ -2437,7 +2435,7 @@ value.  Otherwise return CHILDREN as is.")
     children))
 
 (defun transient--env-apply (fn &optional prefix)
-  (if-let ((env (oref (or prefix transient--prefix) environment)))
+  (if-let* ((env (oref (or prefix transient--prefix) environment)))
       (funcall env fn)
     (funcall fn)))
 
@@ -2772,7 +2770,7 @@ value.  Otherwise return CHILDREN as is.")
           ((and transient--prefix transient--redisplay-key)
            (setq transient--redisplay-key nil)
            (when transient--showp
-             (if-let ((win (minibuffer-selected-window)))
+             (if-let* ((win (minibuffer-selected-window)))
                  (with-selected-window win
                    (transient--show))
                (transient--show)))))
@@ -2859,7 +2857,7 @@ value.  Otherwise return CHILDREN as is.")
                                    (advice-eval-interactive-spec spec)))
                           (setq abort nil))
                       (when abort
-                        (when-let ((unwind (oref prefix unwind-suffix)))
+                        (when-let* ((unwind (oref prefix unwind-suffix)))
                           (transient--debug 'unwind-interactive)
                           (funcall unwind command))
                         (when (symbolp command)
@@ -2875,7 +2873,7 @@ value.  Otherwise return CHILDREN as is.")
                                        (oref grp advice*))))
                         (apply adv fn args)
                       (apply fn args)))
-                (when-let ((unwind (oref prefix unwind-suffix)))
+                (when-let* ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind command))
                 (when (symbolp command)
@@ -2907,7 +2905,7 @@ value.  Otherwise return CHILDREN as is.")
                                (advice-eval-interactive-spec spec)))
                       (setq abort nil))
                   (when abort
-                    (when-let ((unwind (oref prefix unwind-suffix)))
+                    (when-let* ((unwind (oref prefix unwind-suffix)))
                       (transient--debug 'unwind-interactive)
                       (funcall unwind command))
                     (when (symbolp command)
@@ -2925,7 +2923,7 @@ value.  Otherwise return CHILDREN as is.")
                                        (oref grp advice*))))
                         (apply adv fn args)
                       (apply fn args)))
-                (when-let ((unwind (oref prefix unwind-suffix)))
+                (when-let* ((unwind (oref prefix unwind-suffix)))
                   (transient--debug 'unwind-command)
                   (funcall unwind command))
                 (when (symbolp command)
@@ -3139,8 +3137,8 @@ identifying the exit."
 ;;;; Pre-Commands
 
 (defun transient--call-pre-command ()
-  (if-let ((fn (transient--get-pre-command this-command
-                                           (this-command-keys-vector))))
+  (if-let* ((fn (transient--get-pre-command this-command
+                                            (this-command-keys-vector))))
       (let ((action (funcall fn)))
         (when (eq action transient--exit)
           (setq transient--exitp (or transient--exitp t)))
@@ -3347,8 +3345,8 @@ prefix argument and pivot to `transient-update'."
            ;; `this-command' is `transient-undefined' or `transient-inapt'.
            ;; Show the command (`this-original-command') the user actually
            ;; tried to invoke.
-           (if-let ((cmd (or (ignore-errors (symbol-name this-original-command))
-                             (ignore-errors (symbol-name this-command)))))
+           (if-let* ((cmd (or (ignore-errors (symbol-name this-original-command))
+                              (ignore-errors (symbol-name this-command)))))
                (format " [%s]" (propertize cmd 'face 'font-lock-warning-face))
              ""))
   (unless (and transient--transient-map
@@ -3677,7 +3675,7 @@ Use `transient-default-value' to determine the default value."
       ;; the prototype, were the set (if any) value is stored.
       (oref obj value)
     (oset obj value
-          (if-let ((saved (assq (oref obj command) transient-values)))
+          (if-let* ((saved (assq (oref obj command) transient-values)))
               (cdr saved)
             (transient-default-value obj)))))
 
@@ -3726,8 +3724,8 @@ Call `transient-default-value' but because that is a noop for
 If the value of the `default-value' slot is a function, call it to
 determine the value.  If the slot's value isn't a function, return
 that.  If the slot is unbound, return nil."
-  (if-let ((default (and (slot-boundp obj 'default-value)
-                         (oref obj default-value))))
+  (if-let* ((default (and (slot-boundp obj 'default-value)
+                          (oref obj default-value))))
       (if (functionp default)
           (funcall default)
         default)
@@ -3837,7 +3835,7 @@ it\", in which case it is pointless to preserve history.)"
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
                          (oref obj choices))))
-    (if-let ((value (oref obj value)))
+    (if-let* ((value (oref obj value)))
         (cadr (member value choices))
       (car choices))))
 
@@ -3845,7 +3843,7 @@ The last value is \"don't use any of these switches\"."
   "Elsewhere use the reader of the infix command COMMAND.
 Use this if you want to share an infix's history with a regular
 stand-alone command."
-  (if-let ((obj (transient--suffix-prototype command)))
+  (if-let* ((obj (transient--suffix-prototype command)))
       (cl-letf (((symbol-function #'transient--show) #'ignore))
         (transient-infix-read obj))
     (error "Not a suffix command: `%s'" command)))
@@ -4056,7 +4054,7 @@ setting up a menu and its suffixes, in which case `transient-get-value'
 should be used."
   (when (listp prefix)
     (setq prefix (car (or (memq transient-current-command prefix) prefix))))
-  (if-let ((obj (get prefix 'transient--prefix)))
+  (if-let* ((obj (get prefix 'transient--prefix)))
       ;; This OBJ is only used for dispatch purposes; see below.
       (transient-prefix-value obj)
     (error "Not a transient prefix: %s" prefix)))
@@ -4504,7 +4502,7 @@ have a history of their own.")
   (transient--insert-groups)
   (when (or transient--helpp transient--editp)
     (transient--insert-help))
-  (when-let ((line (transient--separator-line)))
+  (when-let* ((line (transient--separator-line)))
     (insert line)))
 
 (defun transient--mode-line-format ()
@@ -4558,8 +4556,8 @@ have a history of their own.")
 (cl-defmethod transient--insert-group :around ((group transient-group)
                                                &optional _)
   "Insert GROUP's description, if any."
-  (when-let ((desc (transient-with-shadowed-buffer
-                     (transient-format-description group))))
+  (when-let* ((desc (transient-with-shadowed-buffer
+                      (transient-format-description group))))
     (insert desc ?\n))
   (let ((transient--max-group-level
          (max (oref group level) transient--max-group-level))
@@ -4687,7 +4685,7 @@ as a button."
   "Format OBJ's `key' for display and return the result."
   (let ((key (if (slot-boundp obj 'key) (oref obj key) ""))
         (cmd (and (slot-boundp obj 'command) (oref obj command))))
-    (when-let ((width (oref transient--pending-group pad-keys)))
+    (when-let* ((width (oref transient--pending-group pad-keys)))
       (setq key (truncate-string-to-width key width nil ?\s)))
     (if transient--redisplay-key
         (let ((len (length transient--redisplay-key))
@@ -4797,7 +4795,7 @@ apply the face `transient-unreachable' to the complete string."
                               `((?c . ,desc)
                                 (?s . ,docstr)))))
     (if desc
-        (when-let ((face (transient--get-face obj 'face)))
+        (when-let* ((face (transient--get-face obj 'face)))
           (setq desc (transient--add-face desc face t)))
       (setq desc (propertize "(BUG: no description)" 'face 'error)))
     (when (cond (transient--all-levels-p
@@ -4806,8 +4804,8 @@ apply the face `transient-unreachable' to the complete string."
                  (> (max (oref obj level) transient--max-group-level)
                     transient--default-prefix-level)))
       (setq desc (transient--add-face desc 'transient-higher-level)))
-    (when-let ((inapt-face (and (oref obj inapt)
-                                (transient--get-face obj 'inapt-face))))
+    (when-let* ((inapt-face (and (oref obj inapt)
+                                 (transient--get-face obj 'inapt-face))))
       (setq desc (transient--add-face desc inapt-face)))
     (when (and (slot-boundp obj 'key)
                (transient--key-unreachable-p obj))
@@ -4827,7 +4825,7 @@ apply the face `transient-unreachable' to the complete string."
 
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((argument (prin1-to-string (oref obj argument) t)))
-    (if-let ((value (oref obj value)))
+    (if-let* ((value (oref obj value)))
         (let* ((inapt (oref obj inapt))
                (aface (if inapt 'transient-inapt-argument 'transient-argument))
                (vface (if inapt 'transient-inapt-argument 'transient-value)))
@@ -4914,8 +4912,8 @@ apply the face `transient-unreachable' to the complete string."
     (and val (not (integerp val)) val)))
 
 (defun transient--maybe-pad-keys (group &optional parent)
-  (when-let ((pad (or (oref group pad-keys)
-                      (and parent (oref parent pad-keys)))))
+  (when-let* ((pad (or (oref group pad-keys)
+                       (and parent (oref parent pad-keys)))))
     (oset group pad-keys
           (apply #'max
                  (if (integerp pad) pad 0)
@@ -4965,7 +4963,7 @@ that, else its name.
 Intended to be temporarily used as the `:suffix-description' of
 a prefix command, while porting a regular keymap to a transient."
   (let ((command (oref obj command)))
-    (if-let ((doc (documentation command)))
+    (if-let* ((doc (documentation command)))
         (propertize (car (split-string doc "\n")) 'face 'font-lock-doc-face)
       (propertize (symbol-name command) 'face 'font-lock-function-name-face))))
 
@@ -5494,10 +5492,5 @@ as stand-in for elements of exhausted lists."
 ;;   (cond . 0)
 ;;   (cond* . 0)
 ;;   (interactive . 0))
-;; read-symbol-shorthands: (
-;;   ("and-let"      . "cond-let--and-let")
-;;   ("if-let"       . "cond-let--if-let")
-;;   ("when-let"     . "cond-let--when-let")
-;;   ("while-let"    . "cond-let--while-let"))
 ;; End:
 ;;; transient.el ends here
