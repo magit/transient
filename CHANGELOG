@@ -1,4 +1,23 @@
 # -*- mode: org -*-
+* v0.13.0    UNRELEASED
+
+- Selecting the menu window using the mouse is now supported.
+  7c46a093
+
+- Selecting the menu window using the command ~other-window~, is now
+  supported, but requires the following configuration.  e3346f7b
+
+    (define-key transient-predicate-map
+      [other-window] #'transient--do-move)
+
+- The region is now properly displayed, when using the mouse to
+  select text in the menu buffer.  7c46a093
+
+- The menu window can now be selected automatically when activating
+  a menu, by setting the new option ~transient-select-menu-window~.
+  Doing so is only encouraged for users of braille output devices.
+  59380806
+
 * v0.12.0    2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,
