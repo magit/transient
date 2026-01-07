@@ -1875,7 +1875,8 @@ This is bound while the suffixes are drawn in the transient buffer.")
 
 (defvar transient--quit-commands
   '(transient-quit-one
-    transient-quit-all))
+    transient-quit-all
+    top-level))
 
 ;;; Identities
 
