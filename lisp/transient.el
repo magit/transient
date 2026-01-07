@@ -1815,6 +1815,9 @@ That buffer is current and empty when this hook runs.")
 (defvar transient--refreshp nil
   "Whether to refresh the transient completely.")
 
+(defvar transient--pre-command nil
+  "The pre-command selected for `this-command'.")
+
 (defvar transient--all-levels-p nil
   "Whether temporary display of suffixes on all levels is active.")
 
@@ -2747,6 +2750,7 @@ value.  Otherwise return CHILDREN as is.")
   (unless (eq transient--docsp 'permanent)
     (setq transient--docsp nil))
   (setq transient--editp nil)
+  (setq transient--pre-command nil)
   (setq transient--prefix nil)
   (setq transient--layout nil)
   (setq transient--suffixes nil)
@@ -3138,19 +3142,17 @@ identifying the exit."
 (defun transient--call-pre-command ()
   (cond-let
     ([fn (transient--get-pre-command this-command (this-command-keys-vector))]
+     (setq transient--pre-command fn)
      (let ((action (funcall fn)))
        (when (eq action transient--exit)
          (setq transient--exitp (or transient--exitp t)))
        action))
     ((let ((keys (this-command-keys-vector)))
        (eq (aref keys (1- (length keys))) ?\C-g))
-     (setq this-command 'transient-noop)
-     transient--stay)
+     (transient--do-noop))
     ((transient--edebug-command-p)
-     transient--stay)
-    (t
-     (setq this-command 'transient-undefined)
-     transient--stay)))
+     (transient--do-stay))
+    ((transient--do-warn))))
 
 (defun transient--get-pre-command (&optional cmd key enforce-type)
   (or (and (not (eq enforce-type 'non-suffix))
@@ -3181,15 +3183,18 @@ identifying the exit."
 
 (defun transient--do-stay ()
   "Call the command without exporting variables and stay transient."
+  (setq transient--pre-command 'transient--do-stay)
   transient--stay)
 
 (defun transient--do-noop ()
   "Call `transient-noop' and stay transient."
+  (setq transient--pre-command 'transient--do-noop)
   (setq this-command 'transient-noop)
   transient--stay)
 
 (defun transient--do-warn ()
   "Call `transient-undefined' and stay transient."
+  (setq transient--pre-command 'transient--do-warn)
   (setq this-command 'transient-undefined)
   transient--stay)
 
