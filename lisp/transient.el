@@ -4384,7 +4384,9 @@ have a history of their own.")
                               (window-parameter nil 'no-other-window))))
     (when (window-live-p transient--window)
       (with-selected-window transient--window
-        (set-window-parameter nil 'no-other-window t)
+        (unless (eq (lookup-key transient-predicate-map [other-window])
+                    'transient--do-move)
+          (set-window-parameter nil 'no-other-window t))
         (goto-char (point-min))
         (when transient-enable-popup-navigation
           (transient--goto-button focus))
