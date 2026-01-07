@@ -189,6 +189,17 @@ if no transient were active."
                  (const :tag "Enable navigation commands" t)
                  (const :tag "Disable navigation commands" nil)))
 
+(defcustom transient-select-menu-window nil
+  "Whether to select the window displaying the transient menu.
+
+Enabling this is discouraged, except for users of braille output
+devises.  Note that enabling this, or alternatively selecting the
+menu window on demand, are both unnecessary, to be able to move
+the cursor in the menu.  See `transient-enable-popup-navigation'."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-display-buffer-action
   '(display-buffer-in-side-window
     (side . bottom)
@@ -2727,7 +2738,10 @@ value.  Otherwise return CHILDREN as is.")
          (transient--wrap-command)
          (when exitp
            (transient--maybe-set-value 'exit)
-           (transient--pre-exit)))))))
+           (transient--pre-exit)))))
+    (when (and (eq (selected-window) transient--window)
+               (not (eq transient--pre-command 'transient--do-mouse)))
+      (select-window transient--original-window))))
 
 (defun transient--pre-exit ()
   (transient--debug 'pre-exit)
@@ -3054,7 +3068,11 @@ value.  Otherwise return CHILDREN as is.")
                           (eq (event-basic-type last-command-event)
                               'mouse-movement))
                       (eq (current-buffer) transient--buffer)))
-       (transient--show)))
+       (transient--show))
+     (when (and transient-select-menu-window
+                (not (eq (selected-window) transient--window))
+                (not (eq transient--pre-command 'transient--do-mouse)))
+       (select-window transient--window)))
     (t
      (when (and (numberp transient-show-popup)
                 (not (zerop transient-show-popup))
