@@ -1870,12 +1870,6 @@ This is bound while the suffixes are drawn in the transient buffer.")
 
 (defvar transient--history nil)
 
-(defvar transient--scroll-commands
-  '(transient-scroll-up
-    transient-scroll-down
-    mwheel-scroll
-    scroll-bar-toolkit-scroll))
-
 (defvar transient--quit-commands
   '(transient-quit-one
     transient-quit-all
@@ -2208,10 +2202,10 @@ of the corresponding object."
   "<transient-reset>"             #'transient--do-call
   "<describe-key-briefly>"        #'transient--do-stay
   "<describe-key>"                #'transient--do-stay
-  "<transient-scroll-up>"         #'transient--do-stay
-  "<transient-scroll-down>"       #'transient--do-stay
-  "<mwheel-scroll>"               #'transient--do-stay
-  "<scroll-bar-toolkit-scroll>"   #'transient--do-stay
+  "<transient-scroll-up>"         #'transient--do-scroll
+  "<transient-scroll-down>"       #'transient--do-scroll
+  "<mwheel-scroll>"               #'transient--do-scroll
+  "<scroll-bar-toolkit-scroll>"   #'transient--do-scroll
   "<transient-noop>"              #'transient--do-noop
   "<transient-mouse-push-button>" #'transient--do-move
   "<transient-push-button>"       #'transient--do-push-button
@@ -3051,7 +3045,7 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--redisplay ()
   (if (or (eq transient-show-popup t)
           transient--showp)
-      (unless (or (memq this-command transient--scroll-commands)
+      (unless (or (eq transient--pre-command 'transient--do-scroll)
                   (and (or (memq this-command '(mouse-drag-region
                                                 mouse-set-region))
                            (eq (event-basic-type last-command-event)
@@ -3295,6 +3289,10 @@ In that case behave like `transient--do-stay', otherwise similar
 to `transient--do-warn'."
   (unless transient-enable-popup-navigation
     (setq this-command 'transient-inhibit-move))
+  transient--stay)
+
+(defun transient--do-scroll ()
+  "Call the scroll command without exporting variables and stay transient."
   transient--stay)
 
 (defun transient--do-minus ()
