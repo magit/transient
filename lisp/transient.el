@@ -3136,18 +3136,21 @@ identifying the exit."
 ;;; Pre-Commands
 
 (defun transient--call-pre-command ()
-  (if-let ((fn (transient--get-pre-command this-command
-                                           (this-command-keys-vector))))
-      (let ((action (funcall fn)))
-        (when (eq action transient--exit)
-          (setq transient--exitp (or transient--exitp t)))
-        action)
-    (if (let ((keys (this-command-keys-vector)))
-          (eq (aref keys (1- (length keys))) ?\C-g))
-        (setq this-command 'transient-noop)
-      (unless (transient--edebug-command-p)
-        (setq this-command 'transient-undefined)))
-    transient--stay))
+  (cond-let
+    ([fn (transient--get-pre-command this-command (this-command-keys-vector))]
+     (let ((action (funcall fn)))
+       (when (eq action transient--exit)
+         (setq transient--exitp (or transient--exitp t)))
+       action))
+    ((let ((keys (this-command-keys-vector)))
+       (eq (aref keys (1- (length keys))) ?\C-g))
+     (setq this-command 'transient-noop)
+     transient--stay)
+    ((transient--edebug-command-p)
+     transient--stay)
+    (t
+     (setq this-command 'transient-undefined)
+     transient--stay)))
 
 (defun transient--get-pre-command (&optional cmd key enforce-type)
   (or (and (not (eq enforce-type 'non-suffix))
