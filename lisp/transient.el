@@ -2137,7 +2137,6 @@ Common Suffix Commands'."
 (defvar-keymap transient-popup-navigation-map
   :doc "One of the keymaps used when menu navigation is enabled.
 See `transient-enable-popup-navigation'."
-  "<down-mouse-1>" #'transient-noop
   "<up>"   #'transient-backward-button
   "<down>" #'transient-forward-button
   "C-r"    #'transient-isearch-backward
@@ -2213,6 +2212,9 @@ of the corresponding object."
   "<transient-forward-button>"    #'transient--do-move
   "<transient-isearch-backward>"  #'transient--do-move
   "<transient-isearch-forward>"   #'transient--do-move
+  "<mouse-set-point>"             #'transient--do-mouse
+  "<mouse-set-region>"            #'transient--do-mouse
+  "<mouse-drag-region>"           #'transient--do-mouse
   "<transient-copy-menu-text>"    #'transient--do-stay
   "<transient-toggle-docstrings>" #'transient--do-stay
   ;; If a valid but incomplete prefix sequence is followed by
@@ -3046,8 +3048,7 @@ value.  Otherwise return CHILDREN as is.")
   (if (or (eq transient-show-popup t)
           transient--showp)
       (unless (or (eq transient--pre-command 'transient--do-scroll)
-                  (and (or (memq this-command '(mouse-drag-region
-                                                mouse-set-region))
+                  (and (or (eq transient--pre-command 'transient--do-mouse)
                            (eq (event-basic-type last-command-event)
                                'mouse-movement))
                        (eq (current-buffer) transient--buffer)))
@@ -3157,9 +3158,13 @@ identifying the exit."
                       (and (symbolp def) def)))
                (lookup-key transient--predicate-map (vector cmd))))
       (and (not (eq enforce-type 'suffix))
-           (transient--resolve-pre-command
-            (oref transient--prefix transient-non-suffix)
-            t))))
+           (if (equal (event-basic-type last-command-event) 'mouse-movement)
+               ;; `this-command' is most likely the anonymous
+               ;; drag command defined inside `mouse-drag-track'.
+               'transient--do-mouse
+             (transient--resolve-pre-command
+              (oref transient--prefix transient-non-suffix)
+              t)))))
 
 (defun transient--resolve-pre-command (pre &optional resolve-boolean correct)
   (setq pre (cond ((booleanp pre)
@@ -3293,6 +3298,10 @@ to `transient--do-warn'."
 
 (defun transient--do-scroll ()
   "Call the scroll command without exporting variables and stay transient."
+  transient--stay)
+
+(defun transient--do-mouse ()
+  "Call the mouse command without exporting variables and stay transient."
   transient--stay)
 
 (defun transient--do-minus ()
