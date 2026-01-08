@@ -1,6 +1,11 @@
 # -*- mode: org -*-
 * v0.13.0    UNRELEASED
 
+This release adds features useful for blind users.  The relevant
+options and recommended settings are documented in the manual in
+the section "Accessibility Options".  To go there, evaluate this
+form: (info "(transient)Accessibility Options").
+
 - Selecting the menu window using the mouse is now supported.
   7c46a093
 

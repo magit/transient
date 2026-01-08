@@ -740,16 +740,6 @@ size of that window.  Otherwise, allow resizing the menu window if the
 number is positive, or hide the menu if it is negative.
 @end defopt
 
-@defopt transient-select-menu-window
-This option controls whether the window displaying the transient menu
-is automatically selected has soon as it is displayed.
-
-Enabling this is discouraged, except for users of braille output
-devises.  Note that enabling this, or alternatively selecting the
-menu window on demand, are both unnecessary, to be able to move
-the cursor in the menu.  See @code{transient-enable-menu-navigation}.
-@end defopt
-
 @defopt transient-read-with-initial-input
 This option controls whether the last history element is used as the
 initial minibuffer input when reading the value of an infix argument
@@ -837,6 +827,35 @@ when creating a new prefix with @code{transient-define-prefix}.
 
 @anchor{Accessibility Options}
 @subheading Accessibility Options
+
+For blind users I recommend the following configuration.  If you
+need more guidance or would like to share your experience, please
+don't hesitate to contact me.
+
+@lisp
+(setopt transient-enable-menu-navigation t) ; the default
+(setopt transient-select-menu-window t)
+(setopt transient-force-single-column t)
+(setopt transient-navigate-to-group-descriptions t)
+@end lisp
+
+Additionally you have allow the command, which you use to read the
+text at point, to be run when a transient menu is active, for example:
+
+@lisp
+(define-key transient-predicate-map
+  [my-read-text-at-point] #'transient--do-stay)
+@end lisp
+
+@defopt transient-select-menu-window
+This option controls whether the window displaying the transient menu
+is automatically selected has soon as it is displayed.
+
+Enabling this is discouraged, except for users of braille output
+devises.  Note that enabling this, or alternatively selecting the
+menu window on demand, are both unnecessary, to be able to move
+the cursor in the menu.  See @code{transient-enable-menu-navigation}.
+@end defopt
 
 @defopt transient-force-single-column
 This option controls whether the use of a single column to display

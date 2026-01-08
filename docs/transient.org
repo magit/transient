@@ -590,16 +590,6 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   size of that window.  Otherwise, allow resizing the menu window if the
   number is positive, or hide the menu if it is negative.
 
-- User Option: transient-select-menu-window ::
-
-  This option controls whether the window displaying the transient menu
-  is automatically selected has soon as it is displayed.
-
-  Enabling this is discouraged, except for users of braille output
-  devises.  Note that enabling this, or alternatively selecting the
-  menu window on demand, are both unnecessary, to be able to move
-  the cursor in the menu.  See ~transient-enable-menu-navigation~.
-
 - User Option: transient-read-with-initial-input ::
 
   This option controls whether the last history element is used as the
@@ -682,6 +672,35 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 :PROPERTIES:
 :UNNUMBERED: notoc
 :END:
+
+For blind users I recommend the following configuration.  If you
+need more guidance or would like to share your experience, please
+don't hesitate to contact me.
+
+#+begin_src emacs-lisp
+  (setopt transient-enable-menu-navigation t) ; the default
+  (setopt transient-select-menu-window t)
+  (setopt transient-force-single-column t)
+  (setopt transient-navigate-to-group-descriptions t)
+#+end_src
+
+Additionally you have allow the command, which you use to read the
+text at point, to be run when a transient menu is active, for example:
+
+#+begin_src emacs-lisp
+  (define-key transient-predicate-map
+    [my-read-text-at-point] #'transient--do-stay)
+#+end_src
+
+- User Option: transient-select-menu-window ::
+
+  This option controls whether the window displaying the transient menu
+  is automatically selected has soon as it is displayed.
+
+  Enabling this is discouraged, except for users of braille output
+  devises.  Note that enabling this, or alternatively selecting the
+  menu window on demand, are both unnecessary, to be able to move
+  the cursor in the menu.  See ~transient-enable-menu-navigation~.
 
 - User Option: transient-force-single-column ::
 
