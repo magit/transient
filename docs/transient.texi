@@ -747,7 +747,7 @@ is automatically selected has soon as it is displayed.
 Enabling this is discouraged, except for users of braille output
 devises.  Note that enabling this, or alternatively selecting the
 menu window on demand, are both unnecessary, to be able to move
-the cursor in the menu.  See @code{transient-enable-popup-navigation}.
+the cursor in the menu.  See @code{transient-enable-menu-navigation}.
 @end defopt
 
 @defopt transient-read-with-initial-input
@@ -757,7 +757,7 @@ from the user.  If @code{nil}, there is no initial input and the first
 element has to be accessed the same way as the older elements.
 @end defopt
 
-@defopt transient-enable-popup-navigation
+@defopt transient-enable-menu-navigation
 This option controls whether navigation commands are enabled in
 transient's menu buffer.  If the value is @code{verbose} (the default),
 brief documentation about the command under point is additionally
@@ -2610,7 +2610,7 @@ returns a brief summary about the command at point or hovered with
 the mouse.
 
 This function is called when the mouse is moved over a command and
-(if the value of @code{transient-enable-popup-navigation} is @code{verbose}) when
+(if the value of @code{transient-enable-menu-navigation} is @code{verbose}) when
 the user navigates to a command using the keyboard.
 
 If OBJ's @code{summary} slot is a string, that is used.  If @code{summary} is a

@@ -598,7 +598,7 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   Enabling this is discouraged, except for users of braille output
   devises.  Note that enabling this, or alternatively selecting the
   menu window on demand, are both unnecessary, to be able to move
-  the cursor in the menu.  See ~transient-enable-popup-navigation~.
+  the cursor in the menu.  See ~transient-enable-menu-navigation~.
 
 - User Option: transient-read-with-initial-input ::
 
@@ -607,7 +607,7 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   from the user.  If ~nil~, there is no initial input and the first
   element has to be accessed the same way as the older elements.
 
-- User Option: transient-enable-popup-navigation ::
+- User Option: transient-enable-menu-navigation ::
 
   This option controls whether navigation commands are enabled in
   transient's menu buffer.  If the value is ~verbose~ (the default),
@@ -2356,7 +2356,7 @@ functions use ~describe-function~.
   the mouse.
 
   This function is called when the mouse is moved over a command and
-  (if the value of ~transient-enable-popup-navigation~ is ~verbose~) when
+  (if the value of ~transient-enable-menu-navigation~ is ~verbose~) when
   the user navigates to a command using the keyboard.
 
   If OBJ's ~summary~ slot is a string, that is used.  If ~summary~ is a
