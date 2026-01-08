@@ -535,7 +535,7 @@ Values]], in [[* Using History]] and in [[* Enabling and Disabling Suffixes]].
 
 Two more essential options are documented in [[* Common Suffix Commands]].
 
-- User Option: transient-show-popup ::
+- User Option: transient-show-menu ::
 
   This option controls whether and when transient's menu buffer is
   shown.

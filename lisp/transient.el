@@ -107,6 +107,11 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
       (advice-add 'internal--build-binding :around
                   #'internal--build-binding@backport-e680827e814)))
 
+(define-obsolete-variable-alias
+  'transient-show-popup
+  'transient-show-menu
+  "transient 0.13.0")
+
 (defvar transient-common-command-prefix)
 
 (defmacro transient--with-emergency-exit (id &rest body)
@@ -131,7 +136,7 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
   "Transient commands."
   :group 'extensions)
 
-(defcustom transient-show-popup t
+(defcustom transient-show-menu t
   "Whether and when to show transient's menu in a buffer.
 
 \\<transient-map>\
@@ -3060,7 +3065,7 @@ value.  Otherwise return CHILDREN as is.")
 
 (defun transient--redisplay ()
   (cond
-    ((or (eq transient-show-popup t)
+    ((or (eq transient-show-menu t)
          transient--showp)
      (unless (or (eq transient--pre-command 'transient--do-move)
                  (eq transient--pre-command 'transient--do-scroll)
@@ -3074,15 +3079,15 @@ value.  Otherwise return CHILDREN as is.")
                 (not (eq transient--pre-command 'transient--do-mouse)))
        (select-window transient--window)))
     (t
-     (when (and (numberp transient-show-popup)
-                (not (zerop transient-show-popup))
+     (when (and (numberp transient-show-menu)
+                (not (zerop transient-show-menu))
                 (not transient--timer))
        (transient--timer-start))
      (transient--show-hint))))
 
 (defun transient--timer-start ()
   (setq transient--timer
-        (run-at-time (abs transient-show-popup) nil
+        (run-at-time (abs transient-show-menu) nil
                      (lambda ()
                        (transient--timer-cancel)
                        (transient--show)
@@ -4487,7 +4492,7 @@ have a history of their own.")
 ;;; Format
 
 (defun transient--format-hint ()
-  (if (and transient-show-popup (<= transient-show-popup 0))
+  (if (and transient-show-menu (<= transient-show-menu 0))
       (format "%s-" (key-description (this-command-keys)))
     (format
      "%s- [%s] %s"

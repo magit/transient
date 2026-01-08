@@ -680,7 +680,7 @@ More options are described in @ref{Common Suffix Commands}, in @ref{Saving Value
 
 Two more essential options are documented in @ref{Common Suffix Commands}.
 
-@defopt transient-show-popup
+@defopt transient-show-menu
 This option controls whether and when transient's menu buffer is
 shown.
 
