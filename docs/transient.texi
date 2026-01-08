@@ -845,6 +845,17 @@ vision who use large text and might otherwise have to scroll in two
 dimensions.
 @end defopt
 
+@defopt transient-navigate-to-group-descriptions
+This option controls whether menu navigation commands stop at group
+descriptions.
+
+If @code{transient-enable-menu-navigation} is non-@code{nil}, which it is by
+default, @kbd{@key{UP}} and @kbd{@key{DOWN}} move from suffix to suffix.  When this option
+is non-@code{nil} as well, then they additionally stop at group descriptions.
+This is useful because it allows braille and audio devices to output
+the group title at point.
+@end defopt
+
 @anchor{Auxiliary Options}
 @subheading Auxiliary Options
 

@@ -18,6 +18,8 @@
   Doing so is only encouraged for users of braille output devices.
   59380806
 
+- Added new option ~transient-navigate-to-group-descriptions~.
+
 * v0.12.0    2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,

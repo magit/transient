@@ -690,6 +690,17 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   vision who use large text and might otherwise have to scroll in two
   dimensions.
 
+- User Option: transient-navigate-to-group-descriptions ::
+
+  This option controls whether menu navigation commands stop at group
+  descriptions.
+
+  If ~transient-enable-menu-navigation~ is non-~nil~, which it is by
+  default, {{{kbd(UP)}}} and {{{kbd(DOWN)}}} move from suffix to suffix.  When this option
+  is non-~nil~ as well, then they additionally stop at group descriptions.
+  This is useful because it allows braille and audio devices to output
+  the group title at point.
+
 *** Auxiliary Options
 :PROPERTIES:
 :UNNUMBERED: notoc

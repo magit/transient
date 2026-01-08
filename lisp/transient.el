@@ -199,6 +199,19 @@ if no transient were active."
                  (const :tag "Enable navigation commands" t)
                  (const :tag "Disable navigation commands" nil)))
 
+(defcustom transient-navigate-to-group-descriptions nil
+  "Whether menu navigation commands stop at group descriptions.
+
+If `transient-enable-menu-navigation' is non-nil, which it is by default,
+\\<transient-popup-navigation-map>\
+then \\[transient-backward-button] and \\[transient-forward-button] move \
+from suffix to suffix.  When this option is
+non-nil as well, then they additionally stop at group descriptions.  This
+is useful for blind users, who use a braille or audio output device."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-select-menu-window nil
   "Whether to select the window displaying the transient menu.
 
@@ -4811,12 +4824,15 @@ and its value is returned to the caller."
   "Format the description by calling the next method.
 If the result doesn't use the `face' property at all, then apply the
 face `transient-heading' to the complete string."
-  (and-let* ((desc (transient--get-description obj)))
-    (cond ((oref obj inapt)
-           (propertize desc 'face 'transient-inapt-suffix))
-          ((text-property-not-all 0 (length desc) 'face nil desc)
-           desc)
-          ((propertize desc 'face 'transient-heading)))))
+  (and-let* ((desc (transient--get-description obj))
+             (desc (cond ((oref obj inapt)
+                          (propertize desc 'face 'transient-inapt-suffix))
+                         ((text-property-not-all 0 (length desc) 'face nil desc)
+                          desc)
+                         ((propertize desc 'face 'transient-heading)))))
+    (if transient-navigate-to-group-descriptions
+        (make-text-button desc nil)
+      desc)))
 
 (cl-defmethod transient-format-description :around ((obj transient-suffix))
   "Format the description by calling the next method.
@@ -5254,8 +5270,9 @@ See `backward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
     (backward-button n t)
-    (when (eq transient-enable-menu-navigation 'verbose)
-      (transient-show-summary (get-text-property (point) 'suffix)))))
+    (when-let ((_(eq transient-enable-menu-navigation 'verbose))
+               (summary (get-text-property (point) 'suffix)))
+      (transient-show-summary summary))))
 
 (defun transient-forward-button (n)
   "Move to the next button in transient's menu buffer.
@@ -5263,8 +5280,9 @@ See `forward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
     (forward-button n t)
-    (when (eq transient-enable-menu-navigation 'verbose)
-      (transient-show-summary (get-text-property (point) 'suffix)))))
+    (when-let ((_(eq transient-enable-menu-navigation 'verbose))
+               (summary (get-text-property (point) 'suffix)))
+      (transient-show-summary summary))))
 
 (define-button-type 'transient
   'face nil
