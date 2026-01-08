@@ -740,6 +740,16 @@ size of that window.  Otherwise, allow resizing the menu window if the
 number is positive, or hide the menu if it is negative.
 @end defopt
 
+@defopt transient-select-menu-window
+This option controls whether the window displaying the transient menu
+is automatically selected has soon as it is displayed.
+
+Enabling this is discouraged, except for users of braille output
+devises.  Note that enabling this, or alternatively selecting the
+menu window on demand, are both unnecessary, to be able to move
+the cursor in the menu.  See @code{transient-enable-popup-navigation}.
+@end defopt
+
 @defopt transient-read-with-initial-input
 This option controls whether the last history element is used as the
 initial minibuffer input when reading the value of an infix argument
