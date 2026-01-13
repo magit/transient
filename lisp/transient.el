@@ -5304,8 +5304,8 @@ See `backward-button' for information about N."
   (with-selected-window transient--window
     (backward-button n t)
     (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (summary (get-text-property (point) 'suffix)))
-      (transient-show-summary summary))))
+               (obj (get-text-property (point) 'suffix)))
+      (transient-show-summary obj))))
 
 (defun transient-forward-button (n)
   "Move to the next button in transient's menu buffer.
@@ -5314,8 +5314,8 @@ See `forward-button' for information about N."
   (with-selected-window transient--window
     (forward-button n t)
     (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (summary (get-text-property (point) 'suffix)))
-      (transient-show-summary summary))))
+               (obj (get-text-property (point) 'suffix)))
+      (transient-show-summary obj))))
 
 (define-button-type 'transient
   'face nil
