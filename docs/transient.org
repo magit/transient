@@ -709,7 +709,8 @@ text at point, to be run when a transient menu is active, for example:
   This option controls whether the use of a single column to display
   suffixes is enforced.  This might be useful for users with low
   vision who use large text and might otherwise have to scroll in two
-  dimensions.
+  dimensions.  This is also useful for blind users, because it causes
+  suffixes to be navigated in a more natural order.
 
 - User Option: transient-navigate-to-group-descriptions ::
 

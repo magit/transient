@@ -862,7 +862,8 @@ the cursor in the menu.  See @code{transient-enable-menu-navigation}.
 This option controls whether the use of a single column to display
 suffixes is enforced.  This might be useful for users with low
 vision who use large text and might otherwise have to scroll in two
-dimensions.
+dimensions.  This is also useful for blind users, because it causes
+suffixes to be navigated in a more natural order.
 @end defopt
 
 @defopt transient-navigate-to-group-descriptions

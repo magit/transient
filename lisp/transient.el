@@ -523,8 +523,10 @@ See also `transient-align-variable-pitch'."
 (defcustom transient-force-single-column nil
   "Whether to force use of a single column to display suffixes.
 
-This might be useful for users with low vision who use large
-text and might otherwise have to scroll in two dimensions."
+This might be useful for users with low vision who use large text
+and might otherwise have to scroll in two dimensions. This is also
+useful for blind users, because it causes suffixes to be navigated
+in a more natural order."
   :package-version '(transient . "0.3.6")
   :group 'transient
   :type 'boolean)
