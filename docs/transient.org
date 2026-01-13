@@ -682,6 +682,8 @@ don't hesitate to contact me.
   (setopt transient-select-menu-window t)
   (setopt transient-force-single-column t)
   (setopt transient-navigate-to-group-descriptions t)
+  (setopt transient-describe-menu t)
+  (add-hook 'transient-setup-buffer-hook 'ding)
 #+end_src
 
 Additionally you have allow the command, which you use to read the
@@ -719,6 +721,18 @@ text at point, to be run when a transient menu is active, for example:
   is non-~nil~ as well, then they additionally stop at group descriptions.
   This is useful because it allows braille and audio devices to output
   the group title at point.
+
+- User Option: transient-describe-menu ::
+
+  This option controls whether short description is inserted at the
+  beginning of the menu buffer.
+
+  When this is non-~nil~, then the menu buffer begins with a short
+  description.  Ideally this is a string written exactly for that
+  purpose, but because this is a new feature, most menu commands
+  do not provide that yet.  In that case the first line of its
+  docstring is used as fallback.  If the value is ~docstring~,
+  then the docstring is used even if a description is available.
 
 *** Auxiliary Options
 :PROPERTIES:
@@ -2520,6 +2534,11 @@ functions use ~describe-function~.
   is intended to be temporarily used when implementing of a new prefix
   command, at which time ~transient-command-summary-or-name~ is a useful
   value.
+
+- ~description~ a short string describing the prefix, which users can
+  opt-in to be displayed at the top of the menu buffer.  This should
+  be more concise than the first line of the docstring, which is used
+  as a fallback if no description is provided.
 
 *** Internal
 :PROPERTIES:

@@ -25,6 +25,8 @@ form: (info "(transient)Accessibility Options").
 
 - Added new option ~transient-navigate-to-group-descriptions~.
 
+- Added new option ~transient-describe-menu~.
+
 * v0.12.0    2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,
