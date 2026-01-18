@@ -4743,12 +4743,15 @@ as a button."
                                                 'transient-enabled-suffix
                                               'transient-disabled-suffix)))
                         str)))
-    (when (and transient-enable-menu-navigation
-               (slot-boundp obj 'command))
-      (setq str (make-text-button str nil
-                                  'type 'transient
-                                  'suffix obj
-                                  'command (oref obj command))))
+    (cond ((not transient-enable-menu-navigation))
+          ((slot-boundp obj 'command)
+           (setq str (make-text-button str nil
+                                       'type 'transient
+                                       'suffix obj
+                                       'command (oref obj command))))
+          ((and transient-navigate-to-group-descriptions
+                (not (equal str "")))
+           (setq str (make-text-button str nil))))
     str))
 
 (cl-defmethod transient-format ((obj transient-infix))
