@@ -3289,17 +3289,13 @@ If there is no parent prefix, then behave like `transient--do-exit'."
 (defun transient--do-push-button ()
   "Call the command represented by the activated button.
 Use that command's pre-command to determine transient behavior."
-  (if (and (mouse-event-p last-command-event)
-           (not (eq (posn-window (event-start last-command-event))
-                    transient--window)))
-      transient--stay
-    (with-selected-window transient--window
-      (let ((pos (if (mouse-event-p last-command-event)
-                     (posn-point (event-start last-command-event))
-                   (point))))
-        (setq this-command (get-text-property pos 'command))
-        (setq transient--current-suffix (get-text-property pos 'suffix))))
-    (transient--call-pre-command)))
+  (with-selected-window transient--window
+    (let ((pos (if (mouse-event-p last-command-event)
+                   (posn-point (event-start last-command-event))
+                 (point))))
+      (setq this-command (get-text-property pos 'command))
+      (setq transient--current-suffix (get-text-property pos 'suffix))))
+  (transient--call-pre-command))
 
 (defun transient--do-recurse ()
   "Call the transient prefix command, preparing for return to outer transient.
