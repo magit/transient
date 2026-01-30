@@ -4584,7 +4584,7 @@ have a history of their own.")
       (when (string-suffix-p "." desc)
         (setq desc (substring desc 0 -1)))
       (insert (if transient-navigate-to-group-descriptions
-                  (make-text-button desc nil)
+                  (make-text-button desc nil 'type 'transient)
                 desc))
       (insert "\n\n")))
   (transient--insert-groups)
@@ -4748,7 +4748,7 @@ as a button."
                                        'command (oref obj command))))
           ((and transient-navigate-to-group-descriptions
                 (not (equal str "")))
-           (setq str (make-text-button str nil))))
+           (setq str (make-text-button str nil 'type 'transient))))
     str))
 
 (cl-defmethod transient-format ((obj transient-infix))
@@ -4864,7 +4864,7 @@ face `transient-heading' to the complete string."
                           desc)
                          ((propertize desc 'face 'transient-heading)))))
     (if transient-navigate-to-group-descriptions
-        (make-text-button desc nil)
+        (make-text-button desc nil 'type 'transient)
       desc)))
 
 (cl-defmethod transient-format-description :around ((obj transient-suffix))
