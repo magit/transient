@@ -3295,6 +3295,7 @@ Use that command's pre-command to determine transient behavior."
                 (posn-point (event-start last-command-event))
               (point))]
        [obj (get-text-property pos 'button-data)]
+       [_(cl-typep obj '(and transient-suffix (not transient-information)))]
        (setq this-command (oref obj command))
        (setq transient--current-suffix obj)
        (transient--call-pre-command))
@@ -4429,8 +4430,7 @@ have a history of their own.")
       (when transient-enable-menu-navigation
         (setq focus (or (get-text-property (point) 'button-data)
                         (and (not (bobp))
-                             (get-text-property (1- (point)) 'button-data))
-                        (transient--heading-at-point))))
+                             (get-text-property (1- (point)) 'button-data)))))
       (erase-buffer)
       (transient--insert-menu setup))
     (unless (window-live-p transient--window)
@@ -4740,7 +4740,7 @@ as a button."
                                                 'transient-enabled-suffix
                                               'transient-disabled-suffix)))
                         str)))
-    (transient-buttonize str (and (slot-boundp obj 'command) obj))))
+    (transient-buttonize str obj)))
 
 (cl-defmethod transient-format ((obj transient-infix))
   "Return a string generated using OBJ's `format'.
@@ -5250,6 +5250,12 @@ of the documentation string, if any.
 If RETURN is non-nil, return the summary instead of showing it.
 This is used when a tooltip is needed.")
 
+(cl-defmethod transient-show-summary ((_obj transient-prefix) &optional _return))
+
+(cl-defmethod transient-show-summary ((_obj transient-group) &optional _return))
+
+(cl-defmethod transient-show-summary ((_obj transient-information) &optional _return))
+
 (cl-defmethod transient-show-summary ((obj transient-suffix) &optional return)
   (with-slots (command summary) obj
     (when-let*
@@ -5323,28 +5329,33 @@ See `forward-button' for information about N."
     string))
 
 (defun transient--goto-button (object)
-  (cond-let
-    ((stringp object)
-     (when (re-search-forward (concat "^" (regexp-quote object)) nil t)
-       (goto-char (match-beginning 0))))
-    ([command (oref object command)]
-     (cl-flet ((found ()
-                 (and$ (get-text-property (point) 'button-data)
-                       (eq (oref $ command) command))))
-       (while (and (ignore-errors (forward-button 1))
-                   (not (found))))
-       (unless (found)
+  (cl-etypecase object
+    (transient-prefix (goto-char (point-min)))
+    ((or transient-group transient-suffix)
+     (let ((found (transient--match-button object)))
+       (while (and (not (funcall found))
+                   (ignore-errors (forward-button 1))))
+       (unless (funcall found)
          (goto-char (point-min))
          (ignore-errors (forward-button 1))
-         (unless (found)
+         (unless (funcall found)
            (goto-char (point-min))))))))
 
-(defun transient--heading-at-point ()
-  (and (eq (get-text-property (point) 'face) 'transient-heading)
-       (let ((beg (line-beginning-position)))
-         (buffer-substring-no-properties
-          beg (next-single-property-change
-               beg 'face nil (line-end-position))))))
+(defun transient--match-button (object)
+  (cl-etypecase object
+    ((or transient-group transient-information)
+     (let ((description (transient-format-description object)))
+       (lambda ()
+         (let ((obj (get-text-property (point) 'button-data)))
+           (and (cl-typep obj '(or transient-group transient-information))
+                (equal (string-trim-left (button-label (button-at (point))))
+                       description))))))
+    (transient-suffix
+     (let ((command (oref object command)))
+       (lambda ()
+         (let ((obj (get-text-property (point) 'button-data)))
+           (and (cl-typep obj 'transient-suffix)
+                (eq (oref obj command) command))))))))
 
 ;;; Compatibility
 ;;;; Menu Isearch
