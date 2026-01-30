@@ -3294,9 +3294,9 @@ Use that command's pre-command to determine transient behavior."
       ([pos (if (mouse-event-p last-command-event)
                 (posn-point (event-start last-command-event))
               (point))]
-       [cmd (get-text-property pos 'command)]
-       (setq this-command cmd)
-       (setq transient--current-suffix (get-text-property pos 'suffix))
+       [obj (get-text-property pos 'button-data)]
+       (setq this-command (oref obj command))
+       (setq transient--current-suffix obj)
        (transient--call-pre-command))
       (transient--stay))))
 
@@ -4427,9 +4427,9 @@ have a history of their own.")
     (setq transient--buffer (get-buffer-create transient--buffer-name))
     (with-current-buffer transient--buffer
       (when transient-enable-menu-navigation
-        (setq focus (or (get-text-property (point) 'command)
+        (setq focus (or (get-text-property (point) 'button-data)
                         (and (not (bobp))
-                             (get-text-property (1- (point)) 'command))
+                             (get-text-property (1- (point)) 'button-data))
                         (transient--heading-at-point))))
       (erase-buffer)
       (transient--insert-menu setup))
@@ -4446,7 +4446,7 @@ have a history of their own.")
                     'transient--do-move)
           (set-window-parameter nil 'no-other-window t))
         (goto-char (point-min))
-        (when transient-enable-menu-navigation
+        (when (and focus transient-enable-menu-navigation)
           (transient--goto-button focus))
         (transient--fit-window-to-buffer transient--window)))))
 
@@ -4740,16 +4740,11 @@ as a button."
                                                 'transient-enabled-suffix
                                               'transient-disabled-suffix)))
                         str)))
-    (cond ((not transient-enable-menu-navigation))
-          ((slot-boundp obj 'command)
-           (setq str (make-text-button str nil
-                                       'type 'transient
-                                       'suffix obj
-                                       'command (oref obj command))))
-          ((and transient-navigate-to-group-descriptions
-                (not (equal str "")))
-           (setq str (make-text-button str nil 'type 'transient))))
-    str))
+    (if transient-enable-menu-navigation
+        (make-text-button str nil
+                          'type 'transient
+                          'button-data (and (slot-boundp obj 'command) obj))
+      str)))
 
 (cl-defmethod transient-format ((obj transient-infix))
   "Return a string generated using OBJ's `format'.
@@ -5304,7 +5299,7 @@ See `backward-button' for information about N."
   (with-selected-window transient--window
     (backward-button n t)
     (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (obj (get-text-property (point) 'suffix)))
+               (obj (get-text-property (point) 'button-data)))
       (transient-show-summary obj))))
 
 (defun transient-forward-button (n)
@@ -5314,7 +5309,7 @@ See `forward-button' for information about N."
   (with-selected-window transient--window
     (forward-button n t)
     (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (obj (get-text-property (point) 'suffix)))
+               (obj (get-text-property (point) 'button-data)))
       (transient-show-summary obj))))
 
 (define-button-type 'transient
@@ -5324,16 +5319,17 @@ See `forward-button' for information about N."
                (with-selected-window win
                  (with-current-buffer buf
                    (transient-show-summary
-                    (get-text-property pos 'suffix) t)))))
+                    (get-text-property pos 'button-data) t)))))
 
-(defun transient--goto-button (command)
-  (cond
-    ((stringp command)
-     (when (re-search-forward (concat "^" (regexp-quote command)) nil t)
+(defun transient--goto-button (object)
+  (cond-let
+    ((stringp object)
+     (when (re-search-forward (concat "^" (regexp-quote object)) nil t)
        (goto-char (match-beginning 0))))
-    (command
+    ([command (oref object command)]
      (cl-flet ((found ()
-                 (eq (get-text-property (point) 'command) command)))
+                 (and$ (get-text-property (point) 'button-data)
+                       (eq (oref $ command) command))))
        (while (and (ignore-errors (forward-button 1))
                    (not (found))))
        (unless (found)
