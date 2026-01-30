@@ -5351,11 +5351,11 @@ See `forward-button' for information about N."
                 (equal (string-trim-left (button-label (button-at (point))))
                        description))))))
     (transient-suffix
-     (let ((command (oref object command)))
+     (let ((key (oref object key)))
        (lambda ()
          (let ((obj (get-text-property (point) 'button-data)))
            (and (cl-typep obj 'transient-suffix)
-                (eq (oref obj command) command))))))))
+                (eq (oref obj key) key))))))))
 
 ;;; Compatibility
 ;;;; Menu Isearch
