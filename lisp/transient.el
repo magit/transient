@@ -4583,9 +4583,9 @@ have a history of their own.")
                   'face 'transient-heading)))
       (when (string-suffix-p "." desc)
         (setq desc (substring desc 0 -1)))
-      (insert (if transient-navigate-to-group-descriptions
-                  (make-text-button desc nil 'type 'transient)
-                desc))
+      (if transient-navigate-to-group-descriptions
+          (insert (transient-buttonize desc transient--prefix))
+        (insert desc))
       (insert "\n\n")))
   (transient--insert-groups)
   (when (or transient--helpp transient--editp)
@@ -4740,11 +4740,7 @@ as a button."
                                                 'transient-enabled-suffix
                                               'transient-disabled-suffix)))
                         str)))
-    (if transient-enable-menu-navigation
-        (make-text-button str nil
-                          'type 'transient
-                          'button-data (and (slot-boundp obj 'command) obj))
-      str)))
+    (transient-buttonize str (and (slot-boundp obj 'command) obj))))
 
 (cl-defmethod transient-format ((obj transient-infix))
   "Return a string generated using OBJ's `format'.
@@ -4859,7 +4855,7 @@ face `transient-heading' to the complete string."
                           desc)
                          ((propertize desc 'face 'transient-heading)))))
     (if transient-navigate-to-group-descriptions
-        (make-text-button desc nil 'type 'transient)
+        (transient-buttonize desc obj)
       desc)))
 
 (cl-defmethod transient-format-description :around ((obj transient-suffix))
@@ -5320,6 +5316,11 @@ See `forward-button' for information about N."
                  (with-current-buffer buf
                    (transient-show-summary
                     (get-text-property pos 'button-data) t)))))
+
+(defun transient-buttonize (string object)
+  (if transient-enable-menu-navigation
+      (make-text-button string nil 'type 'transient 'button-data object)
+    string))
 
 (defun transient--goto-button (object)
   (cond-let
