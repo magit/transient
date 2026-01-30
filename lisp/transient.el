@@ -171,28 +171,26 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
 If the value is `verbose' (the default), additionally show brief
 documentation about the command under point in the echo area.
 
-While a transient is active transient's menu buffer is not the
-current buffer, making it necessary to use dedicated commands to
-act on that buffer itself.  If this is non-nil, then the following
+While a transient is active, the menu buffer is (by default) not the
+current buffer, making it necessary to use dedicated commands to act
+on that buffer itself.  If this option is non-nil, then the following
 bindings are available:
 
 \\<transient-popup-navigation-map>\
 - \\[transient-backward-button] moves the cursor to the previous suffix.
 - \\[transient-forward-button] moves the cursor to the next suffix.
 - \\[transient-push-button] invokes the suffix the cursor is on.
-\\<transient-button-map>\
 - \\`<mouse-1>' and \\`<mouse-2>' invoke the clicked on suffix.
-\\<transient-popup-navigation-map>\
 - \\[transient-isearch-backward]\
  and \\[transient-isearch-forward] start isearch in the menu buffer.
 
-\\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-push-button'.
+\\`<mouse-1>' and \\`<mouse-2>' are bound in `transient-button-map'.
 All other bindings are in `transient-popup-navigation-map'.
 
-By default \\`M-RET' is bound to `transient-push-button', instead of
-\\`RET', because if a transient allows the invocation of non-suffixes,
-then it is likely, that you would want \\`RET' to do what it would do
-if no transient were active."
+Instead of \\`RET', \\`M-RET' is used to invoke the suffix command at point by
+default, because if a transient allows the invocation of non-suffixes,
+then it is likely that the user would want the former do what it would
+do if no transient were active."
   :package-version '(transient . "0.7.8")
   :group 'transient
   :type '(choice (const :tag "Enable navigation and echo summary" verbose)

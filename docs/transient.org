@@ -604,21 +604,24 @@ Two more essential options are documented in [[* Common Suffix Commands]].
   brief documentation about the command under point is additionally
   show in the echo area.
 
-  While a transient is active the menu buffer is not the current
-  buffer, making it necessary to use dedicated commands to act on that
-  buffer itself.  If this option is non-~nil~, then the following
-  features are available:
+  While a transient is active, the menu buffer is (by default) not the
+  current buffer, making it necessary to use dedicated commands to act
+  on that buffer itself.  If this option is non-nil, then the following
+  bindings are available:
 
   - {{{kbd(UP)}}} moves the cursor to the previous suffix.
   - {{{kbd(DOWN)}}} moves the cursor to the next suffix.
   - {{{kbd(M-RET)}}} invokes the suffix the cursor is on.
-  - {{{kbd(mouse-1)}}} invokes the clicked on suffix.
+  - {{{kbd(mouse-1)}}} and {{{kbd(mouse-2)}}} invokes the clicked on suffix.
   - {{{kbd(C-s)}}} and {{{kbd(C-r)}}} start isearch in the menu buffer.
 
-  By default {{{kbd(M-RET)}}} is bound to ~transient-push-button~, instead of
-  {{{kbd(RET)}}}, because if a transient allows the invocation of non-suffixes,
-  then it is likely, that you would want {{{kbd(RET)}}} to do what it would do
-  if no transient were active."
+  {{{kbd(mouse-1)}}} and {{{kbd(mouse-2)}}} are bound in ~transient-button-map~.
+  All other bindings are in ~transient-popup-navigation-map~.
+
+  Instead of {{{kbd(RET)}}}, {{{kbd(M-RET)}}} is used to invoke the suffix command at point by
+  default, because if a transient allows the invocation of non-suffixes,
+  then it is likely that the user would want the former do what it would
+  do if no transient were active.
 
 - User Option: transient-display-buffer-action ::
 
