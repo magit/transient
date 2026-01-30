@@ -4427,9 +4427,9 @@ have a history of their own.")
     (setq transient--buffer (get-buffer-create transient--buffer-name))
     (with-current-buffer transient--buffer
       (when transient-enable-menu-navigation
-        (setq focus (or (button-get (point) 'command)
+        (setq focus (or (get-text-property (point) 'command)
                         (and (not (bobp))
-                             (button-get (1- (point)) 'command))
+                             (get-text-property (1- (point)) 'command))
                         (transient--heading-at-point))))
       (erase-buffer)
       (transient--insert-menu setup))
@@ -5333,8 +5333,7 @@ See `forward-button' for information about N."
        (goto-char (match-beginning 0))))
     (command
      (cl-flet ((found ()
-                 (and$ (button-at (point))
-                       (eq (button-get $ 'command) command))))
+                 (eq (get-text-property (point) 'command) command)))
        (while (and (ignore-errors (forward-button 1))
                    (not (found))))
        (unless (found)
