@@ -5300,9 +5300,7 @@ See `backward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
     (backward-button n t)
-    (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (obj (get-text-property (point) 'button-data)))
-      (transient-show-summary obj))))
+    (transient--button-move-echo)))
 
 (defun transient-forward-button (n)
   "Move to the next button in transient's menu buffer.
@@ -5310,18 +5308,22 @@ See `forward-button' for information about N."
   (interactive "p")
   (with-selected-window transient--window
     (forward-button n t)
-    (when-let ((_(eq transient-enable-menu-navigation 'verbose))
-               (obj (get-text-property (point) 'button-data)))
-      (transient-show-summary obj))))
+    (transient--button-move-echo)))
+
+(defun transient--button-move-echo ()
+  (when-let ((_(eq transient-enable-menu-navigation 'verbose))
+             (obj (get-text-property (point) 'button-data)))
+    (transient-show-summary obj)))
+
+(defun transient--button-help-echo (win buf pos)
+  (with-selected-window win
+    (with-current-buffer buf
+      (transient-show-summary (get-text-property pos 'button-data) t))))
 
 (define-button-type 'transient
   'face nil
   'keymap transient-button-map
-  'help-echo (lambda (win buf pos)
-               (with-selected-window win
-                 (with-current-buffer buf
-                   (transient-show-summary
-                    (get-text-property pos 'button-data) t)))))
+  'help-echo #'transient--button-help-echo)
 
 (defun transient-buttonize (string object)
   (if transient-enable-menu-navigation
