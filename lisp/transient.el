@@ -5238,8 +5238,8 @@ The current level of this menu is %s, so
                     'face 'transient-disabled-suffix)
         (propertize " 0 " 'face 'transient-disabled-suffix))))))
 
-(cl-defgeneric transient-show-summary (obj &optional return)
-  "Show brief summary about the command at point in the echo area.
+(cl-defgeneric transient-get-summary (obj)
+  "Return brief summary about the menu element at point.
 
 If OBJ's `summary' slot is a string, use that.  If it is a function,
 call that with OBJ as the only argument and use the returned string.
@@ -5250,13 +5250,13 @@ of the documentation string, if any.
 If RETURN is non-nil, return the summary instead of showing it.
 This is used when a tooltip is needed.")
 
-(cl-defmethod transient-show-summary ((_obj transient-prefix) &optional _return))
+(cl-defmethod transient-get-summary ((_obj transient-prefix)))
 
-(cl-defmethod transient-show-summary ((_obj transient-group) &optional _return))
+(cl-defmethod transient-get-summary ((_obj transient-group)))
 
-(cl-defmethod transient-show-summary ((_obj transient-information) &optional _return))
+(cl-defmethod transient-get-summary ((_obj transient-information)))
 
-(cl-defmethod transient-show-summary ((obj transient-suffix) &optional return)
+(cl-defmethod transient-get-summary ((obj transient-suffix))
   (with-slots (command summary) obj
     (when-let*
         ((doc (cond ((functionp summary)
@@ -5269,12 +5269,9 @@ This is used when a tooltip is needed.")
                        (car (split-string (documentation
                                            'transient--default-infix-command)
                                           "\n"))))))
-      (when (string-suffix-p "." doc)
-        (setq doc (substring doc 0 -1)))
-      (if return
-          doc
-        (let ((message-log-max nil))
-          (message "%s" doc))))))
+      (if (string-suffix-p "." doc)
+          (substring doc 0 -1)
+        doc))))
 
 ;;; Menu Navigation
 
@@ -5313,12 +5310,13 @@ See `forward-button' for information about N."
 (defun transient--button-move-echo ()
   (when-let ((_(eq transient-enable-menu-navigation 'verbose))
              (obj (get-text-property (point) 'button-data)))
-    (transient-show-summary obj)))
+    (let ((message-log-max nil))
+      (message "%s" (or (transient-get-summary obj) "")))))
 
 (defun transient--button-help-echo (win buf pos)
   (with-selected-window win
     (with-current-buffer buf
-      (transient-show-summary (get-text-property pos 'button-data) t))))
+      (transient-get-summary (get-text-property pos 'button-data)))))
 
 (define-button-type 'transient
   'face nil
