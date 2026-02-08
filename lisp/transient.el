@@ -1138,6 +1138,7 @@ to the setup function:
             `(lambda ()
                (interactive)
                (transient-setup ',name))))
+       :autoload-end
        (put ',name 'interactive-only ,interactive-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--prefix
@@ -1145,6 +1146,7 @@ to the setup function:
        (transient--set-layout
         ',name
         (list ,@(mapcan (lambda (s) (transient--parse-child name s)) groups))))))
+(put 'transient-define-prefix 'autoload-macro 'expand)
 
 (defmacro transient-define-group (name &rest groups)
   "Define one or more groups and store them in symbol NAME.
@@ -1190,10 +1192,12 @@ ARGLIST.  The infix arguments are usually accessed by using
          ,(if (and (not body) class (oref-default class definition))
               `(oref-default ',class definition)
             `(lambda ,arglist ,@body)))
+       :autoload-end
        (put ',name 'interactive-only ,interactive-only)
        (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
+(put 'transient-define-suffix 'autoload-macro 'expand)
 
 (defmacro transient-augment-suffix (name &rest args)
   "Augment existing command NAME with a new transient suffix object.
@@ -1204,8 +1208,10 @@ Similar to `transient-define-suffix' but define a suffix object only.
   (pcase-let
       ((`(,class ,slots)
         (transient--expand-define-args args nil 'transient-augment-suffix t)))
+    :autoload-end
     `(put ',name 'transient--suffix
           (,(or class 'transient-suffix) :command ',name ,@slots))))
+(put 'transient-define-infix 'autoload-macro 'expand)
 
 (defmacro transient-define-infix (name arglist &rest args)
   "Define NAME as a transient infix command.
