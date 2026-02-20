@@ -685,6 +685,8 @@ don't hesitate to contact me.
   (setopt transient-select-menu-window t)
   (setopt transient-force-single-column t)
   (setopt transient-navigate-to-group-descriptions t)
+  (setopt transient-always-read-value t)
+  (setopt transient-use-accessible-format 'braille)
   (setopt transient-describe-menu t)
   (add-hook 'transient-setup-buffer-hook 'ding)
 #+end_src
@@ -725,6 +727,36 @@ text at point, to be run when a transient menu is active, for example:
   is non-~nil~ as well, then they additionally stop at group descriptions.
   This is useful because it allows braille and audio devices to output
   the group title at point.
+
+- User Option: transient-always-read-value ::
+
+  Whether to always read the new value.
+
+  If this is nil, then certain arguments are unconditionally disabled when
+  they are invoked while they have a non-nil value.  They then have to be
+  invoked a second time to set another non-nil value.  For other arguments
+  which have a fixed set of possible values, all values are displayed at
+  all times and the current non-nil value (if any) is highlighted using a
+  different face.
+
+  If this is t, then more arguments will always read the value using the
+  minibuffer.  This is only intended for blind users, for whom the default
+  behavior is problematic.
+
+- User Option: transient-use-accessible-format ::
+
+  Whether to use present arguments and commands in a more accessible format.
+
+  If this is nil, then the default format, from the `format' slot is used.
+  Blind users should set this to either `braille' or `audio' to sue the
+  alternative format used in the respective slot.
+
+  Please note that I need your help to improve the default values used for
+  these slots.  If necessary I will also make this more customizable and
+  add more documentation.
+
+  If this is enabled, then `transient-always-read-value' should be enabled
+  as well.
 
 - User Option: transient-describe-menu ::
 
@@ -2621,6 +2653,17 @@ and ~advice*~ slots (see [[*Slots of ~transient-suffix~]]) are defined.
   - ~%k~ For the key.
   - ~%d~ For the description.
   - ~%v~ For the infix value.  Non-infix suffixes don't have a value.
+
+  The slots ~braille~ and ~audio~ work the same as ~format~.  These
+  alternative formats are intended for blind users.  Which format is
+  used depends on option ~transient-use-accessible-format~.  The
+  following additional %-placeholders are intended for use in these
+  alternative format strings:
+
+  - ~%V~ For the raw infix value (without the argument).
+  - ~%a~ For the argument (or "(no argument)").
+  - ~%i~ One of the strings " inapt " or "", depending on whether the
+    argument is currently inapt.
 
 - ~description~ The description, either a string or a function, which is
   called with zero or one argument (the suffix object), and returns a

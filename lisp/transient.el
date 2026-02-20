@@ -536,6 +536,49 @@ in a more natural order."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-always-read-value nil
+  "Whether to always read the new value.
+
+If this is nil, then certain arguments are unconditionally disabled when
+they are invoked while they have a non-nil value.  They then have to be
+invoked a second time to set another non-nil value.  For other arguments
+which have a fixed set of possible values, all values are displayed at
+all times and the current non-nil value (if any) is highlighted using a
+different face.
+
+If this is t, then more arguments will always read the value using the
+minibuffer.  This is only intended for blind users, for whom the default
+behavior is problematic."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
+(defcustom transient-use-accessible-format nil
+  "Whether to present arguments and commands in a more accessible format.
+
+If this is nil, then the default format, specified by the `format' slot
+is used.  Blind users should set this to either `braille' or `audio' to
+use the alternative format specified by the respective slot.
+
+Please note that these defaults are still subject to change and that I
+need your help to come up with appropriate values.  If necessary I will
+also make this more customizable and add more documentation.
+
+If you enabled this, then `transient-always-read-value' likely should be
+enabled as well."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type '(choice (const :tag "Use format specified by `format' slot" nil)
+                 (const :tag "Use format specified by `braille' slot" braille)
+                 (const :tag "Use format specified by `audio' slot" audio)))
+
+(defcustom transient-overriding-format-alist nil
+  "TODO"
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type '(alist :key-type   (symbol :tag "Class")
+                :value-type (string :tag "Format")))
+
 (defcustom transient-describe-menu nil
   "Whether to begin the menu buffer with a very short description.
 
@@ -986,6 +1029,8 @@ predicate slots or more than one `inapt-if*' slots are non-nil."
    (command     :initarg :command)
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
+   (braille     :initarg :braille     :initform "%i%k %d")
+   (audio       :initarg :audio       :initform "%i%k %d")
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
    (show-help   :initarg :show-help   :initform nil))
@@ -1016,7 +1061,9 @@ Technically a suffix object with no associated command.")
    (reader      :initarg :reader      :initform nil)
    (prompt      :initarg :prompt      :initform nil)
    (choices     :initarg :choices     :initform nil)
-   (format                            :initform " %k %d (%v)"))
+   (format                            :initform " %k %d (%v)")
+   (braille                           :initform "%i%k %a is %V (%d)")
+   (audio                             :initform "%i%k %a is %V (%d)"))
   "Transient infix command."
   :abstract t)
 
@@ -1032,7 +1079,9 @@ Technically a suffix object with no associated command.")
 
 (defclass transient-variable (transient-infix)
   ((variable    :initarg :variable)
-   (format                            :initform " %k %d %v"))
+   (format                            :initform " %k %d %v")
+   (braille                           :initform "%k %a is %V (%d)")
+   (audio                             :initform "%k %a is %V (%d)"))
   "Abstract superclass for infix commands that set a variable."
   :abstract t)
 
@@ -3878,6 +3927,7 @@ it\", in which case it is pointless to preserve history.)"
   (with-slots (value multi-value always-read allow-empty choices) obj
     (if (and value
              (not multi-value)
+             (not transient-always-read-value)
              (not always-read)
              transient--prefix)
         (oset obj value nil)
@@ -3922,16 +3972,25 @@ it\", in which case it is pointless to preserve history.)"
 
 (cl-defmethod transient-infix-read ((obj transient-switch))
   "Toggle the switch on or off."
-  (if (oref obj value) nil (oref obj argument)))
+  (prog1 (if (oref obj value) nil (oref obj argument))
+    (when transient-always-read-value
+      (message "%s is now %s"
+               (oref obj argument)
+               (if (oref obj value) "enabled" "disabled")))))
 
 (cl-defmethod transient-infix-read ((obj transient-switches))
   "Cycle through the mutually exclusive switches.
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
                          (oref obj choices))))
-    (if-let ((value (oref obj value)))
-        (cadr (member value choices))
-      (car choices))))
+    (cond-let
+      (transient-always-read-value
+       (completing-read (transient-prompt obj)
+                        (cons "*disable*" choices)
+                        nil t))
+      ([value (oref obj value)]
+       (cadr (member value choices)))
+      ((car choices)))))
 
 (cl-defmethod transient-infix-read ((command symbol))
   "Elsewhere use the reader of the infix command COMMAND.
@@ -4768,26 +4827,34 @@ as a button."
 %d is formatted using `transient-format-description'.
 %v is formatted using `transient-format-value'."
   (static-if (>= emacs-major-version 29)
-      (format-spec (oref obj format)
+      (format-spec (transient--get-format obj)
                    `((?k . ,(lambda () (transient-format-key obj)))
                      (?d . ,(lambda () (transient-format-description obj)))
-                     (?v . ,(lambda () (transient-format-value obj)))))
-    (format-spec (oref obj format)
+                     (?v . ,(lambda () (transient-format-value obj)))
+                     (?V . ,(lambda () (transient-format-value-only obj)))
+                     (?a . ,(lambda () (transient-format-infix obj)))
+                     (?i . ,(lambda () (transient-format-inapt obj)))))
+    (format-spec (transient--get-format obj)
                  `((?k . ,(transient-format-key obj))
                    (?d . ,(transient-format-description obj))
-                   (?v . ,(transient-format-value obj))))))
+                   (?v . ,(transient-format-value obj))
+                   (?V . ,(transient-format-value-only obj))
+                   (?a . ,(transient-format-infix obj))
+                   (?i . ,(transient-format-inapt obj))))))
 
 (cl-defmethod transient-format ((obj transient-suffix))
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'."
   (static-if (>= emacs-major-version 29)
-      (format-spec (oref obj format)
+      (format-spec (transient--get-format obj)
                    `((?k . ,(lambda () (transient-format-key obj)))
-                     (?d . ,(lambda () (transient-format-description obj)))))
-    (format-spec (oref obj format)
+                     (?d . ,(lambda () (transient-format-description obj)))
+                     (?i . ,(lambda () (transient-format-inapt obj)))))
+    (format-spec (transient--get-format obj)
                  `((?k . ,(transient-format-key obj))
-                   (?d . ,(transient-format-description obj))))))
+                   (?d . ,(transient-format-description obj))
+                   (?i . ,(transient-format-inapt obj))))))
 
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
@@ -4979,6 +5046,34 @@ apply the face `transient-unreachable' to the complete string."
                               'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
+
+(cl-defmethod transient-format-value-only ((obj transient-infix))
+  (if-let ((value (oref obj value)))
+      (prin1-to-string value t)
+    "disabled"))
+
+(cl-defmethod transient-format-value-only ((obj transient-switch))
+  (if (oref obj value) "enabled" "disabled"))
+
+(cl-defmethod transient-format-value-only ((_obj transient-switches))
+  "TODO" "TODO")
+
+(cl-defmethod transient-format-infix ((obj transient-infix))
+  (or (ignore-error (invalid-slot-name unbound-slot) (oref obj argument))
+      (ignore-error (invalid-slot-name unbound-slot) (oref obj variable))
+      "BUG: Neither argument nor variable is bound"))
+
+(cl-defmethod transient-format-inapt ((obj transient-suffix))
+  (if (oref obj inapt) "inapt " ""))
+
+(cl-defmethod transient--get-format ((obj transient-suffix))
+  (alist-get obj transient-overriding-format-alist
+             (pcase transient-use-accessible-format
+               ('braille (oref obj braille))
+               ('audio   (oref obj audio))
+               (_        (oref obj format)))
+             nil
+             (lambda (type obj) (ignore-errors (cl-typep obj type)))))
 
 (cl-defmethod transient--get-description ((obj transient-child))
   (cond-let*
