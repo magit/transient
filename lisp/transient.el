@@ -169,7 +169,11 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
   "Whether navigation commands are enabled in the menu buffer.
 
 If the value is `verbose' (the default), additionally show brief
-documentation about the command under point in the echo area.
+documentation about the command under point in the echo area.  If
+this would result in the same description being echoed, which is
+being displayed in the menu, then `verbose' forgoes doing so. Use
+`more-verbose' to display even such documentation.  If `t', enabling
+navigation, without echoing any documentation.
 
 While a transient is active, the menu buffer is (by default) not the
 current buffer, making it necessary to use dedicated commands to act
@@ -193,9 +197,12 @@ then it is likely that the user would want the former do what it would
 do if no transient were active."
   :package-version '(transient . "0.7.8")
   :group 'transient
-  :type '(choice (const :tag "Enable navigation and echo summary" verbose)
-                 (const :tag "Enable navigation commands" t)
-                 (const :tag "Disable navigation commands" nil)))
+  :type '(choice
+          (const :tag "Enable navigation and echo summary, even if redundant"
+                 more-verbose)
+          (const :tag "Enable navigation and echo summary" verbose)
+          (const :tag "Enable navigation commands" t)
+          (const :tag "Disable navigation commands" nil)))
 
 (defcustom transient-navigate-to-group-descriptions nil
   "Whether menu navigation commands stop at group descriptions.
@@ -850,6 +857,7 @@ If `transient-save-history' is nil, then do nothing."
    (show-help   :initarg :show-help   :initform nil)
    (info-manual :initarg :info-manual :initform nil)
    (man-page    :initarg :man-page    :initform nil)
+   (summary     :initarg :summary     :initform nil)
    (transient-suffix     :initarg :transient-suffix     :initform nil)
    (transient-non-suffix :initarg :transient-non-suffix :initform nil)
    (transient-switch-frame :initarg :transient-switch-frame)
@@ -962,7 +970,10 @@ the prototype is stored in the clone's `prototype' slot.")
    (advice*
     :initarg :advice*
     :initform nil
-    :documentation "Advise applied to the command body and interactive spec."))
+    :documentation "Advise applied to the command body and interactive spec.")
+   (summary
+    :initarg :summary
+    :initform nil))
   "Abstract superclass for group and suffix classes.
 
 It is undefined which predicates are used if more than one `if*'
@@ -977,8 +988,7 @@ predicate slots or more than one `inapt-if*' slots are non-nil."
    (format      :initarg :format      :initform " %k %d")
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
-   (show-help   :initarg :show-help   :initform nil)
-   (summary     :initarg :summary     :initform nil))
+   (show-help   :initarg :show-help   :initform nil))
   "Superclass for suffix command.")
 
 (defclass transient-information (transient-suffix)
@@ -5260,28 +5270,25 @@ of the documentation string, if any.
 If RETURN is non-nil, return the summary instead of showing it.
 This is used when a tooltip is needed.")
 
-(cl-defmethod transient-get-summary ((_obj transient-prefix)))
-
-(cl-defmethod transient-get-summary ((_obj transient-group)))
-
-(cl-defmethod transient-get-summary ((_obj transient-information)))
-
-(cl-defmethod transient-get-summary ((obj transient-suffix))
-  (with-slots (command summary) obj
-    (when-let*
-        ((doc (cond ((functionp summary)
-                     (funcall summary obj))
-                    (summary)
-                    ((documentation command)
-                     (car (split-string (documentation command) "\n")))))
-         (_(stringp doc))
-         (_(not (equal doc
-                       (car (split-string (documentation
-                                           'transient--default-infix-command)
-                                          "\n"))))))
-      (if (string-suffix-p "." doc)
-          (substring doc 0 -1)
-        doc))))
+(cl-defmethod transient-get-summary ((obj transient-object))
+  (let ((command (ignore-error (invalid-slot-name) (oref obj command)))
+        (summary (oref obj summary)))
+    (cond-let*
+      ([doc (cond ((functionp summary)
+                   (funcall summary obj))
+                  (summary)
+                  ((and command (documentation command))
+                   (car (split-string (documentation command) "\n"))))]
+       [_(stringp doc)]
+       [_(not (equal doc
+                     (car (split-string (documentation
+                                         'transient--default-infix-command)
+                                        "\n"))))]
+       (if (string-suffix-p "." doc)
+           (substring doc 0 -1)
+         doc))
+      ((eq transient-enable-menu-navigation 'more-verbose)
+       (transient--get-description obj)))))
 
 ;;; Menu Navigation
 
@@ -5318,7 +5325,7 @@ See `forward-button' for information about N."
     (transient--button-move-echo)))
 
 (defun transient--button-move-echo ()
-  (when-let ((_(eq transient-enable-menu-navigation 'verbose))
+  (when-let ((_(memq transient-enable-menu-navigation '(verbose more-verbose)))
              (obj (get-text-property (point) 'button-data)))
     (let ((message-log-max nil))
       (message "%s" (or (transient-get-summary obj) "")))))
