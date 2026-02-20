@@ -829,9 +829,13 @@ If `transient-save-history' is nil, then do nothing."
   (add-hook 'kill-emacs-hook #'transient-maybe-save-history))
 
 ;;; Classes
+;;;; Base
+
+(defclass transient-object () () :abstract t)
+
 ;;;; Prefix
 
-(defclass transient-prefix ()
+(defclass transient-prefix (transient-object)
   ((prototype   :initarg :prototype)
    (command     :initarg :command)
    (level       :initarg :level)
@@ -871,7 +875,7 @@ the prototype is stored in the clone's `prototype' slot.")
 
 ;;;; Suffix
 
-(defclass transient-child ()
+(defclass transient-child (transient-object)
   ((parent
     :initarg :parent
     :initform nil
