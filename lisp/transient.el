@@ -4767,18 +4767,27 @@ as a button."
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'.
 %v is formatted using `transient-format-value'."
-  (format-spec (oref obj format)
-               `((?k . ,(transient-format-key obj))
-                 (?d . ,(transient-format-description obj))
-                 (?v . ,(transient-format-value obj)))))
+  (static-if (>= emacs-major-version 29)
+      (format-spec (oref obj format)
+                   `((?k . ,(lambda () (transient-format-key obj)))
+                     (?d . ,(lambda () (transient-format-description obj)))
+                     (?v . ,(lambda () (transient-format-value obj)))))
+    (format-spec (oref obj format)
+                 `((?k . ,(transient-format-key obj))
+                   (?d . ,(transient-format-description obj))
+                   (?v . ,(transient-format-value obj))))))
 
 (cl-defmethod transient-format ((obj transient-suffix))
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'."
-  (format-spec (oref obj format)
-               `((?k . ,(transient-format-key obj))
-                 (?d . ,(transient-format-description obj)))))
+  (static-if (>= emacs-major-version 29)
+      (format-spec (oref obj format)
+                   `((?k . ,(lambda () (transient-format-key obj)))
+                     (?d . ,(lambda () (transient-format-description obj)))))
+    (format-spec (oref obj format)
+                 `((?k . ,(transient-format-key obj))
+                   (?d . ,(transient-format-description obj))))))
 
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
