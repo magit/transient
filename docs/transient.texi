@@ -912,6 +912,24 @@ related commands are displayed in the same column but navigation
 first moves horizontally to the next item on the same row.
 @end defopt
 
+@defopt transient-prefer-reading-value
+This option controls whether reading a new value is preferred over
+other value selection methods.
+
+If this is @code{nil} (the default), then certain arguments are directly
+disabled when they are invoked, while they have a non-@code{nil} value.  I.e.,
+to switch from one non-@code{nil} value to another non-@code{nil} value, such commands
+have to be invoked twice.  For other arguments, which happen to have a
+small set of possible values, all values are displayed at all times,
+using solely coloring to indicate which of the values is active.  When
+such an infix command is invoked it cycles to the next value.
+
+This default does not work for visually impaired user.  If this option
+is non-@code{nil}, then more arguments immediately read the new value, instead
+of being toggled off on first invocation, or instead of cycling through
+values.
+@end defopt
+
 @anchor{Auxiliary Options}
 @subheading Auxiliary Options
 

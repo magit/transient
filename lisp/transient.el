@@ -428,6 +428,25 @@ This command is not bound by default, see its docstring for instructions."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-prefer-reading-value nil
+  "Whether to prefer reading new value over other value selection methods.
+
+If this is nil (the default), then certain arguments are directly
+disabled when they are invoked, while they have a non-nil value.  I.e.,
+to switch from one non-nil value to another non-nil value, such commands
+have to be invoked twice.  For other arguments, which happen to have a
+small set of possible values, all values are displayed at all times,
+using solely coloring to indicate which of the values is active.  When
+such an infix command is invoked it cycles to the next value.
+
+This default does not work for visually impaired user.  If this option
+is non-nil, then more arguments immediately read the new value, instead
+of being toggled off on first invocation, or instead of cycling through
+values."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-highlight-mismatched-keys nil
   "Whether to highlight keys that do not match their argument.
 
@@ -3884,6 +3903,7 @@ it\", in which case it is pointless to preserve history.)"
   (with-slots (value multi-value always-read allow-empty choices) obj
     (if (and value
              (not multi-value)
+             (not transient-prefer-reading-value)
              (not always-read)
              transient--prefix)
         (oset obj value nil)
@@ -3928,16 +3948,24 @@ it\", in which case it is pointless to preserve history.)"
 
 (cl-defmethod transient-infix-read ((obj transient-switch))
   "Toggle the switch on or off."
-  (if (oref obj value) nil (oref obj argument)))
+  (prog1 (if (oref obj value) nil (oref obj argument))
+    (when transient-prefer-reading-value
+      (message "%s is now %s"
+               (oref obj argument)
+               (if (oref obj value) "enabled" "disabled")))))
 
 (cl-defmethod transient-infix-read ((obj transient-switches))
   "Cycle through the mutually exclusive switches.
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
                          (oref obj choices))))
-    (if-let ((value (oref obj value)))
-        (cadr (member value choices))
-      (car choices))))
+    (cond-let
+      (transient-prefer-reading-value
+       (let ((choice (completing-read (transient-prompt obj) choices nil t)))
+         (if (equal choice "") nil choice)))
+      ([value (oref obj value)]
+       (cadr (member value choices)))
+      ((car choices)))))
 
 (cl-defmethod transient-infix-read ((command symbol))
   "Elsewhere use the reader of the infix command COMMAND.
@@ -4027,8 +4055,9 @@ prompt."
        (if (stringp prompt)
            prompt
          "[BUG: invalid prompt]: ")))
-    ([name (or (and (slot-boundp obj 'argument) (oref obj argument))
-               (and (slot-boundp obj 'variable) (oref obj variable)))]
+    ([name
+      (or (ignore-error (invalid-slot-name unbound-slot) (oref obj argument))
+          (ignore-error (invalid-slot-name unbound-slot) (oref obj variable)))]
      (if (and (stringp name)
               (string-suffix-p "=" name))
          name
