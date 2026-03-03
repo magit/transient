@@ -776,6 +776,33 @@ text at point, to be run when a transient menu is active, for example:
   of being toggled off on first invocation, or instead of cycling through
   values.
 
+- User Option: transient-use-accessible-formats ::
+
+  This option controls whether more accessible format strings are used
+  for menu elements.
+
+  If this is non-~nil~, then menu elements are displayed in a way, that I
+  hope, is more suitable for visually impaired users than the default.
+  Please provide feedback, so that we can together work on improving this.
+
+  By default the format specified by an element's ~format~ slot is used.
+  When this is non-~nil~, then the ~accessible-format~ slot is used instead.
+  One change implemented in the latter is that for an element representing
+  a command-line argument, the argument and its value are moved before the
+  description, giving quicker access to the current state, while still
+  allowing users to read the description, in case they don't know yet what
+  the argument in question does.
+
+  Enabling this also causes the string "inapt" to be added at the very
+  beginning of the text describing a command that currently cannot be
+  used.  When using the default format, the only visual clue that a
+  command is inapt, is that the complete text representing it is grayed
+  out.  (As an example of such an inapt command, consider the case of a
+  commands that can only act on the file at point, when there currently
+  isn't a file at point.)  Placing the string "inapt" at the very
+  beginning gives users the opportunity to immediately skip over unusable
+  commands, while still giving them the opportunity to read on.
+
 *** Auxiliary Options
 :PROPERTIES:
 :UNNUMBERED: notoc

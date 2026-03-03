@@ -577,6 +577,34 @@ in a more natural order."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-use-accessible-formats nil
+  "Whether to use a more accessible format strings for menu elements.
+
+If this is non-nil, then menu elements are displayed in a way, that I
+hope, is more suitable for visually impaired users than the default.
+Please provide feedback, so that we can together work on improving this.
+
+By default the format specified by an element's `format' slot is used.
+When this is non-nil, then the `accessible-format' slot is used instead.
+One change implemented in the latter is that for an element representing
+a command-line argument, the argument and its value are moved before the
+description, giving quicker access to the current state, while still
+allowing users to read the description, in case they don't know yet what
+the argument in question does.
+
+Enabling this also causes the string \"inapt\" to be added at the very
+beginning of the text describing a command that currently cannot be
+used.  When using the default format, the only visual clue that a
+command is inapt, is that the complete text representing it is grayed
+out.  (As an example of such an inapt command, consider the case of a
+commands that can only act on the file at point, when there currently
+isn't a file at point.)  Placing the string \"inapt\" at the very
+beginning gives users the opportunity to immediately skip over unusable
+commands, while still giving them the opportunity to read on."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defconst transient--max-level 7)
 (defconst transient--default-child-level 1)
 (defconst transient--default-prefix-level 4)
@@ -1012,6 +1040,8 @@ predicate slots or more than one `inapt-if*' slots are non-nil."
    (command     :initarg :command)
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
+   (accessible-format
+    :initarg :accessible-format       :initform "%i%k %d")
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
    (show-help   :initarg :show-help   :initform nil))
@@ -1041,7 +1071,8 @@ Technically a suffix object with no associated command.")
    (reader      :initarg :reader      :initform nil)
    (prompt      :initarg :prompt      :initform nil)
    (choices     :initarg :choices     :initform nil)
-   (format                            :initform " %k %d (%v)"))
+   (format                            :initform " %k %d (%v)")
+   (accessible-format                 :initform "%i%k %v (%d)"))
   "Transient infix command."
   :abstract t)
 
@@ -1057,7 +1088,8 @@ Technically a suffix object with no associated command.")
 
 (defclass transient-variable (transient-infix)
   ((variable    :initarg :variable)
-   (format                            :initform " %k %d %v"))
+   (format                            :initform " %k %d %v")
+   (accessible-format                 :initform "%i%k %v (%d)"))
   "Abstract superclass for infix commands that set a variable."
   :abstract t)
 
@@ -4801,19 +4833,24 @@ as a button."
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'.
-%v is formatted using `transient-format-value'."
-  (format-spec (oref obj format)
+%v is formatted using `transient-format-value'.
+%i is formatted using `transient-format-inapt'."
+  (format-spec (transient--get-format obj)
                `((?k . ,(transient-format-key obj))
                  (?d . ,(transient-format-description obj))
-                 (?v . ,(transient-format-value obj)))))
+                 (?v . ,(transient-format-value obj))
+                 (?i . ,(transient-format-inapt obj)))))
+
 
 (cl-defmethod transient-format ((obj transient-suffix))
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
-%d is formatted using `transient-format-description'."
-  (format-spec (oref obj format)
+%d is formatted using `transient-format-description'.
+%i is formatted using `transient-format-inapt'."
+  (format-spec (transient--get-format obj)
                `((?k . ,(transient-format-key obj))
-                 (?d . ,(transient-format-description obj)))))
+                 (?d . ,(transient-format-description obj))
+                 (?i . ,(transient-format-inapt obj)))))
 
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
@@ -5005,6 +5042,15 @@ apply the face `transient-unreachable' to the complete string."
                               'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
+
+(cl-defmethod transient-format-inapt ((obj transient-suffix))
+  "If OBJ is currently inapt, return \"inapt \", else the empty string."
+  (if (oref obj inapt) "inapt " ""))
+
+(cl-defmethod transient--get-format ((obj transient-suffix))
+  (if transient-use-accessible-formats
+      (oref obj accessible-format)
+    (oref obj format)))
 
 (cl-defmethod transient--get-description ((obj transient-child))
   (cond-let*
@@ -5620,7 +5666,8 @@ as stand-in for elements of exhausted lists."
 ;;;; `transient-cons-option'
 
 (defclass transient-cons-option (transient-option)
-  ((format :initform " %k %d: %v"))
+  ((format            :initform " %k %d: %v")
+   (accessible-format :initform "%i%k %d: %v"))
   "[Experimental] Class used for unencoded key-value pairs.")
 
 (cl-defmethod transient-infix-value ((obj transient-cons-option))
