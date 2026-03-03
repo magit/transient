@@ -683,9 +683,9 @@ Two more essential options are documented in [[* Common Suffix Commands]].
 :UNNUMBERED: notoc
 :END:
 
-For blind users I recommend the following configuration.  If you
-need more guidance or would like to share your experience, please
-don't hesitate to contact me.
+For visually impaired users I recommend the following configuration.
+If you need more guidance or would like to share your experience,
+please don't hesitate to contact me.
 
 #+begin_src emacs-lisp
   (setopt transient-enable-menu-navigation 'verbose) ; the default

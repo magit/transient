@@ -838,9 +838,9 @@ when creating a new prefix with @code{transient-define-prefix}.
 @anchor{Accessibility Options}
 @subheading Accessibility Options
 
-For blind users I recommend the following configuration.  If you
-need more guidance or would like to share your experience, please
-don't hesitate to contact me.
+For visually impaired users I recommend the following configuration.
+If you need more guidance or would like to share your experience,
+please don't hesitate to contact me.
 
 @lisp
 (setopt transient-enable-menu-navigation 'verbose) ; the default

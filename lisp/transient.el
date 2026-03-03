@@ -218,7 +218,8 @@ If `transient-enable-menu-navigation' is non-nil, which it is by default,
 then \\[transient-backward-button] and \\[transient-forward-button] move \
 from suffix to suffix.  When this option is
 non-nil as well, then they additionally stop at group descriptions.  This
-is useful for blind users, who use a braille or audio output device."
+is useful for visually impaired users, who use a braille or audio output
+device."
   :package-version '(transient . "0.13.0")
   :group 'transient
   :type 'boolean)
