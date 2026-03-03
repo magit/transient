@@ -442,7 +442,10 @@ such an infix command is invoked it cycles to the next value.
 This default does not work for visually impaired user.  If this option
 is non-nil, then more arguments immediately read the new value, instead
 of being toggled off on first invocation, or instead of cycling through
-values."
+values.
+
+If you enable this, then `transient-use-accessible-values' should also
+be enabled."
   :package-version '(transient . "0.13.0")
   :group 'transient
   :type 'boolean)
@@ -577,6 +580,32 @@ in a more natural order."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-use-accessible-values nil
+  "Whether to show values in a way that does not rely on coloring.
+
+If this is nil (the default), then colors are used to communicate the
+state of arguments.  For certain argument types the state is solely
+communicated that way.  For example, an enabled command-line switch is
+shown using some bright color, and disabling that argument, changes the
+color to gray, without otherwise changing the displayed text.
+
+This default does not work for visually impaired user.  If this option
+is non-nil, then the state is additionally communicated through other
+means.  A switch, for example, is either followed by \"is enabled\" or
+\"is disabled\".  How exactly the state is communicated depends on the
+type of the infix command.
+
+Note that packages, which use Transient, can define their own infix
+command types, which may or may not involve overriding Transient's
+code, which honors this new option.  I.e., it will take some time until
+everything respects this setting.
+
+If you enable this, then `transient-prefer-reading-value' should also
+be enabled.  Also consider enabling `transient-use-accessible-formats'."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-use-accessible-formats nil
   "Whether to use a more accessible format strings for menu elements.
 
@@ -600,7 +629,9 @@ out.  (As an example of such an inapt command, consider the case of a
 commands that can only act on the file at point, when there currently
 isn't a file at point.)  Placing the string \"inapt\" at the very
 beginning gives users the opportunity to immediately skip over unusable
-commands, while still giving them the opportunity to read on."
+commands, while still giving them the opportunity to read on.
+
+Also consider enabling `transient-use-accessible-values'."
   :package-version '(transient . "0.13.0")
   :group 'transient
   :type 'boolean)
@@ -4993,44 +5024,60 @@ apply the face `transient-unreachable' to the complete string."
   "Format OBJ's value for display and return the result.")
 
 (cl-defmethod transient-format-value ((obj transient-suffix))
-  (propertize (oref obj argument) 'face (transient-argument-face obj)))
+  (with-slots (argument value inapt) obj
+    (concat (propertize argument 'face (transient-argument-face obj))
+            (cond ((not transient-use-accessible-values) nil)
+                  (inapt " is inapt")
+                  (value " is enabled")
+                  (t     " is disabled")))))
 
 (cl-defmethod transient-format-value ((obj transient-option))
-  (let ((argument (prin1-to-string (oref obj argument) t)))
+  (let ((argument (prin1-to-string (oref obj argument) t))
+        (aface (transient-argument-face obj))
+        (vface (transient-value-face obj)))
     (if-let ((value (oref obj value)))
-        (let* ((aface (transient-argument-face obj))
-               (vface (transient-value-face obj)))
-          (pcase-exhaustive (oref obj multi-value)
-            ('nil
-             (concat (propertize argument 'face aface)
-                     (propertize value    'face vface)))
-            ((or 't 'rest)
-             (concat (propertize (if (string-suffix-p " " argument)
-                                     argument
-                                   (concat argument " "))
-                                 'face aface)
-                     (propertize (mapconcat #'prin1-to-string value " ")
-                                 'face vface)))
-            ('repeat
-             (mapconcat (lambda (value)
-                          (concat (propertize argument 'face aface)
-                                  (propertize value    'face vface)))
-                        value " "))))
-      (propertize argument 'face 'transient-inactive-argument))))
+        (pcase-exhaustive (oref obj multi-value)
+          ('nil
+           (concat (propertize argument 'face aface)
+                   (propertize value    'face vface)))
+          ((or 't 'rest)
+           (concat (propertize (if (string-suffix-p " " argument)
+                                   argument
+                                 (concat argument " "))
+                               'face aface)
+                   (propertize (mapconcat #'prin1-to-string value " ")
+                               'face vface)))
+          ('repeat
+           (mapconcat (lambda (value)
+                        (concat (propertize argument 'face aface)
+                                (propertize value    'face vface)))
+                      value " ")))
+      (concat (propertize (if (string-suffix-p "=" argument)
+                              (substring argument 0 -1)
+                            argument)
+                          'face aface)
+              (and transient-use-accessible-values " is disabled")))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
-  (with-slots (value argument-format choices) obj
-    (format (propertize argument-format 'face (transient-argument-face obj))
-            (format
-             (propertize "[%s]" 'face 'transient-delimiter)
-             (mapconcat
-              (lambda (choice)
-                (propertize choice 'face
-                            (transient-value-face
-                             obj
-                             (equal (format argument-format choice) value))))
-              choices
-              (propertize "|" 'face 'transient-delimiter))))))
+  (pcase-let (((eieio value argument-format choices) obj)
+              (face (transient-argument-face obj)))
+    (cond
+      ((not transient-use-accessible-values)
+       (format (propertize argument-format 'face face)
+               (format
+                (propertize "[%s]" 'face 'transient-delimiter)
+                (mapconcat
+                 (lambda (choice)
+                   (propertize choice 'face
+                               (transient-value-face
+                                obj
+                                (equal (format argument-format choice) value))))
+                 choices
+                 (propertize "|" 'face 'transient-delimiter)))))
+      (value (propertize value 'face face))
+      ((format "No %s argument is enabled"
+               (propertize (string-replace "%s" "*" argument-format)
+                           'face face))))))
 
 (cl-defmethod transient-format-inapt ((obj transient-suffix))
   "If OBJ is currently inapt, return \"inapt \", else the empty string."
@@ -5671,7 +5718,7 @@ as stand-in for elements of exhausted lists."
 
 (defclass transient-cons-option (transient-option)
   ((format            :initform " %k %d: %v")
-   (accessible-format :initform "%i%k %d: %v"))
+   (accessible-format :initform "%i%k %d is %v"))
   "[Experimental] Class used for unencoded key-value pairs.")
 
 (cl-defmethod transient-infix-value ((obj transient-cons-option))
@@ -5687,9 +5734,11 @@ as stand-in for elements of exhausted lists."
           description))))
 
 (cl-defmethod transient-format-value ((obj transient-cons-option))
-  (let ((value (oref obj value)))
-    (propertize (prin1-to-string value t)
-                'face (transient-value-face obj))))
+  (with-slots (value) obj
+    (if (or value (not transient-use-accessible-values))
+        (propertize (prin1-to-string value t)
+                    'face (transient-argument-face obj))
+      "unset")))
 
 ;;; _
 (provide 'transient)

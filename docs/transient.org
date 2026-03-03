@@ -776,6 +776,28 @@ text at point, to be run when a transient menu is active, for example:
   of being toggled off on first invocation, or instead of cycling through
   values.
 
+- User Option: transient-use-accessible-values ::
+
+  This option controls whether values are shown in a way that does not
+  rely on coloring.
+
+  If this is ~nil~ (the default), then colors are used to communicate the
+  state of arguments.  For certain argument types the state is solely
+  communicated that way.  For example, an enabled command-line switch is
+  shown using some bright color, and disabling that argument, changes the
+  color to gray, without otherwise changing the displayed text.
+
+  This default does not work for visually impaired user.  If this option
+  is non-~nil~, then the state is additionally communicated through other
+  means.  A switch, for example, is either followed by "is enabled" or
+  "is disabled".  How exactly the state is communicated depends on the
+  type of the infix command.
+
+  Note that packages, which use Transient, can define their own infix
+  command types, which may or may not involve overriding Transient's
+  code, which honors this new option.  I.e., it will take some time until
+  everything respects this setting.
+
 - User Option: transient-use-accessible-formats ::
 
   This option controls whether more accessible format strings are used
