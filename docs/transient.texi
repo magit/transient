@@ -843,12 +843,14 @@ If you need more guidance or would like to share your experience,
 please don't hesitate to contact me.
 
 @lisp
-(setopt transient-enable-menu-navigation 'verbose) ; the default
+(setopt transient-enable-menu-navigation 'force-verbose)
 (setopt transient-navigate-to-group-descriptions t)
 (setopt transient-describe-menu t)
 (setopt transient-select-menu-window t)
 (setopt transient-force-single-column t)
-(add-hook 'transient-setup-buffer-hook 'ding)
+(setopt transient-prefer-reading-value t)
+(setopt transient-use-accessible-values t)
+(setopt transient-use-accessible-formats t)
 @end lisp
 
 Additionally you have allow the command, which you use to read the
