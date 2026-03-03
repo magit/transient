@@ -4993,19 +4993,13 @@ apply the face `transient-unreachable' to the complete string."
   "Format OBJ's value for display and return the result.")
 
 (cl-defmethod transient-format-value ((obj transient-suffix))
-  (propertize (oref obj argument)
-              'face (if (oref obj value)
-                        (if (oref obj inapt)
-                            'transient-inapt-argument
-                          'transient-argument)
-                      'transient-inactive-argument)))
+  (propertize (oref obj argument) 'face (transient-argument-face obj)))
 
 (cl-defmethod transient-format-value ((obj transient-option))
   (let ((argument (prin1-to-string (oref obj argument) t)))
     (if-let ((value (oref obj value)))
-        (let* ((inapt (oref obj inapt))
-               (aface (if inapt 'transient-inapt-argument 'transient-argument))
-               (vface (if inapt 'transient-inapt-argument 'transient-value)))
+        (let* ((aface (transient-argument-face obj))
+               (vface (transient-value-face obj)))
           (pcase-exhaustive (oref obj multi-value)
             ('nil
              (concat (propertize argument 'face aface)
@@ -5026,26 +5020,36 @@ apply the face `transient-unreachable' to the complete string."
 
 (cl-defmethod transient-format-value ((obj transient-switches))
   (with-slots (value argument-format choices) obj
-    (format (propertize argument-format
-                        'face (if value
-                                  'transient-argument
-                                'transient-inactive-argument))
+    (format (propertize argument-format 'face (transient-argument-face obj))
             (format
              (propertize "[%s]" 'face 'transient-delimiter)
              (mapconcat
               (lambda (choice)
                 (propertize choice 'face
-                            (if (equal (format argument-format choice) value)
-                                (if (oref obj inapt)
-                                    'transient-inapt-argument
-                                  'transient-value)
-                              'transient-inactive-value)))
+                            (transient-value-face
+                             obj
+                             (equal (format argument-format choice) value))))
               choices
               (propertize "|" 'face 'transient-delimiter))))))
 
 (cl-defmethod transient-format-inapt ((obj transient-suffix))
   "If OBJ is currently inapt, return \"inapt \", else the empty string."
   (if (oref obj inapt) "inapt " ""))
+
+(defun transient-argument-face (obj)
+  (if (oref obj value)
+      (if (oref obj inapt)
+          'transient-inapt-argument
+        'transient-argument)
+    'transient-inactive-argument))
+
+(cl-defun transient-value-face (obj &optional (active nil sactive))
+  (if (if sactive active (oref obj value))
+      (if (oref obj inapt)
+          ;; transient-inapt-value does not exist
+          'transient-inapt-argument
+        'transient-value)
+    'transient-inactive-value))
 
 (cl-defmethod transient--get-format ((obj transient-suffix))
   (if transient-use-accessible-formats
@@ -5684,8 +5688,8 @@ as stand-in for elements of exhausted lists."
 
 (cl-defmethod transient-format-value ((obj transient-cons-option))
   (let ((value (oref obj value)))
-    (propertize (prin1-to-string value t) 'face
-                (if value 'transient-value 'transient-inactive-value))))
+    (propertize (prin1-to-string value t)
+                'face (transient-value-face obj))))
 
 ;;; _
 (provide 'transient)
