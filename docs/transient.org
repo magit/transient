@@ -756,7 +756,7 @@ text at point, to be run when a transient menu is active, for example:
   dimensions.  This is also useful for blind users, because it causes
   suffixes to be navigated in a more natural order, because often
   related commands are displayed in the same column but navigation
-  first moves horizonally to the next item on the same row.
+  first moves horizontally to the next item on the same row.
 
 *** Auxiliary Options
 :PROPERTIES:

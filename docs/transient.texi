@@ -909,7 +909,7 @@ vision who use large text and might otherwise have to scroll in two
 dimensions.  This is also useful for blind users, because it causes
 suffixes to be navigated in a more natural order, because often
 related commands are displayed in the same column but navigation
-first moves horizonally to the next item on the same row.
+first moves horizontally to the next item on the same row.
 @end defopt
 
 @anchor{Auxiliary Options}
