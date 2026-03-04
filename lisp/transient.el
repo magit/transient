@@ -2960,13 +2960,14 @@ value.  Otherwise return CHILDREN as is.")
   (if (not transient--prefix)
       (funcall fn)
     (transient--suspend-override (bound-and-true-p edebug-active))
-    (funcall fn) ; Already unwind protected.
-    (cond ((memq this-command '(top-level abort-recursive-edit))
-           (setq transient--exitp t)
-           (transient--post-exit this-command)
-           (transient--delete-window))
-          (transient--prefix
-           (transient--resume-override)))))
+    (unwind-protect
+        (funcall fn)
+      (cond ((memq this-command '(top-level abort-recursive-edit))
+             (setq transient--exitp t)
+             (transient--post-exit this-command)
+             (transient--delete-window))
+            (transient--prefix
+             (transient--resume-override))))))
 
 (defmacro transient--with-suspended-override (&rest body)
   (let ((depth (make-symbol "depth"))
