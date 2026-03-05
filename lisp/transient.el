@@ -3289,7 +3289,11 @@ identifying the exit."
     (transient--post-exit this-command)))
 
 (defun transient--quit-kludge (action)
-  (static-if (boundp 'redisplay-can-quit) ;Emacs 31
+  ;; Fixing the bug that makes this kludge necessary was proposed in
+  ;; https://yhetil.org/emacs-bugs/m1ikl4iqtg.fsf@dancol.org/, but it
+  ;; does not look like that's gonna be merged any time soon.  See also
+  ;; https://github.com/magit/transient/commit/45fbefdc5b112f0a15cd9365.
+  (static-if (boundp 'redisplay-can-quit)
       action
     (pcase-exhaustive action
       ('enable
