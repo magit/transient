@@ -4603,7 +4603,7 @@ have a history of their own.")
                             'transient-display-buffer-action))
                (transient-display-buffer-action))))
     (when (and (assq 'pop-up-frame-parameters (cdr action))
-               (fboundp 'buffer-line-statistics)) ; Emacs >= 28.1
+               (fboundp 'buffer-line-statistics)) ; since Emacs 28.1
       (setq action (copy-tree action))
       (pcase-let ((`(,height ,width)
                    (buffer-line-statistics transient--buffer))
