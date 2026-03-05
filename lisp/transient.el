@@ -4097,6 +4097,20 @@ stand-alone command."
   (when (fboundp 'org-read-date)
     (org-read-date 'with-time nil nil prompt default-time)))
 
+(static-if (fboundp 'string-edit) ; since Emacs 29.1
+    (defun transient-read-string-from-buffer (prompt value _)
+      "Switch to a new buffer to edit STRING in a recursive edit.
+Like `read-string-from-buffer' but accept an additional argument as
+provided by `transient-infix-read' (but ignore it).  Only available
+when using Emacs 29.1 or greater."
+      (string-edit prompt (or value "")
+                   (lambda (edited)
+                     (setq value edited)
+                     (exit-recursive-edit))
+                   :abort-callback #'exit-recursive-edit)
+      (recursive-edit)
+      value))
+
 ;;;; Prompt
 
 (cl-defgeneric transient-prompt (obj)
