@@ -3982,8 +3982,9 @@ it\", in which case it is pointless to preserve history.)"
                                          (eq value (car transient--history)))
                                      transient--history
                                    (cons value transient--history)))
-             (initial-input (and transient-read-with-initial-input
-                                 (car transient--history)))
+             (initial-input (or value
+                                (and transient-read-with-initial-input
+                                     (car transient--history))))
              (history (if initial-input
                           (cons 'transient--history 1)
                         'transient--history))
