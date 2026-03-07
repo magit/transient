@@ -29,7 +29,7 @@ _    := $(shell test "$(REVDESC)" = "$$(cat .revdesc 2> /dev/null)" ||\
 %.texi: %.org .orgconfig .revdesc
 	@printf "Generating $@\n"
 	@$(EMACS_ORG) $< $(ORG_EVAL)
-	@sed -i -e 's/“/``/g' -e "s/”/''/g" -e '$$a\' $(PKG).texi #'
+	@sed -e 's/”/``/g' -e “s/”/''/g” -e '$$a\' $(PKG).texi > $(PKG).texi.tmp && mv $(PKG).texi.tmp $(PKG).texi #'
 
 %.info: %.texi
 	@printf "Generating $@\n"
@@ -52,14 +52,14 @@ HTML_FIXUP_MENU   = '/<\/body>/i<div id="s-css-s--menu"><\/div>'
 %.html: %.texi
 	@printf "Generating $@\n"
 	@$(MAKEINFO) --html --no-split $(MANUAL_HTML_ARGS) $<
-	@sed -i -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $@
+	@sed -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $@ > $@.tmp && mv $@.tmp $@
 
 %/index.html: %.texi
 	@printf "Generating $(PKG)/*.html\n"
 	@rm -rf $(PKG)
 	@$(MAKEINFO) --html -o $(PKG)/ $(MANUAL_HTML_ARGS) $<
 	@for f in $$(find $(PKG) -name '*.html') ; do \
-	sed -i -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $$f ; \
+	sed -e $(HTML_FIXUP_CSS) -e $(HTML_FIXUP_ONLOAD) -e $(HTML_FIXUP_MENU) $$f > $$f.tmp && mv $$f.tmp $$f ; \
 	done
 
 %.pdf: %.texi
