@@ -29,7 +29,7 @@ _    := $(shell test "$(REVDESC)" = "$$(cat .revdesc 2> /dev/null)" ||\
 %.texi: %.org .orgconfig .revdesc
 	@printf "Generating $@\n"
 	@$(EMACS_ORG) $< $(ORG_EVAL)
-	@sed -i -e 's/“/``/g' -e "s/”/''/g" -e '$$a\' $(PKG).texi #'
+	@sed -i -e 's/“/``/g' -e "s/”/''/g" -e '$$a\' $@ #'
 
 %.info: %.texi
 	@printf "Generating $@\n"
