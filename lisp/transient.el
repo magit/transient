@@ -2621,10 +2621,8 @@ value.  Otherwise return CHILDREN as is.")
   (cond ((and (not transient--refreshp) layout)
          (setq transient--layout layout)
          (setq transient--suffixes (transient--flatten-suffixes layout)))
-        (t
-         (setq transient--suffixes nil)
-         (setq transient--layout (transient--init-suffixes name))
-         (setq transient--suffixes (nreverse transient--suffixes))))
+        ((pcase-setq `(,transient--layout ,transient--suffixes)
+                     (transient--init-suffixes name))))
   (slot-makeunbound transient--prefix 'value))
 
 (defun transient--init-prefix (name &optional params)
@@ -2640,11 +2638,14 @@ value.  Otherwise return CHILDREN as is.")
     obj))
 
 (defun transient--init-suffixes (name)
-  (let ((levels (alist-get name transient-levels)))
-    (mapcan (lambda (c) (transient--init-child levels c nil))
-            (append (transient--get-children name)
-                    (and (not transient--editp)
-                         (transient--get-children 'transient-common-commands))))))
+  (let ((levels (alist-get name transient-levels))
+        (transient--suffixes nil))
+    (list (mapcan (lambda (c) (transient--init-child levels c nil))
+                  (append (transient--get-children name)
+                          (and (not transient--editp)
+                               (transient--get-children
+                                'transient-common-commands))))
+          (nreverse transient--suffixes))))
 
 (defun transient--flatten-suffixes (layout)
   (named-let flatten ((def layout))
@@ -4318,8 +4319,7 @@ they can be returned.  That does not cause the menu to be displayed."
   (if (eq transient-current-command prefix)
       transient-current-suffixes
     (let ((transient--prefix (transient--init-prefix prefix)))
-      (transient--flatten-suffixes
-       (transient--init-suffixes prefix)))))
+      (cdr (transient--init-suffixes prefix)))))
 
 (defun transient-get-value ()
   "Return the value of the extant prefix.
