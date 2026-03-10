@@ -5314,7 +5314,8 @@ Select the help window, and make the help buffer current and return it."
           (cons (lambda () (setq buffer (current-buffer)))
                 temp-buffer-window-setup-hook)))
     (describe-function fn)
-    (set-buffer buffer)))
+    (when buffer
+      (set-buffer buffer))))
 
 (defun transient--show-manual (manual)
   (info manual))
