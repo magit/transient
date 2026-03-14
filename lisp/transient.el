@@ -3891,7 +3891,7 @@ Call `transient-default-value' but because that is a noop for
               (case-fold-search nil)
               (regexp (if (slot-exists-p obj 'argument-regexp)
                           (oref obj argument-regexp)
-                        (format "\\`%s\\(.*\\)" (oref obj argument)))))
+                        (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument)))))
           (if (memq multi-value '(t rest))
               (cdr (assoc argument value))
             (let ((match (lambda (v)
