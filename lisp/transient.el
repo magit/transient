@@ -135,7 +135,7 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
          ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit ,id)
-      (static-if (fboundp 'error-type-p) ; since Emacs 31.1
+      (static-if (>= emacs-major-version 30)
           (signal err)
         (signal (car err) (cdr err))))))
 
