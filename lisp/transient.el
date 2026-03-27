@@ -2129,6 +2129,7 @@ probably use this instead:
   (cond-let*
     (transient--pending-suffix)
     (transient--current-suffix)
+    [[this-command (advice--cd*r this-command)]]
     ((or transient--prefix
          transient-current-prefix)
      (let ((suffixes
