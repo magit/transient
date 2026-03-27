@@ -3051,13 +3051,7 @@ value.  Otherwise return CHILDREN as is.")
                 (when (symbolp command)
                   (remove-function (symbol-function command) advice))
                 (oset prefix unwind-suffix nil)))))
-        (add-function :around
-                      (if (and (symbolp this-command)
-                               (not (subr-primitive-p
-                                     (symbol-function this-command))))
-                          (symbol-function this-command)
-                        this-command)
-                      advice '((depth . -99)))
+        (transient--advise-this-command advice)
         (cl-assert
          (>= emacs-major-version 30) nil
          "Emacs was downgraded, making it necessary to recompile Transient"))
@@ -3107,13 +3101,20 @@ value.  Otherwise return CHILDREN as is.")
       (setq advice `(lambda (fn &rest args)
                       (interactive ,advice-interactive)
                       (apply ',advice-body fn args)))
-      (add-function :around
-                    (if (and (symbolp this-command)
-                             (not (subr-primitive-p
-                                   (symbol-function this-command))))
-                        (symbol-function this-command)
-                      this-command)
-                    advice '((depth . -99))))))
+      (transient--advise-this-command advice))))
+
+(defun transient--advise-this-command (advice)
+  "Add ADVICE around `this-command'.
+If possible add the advice to the value of `this-command' instead of
+the symbol directly, so the command's identity does not get obfuscated.
+For primitive and anonymous functions that isn't possible, so fall back
+to advising via the symbol in those cases."
+  (add-function
+   :around (if (and (symbolp this-command)
+                    (not (subr-primitive-p (symbol-function this-command))))
+               (symbol-function this-command)
+             this-command)
+   advice '((depth . -99))))
 
 (defun transient--premature-post-command ()
   (and (equal (this-command-keys-vector) [])
