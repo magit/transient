@@ -3052,7 +3052,8 @@ value.  Otherwise return CHILDREN as is.")
                 (oset prefix unwind-suffix nil)))))
         (add-function :around
                       (if (and (symbolp this-command)
-                               (not (subrp (symbol-function this-command))))
+                               (not (subr-primitive-p
+                                     (symbol-function this-command))))
                           (symbol-function this-command)
                         this-command)
                       advice '((depth . -99)))
@@ -3107,7 +3108,8 @@ value.  Otherwise return CHILDREN as is.")
                       (apply ',advice-body fn args)))
       (add-function :around
                     (if (and (symbolp this-command)
-                             (not (subrp (symbol-function this-command))))
+                             (not (subr-primitive-p
+                                   (symbol-function this-command))))
                         (symbol-function this-command)
                       this-command)
                     advice '((depth . -99))))))
