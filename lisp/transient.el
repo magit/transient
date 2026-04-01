@@ -3651,7 +3651,7 @@ transient is active."
   "From a transient menu, describe something in another buffer.
 
 This command can be bound multiple times to describe different targets.
-Each binding must specify the thing it describes, be setting the value
+Each binding must specify the thing it describes, by setting the value
 of its `target' slot, using the keyword argument `:='.
 
 The `helper' slot specifies the low-level function used to describe the
