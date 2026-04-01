@@ -4663,10 +4663,12 @@ have a history of their own.")
            (if (window-parent win)
                (delete-window win)
              (delete-frame (window-frame win) t)))))
-      (when remain-in-minibuffer-window
-        (select-window remain-in-minibuffer-window))))
-  (when (buffer-live-p transient--buffer)
-    (kill-buffer transient--buffer))
+      (with-demoted-errors "Error while exiting transient [1]: %S"
+        (when remain-in-minibuffer-window
+          (select-window remain-in-minibuffer-window)))))
+  (with-demoted-errors "Error while exiting transient [2]: %S"
+    (when (buffer-live-p transient--buffer)
+      (kill-buffer transient--buffer)))
   (setq transient--buffer nil))
 
 (defun transient--preserve-window-p (&optional nohide)
