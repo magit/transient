@@ -1,31 +1,83 @@
 # -*- mode: org -*-
 * v0.13.0    UNRELEASED
 
-This release adds features useful for blind users.  The relevant
-options and recommended settings are documented in the manual in
-the section "Accessibility Options".  To go there, evaluate this
-form: (info "(transient)Accessibility Options").
-
-- Selecting the menu window using the mouse is now supported.
-  7c46a093
-
-- Selecting the menu window using the command ~other-window~, is now
-  supported, but requires the following configuration.  e3346f7b
-
-    (define-key transient-predicate-map
-      [other-window] #'transient--do-move)
-
-- The region is now properly displayed, when using the mouse to
-  select text in the menu buffer.  7c46a093
+This release adds features useful for visually impaired users.
+The relevant options and recommended settings are documented in
+the manual in the section "Accessibility Options".  To go there,
+evaluate this form: (info "(transient)Accessibility Options").
+Some of the new options are also potentially useful for sighted
+users.
 
 - The menu window can now be selected automatically when activating
   a menu, by setting the new option ~transient-select-menu-window~.
   Doing so is only encouraged for users of braille output devices.
-  59380806
+  dd383016
 
 - Added new option ~transient-navigate-to-group-descriptions~.
+  4087cf7b
 
-- Added new option ~transient-describe-menu~.
+- Added new option ~transient-describe-menu~.  c9f8f398
+
+- Improve suffix navigation.  Support navigating to all cells and
+  fix restoring position after refresh for all cell types.
+  5d4a7e71, 0bbd75bd, bf92c158, 250a3c34
+
+- Added new value ~verbose-force~ for ~transient-enable-menu-navigation~,
+  which causes a message to be echoed, even if it is identical to the
+  text displayed in the menu.  4d283706
+
+- Added new option ~transient-prefer-reading-value~.  4dfc3e78
+
+- Added new option ~transient-use-accessible-formats~.  63fca1f6
+
+- Added new option ~transient-use-accessible-values~.  1fc27186
+
+Also included in this release are the following changes, which do
+not (primarily) concern accessibility.
+
+- ~top-level~ did not exit transient's help and edit modes.  b484f759
+
+- Selecting the menu window using the command ~other-window~, is now
+  supported, but requires the following configuration.  5cd017e5
+
+    (define-key transient-predicate-map
+      [other-window] #'transient--do-move)
+
+- Selecting the menu window using the mouse is now supported.
+  c5e6e207
+
+- The region is now properly displayed, when using the mouse to
+  select text in the menu buffer.  c5e6e207
+
+- Added new ~transient-object~ base class, which all other classes
+  ultimately derive from.  8b057d82
+
+- Fixed initial input when reading the value for a suffix whose
+  ~always-read~ slot is non-nil.  cde0756f
+
+- Fixed exiting from ~recursive-edit~ to a transient menu.  #425
+
+- Added new function ~transient-read-string-from-buffer~.  0e65f5da
+
+- Addressed an incompatibility with third-party help extensions.
+  #431
+
+- Fixed how the list of suffixes is build, an issue which could
+  cause ~transient-suffix-object~ to return ~nil~ instead of the object.
+  https://github.com/magit/magit/issues/5528
+
+- When the value of a suffix contained newline characters, then all
+  but the first line was discarded.  #433
+
+- If an error occurred in a command implemented in C or in an
+  anonymous commands, that could cause the transient menu to enter
+  an inconsistent state, because we failed to adequately advise
+  such commands, to protect against that possibility.  63f90723 ff
+
+- If an error occurred because of a window misconfiguration by some
+  third-party code, that could cause the transient menu to enter an
+  inconsistent state, because we did not protect all the places where
+  that could result in an error.  8b142031, #429
 
 * v0.12.0    2026-01-01
 
