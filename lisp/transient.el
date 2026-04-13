@@ -5201,14 +5201,18 @@ apply the face `transient-unreachable' to the complete string."
                                   (length (oref suffix key))))
                            (oref group suffixes))))))
 
-(defun transient--string-pixel-width (string)
-  (with-temp-buffer
-    (insert string)
-    (save-window-excursion
-      (set-window-dedicated-p nil nil)
-      (set-window-buffer nil (current-buffer))
-      (car (window-text-pixel-size
-            nil (line-beginning-position) (point))))))
+(static-if (fboundp 'string-pixel-width) ; since Emacs 29.1
+    (defalias 'transient--string-pixel-width #'string-pixel-width)
+  ;; c22b735f0c6 and 61c254cafc9 cannot be backported.  Some later
+  ;; commits could be ported, but users should instead update Emacs.
+  (defun transient--string-pixel-width (string)
+    (with-temp-buffer
+      (insert string)
+      (save-window-excursion
+        (set-window-dedicated-p nil nil)
+        (set-window-buffer nil (current-buffer))
+        (car (window-text-pixel-size
+              nil (line-beginning-position) (point)))))))
 
 (defun transient--column-stops (columns)
   (let* ((var-pitch (or transient-align-variable-pitch
