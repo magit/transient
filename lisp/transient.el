@@ -5201,10 +5201,10 @@ apply the face `transient-unreachable' to the complete string."
                                   (length (oref suffix key))))
                            (oref group suffixes))))))
 
-(defun transient--pixel-width (string)
-  (save-window-excursion
-    (with-temp-buffer
-      (insert string)
+(defun transient--string-pixel-width (string)
+  (with-temp-buffer
+    (insert string)
+    (save-window-excursion
       (set-window-dedicated-p nil nil)
       (set-window-buffer nil (current-buffer))
       (car (window-text-pixel-size
@@ -5213,14 +5213,15 @@ apply the face `transient-unreachable' to the complete string."
 (defun transient--column-stops (columns)
   (let* ((var-pitch (or transient-align-variable-pitch
                         (oref transient--prefix variable-pitch)))
-         (char-width (and var-pitch (transient--pixel-width " "))))
+         (char-width (and var-pitch (transient--string-pixel-width " "))))
     (transient--seq-reductions-from
      (apply-partially #'+ (* 2 (if var-pitch char-width 1)))
      (transient--mapn
       (lambda (cells min)
         (apply #'max
                (if min (if var-pitch (* min char-width) min) 0)
-               (mapcar (if var-pitch #'transient--pixel-width #'length) cells)))
+               (mapcar (if var-pitch #'transient--string-pixel-width #'length)
+                       cells)))
       columns
       (oref transient--prefix column-widths))
      0)))
