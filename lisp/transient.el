@@ -100,19 +100,6 @@ similar defect.") :emergency))
 (defvar Man-notify-method)
 (defvar pp-default-function) ; since Emacs 29.1
 
-(static-if (< emacs-major-version 30)
-    (progn
-      (defun internal--build-binding@backport-e680827e814 (fn binding prev-var)
-        "Backport not warning about `_' not being left unused.
-Backport fix for https://debbugs.gnu.org/cgi/bugreport.cgi?bug=69108,
-from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
-        (let ((binding (funcall fn binding prev-var)))
-          (if (eq (car binding) '_)
-              (cons (make-symbol "s") (cdr binding))
-            binding)))
-      (advice-add 'internal--build-binding :around
-                  #'internal--build-binding@backport-e680827e814)))
-
 (define-obsolete-variable-alias
   'transient-show-popup
   'transient-show-menu
