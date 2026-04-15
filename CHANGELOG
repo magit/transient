@@ -79,6 +79,9 @@ not (primarily) concern accessibility.
   inconsistent state, because we did not protect all the places where
   that could result in an error.  8b142031, #429
 
+- Restored compatibility with the ~emoji.el~ that ships with Emacs
+  29.4.  #417
+
 * v0.12.0    2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,

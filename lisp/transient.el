@@ -1652,7 +1652,12 @@ symbol property.")
      (transient--set-layout
       prefix
       (named-let upgrade ((spec layout))
-        (cond ((vectorp spec)
+        (cond ((and (vectorp spec)
+                    (length= spec 3))
+               ;; This format is used by emoji.el from Emacs <= 29.4.
+               (pcase-let ((`[,class ,args ,children] spec))
+                 (vector class args (mapcar #'upgrade children))))
+              ((vectorp spec)
                (pcase-let ((`[,level ,class ,args ,children] spec))
                  (when level
                    (setq args (plist-put args :level level)))
