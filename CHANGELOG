@@ -5,7 +5,7 @@ This release adds features useful for visually impaired users.
 The relevant options and recommended settings are documented in
 the manual in the section "Accessibility Options".  To go there,
 evaluate this form: (info "(transient)Accessibility Options").
-Some of the new options are also potentially useful for sighted
+Some of the new options are also potentially useful for other
 users.
 
 - The menu window can now be selected automatically when activating
@@ -19,8 +19,8 @@ users.
 - Added new option ~transient-describe-menu~.  c9f8f398
 
 - Improve suffix navigation.  Support navigating to all cells and
-  fix restoring position after refresh for all cell types.
-  5d4a7e71, 0bbd75bd, bf92c158, 250a3c34
+  fix restoring position after refreshing the menu for all cell
+  types.  5d4a7e71, 0bbd75bd, bf92c158, 250a3c34
 
 - Added new value ~verbose-force~ for ~transient-enable-menu-navigation~,
   which causes a message to be echoed, even if it is identical to the
