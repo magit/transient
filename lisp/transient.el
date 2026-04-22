@@ -5194,7 +5194,8 @@ apply the face `transient-unreachable' to the complete string."
                            (oref group suffixes))))))
 
 (static-if (fboundp 'string-pixel-width) ; since Emacs 29.1
-    (defalias 'transient--string-pixel-width #'string-pixel-width)
+    (progn ; See https://github.com/magit/magit/issues/5557.
+      (defalias 'transient--string-pixel-width #'string-pixel-width))
   ;; c22b735f0c6 and 61c254cafc9 cannot be backported.  Some later
   ;; commits could be ported, but users should instead update Emacs.
   (defun transient--string-pixel-width (string)
