@@ -43,6 +43,7 @@
 ;; non-free javascript on that website.
 
 ;;; Code:
+;;;; Frontmatter
 
 (defconst transient-version "0.13.0")
 
@@ -130,7 +131,7 @@ similar defect.") :emergency))
   (transient--emergency-exit :debugger)
   (apply #'debug args))
 
-;;; Options
+;;;; Options
 
 (defgroup transient nil
   "Transient commands."
@@ -695,7 +696,7 @@ give you as many additional suffixes as you hoped.)"
   :group 'transient
   :type 'boolean)
 
-;;; Faces
+;;;; Faces
 
 (defgroup transient-faces nil
   "Faces used by Transient."
@@ -845,7 +846,7 @@ See also option `transient-highlight-mismatched-keys'."
 See also option `transient-highlight-mismatched-keys'."
   :group 'transient-faces)
 
-;;; Persistence
+;;;; Persistence
 
 (defun transient--read-file-contents (file)
   (with-demoted-errors "Transient error: %S"
@@ -909,12 +910,12 @@ If `transient-save-history' is nil, then do nothing."
 (unless noninteractive
   (add-hook 'kill-emacs-hook #'transient-maybe-save-history))
 
-;;; Classes
-;;;; Base
+;;;; Classes
+;;;;; Base
 
 (defclass transient-object () () :abstract t)
 
-;;;; Prefix
+;;;;; Prefix
 
 (defclass transient-prefix (transient-object)
   ((prototype   :initarg :prototype)
@@ -955,7 +956,7 @@ When a transient prefix command is invoked, then a clone of that
 object is stored in the global variable `transient--prefix' and
 the prototype is stored in the clone's `prototype' slot.")
 
-;;;; Suffix
+;;;;; Suffix
 
 (defclass transient-child (transient-object)
   ((parent
@@ -1138,7 +1139,7 @@ They become the value of this argument.")
    (target :initarg := :initform nil))
   "Class used by the `transient-describe' suffix command.")
 
-;;;; Group
+;;;;; Group
 
 (defclass transient-group (transient-child)
   ((suffixes       :initarg :suffixes       :initform nil)
@@ -1170,7 +1171,7 @@ commands or strings.  This group inserts an empty line between
 subgroups.  The subgroups are responsible for displaying their
 elements themselves.")
 
-;;; Define
+;;;; Define
 
 (defmacro transient-define-prefix (name arglist &rest args)
   "Define NAME as a transient prefix command.
@@ -1698,7 +1699,7 @@ Intended for use in a group's `:setup-children' function."
     (setq prefix (oref prefix command)))
   (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
 
-;;; Edit
+;;;; Edit
 
 (defun transient--insert-suffix (prefix loc suffix action &optional keep-other)
   (pcase-let* ((suf (cl-etypecase suffix
@@ -1918,7 +1919,7 @@ using `transient-define-suffix', `transient-define-infix' or
     (user-error "Cannot set level for `%s'; no prototype object exists"
                 command)))
 
-;;; Variables
+;;;; Variables
 
 (defvar transient-current-prefix nil
   "The transient from which this suffix command was invoked.
@@ -2027,7 +2028,7 @@ This is bound while the suffixes are drawn in the transient buffer.")
     transient-quit-all
     top-level))
 
-;;; Identities
+;;;; Identities
 
 (defun transient-active-prefix (&optional prefixes)
   "Return the active transient object.
@@ -2165,7 +2166,7 @@ probably use this instead:
       (seq-some (lambda (cmd) (get cmd 'transient--suffix))
                 (function-alias-p command))))
 
-;;; Keymaps
+;;;; Keymaps
 
 (defvar-keymap transient-base-map
   :doc "Parent of other keymaps used by Transient.
@@ -2529,7 +2530,7 @@ of the corresponding object."
        transient--transient-map))
     topmap))
 
-;;; Setup
+;;;; Setup
 
 (defun transient-setup (&optional name layout edit &rest params)
   "Setup the transient specified by NAME.
@@ -2817,7 +2818,7 @@ value.  Otherwise return CHILDREN as is.")
     (transient--debug "   autoload %s" cmd)
     (autoload-do-load fn)))
 
-;;; Flow-Control
+;;;; Flow-Control
 
 (defun transient--setup-transient ()
   (transient--debug 'setup-transient)
@@ -3314,7 +3315,7 @@ identifying the exit."
       ('disable
        (remove-function command-error-function "inhibit-quit")))))
 
-;;; Pre-Commands
+;;;; Pre-Commands
 
 (defun transient--call-pre-command ()
   (cond-let
@@ -3513,8 +3514,8 @@ prefix argument and pivot to `transient-update'."
 (put 'transient--do-move       'transient-face 'transient-key-stay)
 (put 'transient--do-minus      'transient-face 'transient-key-stay)
 
-;;; Commands
-;;;; Noop
+;;;; Commands
+;;;;; Noop
 
 (defun transient-noop ()
   "Do nothing at all."
@@ -3562,7 +3563,7 @@ Please open an issue and post the shown command log." :error)))
            this-original-command
            'transient-enable-menu-navigation))
 
-;;;; Core
+;;;;; Core
 
 (defun transient-quit-all ()
   "Exit all transients without saving the transient stack."
@@ -3590,7 +3591,7 @@ Please open an issue and post the shown command log." :error)))
   "Invoke the suffix command represented by this button."
   (interactive))
 
-;;;; Suspend
+;;;;; Suspend
 
 (defun transient-suspend ()
   "Suspend the current transient.
@@ -3620,7 +3621,7 @@ transient is active."
         (t
          (message "No suspended transient command"))))
 
-;;;; Help
+;;;;; Help
 
 (defun transient-help (&optional interactivep)
   "Show help for the active transient or one of its suffixes.
@@ -3660,7 +3661,7 @@ For example:
   (with-slots (helper target) (transient-suffix-object)
     (transient--display-help helper target)))
 
-;;;; Level
+;;;;; Level
 
 (defun transient-set-level (&optional command level)
   "Set the level of the transient or one of its suffix commands."
@@ -3719,7 +3720,7 @@ For example:
   (setq transient--all-levels-p (not transient--all-levels-p))
   (setq transient--refreshp t))
 
-;;;; Value
+;;;;; Value
 
 (defun transient-set ()
   "Set active transient's value for this Emacs session."
@@ -3773,7 +3774,7 @@ For example:
   (interactive)
   (transient-prefix-set (oref (transient-suffix-object) set)))
 
-;;;; Auxiliary
+;;;;; Auxiliary
 
 (transient-define-suffix transient-toggle-common ()
   "Toggle whether common commands are permanently shown."
@@ -3834,8 +3835,8 @@ such as when suggesting a new feature or reporting an issue."
                           arguments " "))
     (message "%s: %S" (key-description (this-command-keys)) arguments)))
 
-;;; Value
-;;;; Init
+;;;; Value
+;;;;; Init
 
 (cl-defgeneric transient-init-value (obj)
   "Set the initial value of the prefix or suffix object OBJ.
@@ -3910,7 +3911,7 @@ Call `transient-default-value' but because that is a noop for
         (car (member (oref obj argument)
                      (oref transient--prefix value)))))
 
-;;;; Default
+;;;;; Default
 
 (cl-defgeneric transient-default-value (obj)
   "Return the default value.")
@@ -3932,7 +3933,7 @@ that.  If the slot is unbound, return nil."
 Doing so causes `transient-init-value' to skip setting the `value' slot."
   eieio--unbound)
 
-;;;; Read
+;;;;; Read
 
 (cl-defgeneric transient-infix-read (obj)
   "Determine the new value of the infix object OBJ.
@@ -4056,7 +4057,7 @@ stand-alone command."
         (transient-infix-read obj))
     (error "Not a suffix command: `%s'" command)))
 
-;;;; Readers
+;;;;; Readers
 
 (defun transient-read-file (prompt _initial-input _history)
   "Read a file."
@@ -4117,7 +4118,7 @@ when using Emacs 29.1 or greater."
       (recursive-edit)
       value))
 
-;;;; Prompt
+;;;;; Prompt
 
 (cl-defgeneric transient-prompt (obj)
   "Return the prompt to be used to read infix object OBJ's value.")
@@ -4158,7 +4159,7 @@ prompt."
        (format "%s: " name)))
     ("[BUG: no prompt]: ")))
 
-;;;; Set
+;;;;; Set
 
 (cl-defgeneric transient-infix-set (obj value)
   "Set the value of infix object OBJ to VALUE.")
@@ -4228,7 +4229,7 @@ See also `transient-prefix-set'.")
                (transient-save-value transient--prefix)
              (transient-set-value transient--prefix))))))
 
-;;;; Save
+;;;;; Save
 
 (cl-defgeneric transient-save-value (obj)
   "Save the value of the transient prefix OBJ.")
@@ -4240,7 +4241,7 @@ See also `transient-prefix-set'.")
     (transient-save-values)
     (transient--history-push obj value)))
 
-;;;; Reset
+;;;;; Reset
 
 (cl-defgeneric transient-reset-value (obj)
   "Clear the set and saved values of the transient prefix OBJ.")
@@ -4254,7 +4255,7 @@ See also `transient-prefix-set'.")
     (transient--history-push obj value))
   (mapc #'transient-init-value transient--suffixes))
 
-;;;; Get
+;;;;; Get
 
 (defun transient-args (prefix)
   "Return the value of the transient prefix command PREFIX.
@@ -4420,7 +4421,7 @@ value of the variable.  I.e., this is a side-effect and does
 not contribute to the value of the transient."
   nil)
 
-;;;; Utilities
+;;;;; Utilities
 
 (defun transient-arg-value (arg args)
   "Return the value of ARG as it appears in ARGS.
@@ -4443,7 +4444,7 @@ Append \"=\ to ARG to indicate that it is an option."
                             args))]
        (match-string 1 match)))))
 
-;;; Return
+;;;; Return
 
 (defun transient-init-return (obj)
   (when-let* ((_ transient--stack)
@@ -4455,8 +4456,8 @@ Append \"=\ to ARG to indicate that it is an option."
                       (list t 'recurse #'transient--do-recurse))))
     (oset obj return t)))
 
-;;; Scope
-;;;; Init
+;;;; Scope
+;;;;; Init
 
 (cl-defgeneric transient-init-scope (obj)
   "Set the scope of the prefix or suffix object OBJ.
@@ -4477,7 +4478,7 @@ a default implementation, which is a noop.")
 (cl-defmethod transient-init-scope ((_   transient-suffix))
   "Noop." nil)
 
-;;;; Get
+;;;;; Get
 
 (defun transient-scope (&optional prefixes classes)
   "Return the scope of the active or current transient prefix command.
@@ -4529,7 +4530,7 @@ If no prefix matches, return nil."
     ([obj (transient-prefix-object)]
      (oref obj scope))))
 
-;;; History
+;;;; History
 
 (cl-defgeneric transient--history-key (obj)
   "Return OBJ's history key.")
@@ -4562,7 +4563,7 @@ have a history of their own.")
           (cons val (delete val (alist-get (transient--history-key obj)
                                            transient-history))))))
 
-;;; Display
+;;;; Display
 
 (defun transient--show-hint ()
   (let ((message-log-max nil))
@@ -4637,7 +4638,7 @@ have a history of their own.")
                               (window-body-width window t)
                               (window-body-height window t))))
 
-;;; Delete
+;;;; Delete
 
 (defun transient--delete-window ()
   (when (window-live-p transient--window)
@@ -4673,7 +4674,7 @@ have a history of their own.")
       (setq show (natnump show)))
     show))
 
-;;; Format
+;;;; Format
 
 (defun transient--format-hint ()
   (if (and transient-show-menu (<= transient-show-menu 0))
@@ -5243,7 +5244,7 @@ a prefix command, while porting a regular keymap to a transient."
         (propertize (car (split-string doc "\n")) 'face 'font-lock-doc-face)
       (propertize (symbol-name command) 'face 'font-lock-function-name-face))))
 
-;;; Help
+;;;; Help
 
 (cl-defgeneric transient-show-help (obj)
   "Show documentation for the command represented by OBJ.")
@@ -5464,7 +5465,7 @@ This is used when a tooltip is needed.")
     ((eq transient-enable-menu-navigation 'force-verbose)
      (transient--get-description obj))))
 
-;;; Menu Navigation
+;;;; Menu Navigation
 
 (defun transient-scroll-up (&optional arg)
   "Scroll text of transient's menu window upward ARG lines.
@@ -5548,8 +5549,8 @@ See `forward-button' for information about N."
            (and (cl-typep obj 'transient-suffix)
                 (eq (oref obj key) key))))))))
 
-;;; Compatibility
-;;;; Menu Isearch
+;;;; Compatibility
+;;;;; Menu Isearch
 
 (defvar-keymap transient--isearch-mode-map
   :parent isearch-mode-map
@@ -5607,14 +5608,14 @@ search instead."
   (select-window transient--original-window)
   (transient--resume-override))
 
-;;;; Edebug
+;;;;; Edebug
 
 (defun transient--edebug-command-p ()
   (and (bound-and-true-p edebug-active)
        (or (memq this-command '(top-level abort-recursive-edit))
            (string-prefix-p "edebug" (symbol-name this-command)))))
 
-;;;; Miscellaneous
+;;;;; Miscellaneous
 
 (cl-pushnew (list nil (concat "^\\s-*("
                               (eval-when-compile
@@ -5702,7 +5703,7 @@ as stand-in for elements of exhausted lists."
       (setq lists (mapcar #'cdr lists)))
     (nreverse result)))
 
-;;; Font-Lock
+;;;; Font-Lock
 
 (defconst transient-font-lock-keywords
   (eval-when-compile
@@ -5720,8 +5721,8 @@ as stand-in for elements of exhausted lists."
 
 (font-lock-add-keywords 'emacs-lisp-mode transient-font-lock-keywords)
 
-;;; Auxiliary Classes
-;;;; `transient-lisp-variable'
+;;;; Auxiliary Classes
+;;;;; `transient-lisp-variable'
 
 (defclass transient-lisp-variable (transient-variable)
   ((reader :initform #'transient-lisp-variable--reader)
@@ -5754,7 +5755,7 @@ as stand-in for elements of exhausted lists."
 (defun transient-lisp-variable--reader (prompt initial-input _history)
   (read--expression prompt initial-input))
 
-;;;; `transient-cons-option'
+;;;;; `transient-cons-option'
 
 (defclass transient-cons-option (transient-option)
   ((format            :initform " %k %d: %v")
@@ -5780,7 +5781,7 @@ as stand-in for elements of exhausted lists."
                     'face (transient-argument-face obj))
       "unset")))
 
-;;; _
+;;;; _
 (provide 'transient)
 ;; Local Variables:
 ;; checkdoc-symbol-words: ("command-line" "edit-mode" "help-mode")
