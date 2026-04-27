@@ -5629,7 +5629,7 @@ search instead."
             lisp-imenu-generic-expression :test #'equal)
 
 (defun transient--suspend-text-conversion-style ()
-  (when (and text-conversion-style
+  (when (and (bound-and-true-p text-conversion-style)
              (bound-and-true-p overriding-text-conversion-style))
     (letrec ((suspended overriding-text-conversion-style)
              (fn (lambda ()
