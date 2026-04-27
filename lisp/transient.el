@@ -5629,14 +5629,14 @@ search instead."
             lisp-imenu-generic-expression :test #'equal)
 
 (defun transient--suspend-text-conversion-style ()
-  (static-if (boundp 'overriding-text-conversion-style) ; since Emacs 30.1
-      (when text-conversion-style
-        (letrec ((suspended overriding-text-conversion-style)
-                 (fn (lambda ()
-                       (setq overriding-text-conversion-style nil)
-                       (remove-hook 'transient-exit-hook fn))))
-          (setq overriding-text-conversion-style suspended)
-          (add-hook 'transient-exit-hook fn)))))
+  (when (and text-conversion-style
+             (bound-and-true-p overriding-text-conversion-style))
+    (letrec ((suspended overriding-text-conversion-style)
+             (fn (lambda ()
+                   (setq overriding-text-conversion-style nil)
+                   (remove-hook 'transient-exit-hook fn))))
+      (setq overriding-text-conversion-style suspended)
+      (add-hook 'transient-exit-hook fn))))
 
 (declare-function which-key-mode "ext:which-key" (&optional arg))
 
