@@ -5630,7 +5630,9 @@ search instead."
 
 (defun transient--suspend-text-conversion-style ()
   (when (and (bound-and-true-p text-conversion-style)
-             (bound-and-true-p overriding-text-conversion-style))
+             (bound-and-true-p overriding-text-conversion-style)
+             ;; Somehow the above does not silence the compiler.
+             (boundp 'overriding-text-conversion-style))
     (letrec ((suspended overriding-text-conversion-style)
              (fn (lambda ()
                    (setq overriding-text-conversion-style nil)
