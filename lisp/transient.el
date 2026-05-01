@@ -122,9 +122,12 @@ similar defect.") :emergency))
          ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit ,id)
-      (static-if (fboundp 'error-type-p) ; since Emacs 31.1
-          (signal err)
-        (signal (car err) (cdr err))))))
+      (static-if (version< emacs-version "31.0.50")
+          (signal (car err) (cdr err))
+        (condition-case nil
+            (signal err)
+          (wrong-number-of-arguments
+           (signal (car err) (cdr err))))))))
 
 (defun transient--exit-and-debug (&rest args)
   (transient--emergency-exit :debugger)
