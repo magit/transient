@@ -3826,7 +3826,7 @@ such as when suggesting a new feature or reporting an issue."
   :description "Echo arguments"
   :key "x"
   (interactive (list (transient-args transient-current-command)))
-  (if (seq-every-p #'stringp arguments)
+  (if (all #'stringp arguments)
       (message "%s: %s" (key-description (this-command-keys))
                (mapconcat (lambda (arg)
                             (propertize (if (string-match-p " " arg)
