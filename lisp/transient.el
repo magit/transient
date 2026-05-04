@@ -9,7 +9,7 @@
 ;; Package-Version: 0.13.2
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
-;;     (compat  "30.1")
+;;     (compat  "31.0")
 ;;     (cond-let "1.0")
 ;;     (seq      "2.24"))
 
@@ -860,7 +860,8 @@ See also option `transient-highlight-mismatched-keys'."
 (defun transient--pp-to-file (value file)
   (when (or value (file-exists-p file))
     (make-directory (file-name-directory file) t)
-    (setq value (cl-sort (copy-sequence value) #'string< :key #'car))
+    (setq value (compat-call sort (copy-sequence value)
+                             :lessp #'string< :key #'car))
     (with-temp-file file
       (let ((print-level nil)
             (print-length nil)
@@ -895,11 +896,12 @@ should not change it manually.")
 
 (defun transient-save-history ()
   (setq transient-history
-        (cl-sort (mapcar (pcase-lambda (`(,key . ,val))
-                           (cons key (take transient-history-limit
-                                           (delete-dups val))))
-                         transient-history)
-                 #'string< :key #'car))
+        (compat-call sort
+                     (mapcar (pcase-lambda (`(,key . ,val))
+                               (cons key (take transient-history-limit
+                                               (delete-dups val))))
+                             transient-history)
+                     :lessp #'string< :key #'car))
   (transient--pp-to-file transient-history transient-history-file))
 
 (defun transient-maybe-save-history ()
@@ -1530,7 +1532,7 @@ commands are aliases for."
                      (format
                       "transient:%s:%s:%d" prefix
                       (replace-regexp-in-string (plist-get args :key) " " "")
-                      (prog1 gensym-counter (cl-incf gensym-counter))))))
+                      (prog1 gensym-counter (incf gensym-counter))))))
            (use :command
                 `(prog1 ',sym
                    (put ',sym 'interactive-only t)
@@ -4103,19 +4105,19 @@ stand-alone command."
   (when (fboundp 'org-read-date)
     (org-read-date 'with-time nil nil prompt default-time)))
 
-(static-if (fboundp 'string-edit) ; since Emacs 29.1
-    (defun transient-read-string-from-buffer (prompt value _)
-      "Switch to a new buffer to edit STRING in a recursive edit.
+(static-when (fboundp 'string-edit) ; since Emacs 29.1
+  (defun transient-read-string-from-buffer (prompt value _)
+    "Switch to a new buffer to edit STRING in a recursive edit.
 Like `read-string-from-buffer' but accept an additional argument as
 provided by `transient-infix-read' (but ignore it).  Only available
 when using Emacs 29.1 or greater."
-      (string-edit prompt (or value "")
-                   (lambda (edited)
-                     (setq value edited)
-                     (exit-recursive-edit))
-                   :abort-callback #'exit-recursive-edit)
-      (recursive-edit)
-      value))
+    (string-edit prompt (or value "")
+                 (lambda (edited)
+                   (setq value edited)
+                   (exit-recursive-edit))
+                 :abort-callback #'exit-recursive-edit)
+    (recursive-edit)
+    value))
 
 ;;;; Prompt
 
