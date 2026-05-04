@@ -2502,14 +2502,12 @@ of the corresponding object."
         (pcase this-command
           ('transient-update
            (setq transient--showp t)
-           (let ((keys (listify-key-sequence (this-single-command-raw-keys))))
+           (let ((keys (listify-key-sequence (this-single-command-keys))))
              (setq unread-command-events (mapcar (lambda (key) (cons t key)) keys))
              keys))
           ('transient-quit-seq
            (setq unread-command-events
-                 (butlast (listify-key-sequence
-                           (this-single-command-raw-keys))
-                          2))
+                 (butlast (listify-key-sequence (this-single-command-keys)) 2))
            (butlast transient--redisplay-key))
           (_ nil)))
   (let ((topmap (make-sparse-keymap))
@@ -3632,8 +3630,7 @@ transient is active."
   (cond
     (interactivep
      (setq transient--helpp t))
-    ((lookup-key transient--transient-map
-                 (this-single-command-raw-keys))
+    ((lookup-key transient--transient-map (this-single-command-keys))
      (setq transient--helpp nil)
      (with-demoted-errors "transient-help: %S"
        (transient--display-help #'transient-show-help
@@ -3674,7 +3671,7 @@ For example:
                (and transient--editp
                     (setq command prefix)))
            (list command
-                 (let ((keys (this-single-command-raw-keys)))
+                 (let ((keys (this-single-command-keys)))
                    (and (lookup-key transient--transient-map keys)
                         (progn
                           (transient--show)
