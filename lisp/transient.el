@@ -4684,27 +4684,25 @@ have a history of their own.")
      "%s- [%s] %s"
      (key-description (this-command-keys))
      (oref transient--prefix command)
-     (mapconcat
-      #'identity
-      (sort
-       (mapcan
-        (lambda (suffix)
-          (let ((key (kbd (oref suffix key))))
-            ;; Don't list any common commands.
-            (and (not (memq (oref suffix command)
-                            `(,(lookup-key transient-map key)
-                              ,(lookup-key transient-sticky-map key)
-                              ;; From transient-common-commands:
-                              transient-set
-                              transient-save
-                              transient-history-prev
-                              transient-history-next
-                              transient-quit-one
-                              transient-toggle-common
-                              transient-set-level)))
-                 (list (propertize (oref suffix key) 'face 'transient-key)))))
-        transient--suffixes)
-       #'string<)
+     (string-join
+      (sort (seq-keep
+             (lambda (suffix)
+               (let ((key (kbd (oref suffix key))))
+                 ;; Don't list any common commands.
+                 (and (not (memq (oref suffix command)
+                                 `(,(lookup-key transient-map key)
+                                   ,(lookup-key transient-sticky-map key)
+                                   ;; From transient-common-commands:
+                                   transient-set
+                                   transient-save
+                                   transient-history-prev
+                                   transient-history-next
+                                   transient-quit-one
+                                   transient-toggle-common
+                                   transient-set-level)))
+                      (propertize (oref suffix key) 'face 'transient-key))))
+             transient--suffixes)
+            #'string<)
       (propertize "|" 'face 'transient-delimiter)))))
 
 (defun transient--insert-menu (setup)
