@@ -896,8 +896,8 @@ should not change it manually.")
 (defun transient-save-history ()
   (setq transient-history
         (cl-sort (mapcar (pcase-lambda (`(,key . ,val))
-                           (cons key (seq-take (delete-dups val)
-                                               transient-history-limit)))
+                           (cons key (take transient-history-limit
+                                           (delete-dups val))))
                          transient-history)
                  #'string< :key #'car))
   (transient--pp-to-file transient-history transient-history-file))
@@ -1806,9 +1806,9 @@ layout of PREFIX."
       (let* ((siblings (aref parent 2))
              (pos (cl-position group siblings)))
         (aset parent 2
-              (nconc (seq-take siblings pos)
+              (nconc (take pos siblings)
                      (transient--get-children group)
-                     (seq-drop siblings (1+ pos))))))))
+                     (drop (1+ pos) siblings)))))))
 
 ;;;###autoload
 (defun transient-remove-suffix (prefix loc)
@@ -4929,14 +4929,14 @@ as a button."
         (let ((len (length transient--redisplay-key))
               (seq (cl-coerce (edmacro-parse-keys key t) 'list)))
           (cond
-            ((member (seq-take seq len)
+            ((member (take len seq)
                      (list transient--redisplay-key
                            (thread-last transient--redisplay-key
                              (cl-substitute ?- 'kp-subtract)
                              (cl-substitute ?= 'kp-equal)
                              (cl-substitute ?+ 'kp-add))))
-             (let ((pre (key-description (vconcat (seq-take seq len))))
-                   (suf (key-description (vconcat (seq-drop seq len)))))
+             (let ((pre (key-description (vconcat (take len seq))))
+                   (suf (key-description (vconcat (drop len seq)))))
                (setq pre (string-replace "RET" "C-m" pre))
                (setq pre (string-replace "TAB" "C-i" pre))
                (setq suf (string-replace "RET" "C-m" suf))
@@ -5172,8 +5172,8 @@ apply the face `transient-unreachable' to the complete string."
 (defun transient--key-unreachable-p (obj)
   (and transient--redisplay-key
        (let ((key (oref obj key)))
-         (not (or (equal (seq-take (cl-coerce (edmacro-parse-keys key t) 'list)
-                                   (length transient--redisplay-key))
+         (not (or (equal (take (length transient--redisplay-key)
+                               (cl-coerce (edmacro-parse-keys key t) 'list))
                          transient--redisplay-key)
                   (transient--lookup-key transient-sticky-map (kbd key)))))))
 
