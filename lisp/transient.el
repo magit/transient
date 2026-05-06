@@ -3904,7 +3904,7 @@ Call `transient-default-value' but because that is a noop for
                                 (match-string 1 v)))))
               (if multi-value
                   (delq nil (mapcar match value))
-                (cl-some match value)))))))
+                (seq-some match value)))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
   "Extract OBJ's value from the value of the prefix object."
