@@ -47,47 +47,12 @@
 (defconst transient-version "0.13.3")
 
 (require 'cl-lib)
-(require 'compat)
 (require 'eieio)
 (require 'edmacro)
 (require 'format-spec)
 (require 'pcase)
 (require 'pp)
-
-(eval-and-compile
-  (when (and (featurep 'seq)
-             (not (fboundp 'seq-keep)))
-    (unload-feature 'seq 'force)))
 (require 'seq)
-(unless (fboundp 'seq-keep)
-  (display-warning 'transient (substitute-command-keys "\
-Transient requires `seq' >= 2.24,
-but due to bad defaults, Emacs's package manager, refuses to
-upgrade this and other built-in packages to higher releases
-from GNU Elpa, when a package specifies that this is needed.
-
-To fix this, you have to add this to your init file:
-
-  (setq package-install-upgrade-built-in t)
-
-Then evaluate that expression by placing the cursor after it
-and typing \\[eval-last-sexp].
-
-Once you have done that, you have to explicitly upgrade `seq':
-
-  \\[package-upgrade] seq \\`RET'
-
-Then you also must make sure the updated version is loaded,
-by evaluating this form:
-
-  (progn (unload-feature 'seq t) (require 'seq))
-
-Until you do this, you will get random errors about `seq-keep'
-being undefined while using Transient.
-
-If you don't use the `package' package manager but still get
-this warning, then your chosen package manager likely has a
-similar defect.") :emergency))
 
 (eval-when-compile (require 'subr-x))
 
@@ -97,7 +62,6 @@ similar defect.") :emergency))
 (declare-function Man-getpage-in-background "man" (topic))
 
 (defvar Man-notify-method)
-(defvar pp-default-function) ; since Emacs 29.1
 
 (define-obsolete-variable-alias
   'transient-show-popup
@@ -121,12 +85,7 @@ similar defect.") :emergency))
          ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit ,id)
-      (static-if (version< emacs-version "31.0.50")
-          (signal (car err) (cdr err))
-        (condition-case nil
-            (signal err)
-          (wrong-number-of-arguments
-           (signal (car err) (cdr err))))))))
+      (signal err))))
 
 (defun transient--exit-and-debug (&rest args)
   (transient--emergency-exit :debugger)
@@ -859,8 +818,7 @@ See also option `transient-highlight-mismatched-keys'."
 (defun transient--pp-to-file (value file)
   (when (or value (file-exists-p file))
     (make-directory (file-name-directory file) t)
-    (setq value (compat-call sort (copy-sequence value)
-                             :lessp #'string< :key #'car))
+    (setq value (sort (copy-sequence value) :lessp #'string< :key #'car))
     (with-temp-file file
       (let ((print-level nil)
             (print-length nil)
@@ -895,12 +853,11 @@ should not change it manually.")
 
 (defun transient-save-history ()
   (setq transient-history
-        (compat-call sort
-                     (mapcar (pcase-lambda (`(,key . ,val))
-                               (cons key (take transient-history-limit
-                                               (delete-dups val))))
-                             transient-history)
-                     :lessp #'string< :key #'car))
+        (sort (mapcar (pcase-lambda (`(,key . ,val))
+                        (cons key (take transient-history-limit
+                                        (delete-dups val))))
+                      transient-history)
+              :lessp #'string< :key #'car))
   (transient--pp-to-file transient-history transient-history-file))
 
 (defun transient-maybe-save-history ()
@@ -1741,8 +1698,7 @@ Intended for use in a group's `:setup-children' function."
                          (equal (transient--suffix-predicate suf)
                                 (transient--suffix-predicate conflict)))))
          (transient-remove-suffix prefix key)
-         (let ((eg (transient--locate-child prefix loc)))
-           (setq elt (car eg) group (cadr eg))))
+         (pcase-setq `(,elt ,group) (transient--locate-child prefix loc)))
        (let ((mem (memq elt (aref group 2))))
          (pcase-exhaustive action
            ('insert  (setcdr mem (cons elt (cdr mem)))
@@ -3004,9 +2960,7 @@ value.  Otherwise return CHILDREN as is.")
 
 (defun transient--wrap-command ()
   (transient--load-command-if-autoload this-command)
-  (static-if (>= emacs-major-version 30)
-      (letrec
-          ((command this-command)
+  (letrec ((command this-command)
            (suffix (transient-suffix-object this-command))
            (prefix transient--prefix)
            (advice
@@ -3047,57 +3001,7 @@ value.  Otherwise return CHILDREN as is.")
                 (when (symbolp command)
                   (remove-function (symbol-function command) advice))
                 (oset prefix unwind-suffix nil)))))
-        (transient--advise-this-command advice)
-        (cl-assert
-         (>= emacs-major-version 30) nil
-         "Emacs was downgraded, making it necessary to recompile Transient"))
-    ;; (< emacs-major-version 30)
-    (let* ((command this-command)
-           (suffix (transient-suffix-object this-command))
-           (prefix transient--prefix)
-           (advice nil)
-           (advice-interactive
-            (lambda (spec)
-              (let ((abort t))
-                (unwind-protect
-                    (prog1 (let ((debugger #'transient--exit-and-debug))
-                             (if-let* ((obj suffix)
-                                       (grp (oref obj parent))
-                                       (adv (or (oref obj advice*)
-                                                (oref grp advice*))))
-                                 (funcall
-                                  adv #'advice-eval-interactive-spec spec)
-                               (advice-eval-interactive-spec spec)))
-                      (setq abort nil))
-                  (when abort
-                    (when-let* ((unwind (oref prefix unwind-suffix)))
-                      (transient--debug 'unwind-interactive)
-                      (funcall unwind command))
-                    (when (symbolp command)
-                      (remove-function (symbol-function command) advice))
-                    (oset prefix unwind-suffix nil))))))
-           (advice-body
-            (lambda (fn &rest args)
-              (unwind-protect
-                  (let ((debugger #'transient--exit-and-debug))
-                    (if-let* ((obj suffix)
-                              (grp (oref obj parent))
-                              (adv (or (oref obj advice)
-                                       (oref obj advice*)
-                                       (oref grp advice)
-                                       (oref grp advice*))))
-                        (apply adv fn args)
-                      (apply fn args)))
-                (when-let* ((unwind (oref prefix unwind-suffix)))
-                  (transient--debug 'unwind-command)
-                  (funcall unwind command))
-                (when (symbolp command)
-                  (remove-function (symbol-function command) advice))
-                (oset prefix unwind-suffix nil)))))
-      (setq advice `(lambda (fn &rest args)
-                      (interactive ,advice-interactive)
-                      (apply ',advice-body fn args)))
-      (transient--advise-this-command advice))))
+    (transient--advise-this-command advice)))
 
 (defun transient--advise-this-command (advice)
   "Add ADVICE around `this-command'.
@@ -4108,19 +4012,18 @@ stand-alone command."
   (when (fboundp 'org-read-date)
     (org-read-date 'with-time nil nil prompt default-time)))
 
-(static-when (fboundp 'string-edit) ; since Emacs 29.1
-  (defun transient-read-string-from-buffer (prompt value _)
-    "Switch to a new buffer to edit STRING in a recursive edit.
+(defun transient-read-string-from-buffer (prompt value _)
+  "Switch to a new buffer to edit STRING in a recursive edit.
 Like `read-string-from-buffer' but accept an additional argument as
 provided by `transient-infix-read' (but ignore it).  Only available
 when using Emacs 29.1 or greater."
-    (string-edit prompt (or value "")
-                 (lambda (edited)
-                   (setq value edited)
-                   (exit-recursive-edit))
-                 :abort-callback #'exit-recursive-edit)
-    (recursive-edit)
-    value))
+  (string-edit prompt (or value "")
+               (lambda (edited)
+                 (setq value edited)
+                 (exit-recursive-edit))
+               :abort-callback #'exit-recursive-edit)
+  (recursive-edit)
+  value)
 
 ;;;;; Prompt
 
@@ -4708,7 +4611,7 @@ have a history of their own.")
                                    transient-set-level)))
                       (propertize (oref suffix key) 'face 'transient-key))))
              transient--suffixes)
-            #'string<)
+            :lessp #'string<)
       (propertize "|" 'face 'transient-delimiter)))))
 
 (defun transient--insert-menu (setup)
@@ -5199,32 +5102,17 @@ apply the face `transient-unreachable' to the complete string."
                                   (length (oref suffix key))))
                            (oref group suffixes))))))
 
-(static-if (fboundp 'string-pixel-width) ; since Emacs 29.1
-    (progn ; See https://github.com/magit/magit/issues/5557.
-      (defalias 'transient--string-pixel-width #'string-pixel-width))
-  ;; c22b735f0c6 and 61c254cafc9 cannot be backported.  Some later
-  ;; commits could be ported, but users should instead update Emacs.
-  (defun transient--string-pixel-width (string)
-    (with-temp-buffer
-      (insert string)
-      (save-window-excursion
-        (set-window-dedicated-p nil nil)
-        (set-window-buffer nil (current-buffer))
-        (car (window-text-pixel-size
-              nil (line-beginning-position) (point)))))))
-
 (defun transient--column-stops (columns)
   (let* ((var-pitch (or transient-align-variable-pitch
                         (oref transient--prefix variable-pitch)))
-         (char-width (and var-pitch (transient--string-pixel-width " "))))
+         (char-width (and var-pitch (string-pixel-width " "))))
     (transient--seq-reductions-from
      (apply-partially #'+ (* 2 (if var-pitch char-width 1)))
      (transient--mapn
       (lambda (cells min)
         (apply #'max
                (if min (if var-pitch (* min char-width) min) 0)
-               (mapcar (if var-pitch #'transient--string-pixel-width #'length)
-                       cells)))
+               (mapcar (if var-pitch #'string-pixel-width #'length) cells)))
       columns
       (oref transient--prefix column-widths))
      0)))
