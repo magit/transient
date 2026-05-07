@@ -4451,9 +4451,10 @@ Append \"=\ to ARG to indicate that it is an option."
   (when-let* ((_ transient--stack)
               (command (oref obj command))
               (suffix-obj (transient-suffix-object command))
-              (_(memq (if (slot-boundp suffix-obj 'transient)
-                          (oref suffix-obj transient)
-                        (oref transient-current-prefix transient-suffix))
+              (_(memq (cond ((slot-boundp suffix-obj 'transient)
+                             (oref suffix-obj transient))
+                            (transient-current-prefix
+                             (oref transient-current-prefix transient-suffix)))
                       (list t 'recurse #'transient--do-recurse))))
     (oset obj return t)))
 
