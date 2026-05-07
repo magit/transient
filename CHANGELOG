@@ -1,4 +1,13 @@
 # -*- mode: org -*-
+* v0.13.3    UNRELEASED
+
+- Stopped needlessly using ~this-single-command-raw-keys~.  #442
+
+- Fixed a bug that prevented setting suffix levels for certain
+  sub-prefixes.  #443.
+
+- Started using new functions added in Emacs 31.
+
 * v0.13.2    2026-05-01
 
 - Fixed an incompatibility with development version of Compat.
