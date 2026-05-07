@@ -1461,8 +1461,8 @@ commands are aliases for."
   (cl-typecase spec
     (null    (error "Invalid transient--parse-child spec: %s" spec))
     (symbol  (list `',spec))
-    (vector  (and$ (transient--parse-group  prefix spec) (list $)))
-    (list    (and$ (transient--parse-suffix prefix spec) (list $)))
+    (vector  (and-let* ((c (transient--parse-group  prefix spec))) (list c)))
+    (list    (and-let* ((c (transient--parse-suffix prefix spec))) (list c)))
     (string  (list spec))
     (t       (error "Invalid transient--parse-child spec: %s" spec))))
 
@@ -2436,9 +2436,9 @@ of the corresponding object."
                  (error "Cannot bind %S to %s and also %s"
                         (string-trim key) cmd alt))
                 ((define-key map kbd cmd))))))
-    (when$ (keymap-lookup map "-") (keymap-set map "<kp-subtract>" $))
-    (when$ (keymap-lookup map "=") (keymap-set map "<kp-equal>" $))
-    (when$ (keymap-lookup map "+") (keymap-set map "<kp-add>" $))
+    (when-let* ((b (keymap-lookup map "-"))) (keymap-set map "<kp-subtract>" b))
+    (when-let* ((b (keymap-lookup map "="))) (keymap-set map "<kp-equal>" b))
+    (when-let* ((b (keymap-lookup map "+"))) (keymap-set map "<kp-add>" b))
     (when transient-enable-menu-navigation
       ;; `transient--make-redisplay-map' maps only over bindings that are
       ;; directly in the base keymap, so that cannot be a composed keymap.
@@ -2761,8 +2761,8 @@ value.  Otherwise return CHILDREN as is.")
      t)))
 
 (defun transient--inapt-suffix-p (obj)
-  (or (and$ (oref obj parent)
-            (oref $ inapt))
+  (or (and-let* ((parent (oref obj parent)))
+        (oref parent inapt))
       (let ((transient--shadowed-buffer (current-buffer))
             (transient--pending-suffix obj))
         (transient--do-suffix-p
@@ -2803,8 +2803,8 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--suffix-predicate (spec)
   (let ((props (transient--suffix-props spec)))
     (seq-some (lambda (prop)
-                (and$ (plist-get props prop)
-                      (list prop $)))
+                (and-let* ((pred (plist-get props prop)))
+                  (list prop pred)))
               '( :if :if-not
                  :if-nil :if-non-nil
                  :if-mode :if-not-mode
@@ -4730,8 +4730,8 @@ have a history of their own.")
            (desc (propertize
                   (or (and (not (eq transient-describe-menu 'docstring))
                            (oref transient--prefix description))
-                      (and$ (documentation command)
-                            (car (split-string $ "\n")))
+                      (and-let* ((doc (documentation command)))
+                        (car (split-string doc "\n")))
                       (symbol-name command))
                   'face 'transient-heading)))
       (when (string-suffix-p "." desc)
@@ -5767,8 +5767,8 @@ as stand-in for elements of exhausted lists."
 
 (cl-defmethod transient-infix-value ((obj transient-cons-option))
   "Return ARGUMENT and VALUE as a cons-cell or nil if the latter is nil."
-  (and$ (oref obj value)
-        (cons (oref obj argument) $)))
+  (and-let* ((value (oref obj value)))
+    (cons (oref obj argument) value)))
 
 (cl-defmethod transient-format-description ((obj transient-cons-option))
   (or (oref obj description)
@@ -5793,10 +5793,8 @@ as stand-in for elements of exhausted lists."
 ;;   (cond . 0)
 ;;   (interactive . 0))
 ;; read-symbol-shorthands: (
-;;   ("and$"         . "cond-let--and$")
 ;;   ("and-let"      . "cond-let--and-let")
 ;;   ("if-let"       . "cond-let--if-let")
-;;   ("when$"        . "cond-let--when$")
 ;;   ("when-let"     . "cond-let--when-let")
 ;;   ("while-let"    . "cond-let--while-let"))
 ;; End:
