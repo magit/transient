@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2026 Jonas Bernoulli
 
-;; Authors: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
+;; Author: Jonas Bernoulli <emacs.transient@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/magit/transient
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
