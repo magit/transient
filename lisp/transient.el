@@ -10,7 +10,7 @@
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
 ;;     (compat  "31.0")
-;;     (cond-let "1.0")
+;;     (cond-let "1.1")
 ;;     (seq      "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -5792,11 +5792,16 @@ as stand-in for elements of exhausted lists."
 ;;   (cond . 0)
 ;;   (interactive . 0))
 ;; read-symbol-shorthands: (
-;;   ("and$"         . "cond-let--and$")
-;;   ("and-let"      . "cond-let--and-let")
-;;   ("if-let"       . "cond-let--if-let")
-;;   ("when$"        . "cond-let--when$")
-;;   ("when-let"     . "cond-let--when-let")
-;;   ("while-let"    . "cond-let--while-let"))
+;;   ("and$"       . "cond-let--and$")
+;;   ("thread$"    . "cond-let--thread$")
+;;   ("when$"      . "cond-let--when$")
+;;   ("and-let*"   . "cond-let--and-let*")
+;;   ("and-let"    . "cond-let--and-let")
+;;   ("if-let*"    . "cond-let--if-let*")
+;;   ("if-let"     . "cond-let--if-let")
+;;   ("when-let*"  . "cond-let--when-let*")
+;;   ("when-let"   . "cond-let--when-let")
+;;   ("while-let*" . "cond-let--while-let*")
+;;   ("while-let"  . "cond-let--while-let"))
 ;; End:
 ;;; transient.el ends here
