@@ -3903,7 +3903,7 @@ Call `transient-default-value' but because that is a noop for
                                 (string-match regexp v)
                                 (match-string 1 v)))))
               (if multi-value
-                  (delq nil (mapcar match value))
+                  (seq-filter match value)
                 (seq-some match value)))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
