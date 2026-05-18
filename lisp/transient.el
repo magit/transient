@@ -1531,7 +1531,7 @@ commands are aliases for."
                (sym (intern
                      (format
                       "transient:%s:%s:%d" prefix
-                      (replace-regexp-in-string (plist-get args :key) " " "")
+                      (string-replace (plist-get args :key) " " "")
                       (prog1 gensym-counter (incf gensym-counter))))))
            (use :command
                 `(prog1 ',sym
