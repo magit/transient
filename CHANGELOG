@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v0.13.4   2026-06-01
+
+- Thoughts and whitespace.
+
 * v0.13.3    2026-05-07
 
 - Stopped needlessly using ~this-single-command-raw-keys~.  #442
