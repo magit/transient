@@ -4347,7 +4347,7 @@ Unlike `transient-get-value' also include the values of inactive and
 inapt arguments.  This function is mainly intended for internal use.
 It is used to preserve the full value when a menu is being refreshed,
 including the presently ineffective parts."
-  (transient--with-emergency-exit :get-value
+  (transient--with-emergency-exit :get-extended-value
     (mapcan #'transient--get-wrapped-value transient--suffixes)))
 
 (defun transient--get-savable-value ()
