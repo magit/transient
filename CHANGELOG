@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v0.13.6   UNRELEASED
+
+- Fixed a regression introduced in v0.13.4, which caused set and
+  saved values to be corrupted for some multi-value arguments.
+
 * v0.13.5   2026-07-01
 
 - Started using LLama.

@@ -3904,7 +3904,7 @@ Call `transient-default-value' but because that is a noop for
                                 (string-match regexp v)
                                 (match-string 1 v)))))
               (if multi-value
-                  (seq-filter match value)
+                  (seq-keep match value)
                 (seq-some match value)))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
