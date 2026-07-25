@@ -4778,9 +4778,10 @@ have a history of their own.")
                                  (list group))))
                         transient--layout)))
     (while-let ((group (pop groups)))
-      (transient--insert-group group)
-      (when groups
-        (insert ?\n)))))
+      (when (transient--active-suffixes group)
+        (transient--insert-group group)
+        (when groups
+          (insert ?\n))))))
 
 (defun transient--active-suffixes (group)
   (seq-remove (lambda (suffix)
