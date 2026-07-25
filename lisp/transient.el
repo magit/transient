@@ -1703,7 +1703,7 @@ SUFFIXES is a list of suffix command or a group specification
 Intended for use in a group's `:setup-children' function."
   (when (cl-typep prefix 'transient-prefix)
     (setq prefix (oref prefix command)))
-  (mapcar (apply-partially #'transient-parse-suffix prefix) suffixes))
+  (mapcar (##transient-parse-suffix prefix %) suffixes))
 
 ;;; Edit
 
