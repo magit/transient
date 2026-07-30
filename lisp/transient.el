@@ -3896,16 +3896,15 @@ Call `transient-default-value' but because that is a noop for
               (case-fold-search nil)
               (regexp (if (slot-exists-p obj 'argument-regexp)
                           (oref obj argument-regexp)
-                        (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument)))))
-          (if (memq multi-value '(t rest))
-              (cdr (assoc argument value))
-            (let ((match (lambda (v)
-                           (and (stringp v)
-                                (string-match regexp v)
-                                (match-string 1 v)))))
-              (if multi-value
-                  (seq-keep match value)
-                (seq-some match value)))))))
+                        (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument))))
+              (match (lambda (v)
+                       (and (stringp v)
+                            (string-match regexp v)
+                            (match-string 1 v)))))
+          (pcase-exhaustive multi-value
+            ((or 't 'rest) (cdr (assoc argument value)))
+            ('repeat       (seq-keep match value))
+            ('nil          (seq-some match value))))))
 
 (cl-defmethod transient-init-value ((obj transient-switch))
   "Extract OBJ's value from the value of the prefix object."
