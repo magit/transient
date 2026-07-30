@@ -8,6 +8,10 @@
 - Fixed a regression introduced in v0.13.4, which caused set and
   saved values to be corrupted for some multi-value arguments.
 
+- Added new ~claim-argument~ suffix slot, which helps avoid conflicts
+  between overlapping suffixes, such as ~--push-option=known=<val>~
+  and ~--push-option=<arbitrary>~.
+
 * v0.13.5   2026-07-01
 
 - Started using LLama.

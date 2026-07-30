@@ -3080,6 +3080,15 @@ They are defined here anyway to allow sharing certain methods.
 @code{shortarg} The short argument, e.g., @code{-v}.
 
 @item
+@code{claim-argument} Whether to claim matched arguments exclusively, i.e.,
+whether to prevent other "overlapping" infixes from also matching.
+
+For example, consider the suffix arguments @code{--push-option=known=<val>}
+and @code{--push-option=<arbitrary>}.  Unless the former claims any matched
+value exclusively (and appears before the latter in the menu), the
+latter also matches, which would lead to undesirable behavior.
+
+@item
 @code{value} The value.  Should not be accessed directly.
 
 @item

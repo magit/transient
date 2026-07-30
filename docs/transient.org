@@ -2772,6 +2772,14 @@ They are defined here anyway to allow sharing certain methods.
 
 - ~shortarg~ The short argument, e.g., ~-v~.
 
+- ~claim-argument~ Whether to claim matched arguments exclusively, i.e.,
+  whether to prevent other "overlapping" infixes from also matching.
+
+  For example, consider the suffix arguments ~--push-option=known=<val>~
+  and ~--push-option=<arbitrary>~.  Unless the former claims any matched
+  value exclusively (and appears before the latter in the menu), the
+  latter also matches, which would lead to undesirable behavior.
+
 - ~value~ The value.  Should not be accessed directly.
 
 - ~init-value~ Function that is responsible for setting the object's

@@ -1088,6 +1088,8 @@ Technically a suffix object with no associated command.")
   ((transient                         :initform t)
    (argument    :initarg :argument)
    (shortarg    :initarg :shortarg)
+   (claim-argument
+    :initarg :claim-argument          :initform nil)
    (value                             :initform nil)
    (init-value  :initarg :init-value)
    (unsavable   :initarg :unsavable   :initform nil)
@@ -3894,12 +3896,16 @@ Call `transient-default-value' but because that is a noop for
 
 (cl-defmethod transient-init-value ((obj transient-argument))
   "Extract OBJ's value from the value of the prefix object."
-  (oset obj value
-        (let ((value (oref transient--prefix value)))
+  (let* ((args (oref transient--prefix value))
+         (value
           (pcase-exhaustive (oref obj multi-value)
-            ((or 't 'rest) (cdr (assoc (oref obj argument) value)))
-            ('repeat       (seq-keep (transient--extract-value obj) value))
-            ('nil          (seq-some (transient--extract-value obj) value))))))
+            ((or 't 'rest) (cdr (assoc (oref obj argument) args)))
+            ('repeat       (seq-keep (transient--extract-value obj) args))
+            ('nil          (seq-some (transient--extract-value obj) args)))))
+    (oset obj value value)
+    (when (and value (oref obj claim-argument))
+      (oset transient--prefix value
+            (seq-difference args (transient--get-wrapped-value obj))))))
 
 (defun transient--extract-value (obj)
   (cond-let*
