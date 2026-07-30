@@ -4177,14 +4177,12 @@ prompt."
               (arg (if (slot-boundp obj 'argument)
                        (oref obj argument)
                      (oref obj argument-format)))
-              (spec (oref transient--prefix incompatible))
-              (filter (lambda (x rule)
-                        (and (member x rule)
-                             (remove x rule))))
-              (incomp (nconc
-                       (mapcan (apply-partially filter arg) spec)
-                       (and (not (equal val arg))
-                            (mapcan (apply-partially filter val) spec)))))
+              (incomp (oref transient--prefix incompatible))
+              (incomp
+               (nconc
+                (mapcan (##and (member arg %) (remove arg %)) incomp)
+                (and (not (equal val arg))
+                     (mapcan (##and (member val %) (remove val %)) incomp)))))
     (dolist (obj transient--suffixes)
       (when-let* ((_(cl-typep obj 'transient-argument))
                   (val (transient-infix-value obj))
