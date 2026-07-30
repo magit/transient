@@ -1,0 +1,20 @@
+Please use your own words.
+Please use your own brain.
+
+No stochastic parrots!
+No LLMs!
+
+ ▐ ▄            ▄▄▄· ▪
+•█▌▐█▪         ▐█ ▀█ ██
+▐█▐▐▌ ▄█▀▄     ▄█▀▀█ ▐█
+██▐█▌▐█▌.▐▌    ▐█ ▪▐▌▐█▌
+▀▀ █▪ ▀█▄▀▪     ▀  ▀ ▀▀▀
+
+Before making significant changes or additions, consider first opening an "idea" discussion.  For trivial changes, skip that step.
+
+Please summarize the changes made in the commits.  Explain why you are making these changes, not just what changes you are making.  This also applies to the commit messages.
+
+Please also
+- use a dedicated feature branch instead of working on "main"
+- use Emacs even for miniscule changes, not the web interface
+- edit "docs/*.org", not "docs/*.texi", then run "make texi"
