@@ -3895,22 +3895,21 @@ Call `transient-default-value' but because that is a noop for
 (cl-defmethod transient-init-value ((obj transient-argument))
   "Extract OBJ's value from the value of the prefix object."
   (oset obj value
-        (let ((value (oref transient--prefix value))
-              (argument (and (slot-boundp obj 'argument)
-                             (oref obj argument)))
-              (multi-value (oref obj multi-value))
-              (case-fold-search nil)
-              (regexp (if (slot-exists-p obj 'argument-regexp)
-                          (oref obj argument-regexp)
-                        (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument))))
-              (match (lambda (v)
-                       (and (stringp v)
-                            (string-match regexp v)
-                            (match-string 1 v)))))
-          (pcase-exhaustive multi-value
-            ((or 't 'rest) (cdr (assoc argument value)))
-            ('repeat       (seq-keep match value))
-            ('nil          (seq-some match value))))))
+        (let ((value (oref transient--prefix value)))
+          (pcase-exhaustive (oref obj multi-value)
+            ((or 't 'rest) (cdr (assoc (oref obj argument) value)))
+            ('repeat       (seq-keep (transient--extract-value obj) value))
+            ('nil          (seq-some (transient--extract-value obj) value))))))
+
+(defun transient--extract-value (obj)
+  (let ((case-fold-search nil)
+        (regexp (if (slot-exists-p obj 'argument-regexp)
+                    (oref obj argument-regexp)
+                  (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument)))))
+    (lambda (arg)
+      (and (stringp arg)
+           (string-match regexp arg)
+           (match-string 1 arg)))))
 
 ;;;; Default
 
