@@ -3886,6 +3886,12 @@ Call `transient-default-value' but because that is a noop for
     (unless (eq value eieio--unbound)
       (oset obj value value))))
 
+(cl-defmethod transient-init-value ((obj transient-switch))
+  "Extract OBJ's value from the value of the prefix object."
+  (oset obj value
+        (car (member (oref obj argument)
+                     (oref transient--prefix value)))))
+
 (cl-defmethod transient-init-value ((obj transient-argument))
   "Extract OBJ's value from the value of the prefix object."
   (oset obj value
@@ -3905,12 +3911,6 @@ Call `transient-default-value' but because that is a noop for
             ((or 't 'rest) (cdr (assoc argument value)))
             ('repeat       (seq-keep match value))
             ('nil          (seq-some match value))))))
-
-(cl-defmethod transient-init-value ((obj transient-switch))
-  "Extract OBJ's value from the value of the prefix object."
-  (oset obj value
-        (car (member (oref obj argument)
-                     (oref transient--prefix value)))))
 
 ;;;; Default
 
