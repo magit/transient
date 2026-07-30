@@ -3902,14 +3902,18 @@ Call `transient-default-value' but because that is a noop for
             ('nil          (seq-some (transient--extract-value obj) value))))))
 
 (defun transient--extract-value (obj)
-  (let ((case-fold-search nil)
-        (regexp (if (slot-exists-p obj 'argument-regexp)
-                    (oref obj argument-regexp)
-                  (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument)))))
-    (lambda (arg)
-      (and (stringp arg)
-           (string-match regexp arg)
-           (match-string 1 arg)))))
+  (cond-let*
+    ([_(slot-exists-p obj 'argument-regexp)]
+     [regexp (oref obj argument-regexp)]
+     (lambda (arg)
+       (and (stringp arg)
+            (let ((case-fold-search nil))
+              (string-match regexp arg))
+            (match-string 1 arg))))
+    ([argument (oref obj argument)]
+     (lambda (arg)
+       (and (string-prefix-p argument arg)
+            (substring arg (length argument)))))))
 
 ;;;; Default
 
