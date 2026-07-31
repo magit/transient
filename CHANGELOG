@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.13.6   UNRELEASED
+* v0.13.6   2026-08-01
 
 - When a group would be empty because all its suffixes are inactive
   (due to ~:if*~ predicates or their ~:level~), then it is no longer
