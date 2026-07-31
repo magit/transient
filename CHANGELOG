@@ -3,14 +3,15 @@
 
 - When a group would be empty because all its suffixes are inactive
   (due to ~:if*~ predicates or their ~:level~), then it is no longer
-  inserted at all.
-
-- Fixed a regression introduced in v0.13.4, which caused set and
-  saved values to be corrupted for some multi-value arguments.
+  inserted at all.  d5514493
 
 - Added new ~claim-argument~ suffix slot, which helps avoid conflicts
   between overlapping suffixes, such as ~--push-option=known=<val>~
-  and ~--push-option=<arbitrary>~.
+  and ~--push-option=<arbitrary>~.  f772690e
+
+- Fixed a regression introduced in v0.13.4, which caused set and
+  saved values to be corrupted for some multi-value arguments.
+  7600a430
 
 * v0.13.5   2026-07-01
 
