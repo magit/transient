@@ -3918,7 +3918,8 @@ Call `transient-default-value' but because that is a noop for
             (match-string 1 arg))))
     ([argument (oref obj argument)]
      (lambda (arg)
-       (and (string-prefix-p argument arg)
+       (and (stringp arg)
+            (string-prefix-p argument arg)
             (substring arg (length argument)))))))
 
 ;;;; Default
