@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.13.7   UNRELEASED
+* v0.13.7   2026-08-06
 
 - Fixed a minor regression introduced in v0.13.6 affecting infixes
   whose values aren't represented using a string.
