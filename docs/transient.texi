@@ -1567,6 +1567,8 @@ is used and a warning is displayed.  This warning will eventually
 be replaced with an error.
 
 @lisp
+;; -*- lexical-binding:t -*-
+;; Before evaluating this example, make sure `lexical-binding' is t.
 (transient-define-prefix my-finder-by-keyword ()
   "Select a keyword and list matching packages."
   ;; The real `finder-by-keyword' is more convenient
