@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v0.13.8   2026-09-01
+
+- Thoughts and whitespace.
+
 * v0.13.7   2026-08-06
 
 - Fixed a minor regression introduced in v0.13.6 affecting infixes
