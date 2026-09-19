@@ -2599,14 +2599,11 @@ value.  Otherwise return CHILDREN as is.")
     (funcall fn)))
 
 (defun transient--init-transient (&optional name layout params)
-  (unless name
-    ;; Re-init.
-    (if (eq transient--refreshp 'updated-value)
-        ;; Preserve the prefix value this once, because the
-        ;; invoked suffix indicates that it has updated that.
-        (setq transient--refreshp (oref transient--prefix refresh-suffixes))
-      ;; Otherwise update the prefix value from suffix values.
-      (oset transient--prefix value (transient--get-extended-value))))
+  ;; Set the prefix's value from suffix values, except during
+  ;; initial setup (when NAME is non-nil) or when the invoked
+  ;; suffix indicated that it just updated the prefix's value.
+  (unless (or name (eq transient--refreshp 'updated-value))
+    (oset transient--prefix value (transient--get-extended-value)))
   (transient--init-objects name layout params)
   (transient--init-keymaps))
 
