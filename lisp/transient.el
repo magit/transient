@@ -3850,7 +3850,7 @@ Third-party subclasses of `transient-infix' must implement a primary
 method.")
 
 (cl-defmethod transient-init-value :around ((obj transient-prefix))
-  "If bound, use the value returned by OBJ' `init-value' function.
+  "If bound, use OBJ's `init-value' function to set the value.
 If the value of OBJ's `init-value' is non-nil, call that function to
 determine the value.  Otherwise call the primary method according to
 OBJ's class."
@@ -3859,10 +3859,10 @@ OBJ's class."
     (cl-call-next-method obj)))
 
 (cl-defmethod transient-init-value :around ((obj transient-infix))
-  "If bound, use the value returned by OBJ's `init-value' function.
-If the value of OBJ's `init-value' is non-nil, call that function to
-determine the value.  Otherwise call the primary method according to
-OBJ's class."
+  "If bound, use OBJ's `init-value' function to set the value.
+If the value of OBJ's `init-value' slot is non-nil, call that function
+to set the value.  Otherwise call the primary method according to OBJ's
+class."
   (if (slot-boundp obj 'init-value)
       (funcall (oref obj init-value) obj)
     (cl-call-next-method obj)))
