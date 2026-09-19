@@ -1309,7 +1309,7 @@ Also contains various documentation updates and code clean-ups.
   as argument in addition to a single mode as before.  1c6afb8
 
 - The new ~incompatible~ slot of prefix objects makes it possible to
-  specify which arguments should be autoatically disabled when the
+  specify which arguments should be automatically disabled when the
   user enables certain other arguments.  544b3bb
 
 - ~transient--history-push~ is now defined as generic function.  47b7975
