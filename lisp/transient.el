@@ -2649,13 +2649,12 @@ value.  Otherwise return CHILDREN as is.")
 (defun transient--flatten-suffixes (layout)
   (nreverse
    (named-let flatten ((def layout))
-     (cond ((stringp def) nil)
-           ((cl-typep def 'transient-information) nil)
-           ((listp def) (mapcan #'flatten def))
-           ((cl-typep def 'transient-group)
-            (mapcan #'flatten (oref def suffixes)))
-           ((cl-typep def 'transient-suffix)
-            (list def))))))
+     (cl-typecase def
+       (string                nil)
+       (transient-information nil)
+       (list                  (mapcan #'flatten def))
+       (transient-group       (mapcan #'flatten (oref def suffixes)))
+       (transient-suffix      (list def))))))
 
 (defun transient--init-child (levels spec parent)
   (cl-etypecase spec
