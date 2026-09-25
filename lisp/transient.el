@@ -92,8 +92,6 @@ If you don't use the `package' package manager but still get
 this warning, then your chosen package manager likely has a
 similar defect.") :emergency))
 
-(eval-when-compile (require 'subr-x))
-
 (declare-function info "info" (&optional file-or-node buffer))
 (declare-function Man-find-section "man" (section))
 (declare-function Man-next-section "man" (n))
