@@ -52,7 +52,6 @@
 (require 'cond-let)
 (require 'eieio)
 (require 'edmacro)
-(require 'format-spec)
 (require 'llama)
 (require 'pcase)
 (require 'pp)
