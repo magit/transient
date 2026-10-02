@@ -30,7 +30,7 @@
 
 - Thoughts and whitespace.
 
-* v0.13.3    2026-05-07
+* v0.13.3   2026-05-07
 
 - Stopped needlessly using ~this-single-command-raw-keys~.  #442
 
@@ -39,15 +39,15 @@
 
 - Started using new functions added in Emacs 31.
 
-* v0.13.2    2026-05-01
+* v0.13.2   2026-05-01
 
 - Fixed an incompatibility with development version of Compat.
 
-* v0.13.1    2026-05-01
+* v0.13.1   2026-05-01
 
 - Improved making a kludge subject only to affected Emacsen.
 
-* v0.13.0    2026-04-22
+* v0.13.0   2026-04-22
 
 This release adds features useful for visually impaired users.
 The relevant options and recommended settings are documented in
@@ -130,7 +130,7 @@ not (primarily) concern accessibility.
 - Restored compatibility with the ~emoji.el~ that ships with Emacs
   29.4.  #417
 
-* v0.12.0    2026-01-01
+* v0.12.0   2026-01-01
 
 - Fixed a regression when using the ~transient-value-preset~ class,
   introduced in v0.10.0.  f960acdf
@@ -144,7 +144,7 @@ not (primarily) concern accessibility.
 
 - Various build improvements.
 
-* v0.11.0    2025-11-18
+* v0.11.0   2025-11-18
 
 - At least Emacs 28.1 is required now.  Emacs 30.1 was released
   earlier this year, so we still support Emacs "oldoldstable".
@@ -157,12 +157,12 @@ not (primarily) concern accessibility.
   ~isearch-mode-map~, then the Transient state was not resumed.
   82baa889
 
-* v0.10.1    2025-10-06
+* v0.10.1   2025-10-06
 
 - ~transient--get-savable-value~ now also functions properly when
   used while exiting the menu.  #410
 
-* v0.10.0    2025-09-01
+* v0.10.0   2025-09-01
 
 - Added more context-specific functions for getting the prefix's
   value and improved the documentation explaining when to use which
