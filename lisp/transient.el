@@ -634,26 +634,30 @@ Also consider enabling `transient-use-accessible-values'."
 (defcustom transient-default-level transient--default-prefix-level
   "Control what suffix levels are made available by default.
 
-Each suffix command is placed on a level and each prefix command
-has a level, which controls which suffix commands are available.
-Integers between 1 and 7 (inclusive) are valid levels.
+Each suffix command is placed on a level and each menu has a level.
+A suffix commands is available if its (non-zero) level is smaller or
+equal to the level of the menu.  Valid levels are integers between 1
+and 7.  As a special case, the level of a suffix can be 0, in which
+case it is never shown, regardless of the menu's level.  The default
+level for suffix commands is 1.
 
-The levels of individual transients and/or their individual
-suffixes can be changed individually, by invoking the prefix and
-then pressing \\<transient--docstr-hint-2>\\[transient-set-level].
+The default level for menus is controlled by this option and defaults
+to 4.  To show more suffix commands increase the value of this option
+or the level of an individual menu.  To show fewer suffixes increase
+such a value.  Changing the value of this option affects the menus of
+all packages, so you might want to only change the value of individual
+menus.
 
-The default level for both transients and their suffixes is 4.
-This option only controls the default for transients.  The default
-suffix level is always 4.  The author of a transient should place
-certain suffixes on a higher level if they expect that it won't be
-of use to most users, and they should place very important suffixes
-on a lower level so that they remain available even if the user
-lowers the transient level.
+To control which commands are shown for some menu, invoke it as usual,
+and then press \\<transient--docstr-hint-2>\\[transient-set-level]. \
+You will be guided through the process.  This
+allows you to change the level of the menu itself, and/or the levels
+of individual suffix commands for even finer control.
 
-\(Magit currently places nearly all suffixes on level 4 and lower
-levels are not used at all yet.  So for the time being you should
-not set a lower level here and using a higher level might not
-give you as many additional suffixes as you hoped.)"
+The function `transient-set-default-level' can be used to change the
+level of an individual suffix command across all menus, which feature
+that command and provided no local value is specified.  This does not
+work for all suffix commands, and is thus discouraged."
   :package-version '(transient . "0.1.0")
   :group 'transient
   :type '(choice (const :tag "1 - fewest suffixes" 1)
@@ -1912,13 +1916,31 @@ See info node `(transient)Modifying Existing Transients'."
 (defun transient-set-default-level (command level)
   "Set the default level of suffix COMMAND to LEVEL.
 
-The default level is shadowed if the binding of the suffix in a
-prefix menu specifies a level, and also if the user changes the
-level of such a binding.
+See `transient-default-level' for an introduction to how levels work.
 
-The default level can only be set for commands that were defined
-using `transient-define-suffix', `transient-define-infix' or
-`transient-define-argument'."
+A suffix command is made available if its level is smaller than or
+equal to the level of the menu.  The level of a suffix command is
+determined as follows:
+
+1. The default level for all suffix commands, which is always 1.
+
+2. The level set when the suffix command was defined using
+   `transient-define-suffix', `transient-define-infix' or
+   `transient-define-argument'.
+
+3. The level set using this function.  Use this to override the
+   value set using (2) or the default from (1).  (4) and (5)
+   override the value set here.  This function can only be used for
+   commands defined using the functions mentioned in (2); else you
+   have to use (5).  Unless a command appears in multiple menus, it
+   is better to use (5).
+
+4. The level set when binding the suffix command in a specific menu.
+   Package authors should avoid this, and prefer (2); unless they
+   want to place a command on different levels in different menus.
+
+5. The level interactively set for an individual suffix command in an
+   individual menu, using \\<transient--docstr-hint-2>\\[transient-set-level]."
   (if-let ((proto (transient--suffix-prototype command)))
       (oset proto level level)
     (user-error "Cannot set level for `%s'; no prototype object exists"
