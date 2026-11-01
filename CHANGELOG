@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.13.9   UNRELEASED
+* v0.13.9   2026-11-01
 
 - In menus that fully refresh after every command, it was not possible
   to chain multiple prefix argument commands.  03c8ccc
