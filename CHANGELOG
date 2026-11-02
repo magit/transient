@@ -5,6 +5,11 @@
   function documentation.  (If a package, such as Magit, still
   supports Emacs 29 or even older, then that still is the case.)
 
+- At least Emacs 29.1 is required now.  Emacs 31.1 was released
+  earlier this year, so we still support Emacs "oldoldstable".
+  Users who want to keep using legacy Emacs 28.* have to stick
+  with the previous Transient release.
+
 * v0.13.9   2026-11-01
 
 - In menus that fully refresh after every command, it was not possible
