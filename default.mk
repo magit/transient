@@ -10,7 +10,6 @@ ELCS  = $(ELS:.el=.elc)
 DEPS  = compat
 DEPS += cond-let
 DEPS += llama
-DEPS += seq
 
 LOAD_PATH     ?= $(addprefix -L ../../,$(DEPS))
 LOAD_PATH     += -L .

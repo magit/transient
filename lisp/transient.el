@@ -8,11 +8,10 @@
 
 ;; Package-Version: 0.13.9
 ;; Package-Requires: (
-;;     (emacs   "28.1")
+;;     (emacs   "29.1")
 ;;     (compat  "31.1")
 ;;     (cond-let "1.1")
-;;     (llama    "1.0")
-;;     (seq      "2.24"))
+;;     (llama    "1.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -55,41 +54,7 @@
 (require 'llama)
 (require 'pcase)
 (require 'pp)
-
-(eval-and-compile
-  (when (and (featurep 'seq)
-             (not (fboundp 'seq-keep)))
-    (unload-feature 'seq 'force)))
 (require 'seq)
-(unless (fboundp 'seq-keep)
-  (display-warning 'transient (substitute-command-keys "\
-Transient requires `seq' >= 2.24,
-but due to bad defaults, Emacs's package manager, refuses to
-upgrade this and other built-in packages to higher releases
-from GNU Elpa, when a package specifies that this is needed.
-
-To fix this, you have to add this to your init file:
-
-  (setq package-install-upgrade-built-in t)
-
-Then evaluate that expression by placing the cursor after it
-and typing \\[eval-last-sexp].
-
-Once you have done that, you have to explicitly upgrade `seq':
-
-  \\[package-upgrade] seq \\`RET'
-
-Then you also must make sure the updated version is loaded,
-by evaluating this form:
-
-  (progn (unload-feature 'seq t) (require 'seq))
-
-Until you do this, you will get random errors about `seq-keep'
-being undefined while using Transient.
-
-If you don't use the `package' package manager but still get
-this warning, then your chosen package manager likely has a
-similar defect.") :emergency))
 
 (declare-function info "info" (&optional file-or-node buffer))
 (declare-function Man-find-section "man" (section))
@@ -97,7 +62,7 @@ similar defect.") :emergency))
 (declare-function Man-getpage-in-background "man" (topic))
 
 (defvar Man-notify-method)
-(defvar pp-default-function) ; since Emacs 29.1
+(defvar pp-default-function) ; since Emacs 30.1
 
 (define-obsolete-variable-alias
   'transient-show-popup
@@ -4134,19 +4099,17 @@ stand-alone command."
   (when (fboundp 'org-read-date)
     (org-read-date 'with-time nil nil prompt default-time)))
 
-(static-when (fboundp 'string-edit) ; since Emacs 29.1
-  (defun transient-read-string-from-buffer (prompt value _)
-    "Switch to a new buffer to edit STRING in a recursive edit.
-Like `read-string-from-buffer' but accept an additional argument as
-provided by `transient-infix-read' (but ignore it).  Only available
-when using Emacs 29.1 or greater."
-    (string-edit prompt (or value "")
-                 (lambda (edited)
-                   (setq value edited)
-                   (exit-recursive-edit))
-                 :abort-callback #'exit-recursive-edit)
-    (recursive-edit)
-    value))
+(defun transient-read-string-from-buffer (prompt value _)
+  "Switch to a new buffer to edit STRING in a recursive edit.
+Like `read-string-from-buffer' but accept an additional argument
+as provided by `transient-infix-read' (but ignore it)."
+  (string-edit prompt (or value "")
+               (lambda (edited)
+                 (setq value edited)
+                 (exit-recursive-edit))
+               :abort-callback #'exit-recursive-edit)
+  (recursive-edit)
+  value)
 
 ;;;; Prompt
 
@@ -5220,24 +5183,10 @@ apply the face `transient-unreachable' to the complete string."
                                   (length (oref suffix key))))
                            (oref group suffixes))))))
 
-(static-if (fboundp 'string-pixel-width) ; since Emacs 29.1
-    (progn ; See https://github.com/magit/magit/issues/5557.
-      (defalias 'transient--string-pixel-width #'string-pixel-width))
-  ;; c22b735f0c6 and 61c254cafc9 cannot be backported.  Some later
-  ;; commits could be ported, but users should instead update Emacs.
-  (defun transient--string-pixel-width (string)
-    (with-temp-buffer
-      (insert string)
-      (save-window-excursion
-        (set-window-dedicated-p nil nil)
-        (set-window-buffer nil (current-buffer))
-        (car (window-text-pixel-size
-              nil (line-beginning-position) (point)))))))
-
 (defun transient--column-stops (columns)
   (let* ((var-pitch (or transient-align-variable-pitch
                         (oref transient--prefix variable-pitch)))
-         (char-width (and var-pitch (transient--string-pixel-width " ")))
+         (char-width (and var-pitch (string-pixel-width " ")))
          (gap (* 2 (if var-pitch char-width 1))))
     (transient--seq-reductions-from
      (lambda (acc elt) (+ acc gap elt))
@@ -5245,8 +5194,7 @@ apply the face `transient-unreachable' to the complete string."
       (lambda (cells min)
         (apply #'max
                (if min (if var-pitch (* min char-width) min) 0)
-               (mapcar (if var-pitch #'transient--string-pixel-width #'length)
-                       cells)))
+               (mapcar (if var-pitch #'string-pixel-width #'length) cells)))
       columns
       (oref transient--prefix column-widths))
      0)))
