@@ -1745,8 +1745,7 @@ Intended for use in a group's `:setup-children' function."
                          (equal (transient--suffix-predicate suf)
                                 (transient--suffix-predicate conflict)))))
          (transient-remove-suffix prefix key)
-         (let ((eg (transient--locate-child prefix loc)))
-           (setq elt (car eg) group (cadr eg))))
+         (pcase-setq `(,elt ,group) (transient--locate-child prefix loc)))
        (let ((mem (memq elt (aref group 2))))
          (pcase-exhaustive action
            ('insert  (setcdr mem (cons elt (cdr mem)))
