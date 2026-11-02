@@ -121,7 +121,7 @@ similar defect.") :emergency))
          ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit ,id)
-      (static-if (version< emacs-version "31.0.50")
+      (static-if (< emacs-major-version 31)
           (signal (car err) (cdr err))
         (condition-case nil
             (signal err)
