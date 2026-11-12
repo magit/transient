@@ -1238,10 +1238,10 @@ to the setup function:
               `(lambda ,arglist ,@body)
             `(lambda ()
                (interactive)
-               (transient-setup ',name))))
+               (transient-setup ',name)))
+         ,docstr)
        :autoload-end
        (put ',name 'interactive-only ,interactive-only)
-       (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--prefix
             (,(or class 'transient-prefix) :command ',name ,@slots))
        (transient--set-layout
@@ -1292,10 +1292,10 @@ ARGLIST.  The infix arguments are usually accessed by using
        (defalias ',name
          ,(if (and (not body) class (oref-default class definition))
               `(oref-default ',class definition)
-            `(lambda ,arglist ,@body)))
+            `(lambda ,arglist ,@body))
+         ,docstr)
        :autoload-end
        (put ',name 'interactive-only ,interactive-only)
-       (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-suffix) :command ',name ,@slots)))))
 (put 'transient-define-suffix 'autoload-macro 'expand)
@@ -1353,10 +1353,9 @@ keyword.
       ((`(,class ,slots ,_ ,docstr ,_ ,interactive-only)
         (transient--expand-define-args args arglist 'transient-define-infix t)))
     `(progn
-       (defalias ',name #'transient--default-infix-command)
+       (defalias ',name #'transient--default-infix-command ,docstr)
        (put ',name 'interactive-only ,interactive-only)
        (put ',name 'completion-predicate #'transient--suffix-only)
-       (put ',name 'function-documentation ,docstr)
        (put ',name 'transient--suffix
             (,(or class 'transient-switch) :command ',name ,@slots)))))
 

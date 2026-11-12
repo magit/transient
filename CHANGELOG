@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v0.14.0   UNRELEASED
+
+- While still only autoloaded, prefix and suffix commands lacked
+  function documentation.  (If a package, such as Magit, still
+  supports Emacs 29 or even older, then that still is the case.)
+
 * v0.13.9   2026-11-01
 
 - In menus that fully refresh after every command, it was not possible
