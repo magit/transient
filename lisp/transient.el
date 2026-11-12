@@ -1309,10 +1309,8 @@ Similar to `transient-define-suffix' but define a suffix object only.
   (pcase-let
       ((`(,class ,slots)
         (transient--expand-define-args args nil 'transient-augment-suffix t)))
-    :autoload-end
     `(put ',name 'transient--suffix
           (,(or class 'transient-suffix) :command ',name ,@slots))))
-(put 'transient-define-infix 'autoload-macro 'expand)
 
 (defmacro transient-define-infix (name arglist &rest args)
   "Define NAME as a transient infix command.
