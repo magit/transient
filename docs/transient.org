@@ -2964,7 +2964,9 @@ for this command in ~transient-map~.
 If your package only supports Emacs 30, just prefix the definition
 with ~;;;###autoload~.  If your package supports older Emacs releases,
 you unfortunately have to use a long-form autoload comment as
-described in [[info:elisp#Autoload]].
+described in [[info:elisp#Autoload]].  That unfortunately also means that
+docstrings won't be autoloaded.  (Note that Magit still supports older
+Emacs releases.)
 
 #+begin_src emacs-lisp
   ;;;###autoload (autoload 'magit-dispatch "magit" nil t)
