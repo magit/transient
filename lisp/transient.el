@@ -5593,8 +5593,7 @@ With a prefix argument, do an incremental regular expression
 search instead."
   (interactive "P")
   (transient--isearch-setup)
-  (let ((isearch-mode-map transient--isearch-mode-map))
-    (isearch-mode nil regexp-p)))
+  (isearch-mode nil regexp-p))
 
 (defun transient-isearch-forward (&optional regexp-p)
   "Do incremental search forward.
@@ -5602,8 +5601,7 @@ With a prefix argument, do an incremental regular expression
 search instead."
   (interactive "P")
   (transient--isearch-setup)
-  (let ((isearch-mode-map transient--isearch-mode-map))
-    (isearch-mode t regexp-p)))
+  (isearch-mode t regexp-p))
 
 (defun transient-isearch-exit ()
   "Like `isearch-exit' but adapted for `transient'."
@@ -5630,6 +5628,7 @@ search instead."
 
 (defun transient--isearch-setup ()
   (select-window transient--window)
+  (setq-local isearch-mode-map transient--isearch-mode-map)
   (transient--suspend-override t))
 
 (defun transient--isearch-exit ()

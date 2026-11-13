@@ -9,6 +9,10 @@
   slot.  Hidden commands remain available, they are just not shown
   in the menu.  #422.
 
+- Using ~isearch-edit-string~ from an Isearch session, used to search
+  in a menu, resulted in Transient key bindings not being restored,
+  when exiting Isearch.  #453
+
 * v0.13.9   2026-11-01
 
 - In menus that fully refresh after every command, it was not possible
