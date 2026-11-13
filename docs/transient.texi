@@ -1563,6 +1563,9 @@ suffixes, which assumes that a predicate like this is used:
       ?\C-c)) ; the prefix key shared by all bindings
 @end lisp
 
+The value can also be a boolean, though that is more useful when
+setting this slot for an individual suffix command.
+
 @item
 The value of @code{:setup-children}, if non-@code{nil}, is a function that takes
 one argument, a potentially list of children, and must return a list
@@ -3005,6 +3008,13 @@ the @code{object} therefore has to appear in the menu again.  Likewise a
 group or suffix may be (potentially only temporarily) inactive due
 to its @code{level}.  The @code{inactive} slot is set accordingly.  Never set it
 yourself.
+
+@item
+@code{hide} Whether the command or group should be omitted from the menu.
+Setting this to a non-nil value only hides it from display, the
+command is still available.  The value can also be a function, see
+@ref{Group Specifications, , Group Specifications}.  This slot is mainly intended for groups.
+Its use is discouraged for individual suffix commands.
 @end itemize
 
 The following two slots are experimental.  If they are set for a

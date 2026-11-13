@@ -5,6 +5,10 @@
   function documentation.  (If a package, such as Magit, still
   supports Emacs 29 or even older, then that still is the case.)
 
+- Individual suffix commands can now be hidden, using the new ~hide~
+  slot.  Hidden commands remain available, they are just not shown
+  in the menu.  #422.
+
 * v0.13.9   2026-11-01
 
 - In menus that fully refresh after every command, it was not possible

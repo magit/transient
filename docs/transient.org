@@ -1380,6 +1380,9 @@ constructor of that class.
           ?\C-c)) ; the prefix key shared by all bindings
   #+END_SRC
 
+  The value can also be a boolean, though that is more useful when
+  setting this slot for an individual suffix command.
+
 - The value of ~:setup-children~, if non-~nil~, is a function that takes
   one argument, a potentially list of children, and must return a list
   of children or an empty list.  This can either be used to somehow
@@ -2711,6 +2714,13 @@ the ~level~ slot (see [[*Enabling and Disabling Suffixes]]) are defined.
   group or suffix may be (potentially only temporarily) inactive due
   to its ~level~.  The ~inactive~ slot is set accordingly.  Never set it
   yourself.
+
+- ~hide~ Whether the command or group should be omitted from the menu.
+  Setting this to a non-nil value only hides it from display, the
+  command is still available.  The value can also be a function, see
+  [[*Group
+   Specifications][Group Specifications]].  This slot is mainly intended for groups.
+  Its use is discouraged for individual suffix commands.
 
 The following two slots are experimental.  If they are set for a
 group, then they apply to all suffixes in that group, except for
